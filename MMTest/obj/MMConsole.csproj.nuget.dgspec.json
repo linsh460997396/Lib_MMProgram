@@ -1,0 +1,93 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\VSWork\\2019\\Lib_MMProgram\\MMTest\\MMConsole.csproj": {}
+  },
+  "projects": {
+    "D:\\VSWork\\2019\\Lib_MMProgram\\Lib_MMCore\\Lib_MMCore.csproj": {
+      "restore": {
+        "projectUniqueName": "D:\\VSWork\\2019\\Lib_MMProgram\\Lib_MMCore\\Lib_MMCore.csproj",
+        "projectName": "Lib_MMCore",
+        "projectPath": "D:\\VSWork\\2019\\Lib_MMProgram\\Lib_MMCore\\Lib_MMCore.csproj",
+        "frameworks": {
+          "net472": {
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net472": {}
+      }
+    },
+    "D:\\VSWork\\2019\\Lib_MMProgram\\MMTest\\MMConsole.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\VSWork\\2019\\Lib_MMProgram\\MMTest\\MMConsole.csproj",
+        "projectName": "MMConsole",
+        "projectPath": "D:\\VSWork\\2019\\Lib_MMProgram\\MMTest\\MMConsole.csproj",
+        "packagesPath": "C:\\Users\\linsh\\.nuget\\packages\\",
+        "outputPath": "D:\\VSWork\\2019\\Lib_MMProgram\\MMTest\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\linsh\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net5.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net5.0": {
+            "targetAlias": "net5.0",
+            "projectReferences": {
+              "D:\\VSWork\\2019\\Lib_MMProgram\\Lib_MMCore\\Lib_MMCore.csproj": {
+                "projectPath": "D:\\VSWork\\2019\\Lib_MMProgram\\Lib_MMCore\\Lib_MMCore.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "dependencies": {
+            "HtmlAgilityPack": {
+              "target": "Package",
+              "version": "[1.11.49, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[5.0.15, 5.0.15]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

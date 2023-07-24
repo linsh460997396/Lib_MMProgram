@@ -1,0 +1,52 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v5.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v5.0": {
+      "MMConsole/1.0.0": {
+        "dependencies": {
+          "HtmlAgilityPack": "1.11.49",
+          "Lib_MMCore": "1.0.0"
+        },
+        "runtime": {
+          "MMConsole.dll": {}
+        }
+      },
+      "HtmlAgilityPack/1.11.49": {
+        "runtime": {
+          "lib/netstandard2.0/HtmlAgilityPack.dll": {
+            "assemblyVersion": "1.11.49.0",
+            "fileVersion": "1.11.49.0"
+          }
+        }
+      },
+      "Lib_MMCore/1.0.0": {
+        "runtime": {
+          "Lib_MMCore.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "MMConsole/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "HtmlAgilityPack/1.11.49": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Mo5Thds22DOvJOBOTmMosHsykqoTHECuHzjc1VWQMIjUTXZ+W03m/+HHH1dkWYfV8fOkXsI3eXCXVGNjAsdRKQ==",
+      "path": "htmlagilitypack/1.11.49",
+      "hashPath": "htmlagilitypack.1.11.49.nupkg.sha512"
+    },
+    "Lib_MMCore/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

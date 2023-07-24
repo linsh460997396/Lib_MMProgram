@@ -1,0 +1,10 @@
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\Lib_MMCore.dll
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\Lib_MMCore.pdb
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\HtmlAgilityPack.dll
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\HtmlAgilityPack.pdb
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\HtmlAgilityPack.xml
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\obj\Debug\Lib_MMCore.csproj.CoreCompileInputs.cache
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\obj\Debug\Lib_MMCore.csproj.CopyComplete
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\obj\Debug\Lib_MMCore.dll
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\obj\Debug\Lib_MMCore.pdb
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\obj\Debug\Lib_MMCore.csproj.AssemblyReference.cache

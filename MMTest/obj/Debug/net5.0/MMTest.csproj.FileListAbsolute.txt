@@ -1,0 +1,16 @@
+D:\VSWork\2019\Lib_MMProgram\MMTest\bin\Debug\net5.0\MMTest.exe
+D:\VSWork\2019\Lib_MMProgram\MMTest\bin\Debug\net5.0\MMTest.deps.json
+D:\VSWork\2019\Lib_MMProgram\MMTest\bin\Debug\net5.0\MMTest.runtimeconfig.json
+D:\VSWork\2019\Lib_MMProgram\MMTest\bin\Debug\net5.0\MMTest.runtimeconfig.dev.json
+D:\VSWork\2019\Lib_MMProgram\MMTest\bin\Debug\net5.0\MMTest.dll
+D:\VSWork\2019\Lib_MMProgram\MMTest\bin\Debug\net5.0\ref\MMTest.dll
+D:\VSWork\2019\Lib_MMProgram\MMTest\bin\Debug\net5.0\MMTest.pdb
+D:\VSWork\2019\Lib_MMProgram\MMTest\obj\Debug\net5.0\MMTest.csproj.AssemblyReference.cache
+D:\VSWork\2019\Lib_MMProgram\MMTest\obj\Debug\net5.0\MMTest.GeneratedMSBuildEditorConfig.editorconfig
+D:\VSWork\2019\Lib_MMProgram\MMTest\obj\Debug\net5.0\MMTest.AssemblyInfoInputs.cache
+D:\VSWork\2019\Lib_MMProgram\MMTest\obj\Debug\net5.0\MMTest.AssemblyInfo.cs
+D:\VSWork\2019\Lib_MMProgram\MMTest\obj\Debug\net5.0\MMTest.csproj.CoreCompileInputs.cache
+D:\VSWork\2019\Lib_MMProgram\MMTest\obj\Debug\net5.0\MMTest.dll
+D:\VSWork\2019\Lib_MMProgram\MMTest\obj\Debug\net5.0\ref\MMTest.dll
+D:\VSWork\2019\Lib_MMProgram\MMTest\obj\Debug\net5.0\MMTest.pdb
+D:\VSWork\2019\Lib_MMProgram\MMTest\obj\Debug\net5.0\MMTest.genruntimeconfig.cache

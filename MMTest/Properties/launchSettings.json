@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MMConsole": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}
