@@ -18,3 +18,4 @@ D:\VSWork\2019\Lib_MMProgram\MMTest\bin\Debug\net5.0\HtmlAgilityPack.dll
 D:\VSWork\2019\Lib_MMProgram\MMTest\bin\Debug\net5.0\Lib_MMCore.dll
 D:\VSWork\2019\Lib_MMProgram\MMTest\bin\Debug\net5.0\Lib_MMCore.pdb
 D:\VSWork\2019\Lib_MMProgram\MMTest\obj\Debug\net5.0\MMConsole.csproj.CopyComplete
+D:\VSWork\2019\Lib_MMProgram\MMTest\bin\Debug\net5.0\Lib_MMCore.dll.config

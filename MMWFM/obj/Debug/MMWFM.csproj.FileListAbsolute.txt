@@ -14,3 +14,4 @@ D:\VSWork\2019\Lib_MMProgram\MMWFM\obj\Debug\MMWFM.pdb
 D:\VSWork\2019\Lib_MMProgram\MMWFM\bin\Debug\HtmlAgilityPack.dll
 D:\VSWork\2019\Lib_MMProgram\MMWFM\bin\Debug\HtmlAgilityPack.pdb
 D:\VSWork\2019\Lib_MMProgram\MMWFM\bin\Debug\HtmlAgilityPack.xml
+D:\VSWork\2019\Lib_MMProgram\MMWFM\bin\Debug\Lib_MMCore.dll.config

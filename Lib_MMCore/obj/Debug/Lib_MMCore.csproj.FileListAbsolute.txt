@@ -8,3 +8,13 @@ D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\obj\Debug\Lib_MMCore.csproj.CopyComplete
 D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\obj\Debug\Lib_MMCore.dll
 D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\obj\Debug\Lib_MMCore.pdb
 D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\obj\Debug\Lib_MMCore.csproj.AssemblyReference.cache
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\Lib_MMCore.dll.config
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\Reminiscence.dll
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\System.Buffers.dll
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\System.Memory.dll
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\System.Numerics.Vectors.dll
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\System.Buffers.xml
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\System.Memory.xml
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\System.Numerics.Vectors.xml
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml

@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace MMConsole
 {
-    public class MMConsole
+    public static class MMConsole
     {
         public static void Main() //入口主函数只有1个，设置静态后它只从模板形成1个活动副本
         {

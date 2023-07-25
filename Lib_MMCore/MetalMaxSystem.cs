@@ -3,7 +3,7 @@
 //--------------------------------------------------------------------------------------------------
 //MetalMaxSystem.FuncLib（MM_函数库）
 //Code By Prinny（蔚蓝星海）
-//Github：
+//Github：https://github.com/linsh460997396/Lib_MMProgram.git
 //--------------------------------------------------------------------------------------------------
 //功能及使用说明：
 //
@@ -24,7 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Management;
@@ -40,6 +39,7 @@ using Timer = System.Threading.Timer;
 using System.Windows;
 using System.Windows.Media.Media3D;
 using System.Windows.Forms;
+using Point = System.Windows.Point;
 
 #endregion
 
@@ -76,6 +76,11 @@ namespace MetalMaxSystem
     #endregion
 
     #region 委托类型存放区
+
+    //个人书写习惯↓
+    //声明的委托类型首字母大写、委托类型的变量（当函数调用）首字母大写；
+    //Funcref 无事件event记号的委托类型（不安全）
+    //Handler 有事件event记号的委托类型（安全）
 
     /// <summary>
     /// 声明键鼠事件函数引用（委托类型）
@@ -316,6 +321,12 @@ namespace MetalMaxSystem
 
         #region Functions 数学公式区
 
+        public static int RandomInt(int min, int max)
+        {
+            Random r = new Random(Guid.NewGuid().GetHashCode());
+            return r.Next(min, max);
+        }
+
         public static Vector ToVector(Vector3D vector)
         {
             return new Vector(vector.X, vector.Y);
@@ -331,9 +342,17 @@ namespace MetalMaxSystem
             return Vector3D.AngleBetween(new Vector3D(x, y, z), new Vector3D(a, b, z));
         }
 
-        public static double AngleBetween(PointF point1, PointF point2)
+        /// <summary>
+        /// 返回从点1到点2的角度作为实数，以度为单位。
+        /// Returns the angle from point 1 to point 2 as a real value, in degrees
+        /// </summary>
+        /// <param name="point1"></param>
+        /// <param name="point2"></param>
+        /// <returns></returns>
+        public static double AngleBetween(Point point1, Point point2)
         {
-
+            //double X1 = point1.X, Y1 = point1.Y, X2 = point2.Y, Y2 = point2.Y;
+            //double angleOfLine = Math.Atan2((Y2 - Y1), (X2 - X2)) * 180 / Math.PI;
             return Vector.AngleBetween(new Vector(point1.X, point1.Y), new Vector(point2.X, point2.Y));
         }
 
@@ -364,7 +383,7 @@ namespace MetalMaxSystem
             return result;
         }
 
-        public static double Distance(PointF point1, PointF point2)
+        public static double Distance(Point point1, Point point2)
         {
             double x1 = point1.X;
             double y1 = point1.Y;
@@ -2223,6 +2242,5204 @@ namespace MetalMaxSystem
 
         #endregion
 
+        #region 互动功能区
+
+        #region 任意类型
+
+        //--------------------------------------------------------------------------------------------------
+        // 任意类型组Start
+        //--------------------------------------------------------------------------------------------------
+        public static int HD_RegObjectTagAndReturn_Int(Object lp_object)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_ObjectJBNum");
+            // Implementation
+            if ((lv_jBNum == 0))
+            {
+                lv_j = (lv_jBNum + 1);
+                DataTableSave0(true, "HD_ObjectJBNum", lv_j);
+                DataTableSave0(true, ("HD_Object_" + lv_j.ToString()), lp_object);
+            }
+            else
+            {
+                auto_ae = lv_jBNum;
+                auto_var = 1;
+                for (; auto_var <= auto_ae; auto_var += 1)
+                {
+                    lv_j = auto_var;
+                    if ((Object)DataTableLoad0(true, ("HD_Object_" + lv_j.ToString())) == lp_object)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        if ((lv_j == lv_jBNum))
+                        {
+                            lv_j = (lv_jBNum + 1);
+                            DataTableSave0(true, "HD_ObjectJBNum", lv_j);
+                            DataTableSave0(true, ("HD_Object_" + lv_j.ToString()), lp_object);
+                        }
+                    }
+                }
+            }
+            return lv_j;
+        }
+        public static int HD_ReturnObjectTag_Int(Object lp_object)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_ObjectJBNum");
+            // Implementation
+            auto_ae = lv_jBNum;
+            auto_var = 1;
+            for (; auto_var <= auto_ae; auto_var += 1)
+            {
+                lv_j = auto_var;
+                if ((Object)DataTableLoad0(true, "HD_Object_" + lv_j.ToString()) == lp_object)
+                {
+                    break;
+                }
+            }
+            return lv_j;
+        }
+        public static string HD_RegObjectTagAndReturn(Object lp_object)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            string lv_tag = "";
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_ObjectJBNum");
+            lv_tag = "";
+            // Implementation
+            if ((lv_jBNum == 0))
+            {
+                lv_j = (lv_jBNum + 1);
+                DataTableSave0(true, "HD_ObjectJBNum", lv_j);
+                DataTableSave0(true, ("HD_Object_" + lv_j.ToString()), lp_object);
+            }
+            else
+            {
+                auto_ae = lv_jBNum;
+                auto_var = 1;
+                for (; auto_var <= auto_ae; auto_var += 1)
+                {
+                    lv_j = auto_var;
+                    if ((Object)DataTableLoad0(true, "HD_Object_" + lv_j.ToString()) == lp_object)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        if ((lv_j == lv_jBNum))
+                        {
+                            lv_j = (lv_jBNum + 1);
+                            DataTableSave0(true, "HD_ObjectJBNum", lv_j);
+                            DataTableSave0(true, ("HD_Object_" + lv_j.ToString()), lp_object);
+                        }
+                    }
+                }
+            }
+            lv_tag = lv_j.ToString();
+            //Console.WriteLine(("Tag：" + lv_tag));
+            return lv_tag;
+        }
+        public static string HD_ReturnObjectTag(Object lp_object)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            string lv_tag = "";
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_ObjectJBNum");
+            // Implementation
+            auto_ae = lv_jBNum;
+            auto_var = 1;
+            for (; auto_var <= auto_ae; auto_var += 1)
+            {
+                lv_j = auto_var;
+                if ((Object)DataTableLoad0(true, "HD_Object_" + lv_j.ToString()) == lp_object)
+                {
+                    lv_tag = lv_j.ToString();
+                    break;
+                }
+            }
+            return lv_tag;
+        }
+        public static void HD_RegObject(Object lp_object, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            int lv_jBNum;
+            string lv_tagStr;
+            int lv_tag;
+            int lv_i;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_jBNum = (int)DataTableLoad0(true, (lv_str + "JBNum"));
+            lv_tagStr = "";
+            // Implementation
+            ThreadWait(lv_str);
+            lv_tagStr = HD_RegObjectTagAndReturn(lp_object);
+            lv_tag = Convert.ToInt32(lv_tagStr);
+            if ((lv_num == 0))
+            {
+                lv_i = (lv_num + 1);
+                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                DataTableSave0(true, (("HD_IfObjectTag" + "") + "_" + lv_tagStr), true);
+                DataTableSave1(true, ("HD_IfObjectTag" + lv_str), lv_tag, true);
+            }
+            else
+            {
+                if ((lv_num >= 1))
+                {
+                    auto_ae = lv_num;
+                    auto_var = 1;
+                    for (; auto_var <= auto_ae; auto_var += 1)
+                    {
+                        lv_i = auto_var;
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            if ((lv_i == lv_num))
+                            {
+                                lv_i = (lv_num + 1);
+                                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                                DataTableSave0(true, (("HD_IfObjectTag" + "") + "_" + lv_tagStr), true);
+                                DataTableSave1(true, ("HD_IfObjectTag" + lv_str), lv_tag, true);
+                            }
+                        }
+                    }
+                }
+            }
+            DataTableSave0(true, ("HD_ObjectState" + "" + "_" + lv_tagStr), lp_inherentStats);
+            DataTableSave0(true, ("HD_ObjectCV" + "" + "_" + lv_tagStr), lp_inherentCustomValue);
+        }
+        public static void HD_RegObject_Simple(Object lp_object, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            int lv_jBNum;
+            string lv_tagStr;
+            int lv_tag;
+            int lv_i;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_jBNum = (int)DataTableLoad0(true, (lv_str + "JBNum"));
+            lv_tagStr = "";
+            // Implementation
+            ThreadWait(lv_str);
+            lv_tagStr = HD_RegObjectTagAndReturn(lp_object);
+            lv_tag = Convert.ToInt32(lv_tagStr);
+            if ((lv_num == 0))
+            {
+                lv_i = (lv_num + 1);
+                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                DataTableSave0(true, (("HD_IfObjectTag" + "") + "_" + lv_tagStr), true);
+                DataTableSave1(true, ("HD_IfObjectTag" + lv_str), lv_tag, true);
+            }
+            else
+            {
+                if ((lv_num >= 1))
+                {
+                    auto_ae = lv_num;
+                    auto_var = 1;
+                    for (; auto_var <= auto_ae; auto_var += 1)
+                    {
+                        lv_i = auto_var;
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            if ((lv_i == lv_num))
+                            {
+                                lv_i = (lv_num + 1);
+                                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                                DataTableSave0(true, (("HD_IfObjectTag" + "") + "_" + lv_tagStr), true);
+                                DataTableSave1(true, ("HD_IfObjectTag" + lv_str), lv_tag, true);
+                            }
+                        }
+                    }
+                }
+            }
+            if ((DataTableKeyExists(true, ("HD_Object" + "State" + "_" + lv_tag.ToString())) == false))
+            {
+                DataTableSave1(true, (("HD_Object" + "State")), lv_tag, "true");
+            }
+        }
+        public static void HD_DestroyP(Object lp_object, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            string lv_tag = "";
+            int lv_a;
+            int lv_b;
+            string lv_c;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_tag = HD_ReturnObjectTag(lp_object);
+            lv_c = "";
+            // Implementation
+            if ((lv_tag != null))
+            {
+                ThreadWait(lv_str);
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
+                {
+                    if ((DataTableLoad1(true, (lp_key + "ObjectTag"), lv_a).ToString() == lv_tag))
+                    {
+                        lv_num -= 1;
+                        DataTableClear0(true, "HD_IfObjectTag_" + lv_tag);
+                        DataTableClear0(true, "HD_IfObjectTag" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_Object_" + lv_tag);
+                        DataTableClear0(true, "HD_ObjectCV_" + lv_tag);
+                        DataTableClear0(true, "HD_ObjectState_" + lv_tag);
+                        DataTableClear0(true, "HD_ObjectCV" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_ObjectState" + lv_str + "_" + lv_tag);
+                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
+                        {
+                            lv_c = DataTableLoad1(true, (lp_key + "ObjectTag"), lv_b + 1).ToString();
+                            DataTableSave1(true, (lp_key + "ObjectTag"), lv_b, lv_c);
+                        }
+                        //注销后触发序号重列，这里-1可以让挑选回滚，以再次检查重排后的当前挑选序号
+                        lv_a -= 1;
+                    }
+                }
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            }
+        }
+        public static void HD_RemoveObject(Object lp_object, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            string lv_tag = "";
+            int lv_a;
+            int lv_b;
+            string lv_c;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_tag = HD_ReturnObjectTag(lp_object);
+            lv_c = "";
+            // Implementation
+            if ((lv_tag != null))
+            {
+                ThreadWait(lv_str);
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
+                {
+                    if ((DataTableLoad1(true, (lp_key + "ObjectTag"), lv_a) == lv_tag))
+                    {
+                        lv_num -= 1;
+                        DataTableClear0(true, "HD_IfObjectTag" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_ObjectCV" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_ObjectState" + lv_str + "_" + lv_tag);
+                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
+                        {
+                            lv_c = DataTableLoad1(true, (lp_key + "ObjectTag"), lv_b + 1).ToString();
+                            DataTableSave1(true, (lp_key + "ObjectTag"), lv_b, lv_c);
+                        }
+                        //注销后触发序号重列，这里-1可以让挑选回滚，以再次检查重排后的当前挑选序号
+                        lv_a -= 1;
+                    }
+                }
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            }
+        }
+        public static int HD_ReturnObjectNumMax(string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            // Implementation
+            return lv_num;
+        }
+        public static int HD_ReturnObjectNum(Object lp_object, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            int lv_i;
+            string lv_tag = "";
+            int lv_torf;
+            // Automatic Variable Declarations
+            const int auto_n = 1;
+            int auto_i;
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_tag = HD_ReturnObjectTag(lp_object);
+            lv_torf = -1;
+            // Implementation
+            for (auto_i = 1; auto_i <= auto_n; auto_i += 1)
+            {
+                if ((lv_tag != null))
+                {
+                    lv_torf = -2;
+                    break;
+                }
+                if ((lv_num == 0))
+                {
+                    lv_torf = 0;
+                }
+                else
+                {
+                    if ((lv_num >= 1))
+                    {
+                        auto_ae = lv_num;
+                        auto_var = 1;
+                        for (; auto_var <= auto_ae; auto_var += 1)
+                        {
+                            lv_i = auto_var;
+                            if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tag))
+                            {
+                                lv_torf = lv_i;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return lv_torf;
+        }
+        public static Object HD_ReturnObjectFromRegNum(int lp_regNum, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            Object lv_object;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            lv_object = (Object)DataTableLoad0(true, ("HD_Object_" + lv_tag));
+            // Implementation
+            return lv_object;
+        }
+        public static Object HD_ReturnObjectFromTag(int lp_tag)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            Object lv_object;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = lp_tag.ToString();
+            lv_object = (Object)DataTableLoad0(true, ("HD_Object_" + lv_tag));
+            // Implementation
+            return lv_object;
+        }
+        public static string HD_ReturnObjectTagFromRegNum_String(int lp_regNum, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            // Implementation
+            return lv_tag;
+        }
+        public static int HD_ReturnObjectTagFromRegNum_Int(int lp_regNum, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            // Implementation
+            return Convert.ToInt32(lv_tag);
+        }
+        public static void HD_SetPState(Object lp_object, string lp_key, string lp_stats)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            lv_tag = HD_RegObjectTagAndReturn(lp_object);
+            // Implementation
+            DataTableSave0(true, ("HD_ObjectState" + lv_str + "_" + lv_tag), lp_stats);
+        }
+        public static string HD_ReturnObjectState(Object lp_object, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            string lv_stats;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            lv_tag = HD_ReturnObjectTag(lp_object);
+            lv_stats = DataTableLoad0(true, ("HD_ObjectState" + lv_str + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_stats;
+        }
+        public static void HD_SetPCV(Object lp_object, string lp_key, string lp_customValue)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            lv_tag = HD_RegObjectTagAndReturn(lp_object);
+            // Implementation
+            DataTableSave0(true, ("HD_ObjectCV" + lv_str + "_" + lv_tag), lp_customValue);
+        }
+        public static string HD_ReturnObjectCV(Object lp_object, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            string lv_customValue;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            lv_tag = HD_ReturnObjectTag(lp_object);
+            lv_customValue = DataTableLoad0(true, ("HD_ObjectCV" + lv_str + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_customValue;
+        }
+        public static string HD_ReturnObjectState_Only(Object lp_object)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            string lv_stats;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnObjectTag(lp_object);
+            lv_stats = DataTableLoad0(true, ("HD_ObjectState" + "" + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_stats;
+        }
+        public static string HD_ReturnObjectCV_Only(Object lp_object)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            string lv_customValue;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnObjectTag(lp_object);
+            lv_customValue = DataTableLoad0(true, ("HD_ObjectCV" + "" + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_customValue;
+        }
+        public static void HD_SetPDouble(Object lp_object, double lp_realNumTag)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_RegObjectTagAndReturn(lp_object);
+            // Implementation
+            DataTableSave0(true, ("HD_CDDouble_T_" + lv_tag), lp_realNumTag);
+        }
+        public static double HD_ReturnObjectDouble(Object lp_object)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            double lv_f;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnObjectTag(lp_object);
+            lv_f = (double)DataTableLoad0(true, ("HD_CDDouble_T_" + lv_tag));
+            // Implementation
+            return lv_f;
+        }
+        public static bool HD_ReturnIfObjectTag(Object lp_object)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            bool lv_torf;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnObjectTag(lp_object);
+            lv_torf = (bool)DataTableLoad0(true, ("HD_IfObjectTag" + "" + "_" + lv_tag));
+            // Implementation
+            return lv_torf;
+        }
+        public static bool HD_ReturnIfObjectTagKey(Object lp_object, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            bool lv_torf;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            lv_tag = HD_ReturnObjectTag(lp_object);
+            lv_torf = (bool)DataTableLoad0(true, ("HD_IfObjectTag" + lv_str + "_" + lv_tag));
+            // Implementation
+            return lv_torf;
+        }
+        public static void HD_ObjectGSortCV(string lp_key, string lp_cVStr, bool lp_big)
+        {
+            // Automatic Variable Declarations
+            // Implementation
+            // Variable Declarations
+            int lv_a;
+            int lv_b;
+            int lv_c;
+            bool lv_bool;
+            int lv_tag;
+            int lv_tagValue;
+            string lv_str;
+            int lv_num;
+            int lv_intStackOutSize;
+            string lv_tagValuestr;
+            // Automatic Variable Declarations
+            int autoA_ae;
+            const int autoA_ai = 1;
+            int autoB_ae;
+            const int autoB_ai = 1;
+            int autoC_ae;
+            const int autoC_ai = 1;
+            int autoD_ae;
+            const int autoD_ai = -1;
+            int autoE_ae;
+            const int autoE_ai = 1;
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            ThreadWait(lv_str);
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_intStackOutSize = 0;
+            // Implementation
+            autoB_ae = lv_num;
+            lv_a = 1;
+            for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
+            {
+                lv_tag = HD_ReturnObjectTagFromRegNum_Int(lv_a, lp_key);
+                lv_tagValuestr = HD_ReturnObjectCV(HD_ReturnObjectFromTag(lv_tag), lp_cVStr);
+                lv_tagValue = Convert.ToInt32(lv_tagValuestr);
+                //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
+                if ((lv_intStackOutSize == 0))
+                {
+                    lv_intStackOutSize += 1;
+                    DataTableSave1(false, "IntStackOutTag", 1, lv_tag);
+                    DataTableSave1(false, "IntStackOutTagValue", 1, lv_tagValue);
+                    DataTableSave1(false, "IntStackOutTagIteraOrig", 1, lv_a);
+                    //Console.WriteLine("尺寸" + IntToString(lv_intStackOutSize) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue)+"，IteraOrig="+IntToString(lv_a));
+                }
+                else
+                {
+                    lv_bool = false;
+                    autoC_ae = lv_intStackOutSize;
+                    lv_b = 1;
+                    //Console.WriteLine("For" + IntToString(1) +"到"+IntToString(autoC_ae));
+                    for (; ((autoC_ai >= 0 && lv_b <= autoC_ae) || (autoC_ai < 0 && lv_b >= autoC_ae)); lv_b += autoC_ai)
+                    {
+                        if (lp_big == false)
+                        {
+                            //Console.WriteLine("小值靠前");
+                            if (lv_tagValue < (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                lv_intStackOutSize += 1;
+                                autoD_ae = (lv_b + 1);
+                                lv_c = lv_intStackOutSize;
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            //Console.WriteLine("大值靠前"+"，当前lv_b=" +IntToString(lv_b));
+                            if (lv_tagValue > (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnObjectTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
+                                //Console.WriteLine("生效的lv_b：" + IntToString(lv_b));
+                                lv_intStackOutSize += 1;
+                                //Console.WriteLine("lv_intStackOutSize：" + IntToString(lv_intStackOutSize));
+                                autoD_ae = (lv_b + 1);
+                                //Console.WriteLine("autoD_ae：" + IntToString(autoD_ae));
+                                lv_c = lv_intStackOutSize;
+                                //Console.WriteLine("lv_c：" + IntToString(lv_c));
+                                //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoD_ae));
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    //Console.WriteLine("交换元素" + IntToString(DataTableLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    //Console.WriteLine("交换值" + IntToString(DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    //Console.WriteLine("交换新序值" + IntToString(DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                //Console.WriteLine("值IteraOrig=lv_a=" + IntToString(lv_a) +"存到序号lv_b="+IntToString(lv_b) +"位置");
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                    }
+                    if ((lv_bool == false))
+                    {
+                        lv_intStackOutSize += 1;
+                        DataTableSave1(false, "IntStackOutTag", lv_intStackOutSize, lv_tag);
+                        //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagValue", lv_intStackOutSize, lv_tagValue);
+                        //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagIteraOrig", lv_intStackOutSize, lv_a);
+                        //Console.WriteLine("IteraOrig=lv_a=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                    }
+                }
+            }
+            autoE_ae = lv_num; //此时lv_intStackOutSize=Num
+            lv_a = 1;
+            //Console.WriteLine("最终处理For 1~" + IntToString(lv_num));
+            for (; ((autoE_ai >= 0 && lv_a <= autoE_ae) || (autoE_ai < 0 && lv_a >= autoE_ae)); lv_a += autoE_ai)
+            {
+                //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
+                //lv_tag = DataTableLoad1(true, (lp_key + "ObjectTag"), lv_a).ToString(); //原始序号元素
+                lv_tag = (int)DataTableLoad1(false, "IntStackOutTag", lv_a);
+                lv_tagValuestr = HD_ReturnObjectCV(HD_ReturnObjectFromTag(lv_tag), lp_cVStr);
+                lv_tagValue = Convert.ToInt32(lv_tagValuestr);
+                //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
+                lv_b = (int)DataTableLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                                                                                    //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                if (lv_a != lv_b)
+                {
+                    //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
+                    DataTableSave1(true, (lp_key + "ObjectTag"), lv_a, lv_tag); //lv_tag放入新序号
+                                                                                //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                }
+            }
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+        }
+        public static void HD_ObjectGSort(string lp_key, bool lp_big)
+        {
+            // Automatic Variable Declarations
+            // Implementation
+            // Variable Declarations
+            int lv_a;
+            int lv_b;
+            int lv_c;
+            bool lv_bool;
+            int lv_tag;
+            int lv_tagValue;
+            string lv_str;
+            int lv_num;
+            int lv_intStackOutSize;
+            // Automatic Variable Declarations
+            int autoA_ae;
+            const int autoA_ai = 1;
+            int autoB_ae;
+            const int autoB_ai = 1;
+            int autoC_ae;
+            const int autoC_ai = 1;
+            int autoD_ae;
+            const int autoD_ai = -1;
+            int autoE_ae;
+            const int autoE_ai = 1;
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            ThreadWait(lv_str);
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_intStackOutSize = 0;
+            // Implementation
+            autoB_ae = lv_num;
+            lv_a = 1;
+            for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
+            {
+                lv_tag = HD_ReturnObjectTagFromRegNum_Int(lv_a, lp_key);
+                lv_tagValue = lv_tag;
+                //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
+                if ((lv_intStackOutSize == 0))
+                {
+                    lv_intStackOutSize += 1;
+                    DataTableSave1(false, "IntStackOutTag", 1, lv_tag);
+                    DataTableSave1(false, "IntStackOutTagValue", 1, lv_tagValue);
+                    DataTableSave1(false, "IntStackOutTagIteraOrig", 1, lv_a);
+                    //Console.WriteLine("尺寸" + IntToString(lv_intStackOutSize) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue)+"，IteraOrig="+IntToString(lv_a));
+                }
+                else
+                {
+                    lv_bool = false;
+                    autoC_ae = lv_intStackOutSize;
+                    lv_b = 1;
+                    //Console.WriteLine("For" + IntToString(1) +"到"+IntToString(autoC_ae));
+                    for (; ((autoC_ai >= 0 && lv_b <= autoC_ae) || (autoC_ai < 0 && lv_b >= autoC_ae)); lv_b += autoC_ai)
+                    {
+                        if (lp_big == false)
+                        {
+                            //Console.WriteLine("小值靠前");
+                            if (lv_tagValue < (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                lv_intStackOutSize += 1;
+                                autoD_ae = (lv_b + 1);
+                                lv_c = lv_intStackOutSize;
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            //Console.WriteLine("大值靠前"+"，当前lv_b=" +IntToString(lv_b));
+                            if (lv_tagValue > (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnObjectTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
+                                //Console.WriteLine("生效的lv_b：" + IntToString(lv_b));
+                                lv_intStackOutSize += 1;
+                                //Console.WriteLine("lv_intStackOutSize：" + IntToString(lv_intStackOutSize));
+                                autoD_ae = (lv_b + 1);
+                                //Console.WriteLine("autoD_ae：" + IntToString(autoD_ae));
+                                lv_c = lv_intStackOutSize;
+                                //Console.WriteLine("lv_c：" + IntToString(lv_c));
+                                //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoD_ae));
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    //Console.WriteLine("交换元素" + IntToString(DataTableLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    //Console.WriteLine("交换值" + IntToString(DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    //Console.WriteLine("交换新序值" + IntToString(DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                //Console.WriteLine("值IteraOrig=lv_a=" + IntToString(lv_a) +"存到序号lv_b="+IntToString(lv_b) +"位置");
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                    }
+                    if ((lv_bool == false))
+                    {
+                        lv_intStackOutSize += 1;
+                        DataTableSave1(false, "IntStackOutTag", lv_intStackOutSize, lv_tag);
+                        //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagValue", lv_intStackOutSize, lv_tagValue);
+                        //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagIteraOrig", lv_intStackOutSize, lv_a);
+                        //Console.WriteLine("IteraOrig=lv_a=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                    }
+                }
+            }
+            autoE_ae = lv_num; //此时lv_intStackOutSize=Num
+            lv_a = 1;
+            //Console.WriteLine("最终处理For 1~" + IntToString(lv_num));
+            for (; ((autoE_ai >= 0 && lv_a <= autoE_ae) || (autoE_ai < 0 && lv_a >= autoE_ae)); lv_a += autoE_ai)
+            {
+                //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
+                //lv_tag = DataTableLoad1(true, (lp_key + "ObjectTag"), lv_a).ToString(); //原始序号元素
+                lv_tag = (int)DataTableLoad1(false, "IntStackOutTag", lv_a);
+                lv_tagValue = lv_tag;
+                //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
+                lv_b = (int)DataTableLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                                                                                    //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                if (lv_a != lv_b)
+                {
+                    //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
+                    DataTableSave1(true, (lp_key + "ObjectTag"), lv_a, lv_tag); //lv_tag放入新序号
+                                                                                //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                }
+            }
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+        }
+        public static Object HD_ReturnObjectFromPGFunc(int lp_regNum, string lp_gs)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            Object lv_object;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_gs + "Object");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            lv_object = (Object)DataTableLoad0(true, ("HD_Object_" + lv_tag));
+            // Implementation
+            return lv_object;
+        }
+        public static int HD_ReturnObjectGNumMax_StateTrueFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            Object lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnObjectNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnObjectFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnObjectState(lv_c, lp_gs);
+                if ((lv_b == "true"))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static int HD_ReturnObjectGNumMax_StateFalseFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            Object lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnObjectNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnObjectFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnObjectState(lv_c, lp_gs);
+                if ((lv_b == "false"))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static int HD_ReturnObjectGNumMax_StateUselessFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            Object lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnObjectNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnObjectFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnObjectState(lv_c, lp_gs);
+                if (((lv_b == "false") || (lv_b == "") || (lv_b == null)))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static int HD_ReturnObjectGNumMax_StateFunc_Specify(string lp_gs, string lp_State)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            Object lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnObjectNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnObjectFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnObjectState(lv_c, lp_gs);
+                if ((lv_b == lp_State))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static Object HD_ReturnRandomObjectFromPGFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_num;
+            int lv_a;
+            Object lv_c = null;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_num = HD_ReturnObjectNumMax(lp_gs);
+            // Implementation
+            if ((lv_num >= 1))
+            {
+                lv_a = RandomInt(1, lv_num);
+                lv_c = HD_ReturnObjectFromRegNum(lv_a, lp_gs);
+            }
+            return lv_c;
+        }
+        public static void HD_RemoveObjectGAll(string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            string lv_tag = "";
+            int lv_a;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Object");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            // Implementation
+            ThreadWait(lv_str);
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
+            {
+                lv_tag = DataTableLoad1(true, (lp_key + "ObjectTag"), lv_a).ToString();
+                lv_num -= 1;
+                DataTableClear0(true, "HD_IfObjectTag" + lv_str + "_" + lv_tag);
+                DataTableClear0(true, "HD_ObjectCV" + lv_str + "_" + lv_tag);
+                DataTableClear0(true, "HD_ObjectState" + lv_str + "_" + lv_tag);
+                DataTableSave0(true, (lp_key + "TNum"), lv_num);
+            }
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+        }
+
+        //--------------------------------------------------------------------------------------------------
+        // 任意类型组End
+        //--------------------------------------------------------------------------------------------------
+
+        #endregion
+
+        #region 点
+
+        //--------------------------------------------------------------------------------------------------
+        // 点组Start
+        //--------------------------------------------------------------------------------------------------
+        public static int HD_RegPTagAndReturn_Int(Vector lp_vector)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_VectorJBNum");
+            // Implementation
+            if ((lv_jBNum == 0))
+            {
+                lv_j = (lv_jBNum + 1);
+                DataTableSave0(true, "HD_VectorJBNum", lv_j);
+                DataTableSave0(true, ("HD_Vector_" + lv_j.ToString()), lp_vector);
+            }
+            else
+            {
+                auto_ae = lv_jBNum;
+                auto_var = 1;
+                for (; auto_var <= auto_ae; auto_var += 1)
+                {
+                    lv_j = auto_var;
+                    if ((Vector)DataTableLoad0(true, ("HD_Vector_" + lv_j.ToString())) == lp_vector)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        if ((lv_j == lv_jBNum))
+                        {
+                            lv_j = (lv_jBNum + 1);
+                            DataTableSave0(true, "HD_VectorJBNum", lv_j);
+                            DataTableSave0(true, ("HD_Vector_" + lv_j.ToString()), lp_vector);
+                        }
+                    }
+                }
+            }
+            return lv_j;
+        }
+        public static int HD_ReturnPTag_Int(Vector lp_vector)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_VectorJBNum");
+            // Implementation
+            auto_ae = lv_jBNum;
+            auto_var = 1;
+            for (; auto_var <= auto_ae; auto_var += 1)
+            {
+                lv_j = auto_var;
+                if ((Vector)DataTableLoad0(true, "HD_Vector_" + lv_j.ToString()) == lp_vector)
+                {
+                    break;
+                }
+            }
+            return lv_j;
+        }
+        public static string HD_RegPTagAndReturn(Vector lp_vector)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            string lv_tag = "";
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_VectorJBNum");
+            lv_tag = "";
+            // Implementation
+            if ((lv_jBNum == 0))
+            {
+                lv_j = (lv_jBNum + 1);
+                DataTableSave0(true, "HD_VectorJBNum", lv_j);
+                DataTableSave0(true, ("HD_Vector_" + lv_j.ToString()), lp_vector);
+            }
+            else
+            {
+                auto_ae = lv_jBNum;
+                auto_var = 1;
+                for (; auto_var <= auto_ae; auto_var += 1)
+                {
+                    lv_j = auto_var;
+                    if ((Vector)DataTableLoad0(true, "HD_Vector_" + lv_j.ToString()) == lp_vector)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        if ((lv_j == lv_jBNum))
+                        {
+                            lv_j = (lv_jBNum + 1);
+                            DataTableSave0(true, "HD_VectorJBNum", lv_j);
+                            DataTableSave0(true, ("HD_Vector_" + lv_j.ToString()), lp_vector);
+                        }
+                    }
+                }
+            }
+            lv_tag = lv_j.ToString();
+            //Console.WriteLine(("Tag：" + lv_tag));
+            return lv_tag;
+        }
+        public static string HD_ReturnPTag(Vector lp_vector)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            string lv_tag = "";
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_VectorJBNum");
+            // Implementation
+            auto_ae = lv_jBNum;
+            auto_var = 1;
+            for (; auto_var <= auto_ae; auto_var += 1)
+            {
+                lv_j = auto_var;
+                if ((Vector)DataTableLoad0(true, "HD_Vector_" + lv_j.ToString()) == lp_vector)
+                {
+                    lv_tag = lv_j.ToString();
+                    break;
+                }
+            }
+            return lv_tag;
+        }
+        public static void HD_RegP(Vector lp_vector, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            int lv_jBNum;
+            string lv_tagStr;
+            int lv_tag;
+            int lv_i;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_jBNum = (int)DataTableLoad0(true, (lv_str + "JBNum"));
+            lv_tagStr = "";
+            // Implementation
+            ThreadWait(lv_str);
+            lv_tagStr = HD_RegPTagAndReturn(lp_vector);
+            lv_tag = Convert.ToInt32(lv_tagStr);
+            if ((lv_num == 0))
+            {
+                lv_i = (lv_num + 1);
+                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                DataTableSave0(true, (("HD_IfPTag" + "") + "_" + lv_tagStr), true);
+                DataTableSave1(true, ("HD_IfPTag" + lv_str), lv_tag, true);
+            }
+            else
+            {
+                if ((lv_num >= 1))
+                {
+                    auto_ae = lv_num;
+                    auto_var = 1;
+                    for (; auto_var <= auto_ae; auto_var += 1)
+                    {
+                        lv_i = auto_var;
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            if ((lv_i == lv_num))
+                            {
+                                lv_i = (lv_num + 1);
+                                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                                DataTableSave0(true, (("HD_IfPTag" + "") + "_" + lv_tagStr), true);
+                                DataTableSave1(true, ("HD_IfPTag" + lv_str), lv_tag, true);
+                            }
+                        }
+                    }
+                }
+            }
+            DataTableSave0(true, ("HD_VectorState" + "" + "_" + lv_tagStr), lp_inherentStats);
+            DataTableSave0(true, ("HD_VectorCV" + "" + "_" + lv_tagStr), lp_inherentCustomValue);
+        }
+        public static void HD_RegP_Simple(Vector lp_vector, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            int lv_jBNum;
+            string lv_tagStr;
+            int lv_tag;
+            int lv_i;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_jBNum = (int)DataTableLoad0(true, (lv_str + "JBNum"));
+            lv_tagStr = "";
+            // Implementation
+            ThreadWait(lv_str);
+            lv_tagStr = HD_RegPTagAndReturn(lp_vector);
+            lv_tag = Convert.ToInt32(lv_tagStr);
+            if ((lv_num == 0))
+            {
+                lv_i = (lv_num + 1);
+                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                DataTableSave0(true, (("HD_IfPTag" + "") + "_" + lv_tagStr), true);
+                DataTableSave1(true, ("HD_IfPTag" + lv_str), lv_tag, true);
+            }
+            else
+            {
+                if ((lv_num >= 1))
+                {
+                    auto_ae = lv_num;
+                    auto_var = 1;
+                    for (; auto_var <= auto_ae; auto_var += 1)
+                    {
+                        lv_i = auto_var;
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            if ((lv_i == lv_num))
+                            {
+                                lv_i = (lv_num + 1);
+                                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                                DataTableSave0(true, (("HD_IfPTag" + "") + "_" + lv_tagStr), true);
+                                DataTableSave1(true, ("HD_IfPTag" + lv_str), lv_tag, true);
+                            }
+                        }
+                    }
+                }
+            }
+            if ((DataTableKeyExists(true, ("HD_Vector" + "State" + "_" + lv_tag.ToString())) == false))
+            {
+                DataTableSave1(true, (("HD_Vector" + "State")), lv_tag, "true");
+            }
+        }
+        public static void HD_DestroyP(Vector lp_vector, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            string lv_tag = "";
+            int lv_a;
+            int lv_b;
+            string lv_c;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_c = "";
+            // Implementation
+            if ((lv_tag != null))
+            {
+                ThreadWait(lv_str);
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
+                {
+                    if ((DataTableLoad1(true, (lp_key + "PTag"), lv_a).ToString() == lv_tag))
+                    {
+                        lv_num -= 1;
+                        DataTableClear0(true, "HD_IfPTag_" + lv_tag);
+                        DataTableClear0(true, "HD_IfPTag" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_Vector_" + lv_tag);
+                        DataTableClear0(true, "HD_VectorCV_" + lv_tag);
+                        DataTableClear0(true, "HD_VectorState_" + lv_tag);
+                        DataTableClear0(true, "HD_VectorCV" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_VectorState" + lv_str + "_" + lv_tag);
+                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
+                        {
+                            lv_c = DataTableLoad1(true, (lp_key + "PTag"), lv_b + 1).ToString();
+                            DataTableSave1(true, (lp_key + "PTag"), lv_b, lv_c);
+                        }
+                        //注销后触发序号重列，这里-1可以让挑选回滚，以再次检查重排后的当前挑选序号
+                        lv_a -= 1;
+                    }
+                }
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            }
+        }
+        public static void HD_RemoveP(Vector lp_vector, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            string lv_tag = "";
+            int lv_a;
+            int lv_b;
+            string lv_c;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_c = "";
+            // Implementation
+            if ((lv_tag != null))
+            {
+                ThreadWait(lv_str);
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
+                {
+                    if ((DataTableLoad1(true, (lp_key + "PTag"), lv_a) == lv_tag))
+                    {
+                        lv_num -= 1;
+                        DataTableClear0(true, "HD_IfPTag" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_VectorCV" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_VectorState" + lv_str + "_" + lv_tag);
+                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
+                        {
+                            lv_c = DataTableLoad1(true, (lp_key + "PTag"), lv_b + 1).ToString();
+                            DataTableSave1(true, (lp_key + "PTag"), lv_b, lv_c);
+                        }
+                        //注销后触发序号重列，这里-1可以让挑选回滚，以再次检查重排后的当前挑选序号
+                        lv_a -= 1;
+                    }
+                }
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            }
+        }
+        public static int HD_ReturnPNumMax(string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            // Implementation
+            return lv_num;
+        }
+        public static int HD_ReturnPNum(Vector lp_vector, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            int lv_i;
+            string lv_tag = "";
+            int lv_torf;
+            // Automatic Variable Declarations
+            const int auto_n = 1;
+            int auto_i;
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_torf = -1;
+            // Implementation
+            for (auto_i = 1; auto_i <= auto_n; auto_i += 1)
+            {
+                if ((lv_tag != null))
+                {
+                    lv_torf = -2;
+                    break;
+                }
+                if ((lv_num == 0))
+                {
+                    lv_torf = 0;
+                }
+                else
+                {
+                    if ((lv_num >= 1))
+                    {
+                        auto_ae = lv_num;
+                        auto_var = 1;
+                        for (; auto_var <= auto_ae; auto_var += 1)
+                        {
+                            lv_i = auto_var;
+                            if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tag))
+                            {
+                                lv_torf = lv_i;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return lv_torf;
+        }
+        public static Vector HD_ReturnPFromRegNum(int lp_regNum, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            Vector lv_vector;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            lv_vector = (Vector)DataTableLoad0(true, ("HD_Vector_" + lv_tag));
+            // Implementation
+            return lv_vector;
+        }
+        public static Vector HD_ReturnPFromTag(int lp_tag)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            Vector lv_vector;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = lp_tag.ToString();
+            lv_vector = (Vector)DataTableLoad0(true, ("HD_Vector_" + lv_tag));
+            // Implementation
+            return lv_vector;
+        }
+        public static string HD_ReturnPTagFromRegNum_String(int lp_regNum, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            // Implementation
+            return lv_tag;
+        }
+        public static int HD_ReturnPTagFromRegNum_Int(int lp_regNum, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            // Implementation
+            return Convert.ToInt32(lv_tag);
+        }
+        public static void HD_SetPState(Vector lp_vector, string lp_key, string lp_stats)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            lv_tag = HD_RegPTagAndReturn(lp_vector);
+            // Implementation
+            DataTableSave0(true, ("HD_VectorState" + lv_str + "_" + lv_tag), lp_stats);
+        }
+        public static string HD_ReturnPState(Vector lp_vector, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            string lv_stats;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_stats = DataTableLoad0(true, ("HD_VectorState" + lv_str + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_stats;
+        }
+        public static void HD_SetPCV(Vector lp_vector, string lp_key, string lp_customValue)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            lv_tag = HD_RegPTagAndReturn(lp_vector);
+            // Implementation
+            DataTableSave0(true, ("HD_VectorCV" + lv_str + "_" + lv_tag), lp_customValue);
+        }
+        public static string HD_ReturnPCV(Vector lp_vector, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            string lv_customValue;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_customValue = DataTableLoad0(true, ("HD_VectorCV" + lv_str + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_customValue;
+        }
+        public static string HD_ReturnPState_Only(Vector lp_vector)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            string lv_stats;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_stats = DataTableLoad0(true, ("HD_VectorState" + "" + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_stats;
+        }
+        public static string HD_ReturnPCV_Only(Vector lp_vector)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            string lv_customValue;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_customValue = DataTableLoad0(true, ("HD_VectorCV" + "" + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_customValue;
+        }
+        public static void HD_SetPDouble(Vector lp_vector, double lp_realNumTag)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_RegPTagAndReturn(lp_vector);
+            // Implementation
+            DataTableSave0(true, ("HD_CDDouble_T_" + lv_tag), lp_realNumTag);
+        }
+        public static double HD_ReturnPDouble(Vector lp_vector)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            double lv_f;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_f = (double)DataTableLoad0(true, ("HD_CDDouble_T_" + lv_tag));
+            // Implementation
+            return lv_f;
+        }
+        public static bool HD_ReturnIfPTag(Vector lp_vector)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            bool lv_torf;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_torf = (bool)DataTableLoad0(true, ("HD_IfPTag" + "" + "_" + lv_tag));
+            // Implementation
+            return lv_torf;
+        }
+        public static bool HD_ReturnIfPTagKey(Vector lp_vector, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            bool lv_torf;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_torf = (bool)DataTableLoad0(true, ("HD_IfPTag" + lv_str + "_" + lv_tag));
+            // Implementation
+            return lv_torf;
+        }
+        public static void HD_PGSortCV(string lp_key, string lp_cVStr, bool lp_big)
+        {
+            // Automatic Variable Declarations
+            // Implementation
+            // Variable Declarations
+            int lv_a;
+            int lv_b;
+            int lv_c;
+            bool lv_bool;
+            int lv_tag;
+            int lv_tagValue;
+            string lv_str;
+            int lv_num;
+            int lv_intStackOutSize;
+            string lv_tagValuestr;
+            // Automatic Variable Declarations
+            int autoA_ae;
+            const int autoA_ai = 1;
+            int autoB_ae;
+            const int autoB_ai = 1;
+            int autoC_ae;
+            const int autoC_ai = 1;
+            int autoD_ae;
+            const int autoD_ai = -1;
+            int autoE_ae;
+            const int autoE_ai = 1;
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            ThreadWait(lv_str);
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_intStackOutSize = 0;
+            // Implementation
+            autoB_ae = lv_num;
+            lv_a = 1;
+            for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
+            {
+                lv_tag = HD_ReturnPTagFromRegNum_Int(lv_a, lp_key);
+                lv_tagValuestr = HD_ReturnPCV(HD_ReturnPFromTag(lv_tag), lp_cVStr);
+                lv_tagValue = Convert.ToInt32(lv_tagValuestr);
+                //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
+                if ((lv_intStackOutSize == 0))
+                {
+                    lv_intStackOutSize += 1;
+                    DataTableSave1(false, "IntStackOutTag", 1, lv_tag);
+                    DataTableSave1(false, "IntStackOutTagValue", 1, lv_tagValue);
+                    DataTableSave1(false, "IntStackOutTagIteraOrig", 1, lv_a);
+                    //Console.WriteLine("尺寸" + IntToString(lv_intStackOutSize) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue)+"，IteraOrig="+IntToString(lv_a));
+                }
+                else
+                {
+                    lv_bool = false;
+                    autoC_ae = lv_intStackOutSize;
+                    lv_b = 1;
+                    //Console.WriteLine("For" + IntToString(1) +"到"+IntToString(autoC_ae));
+                    for (; ((autoC_ai >= 0 && lv_b <= autoC_ae) || (autoC_ai < 0 && lv_b >= autoC_ae)); lv_b += autoC_ai)
+                    {
+                        if (lp_big == false)
+                        {
+                            //Console.WriteLine("小值靠前");
+                            if (lv_tagValue < (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                lv_intStackOutSize += 1;
+                                autoD_ae = (lv_b + 1);
+                                lv_c = lv_intStackOutSize;
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            //Console.WriteLine("大值靠前"+"，当前lv_b=" +IntToString(lv_b));
+                            if (lv_tagValue > (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnPTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
+                                //Console.WriteLine("生效的lv_b：" + IntToString(lv_b));
+                                lv_intStackOutSize += 1;
+                                //Console.WriteLine("lv_intStackOutSize：" + IntToString(lv_intStackOutSize));
+                                autoD_ae = (lv_b + 1);
+                                //Console.WriteLine("autoD_ae：" + IntToString(autoD_ae));
+                                lv_c = lv_intStackOutSize;
+                                //Console.WriteLine("lv_c：" + IntToString(lv_c));
+                                //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoD_ae));
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    //Console.WriteLine("交换元素" + IntToString(DataTableLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    //Console.WriteLine("交换值" + IntToString(DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    //Console.WriteLine("交换新序值" + IntToString(DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                //Console.WriteLine("值IteraOrig=lv_a=" + IntToString(lv_a) +"存到序号lv_b="+IntToString(lv_b) +"位置");
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                    }
+                    if ((lv_bool == false))
+                    {
+                        lv_intStackOutSize += 1;
+                        DataTableSave1(false, "IntStackOutTag", lv_intStackOutSize, lv_tag);
+                        //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagValue", lv_intStackOutSize, lv_tagValue);
+                        //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagIteraOrig", lv_intStackOutSize, lv_a);
+                        //Console.WriteLine("IteraOrig=lv_a=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                    }
+                }
+            }
+            autoE_ae = lv_num; //此时lv_intStackOutSize=Num
+            lv_a = 1;
+            //Console.WriteLine("最终处理For 1~" + IntToString(lv_num));
+            for (; ((autoE_ai >= 0 && lv_a <= autoE_ae) || (autoE_ai < 0 && lv_a >= autoE_ae)); lv_a += autoE_ai)
+            {
+                //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
+                //lv_tag = DataTableLoad1(true, (lp_key + "PTag"), lv_a).ToString(); //原始序号元素
+                lv_tag = (int)DataTableLoad1(false, "IntStackOutTag", lv_a);
+                lv_tagValuestr = HD_ReturnPCV(HD_ReturnPFromTag(lv_tag), lp_cVStr);
+                lv_tagValue = Convert.ToInt32(lv_tagValuestr);
+                //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
+                lv_b = (int)DataTableLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                                                                               //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                if (lv_a != lv_b)
+                {
+                    //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
+                    DataTableSave1(true, (lp_key + "PTag"), lv_a, lv_tag); //lv_tag放入新序号
+                                                                           //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                }
+            }
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+        }
+        public static void HD_PGSort(string lp_key, bool lp_big)
+        {
+            // Automatic Variable Declarations
+            // Implementation
+            // Variable Declarations
+            int lv_a;
+            int lv_b;
+            int lv_c;
+            bool lv_bool;
+            int lv_tag;
+            int lv_tagValue;
+            string lv_str;
+            int lv_num;
+            int lv_intStackOutSize;
+            // Automatic Variable Declarations
+            int autoA_ae;
+            const int autoA_ai = 1;
+            int autoB_ae;
+            const int autoB_ai = 1;
+            int autoC_ae;
+            const int autoC_ai = 1;
+            int autoD_ae;
+            const int autoD_ai = -1;
+            int autoE_ae;
+            const int autoE_ai = 1;
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            ThreadWait(lv_str);
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_intStackOutSize = 0;
+            // Implementation
+            autoB_ae = lv_num;
+            lv_a = 1;
+            for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
+            {
+                lv_tag = HD_ReturnPTagFromRegNum_Int(lv_a, lp_key);
+                lv_tagValue = lv_tag;
+                //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
+                if ((lv_intStackOutSize == 0))
+                {
+                    lv_intStackOutSize += 1;
+                    DataTableSave1(false, "IntStackOutTag", 1, lv_tag);
+                    DataTableSave1(false, "IntStackOutTagValue", 1, lv_tagValue);
+                    DataTableSave1(false, "IntStackOutTagIteraOrig", 1, lv_a);
+                    //Console.WriteLine("尺寸" + IntToString(lv_intStackOutSize) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue)+"，IteraOrig="+IntToString(lv_a));
+                }
+                else
+                {
+                    lv_bool = false;
+                    autoC_ae = lv_intStackOutSize;
+                    lv_b = 1;
+                    //Console.WriteLine("For" + IntToString(1) +"到"+IntToString(autoC_ae));
+                    for (; ((autoC_ai >= 0 && lv_b <= autoC_ae) || (autoC_ai < 0 && lv_b >= autoC_ae)); lv_b += autoC_ai)
+                    {
+                        if (lp_big == false)
+                        {
+                            //Console.WriteLine("小值靠前");
+                            if (lv_tagValue < (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                lv_intStackOutSize += 1;
+                                autoD_ae = (lv_b + 1);
+                                lv_c = lv_intStackOutSize;
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            //Console.WriteLine("大值靠前"+"，当前lv_b=" +IntToString(lv_b));
+                            if (lv_tagValue > (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnPTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
+                                //Console.WriteLine("生效的lv_b：" + IntToString(lv_b));
+                                lv_intStackOutSize += 1;
+                                //Console.WriteLine("lv_intStackOutSize：" + IntToString(lv_intStackOutSize));
+                                autoD_ae = (lv_b + 1);
+                                //Console.WriteLine("autoD_ae：" + IntToString(autoD_ae));
+                                lv_c = lv_intStackOutSize;
+                                //Console.WriteLine("lv_c：" + IntToString(lv_c));
+                                //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoD_ae));
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    //Console.WriteLine("交换元素" + IntToString(DataTableLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    //Console.WriteLine("交换值" + IntToString(DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    //Console.WriteLine("交换新序值" + IntToString(DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                //Console.WriteLine("值IteraOrig=lv_a=" + IntToString(lv_a) +"存到序号lv_b="+IntToString(lv_b) +"位置");
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                    }
+                    if ((lv_bool == false))
+                    {
+                        lv_intStackOutSize += 1;
+                        DataTableSave1(false, "IntStackOutTag", lv_intStackOutSize, lv_tag);
+                        //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagValue", lv_intStackOutSize, lv_tagValue);
+                        //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagIteraOrig", lv_intStackOutSize, lv_a);
+                        //Console.WriteLine("IteraOrig=lv_a=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                    }
+                }
+            }
+            autoE_ae = lv_num; //此时lv_intStackOutSize=Num
+            lv_a = 1;
+            //Console.WriteLine("最终处理For 1~" + IntToString(lv_num));
+            for (; ((autoE_ai >= 0 && lv_a <= autoE_ae) || (autoE_ai < 0 && lv_a >= autoE_ae)); lv_a += autoE_ai)
+            {
+                //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
+                //lv_tag = DataTableLoad1(true, (lp_key + "PTag"), lv_a).ToString(); //原始序号元素
+                lv_tag = (int)DataTableLoad1(false, "IntStackOutTag", lv_a);
+                lv_tagValue = lv_tag;
+                //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
+                lv_b = (int)DataTableLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                                                                               //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                if (lv_a != lv_b)
+                {
+                    //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
+                    DataTableSave1(true, (lp_key + "PTag"), lv_a, lv_tag); //lv_tag放入新序号
+                                                                           //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                }
+            }
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+        }
+        public static Vector HD_ReturnPFromPGFunc(int lp_regNum, string lp_gs)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            Vector lv_vector;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_gs + "P");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            lv_vector = (Vector)DataTableLoad0(true, ("HD_Vector_" + lv_tag));
+            // Implementation
+            return lv_vector;
+        }
+        public static int HD_ReturnPGNumMax_StateTrueFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            Vector lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnPNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnPFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnPState(lv_c, lp_gs);
+                if ((lv_b == "true"))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static int HD_ReturnPGNumMax_StateFalseFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            Vector lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnPNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnPFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnPState(lv_c, lp_gs);
+                if ((lv_b == "false"))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static int HD_ReturnPGNumMax_StateUselessFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            Vector lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnPNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnPFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnPState(lv_c, lp_gs);
+                if (((lv_b == "false") || (lv_b == "") || (lv_b == null)))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static int HD_ReturnPGNumMax_StateFunc_Specify(string lp_gs, string lp_State)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            Vector lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnPNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnPFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnPState(lv_c, lp_gs);
+                if ((lv_b == lp_State))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static Vector? HD_ReturnRandomVectorFromPGFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_num;
+            int lv_a;
+            Vector? lv_c = null;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_num = HD_ReturnPNumMax(lp_gs);
+            // Implementation
+            if ((lv_num >= 1))
+            {
+                lv_a = RandomInt(1, lv_num);
+                lv_c = HD_ReturnPFromRegNum(lv_a, lp_gs);
+            }
+            return lv_c;
+        }
+        public static void HD_RemovePGAll(string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            string lv_tag = "";
+            int lv_a;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "P");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            // Implementation
+            ThreadWait(lv_str);
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
+            {
+                lv_tag = DataTableLoad1(true, (lp_key + "PTag"), lv_a).ToString();
+                lv_num -= 1;
+                DataTableClear0(true, "HD_IfPTag" + lv_str + "_" + lv_tag);
+                DataTableClear0(true, "HD_VectorCV" + lv_str + "_" + lv_tag);
+                DataTableClear0(true, "HD_VectorState" + lv_str + "_" + lv_tag);
+                DataTableSave0(true, (lp_key + "TNum"), lv_num);
+            }
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+        }
+
+        //--------------------------------------------------------------------------------------------------
+        // 点组End
+        //--------------------------------------------------------------------------------------------------
+
+        #endregion
+
+        #region 计时器
+
+        //--------------------------------------------------------------------------------------------------
+        // 计时器组Start
+        //--------------------------------------------------------------------------------------------------
+        public static int HD_RegTimerTagAndReturn_Int(Timer lp_timer)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_TimerJBNum");
+            // Implementation
+            if ((lv_jBNum == 0))
+            {
+                lv_j = (lv_jBNum + 1);
+                DataTableSave0(true, "HD_TimerJBNum", lv_j);
+                DataTableSave0(true, ("HD_Timer_" + lv_j.ToString()), lp_timer);
+            }
+            else
+            {
+                auto_ae = lv_jBNum;
+                auto_var = 1;
+                for (; auto_var <= auto_ae; auto_var += 1)
+                {
+                    lv_j = auto_var;
+                    if ((Timer)DataTableLoad0(true, ("HD_Timer_" + lv_j.ToString())) == lp_timer)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        if ((lv_j == lv_jBNum))
+                        {
+                            lv_j = (lv_jBNum + 1);
+                            DataTableSave0(true, "HD_TimerJBNum", lv_j);
+                            DataTableSave0(true, ("HD_Timer_" + lv_j.ToString()), lp_timer);
+                        }
+                    }
+                }
+            }
+            return lv_j;
+        }
+        public static int HD_ReturnTimerTag_Int(Timer lp_timer)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_TimerJBNum");
+            // Implementation
+            auto_ae = lv_jBNum;
+            auto_var = 1;
+            for (; auto_var <= auto_ae; auto_var += 1)
+            {
+                lv_j = auto_var;
+                if ((Timer)DataTableLoad0(true, "HD_Timer_" + lv_j.ToString()) == lp_timer)
+                {
+                    break;
+                }
+            }
+            return lv_j;
+        }
+        public static string HD_RegTimerTagAndReturn(Timer lp_timer)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            string lv_tag = "";
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_TimerJBNum");
+            lv_tag = "";
+            // Implementation
+            if ((lv_jBNum == 0))
+            {
+                lv_j = (lv_jBNum + 1);
+                DataTableSave0(true, "HD_TimerJBNum", lv_j);
+                DataTableSave0(true, ("HD_Timer_" + lv_j.ToString()), lp_timer);
+            }
+            else
+            {
+                auto_ae = lv_jBNum;
+                auto_var = 1;
+                for (; auto_var <= auto_ae; auto_var += 1)
+                {
+                    lv_j = auto_var;
+                    if ((Timer)DataTableLoad0(true, "HD_Timer_" + lv_j.ToString()) == lp_timer)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        if ((lv_j == lv_jBNum))
+                        {
+                            lv_j = (lv_jBNum + 1);
+                            DataTableSave0(true, "HD_TimerJBNum", lv_j);
+                            DataTableSave0(true, ("HD_Timer_" + lv_j.ToString()), lp_timer);
+                        }
+                    }
+                }
+            }
+            lv_tag = lv_j.ToString();
+            //Console.WriteLine(("Tag：" + lv_tag));
+            return lv_tag;
+        }
+        public static string HD_ReturnTimerTag(Timer lp_timer)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            string lv_tag = "";
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_TimerJBNum");
+            // Implementation
+            auto_ae = lv_jBNum;
+            auto_var = 1;
+            for (; auto_var <= auto_ae; auto_var += 1)
+            {
+                lv_j = auto_var;
+                if ((Timer)DataTableLoad0(true, "HD_Timer_" + lv_j.ToString()) == lp_timer)
+                {
+                    lv_tag = lv_j.ToString();
+                    break;
+                }
+            }
+            return lv_tag;
+        }
+        public static void HD_RegTimer(Timer lp_timer, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            int lv_jBNum;
+            string lv_tagStr;
+            int lv_tag;
+            int lv_i;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_jBNum = (int)DataTableLoad0(true, (lv_str + "JBNum"));
+            lv_tagStr = "";
+            // Implementation
+            ThreadWait(lv_str);
+            lv_tagStr = HD_RegTimerTagAndReturn(lp_timer);
+            lv_tag = Convert.ToInt32(lv_tagStr);
+            if ((lv_num == 0))
+            {
+                lv_i = (lv_num + 1);
+                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                DataTableSave0(true, (("HD_IfTimerTag" + "") + "_" + lv_tagStr), true);
+                DataTableSave1(true, ("HD_IfTimerTag" + lv_str), lv_tag, true);
+            }
+            else
+            {
+                if ((lv_num >= 1))
+                {
+                    auto_ae = lv_num;
+                    auto_var = 1;
+                    for (; auto_var <= auto_ae; auto_var += 1)
+                    {
+                        lv_i = auto_var;
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            if ((lv_i == lv_num))
+                            {
+                                lv_i = (lv_num + 1);
+                                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                                DataTableSave0(true, (("HD_IfTimerTag" + "") + "_" + lv_tagStr), true);
+                                DataTableSave1(true, ("HD_IfTimerTag" + lv_str), lv_tag, true);
+                            }
+                        }
+                    }
+                }
+            }
+            DataTableSave0(true, ("HD_TimerState" + "" + "_" + lv_tagStr), lp_inherentStats);
+            DataTableSave0(true, ("HD_TimerCV" + "" + "_" + lv_tagStr), lp_inherentCustomValue);
+        }
+        public static void HD_RegTimer_Simple(Timer lp_timer, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            int lv_jBNum;
+            string lv_tagStr;
+            int lv_tag;
+            int lv_i;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_jBNum = (int)DataTableLoad0(true, (lv_str + "JBNum"));
+            lv_tagStr = "";
+            // Implementation
+            ThreadWait(lv_str);
+            lv_tagStr = HD_RegTimerTagAndReturn(lp_timer);
+            lv_tag = Convert.ToInt32(lv_tagStr);
+            if ((lv_num == 0))
+            {
+                lv_i = (lv_num + 1);
+                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                DataTableSave0(true, (("HD_IfTimerTag" + "") + "_" + lv_tagStr), true);
+                DataTableSave1(true, ("HD_IfTimerTag" + lv_str), lv_tag, true);
+            }
+            else
+            {
+                if ((lv_num >= 1))
+                {
+                    auto_ae = lv_num;
+                    auto_var = 1;
+                    for (; auto_var <= auto_ae; auto_var += 1)
+                    {
+                        lv_i = auto_var;
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            if ((lv_i == lv_num))
+                            {
+                                lv_i = (lv_num + 1);
+                                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                                DataTableSave0(true, (("HD_IfTimerTag" + "") + "_" + lv_tagStr), true);
+                                DataTableSave1(true, ("HD_IfTimerTag" + lv_str), lv_tag, true);
+                            }
+                        }
+                    }
+                }
+            }
+            if ((DataTableKeyExists(true, ("HD_Timer" + "State" + "_" + lv_tag.ToString())) == false))
+            {
+                DataTableSave1(true, (("HD_Timer" + "State")), lv_tag, "true");
+            }
+        }
+        public static void HD_DestroyP(Timer lp_timer, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            string lv_tag = "";
+            int lv_a;
+            int lv_b;
+            string lv_c;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_tag = HD_ReturnTimerTag(lp_timer);
+            lv_c = "";
+            // Implementation
+            if ((lv_tag != null))
+            {
+                ThreadWait(lv_str);
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
+                {
+                    if ((DataTableLoad1(true, (lp_key + "TimerTag"), lv_a).ToString() == lv_tag))
+                    {
+                        lv_num -= 1;
+                        DataTableClear0(true, "HD_IfTimerTag_" + lv_tag);
+                        DataTableClear0(true, "HD_IfTimerTag" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_Timer_" + lv_tag);
+                        DataTableClear0(true, "HD_TimerCV_" + lv_tag);
+                        DataTableClear0(true, "HD_TimerState_" + lv_tag);
+                        DataTableClear0(true, "HD_TimerCV" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_TimerState" + lv_str + "_" + lv_tag);
+                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
+                        {
+                            lv_c = DataTableLoad1(true, (lp_key + "TimerTag"), lv_b + 1).ToString();
+                            DataTableSave1(true, (lp_key + "TimerTag"), lv_b, lv_c);
+                        }
+                        //注销后触发序号重列，这里-1可以让挑选回滚，以再次检查重排后的当前挑选序号
+                        lv_a -= 1;
+                    }
+                }
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            }
+        }
+        public static void HD_RemoveTimer(Timer lp_timer, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            string lv_tag = "";
+            int lv_a;
+            int lv_b;
+            string lv_c;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_tag = HD_ReturnTimerTag(lp_timer);
+            lv_c = "";
+            // Implementation
+            if ((lv_tag != null))
+            {
+                ThreadWait(lv_str);
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
+                {
+                    if ((DataTableLoad1(true, (lp_key + "TimerTag"), lv_a) == lv_tag))
+                    {
+                        lv_num -= 1;
+                        DataTableClear0(true, "HD_IfTimerTag" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_TimerCV" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_TimerState" + lv_str + "_" + lv_tag);
+                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
+                        {
+                            lv_c = DataTableLoad1(true, (lp_key + "TimerTag"), lv_b + 1).ToString();
+                            DataTableSave1(true, (lp_key + "TimerTag"), lv_b, lv_c);
+                        }
+                        //注销后触发序号重列，这里-1可以让挑选回滚，以再次检查重排后的当前挑选序号
+                        lv_a -= 1;
+                    }
+                }
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            }
+        }
+        public static int HD_ReturnTimerNumMax(string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            // Implementation
+            return lv_num;
+        }
+        public static int HD_ReturnTimerNum(Timer lp_timer, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            int lv_i;
+            string lv_tag = "";
+            int lv_torf;
+            // Automatic Variable Declarations
+            const int auto_n = 1;
+            int auto_i;
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_tag = HD_ReturnTimerTag(lp_timer);
+            lv_torf = -1;
+            // Implementation
+            for (auto_i = 1; auto_i <= auto_n; auto_i += 1)
+            {
+                if ((lv_tag != null))
+                {
+                    lv_torf = -2;
+                    break;
+                }
+                if ((lv_num == 0))
+                {
+                    lv_torf = 0;
+                }
+                else
+                {
+                    if ((lv_num >= 1))
+                    {
+                        auto_ae = lv_num;
+                        auto_var = 1;
+                        for (; auto_var <= auto_ae; auto_var += 1)
+                        {
+                            lv_i = auto_var;
+                            if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tag))
+                            {
+                                lv_torf = lv_i;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return lv_torf;
+        }
+        public static Timer HD_ReturnTimerFromRegNum(int lp_regNum, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            Timer lv_timer;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            lv_timer = (Timer)DataTableLoad0(true, ("HD_Timer_" + lv_tag));
+            // Implementation
+            return lv_timer;
+        }
+        public static Timer HD_ReturnTimerFromTag(int lp_tag)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            Timer lv_timer;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = lp_tag.ToString();
+            lv_timer = (Timer)DataTableLoad0(true, ("HD_Timer_" + lv_tag));
+            // Implementation
+            return lv_timer;
+        }
+        public static string HD_ReturnTimerTagFromRegNum_String(int lp_regNum, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            // Implementation
+            return lv_tag;
+        }
+        public static int HD_ReturnTimerTagFromRegNum_Int(int lp_regNum, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            // Implementation
+            return Convert.ToInt32(lv_tag);
+        }
+        public static void HD_SetPState(Timer lp_timer, string lp_key, string lp_stats)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            lv_tag = HD_RegTimerTagAndReturn(lp_timer);
+            // Implementation
+            DataTableSave0(true, ("HD_TimerState" + lv_str + "_" + lv_tag), lp_stats);
+        }
+        public static string HD_ReturnTimerState(Timer lp_timer, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            string lv_stats;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            lv_tag = HD_ReturnTimerTag(lp_timer);
+            lv_stats = DataTableLoad0(true, ("HD_TimerState" + lv_str + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_stats;
+        }
+        public static void HD_SetPCV(Timer lp_timer, string lp_key, string lp_customValue)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            lv_tag = HD_RegTimerTagAndReturn(lp_timer);
+            // Implementation
+            DataTableSave0(true, ("HD_TimerCV" + lv_str + "_" + lv_tag), lp_customValue);
+        }
+        public static string HD_ReturnTimerCV(Timer lp_timer, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            string lv_customValue;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            lv_tag = HD_ReturnTimerTag(lp_timer);
+            lv_customValue = DataTableLoad0(true, ("HD_TimerCV" + lv_str + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_customValue;
+        }
+        public static string HD_ReturnTimerState_Only(Timer lp_timer)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            string lv_stats;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnTimerTag(lp_timer);
+            lv_stats = DataTableLoad0(true, ("HD_TimerState" + "" + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_stats;
+        }
+        public static string HD_ReturnTimerCV_Only(Timer lp_timer)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            string lv_customValue;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnTimerTag(lp_timer);
+            lv_customValue = DataTableLoad0(true, ("HD_TimerCV" + "" + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_customValue;
+        }
+        public static void HD_SetPDouble(Timer lp_timer, double lp_realNumTag)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_RegTimerTagAndReturn(lp_timer);
+            // Implementation
+            DataTableSave0(true, ("HD_CDDouble_T_" + lv_tag), lp_realNumTag);
+        }
+        public static double HD_ReturnTimerDouble(Timer lp_timer)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            double lv_f;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnTimerTag(lp_timer);
+            lv_f = (double)DataTableLoad0(true, ("HD_CDDouble_T_" + lv_tag));
+            // Implementation
+            return lv_f;
+        }
+        public static bool HD_ReturnIfTimerTag(Timer lp_timer)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            bool lv_torf;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnTimerTag(lp_timer);
+            lv_torf = (bool)DataTableLoad0(true, ("HD_IfTimerTag" + "" + "_" + lv_tag));
+            // Implementation
+            return lv_torf;
+        }
+        public static bool HD_ReturnIfTimerTagKey(Timer lp_timer, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            bool lv_torf;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            lv_tag = HD_ReturnTimerTag(lp_timer);
+            lv_torf = (bool)DataTableLoad0(true, ("HD_IfTimerTag" + lv_str + "_" + lv_tag));
+            // Implementation
+            return lv_torf;
+        }
+        public static void HD_TimerGSortCV(string lp_key, string lp_cVStr, bool lp_big)
+        {
+            // Automatic Variable Declarations
+            // Implementation
+            // Variable Declarations
+            int lv_a;
+            int lv_b;
+            int lv_c;
+            bool lv_bool;
+            int lv_tag;
+            int lv_tagValue;
+            string lv_str;
+            int lv_num;
+            int lv_intStackOutSize;
+            string lv_tagValuestr;
+            // Automatic Variable Declarations
+            int autoA_ae;
+            const int autoA_ai = 1;
+            int autoB_ae;
+            const int autoB_ai = 1;
+            int autoC_ae;
+            const int autoC_ai = 1;
+            int autoD_ae;
+            const int autoD_ai = -1;
+            int autoE_ae;
+            const int autoE_ai = 1;
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            ThreadWait(lv_str);
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_intStackOutSize = 0;
+            // Implementation
+            autoB_ae = lv_num;
+            lv_a = 1;
+            for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
+            {
+                lv_tag = HD_ReturnTimerTagFromRegNum_Int(lv_a, lp_key);
+                lv_tagValuestr = HD_ReturnTimerCV(HD_ReturnTimerFromTag(lv_tag), lp_cVStr);
+                lv_tagValue = Convert.ToInt32(lv_tagValuestr);
+                //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
+                if ((lv_intStackOutSize == 0))
+                {
+                    lv_intStackOutSize += 1;
+                    DataTableSave1(false, "IntStackOutTag", 1, lv_tag);
+                    DataTableSave1(false, "IntStackOutTagValue", 1, lv_tagValue);
+                    DataTableSave1(false, "IntStackOutTagIteraOrig", 1, lv_a);
+                    //Console.WriteLine("尺寸" + IntToString(lv_intStackOutSize) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue)+"，IteraOrig="+IntToString(lv_a));
+                }
+                else
+                {
+                    lv_bool = false;
+                    autoC_ae = lv_intStackOutSize;
+                    lv_b = 1;
+                    //Console.WriteLine("For" + IntToString(1) +"到"+IntToString(autoC_ae));
+                    for (; ((autoC_ai >= 0 && lv_b <= autoC_ae) || (autoC_ai < 0 && lv_b >= autoC_ae)); lv_b += autoC_ai)
+                    {
+                        if (lp_big == false)
+                        {
+                            //Console.WriteLine("小值靠前");
+                            if (lv_tagValue < (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                lv_intStackOutSize += 1;
+                                autoD_ae = (lv_b + 1);
+                                lv_c = lv_intStackOutSize;
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            //Console.WriteLine("大值靠前"+"，当前lv_b=" +IntToString(lv_b));
+                            if (lv_tagValue > (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnTimerTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
+                                //Console.WriteLine("生效的lv_b：" + IntToString(lv_b));
+                                lv_intStackOutSize += 1;
+                                //Console.WriteLine("lv_intStackOutSize：" + IntToString(lv_intStackOutSize));
+                                autoD_ae = (lv_b + 1);
+                                //Console.WriteLine("autoD_ae：" + IntToString(autoD_ae));
+                                lv_c = lv_intStackOutSize;
+                                //Console.WriteLine("lv_c：" + IntToString(lv_c));
+                                //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoD_ae));
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    //Console.WriteLine("交换元素" + IntToString(DataTableLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    //Console.WriteLine("交换值" + IntToString(DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    //Console.WriteLine("交换新序值" + IntToString(DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                //Console.WriteLine("值IteraOrig=lv_a=" + IntToString(lv_a) +"存到序号lv_b="+IntToString(lv_b) +"位置");
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                    }
+                    if ((lv_bool == false))
+                    {
+                        lv_intStackOutSize += 1;
+                        DataTableSave1(false, "IntStackOutTag", lv_intStackOutSize, lv_tag);
+                        //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagValue", lv_intStackOutSize, lv_tagValue);
+                        //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagIteraOrig", lv_intStackOutSize, lv_a);
+                        //Console.WriteLine("IteraOrig=lv_a=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                    }
+                }
+            }
+            autoE_ae = lv_num; //此时lv_intStackOutSize=Num
+            lv_a = 1;
+            //Console.WriteLine("最终处理For 1~" + IntToString(lv_num));
+            for (; ((autoE_ai >= 0 && lv_a <= autoE_ae) || (autoE_ai < 0 && lv_a >= autoE_ae)); lv_a += autoE_ai)
+            {
+                //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
+                //lv_tag = DataTableLoad1(true, (lp_key + "TimerTag"), lv_a).ToString(); //原始序号元素
+                lv_tag = (int)DataTableLoad1(false, "IntStackOutTag", lv_a);
+                lv_tagValuestr = HD_ReturnTimerCV(HD_ReturnTimerFromTag(lv_tag), lp_cVStr);
+                lv_tagValue = Convert.ToInt32(lv_tagValuestr);
+                //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
+                lv_b = (int)DataTableLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                                                                                    //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                if (lv_a != lv_b)
+                {
+                    //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
+                    DataTableSave1(true, (lp_key + "TimerTag"), lv_a, lv_tag); //lv_tag放入新序号
+                                                                               //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                }
+            }
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+        }
+        public static void HD_TimerGSort(string lp_key, bool lp_big)
+        {
+            // Automatic Variable Declarations
+            // Implementation
+            // Variable Declarations
+            int lv_a;
+            int lv_b;
+            int lv_c;
+            bool lv_bool;
+            int lv_tag;
+            int lv_tagValue;
+            string lv_str;
+            int lv_num;
+            int lv_intStackOutSize;
+            // Automatic Variable Declarations
+            int autoA_ae;
+            const int autoA_ai = 1;
+            int autoB_ae;
+            const int autoB_ai = 1;
+            int autoC_ae;
+            const int autoC_ai = 1;
+            int autoD_ae;
+            const int autoD_ai = -1;
+            int autoE_ae;
+            const int autoE_ai = 1;
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            ThreadWait(lv_str);
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_intStackOutSize = 0;
+            // Implementation
+            autoB_ae = lv_num;
+            lv_a = 1;
+            for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
+            {
+                lv_tag = HD_ReturnTimerTagFromRegNum_Int(lv_a, lp_key);
+                lv_tagValue = lv_tag;
+                //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
+                if ((lv_intStackOutSize == 0))
+                {
+                    lv_intStackOutSize += 1;
+                    DataTableSave1(false, "IntStackOutTag", 1, lv_tag);
+                    DataTableSave1(false, "IntStackOutTagValue", 1, lv_tagValue);
+                    DataTableSave1(false, "IntStackOutTagIteraOrig", 1, lv_a);
+                    //Console.WriteLine("尺寸" + IntToString(lv_intStackOutSize) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue)+"，IteraOrig="+IntToString(lv_a));
+                }
+                else
+                {
+                    lv_bool = false;
+                    autoC_ae = lv_intStackOutSize;
+                    lv_b = 1;
+                    //Console.WriteLine("For" + IntToString(1) +"到"+IntToString(autoC_ae));
+                    for (; ((autoC_ai >= 0 && lv_b <= autoC_ae) || (autoC_ai < 0 && lv_b >= autoC_ae)); lv_b += autoC_ai)
+                    {
+                        if (lp_big == false)
+                        {
+                            //Console.WriteLine("小值靠前");
+                            if (lv_tagValue < (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                lv_intStackOutSize += 1;
+                                autoD_ae = (lv_b + 1);
+                                lv_c = lv_intStackOutSize;
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            //Console.WriteLine("大值靠前"+"，当前lv_b=" +IntToString(lv_b));
+                            if (lv_tagValue > (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnTimerTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
+                                //Console.WriteLine("生效的lv_b：" + IntToString(lv_b));
+                                lv_intStackOutSize += 1;
+                                //Console.WriteLine("lv_intStackOutSize：" + IntToString(lv_intStackOutSize));
+                                autoD_ae = (lv_b + 1);
+                                //Console.WriteLine("autoD_ae：" + IntToString(autoD_ae));
+                                lv_c = lv_intStackOutSize;
+                                //Console.WriteLine("lv_c：" + IntToString(lv_c));
+                                //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoD_ae));
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    //Console.WriteLine("交换元素" + IntToString(DataTableLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    //Console.WriteLine("交换值" + IntToString(DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    //Console.WriteLine("交换新序值" + IntToString(DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                //Console.WriteLine("值IteraOrig=lv_a=" + IntToString(lv_a) +"存到序号lv_b="+IntToString(lv_b) +"位置");
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                    }
+                    if ((lv_bool == false))
+                    {
+                        lv_intStackOutSize += 1;
+                        DataTableSave1(false, "IntStackOutTag", lv_intStackOutSize, lv_tag);
+                        //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagValue", lv_intStackOutSize, lv_tagValue);
+                        //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagIteraOrig", lv_intStackOutSize, lv_a);
+                        //Console.WriteLine("IteraOrig=lv_a=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                    }
+                }
+            }
+            autoE_ae = lv_num; //此时lv_intStackOutSize=Num
+            lv_a = 1;
+            //Console.WriteLine("最终处理For 1~" + IntToString(lv_num));
+            for (; ((autoE_ai >= 0 && lv_a <= autoE_ae) || (autoE_ai < 0 && lv_a >= autoE_ae)); lv_a += autoE_ai)
+            {
+                //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
+                //lv_tag = DataTableLoad1(true, (lp_key + "TimerTag"), lv_a).ToString(); //原始序号元素
+                lv_tag = (int)DataTableLoad1(false, "IntStackOutTag", lv_a);
+                lv_tagValue = lv_tag;
+                //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
+                lv_b = (int)DataTableLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                                                                                    //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                if (lv_a != lv_b)
+                {
+                    //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
+                    DataTableSave1(true, (lp_key + "TimerTag"), lv_a, lv_tag); //lv_tag放入新序号
+                                                                               //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                }
+            }
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+        }
+        public static Timer HD_ReturnTimerFromPGFunc(int lp_regNum, string lp_gs)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            Timer lv_timer;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_gs + "Timer");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            lv_timer = (Timer)DataTableLoad0(true, ("HD_Timer_" + lv_tag));
+            // Implementation
+            return lv_timer;
+        }
+        public static int HD_ReturnTimerGNumMax_StateTrueFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            Timer lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnTimerNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnTimerFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnTimerState(lv_c, lp_gs);
+                if ((lv_b == "true"))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static int HD_ReturnTimerGNumMax_StateFalseFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            Timer lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnTimerNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnTimerFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnTimerState(lv_c, lp_gs);
+                if ((lv_b == "false"))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static int HD_ReturnTimerGNumMax_StateUselessFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            Timer lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnTimerNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnTimerFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnTimerState(lv_c, lp_gs);
+                if (((lv_b == "false") || (lv_b == "") || (lv_b == null)))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static int HD_ReturnTimerGNumMax_StateFunc_Specify(string lp_gs, string lp_State)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            Timer lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnTimerNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnTimerFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnTimerState(lv_c, lp_gs);
+                if ((lv_b == lp_State))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static Timer HD_ReturnRandomTimerFromPGFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_num;
+            int lv_a;
+            Timer lv_c = null;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_num = HD_ReturnTimerNumMax(lp_gs);
+            // Implementation
+            if ((lv_num >= 1))
+            {
+                lv_a = RandomInt(1, lv_num);
+                lv_c = HD_ReturnTimerFromRegNum(lv_a, lp_gs);
+            }
+            return lv_c;
+        }
+        public static void HD_RemoveTimerGAll(string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            string lv_tag = "";
+            int lv_a;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Timer");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            // Implementation
+            ThreadWait(lv_str);
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
+            {
+                lv_tag = DataTableLoad1(true, (lp_key + "TimerTag"), lv_a).ToString();
+                lv_num -= 1;
+                DataTableClear0(true, "HD_IfTimerTag" + lv_str + "_" + lv_tag);
+                DataTableClear0(true, "HD_TimerCV" + lv_str + "_" + lv_tag);
+                DataTableClear0(true, "HD_TimerState" + lv_str + "_" + lv_tag);
+                DataTableSave0(true, (lp_key + "TNum"), lv_num);
+            }
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+        }
+
+        //--------------------------------------------------------------------------------------------------
+        // 计时器组End
+        //--------------------------------------------------------------------------------------------------
+
+        #endregion
+
+        #region 数字
+
+        //--------------------------------------------------------------------------------------------------
+        // 数字组Start
+        //--------------------------------------------------------------------------------------------------
+        public static int HD_RegIntTagAndReturn_Int(int lp_integer)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_IntJBNum");
+            // Implementation
+            if ((lv_jBNum == 0))
+            {
+                lv_j = (lv_jBNum + 1);
+                DataTableSave0(true, "HD_IntJBNum", lv_j);
+                DataTableSave0(true, ("HD_Int_" + lv_j.ToString()), lp_integer);
+            }
+            else
+            {
+                auto_ae = lv_jBNum;
+                auto_var = 1;
+                for (; auto_var <= auto_ae; auto_var += 1)
+                {
+                    lv_j = auto_var;
+                    if ((int)DataTableLoad0(true, ("HD_Int_" + lv_j.ToString())) == lp_integer)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        if ((lv_j == lv_jBNum))
+                        {
+                            lv_j = (lv_jBNum + 1);
+                            DataTableSave0(true, "HD_IntJBNum", lv_j);
+                            DataTableSave0(true, ("HD_Int_" + lv_j.ToString()), lp_integer);
+                        }
+                    }
+                }
+            }
+            return lv_j;
+        }
+        public static int HD_ReturnIntTag_Int(int lp_integer)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_IntJBNum");
+            // Implementation
+            auto_ae = lv_jBNum;
+            auto_var = 1;
+            for (; auto_var <= auto_ae; auto_var += 1)
+            {
+                lv_j = auto_var;
+                if ((int)DataTableLoad0(true, "HD_Int_" + lv_j.ToString()) == lp_integer)
+                {
+                    break;
+                }
+            }
+            return lv_j;
+        }
+        public static string HD_RegIntTagAndReturn(int lp_integer)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            string lv_tag = "";
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_IntJBNum");
+            lv_tag = "";
+            // Implementation
+            if ((lv_jBNum == 0))
+            {
+                lv_j = (lv_jBNum + 1);
+                DataTableSave0(true, "HD_IntJBNum", lv_j);
+                DataTableSave0(true, ("HD_Int_" + lv_j.ToString()), lp_integer);
+            }
+            else
+            {
+                auto_ae = lv_jBNum;
+                auto_var = 1;
+                for (; auto_var <= auto_ae; auto_var += 1)
+                {
+                    lv_j = auto_var;
+                    if ((int)DataTableLoad0(true, "HD_Int_" + lv_j.ToString()) == lp_integer)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        if ((lv_j == lv_jBNum))
+                        {
+                            lv_j = (lv_jBNum + 1);
+                            DataTableSave0(true, "HD_IntJBNum", lv_j);
+                            DataTableSave0(true, ("HD_Int_" + lv_j.ToString()), lp_integer);
+                        }
+                    }
+                }
+            }
+            lv_tag = lv_j.ToString();
+            //Console.WriteLine(("Tag：" + lv_tag));
+            return lv_tag;
+        }
+        public static string HD_ReturnIntTag(int lp_integer)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            string lv_tag = "";
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_IntJBNum");
+            // Implementation
+            auto_ae = lv_jBNum;
+            auto_var = 1;
+            for (; auto_var <= auto_ae; auto_var += 1)
+            {
+                lv_j = auto_var;
+                if ((int)DataTableLoad0(true, "HD_Int_" + lv_j.ToString()) == lp_integer)
+                {
+                    lv_tag = lv_j.ToString();
+                    break;
+                }
+            }
+            return lv_tag;
+        }
+        public static void HD_RegInt(int lp_integer, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            int lv_jBNum;
+            string lv_tagStr;
+            int lv_tag;
+            int lv_i;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_jBNum = (int)DataTableLoad0(true, (lv_str + "JBNum"));
+            lv_tagStr = "";
+            // Implementation
+            ThreadWait(lv_str);
+            lv_tagStr = HD_RegIntTagAndReturn(lp_integer);
+            lv_tag = Convert.ToInt32(lv_tagStr);
+            if ((lv_num == 0))
+            {
+                lv_i = (lv_num + 1);
+                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                DataTableSave0(true, (("HD_IfIntTag" + "") + "_" + lv_tagStr), true);
+                DataTableSave1(true, ("HD_IfIntTag" + lv_str), lv_tag, true);
+            }
+            else
+            {
+                if ((lv_num >= 1))
+                {
+                    auto_ae = lv_num;
+                    auto_var = 1;
+                    for (; auto_var <= auto_ae; auto_var += 1)
+                    {
+                        lv_i = auto_var;
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            if ((lv_i == lv_num))
+                            {
+                                lv_i = (lv_num + 1);
+                                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                                DataTableSave0(true, (("HD_IfIntTag" + "") + "_" + lv_tagStr), true);
+                                DataTableSave1(true, ("HD_IfIntTag" + lv_str), lv_tag, true);
+                            }
+                        }
+                    }
+                }
+            }
+            DataTableSave0(true, ("HD_IntState" + "" + "_" + lv_tagStr), lp_inherentStats);
+            DataTableSave0(true, ("HD_IntCV" + "" + "_" + lv_tagStr), lp_inherentCustomValue);
+        }
+        public static void HD_RegInt_Simple(int lp_integer, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            int lv_jBNum;
+            string lv_tagStr;
+            int lv_tag;
+            int lv_i;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_jBNum = (int)DataTableLoad0(true, (lv_str + "JBNum"));
+            lv_tagStr = "";
+            // Implementation
+            ThreadWait(lv_str);
+            lv_tagStr = HD_RegIntTagAndReturn(lp_integer);
+            lv_tag = Convert.ToInt32(lv_tagStr);
+            if ((lv_num == 0))
+            {
+                lv_i = (lv_num + 1);
+                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                DataTableSave0(true, (("HD_IfIntTag" + "") + "_" + lv_tagStr), true);
+                DataTableSave1(true, ("HD_IfIntTag" + lv_str), lv_tag, true);
+            }
+            else
+            {
+                if ((lv_num >= 1))
+                {
+                    auto_ae = lv_num;
+                    auto_var = 1;
+                    for (; auto_var <= auto_ae; auto_var += 1)
+                    {
+                        lv_i = auto_var;
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            if ((lv_i == lv_num))
+                            {
+                                lv_i = (lv_num + 1);
+                                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                                DataTableSave0(true, (("HD_IfIntTag" + "") + "_" + lv_tagStr), true);
+                                DataTableSave1(true, ("HD_IfIntTag" + lv_str), lv_tag, true);
+                            }
+                        }
+                    }
+                }
+            }
+            if ((DataTableKeyExists(true, ("HD_Int" + "State" + "_" + lv_tag.ToString())) == false))
+            {
+                DataTableSave1(true, (("HD_Int" + "State")), lv_tag, "true");
+            }
+        }
+        public static void HD_DestroyP(int lp_integer, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            string lv_tag = "";
+            int lv_a;
+            int lv_b;
+            string lv_c;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_tag = HD_ReturnIntTag(lp_integer);
+            lv_c = "";
+            // Implementation
+            if ((lv_tag != null))
+            {
+                ThreadWait(lv_str);
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
+                {
+                    if ((DataTableLoad1(true, (lp_key + "IntTag"), lv_a).ToString() == lv_tag))
+                    {
+                        lv_num -= 1;
+                        DataTableClear0(true, "HD_IfIntTag_" + lv_tag);
+                        DataTableClear0(true, "HD_IfIntTag" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_Int_" + lv_tag);
+                        DataTableClear0(true, "HD_IntCV_" + lv_tag);
+                        DataTableClear0(true, "HD_IntState_" + lv_tag);
+                        DataTableClear0(true, "HD_IntCV" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_IntState" + lv_str + "_" + lv_tag);
+                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
+                        {
+                            lv_c = DataTableLoad1(true, (lp_key + "IntTag"), lv_b + 1).ToString();
+                            DataTableSave1(true, (lp_key + "IntTag"), lv_b, lv_c);
+                        }
+                        //注销后触发序号重列，这里-1可以让挑选回滚，以再次检查重排后的当前挑选序号
+                        lv_a -= 1;
+                    }
+                }
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            }
+        }
+        public static void HD_RemoveInt(int lp_integer, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            string lv_tag = "";
+            int lv_a;
+            int lv_b;
+            string lv_c;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_tag = HD_ReturnIntTag(lp_integer);
+            lv_c = "";
+            // Implementation
+            if ((lv_tag != null))
+            {
+                ThreadWait(lv_str);
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
+                {
+                    if ((DataTableLoad1(true, (lp_key + "IntTag"), lv_a) == lv_tag))
+                    {
+                        lv_num -= 1;
+                        DataTableClear0(true, "HD_IfIntTag" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_IntCV" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_IntState" + lv_str + "_" + lv_tag);
+                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
+                        {
+                            lv_c = DataTableLoad1(true, (lp_key + "IntTag"), lv_b + 1).ToString();
+                            DataTableSave1(true, (lp_key + "IntTag"), lv_b, lv_c);
+                        }
+                        //注销后触发序号重列，这里-1可以让挑选回滚，以再次检查重排后的当前挑选序号
+                        lv_a -= 1;
+                    }
+                }
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            }
+        }
+        public static int HD_ReturnIntNumMax(string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            // Implementation
+            return lv_num;
+        }
+        public static int HD_ReturnIntNum(int lp_integer, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            int lv_i;
+            string lv_tag = "";
+            int lv_torf;
+            // Automatic Variable Declarations
+            const int auto_n = 1;
+            int auto_i;
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_tag = HD_ReturnIntTag(lp_integer);
+            lv_torf = -1;
+            // Implementation
+            for (auto_i = 1; auto_i <= auto_n; auto_i += 1)
+            {
+                if ((lv_tag != null))
+                {
+                    lv_torf = -2;
+                    break;
+                }
+                if ((lv_num == 0))
+                {
+                    lv_torf = 0;
+                }
+                else
+                {
+                    if ((lv_num >= 1))
+                    {
+                        auto_ae = lv_num;
+                        auto_var = 1;
+                        for (; auto_var <= auto_ae; auto_var += 1)
+                        {
+                            lv_i = auto_var;
+                            if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tag))
+                            {
+                                lv_torf = lv_i;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return lv_torf;
+        }
+        public static int HD_ReturnIntFromRegNum(int lp_regNum, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            int lv_integer;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            lv_integer = (int)DataTableLoad0(true, ("HD_Int_" + lv_tag));
+            // Implementation
+            return lv_integer;
+        }
+        public static int HD_ReturnIntFromTag(int lp_tag)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            int lv_integer;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = lp_tag.ToString();
+            lv_integer = (int)DataTableLoad0(true, ("HD_Int_" + lv_tag));
+            // Implementation
+            return lv_integer;
+        }
+        public static string HD_ReturnIntTagFromRegNum_String(int lp_regNum, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            // Implementation
+            return lv_tag;
+        }
+        public static int HD_ReturnIntTagFromRegNum_Int(int lp_regNum, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            // Implementation
+            return Convert.ToInt32(lv_tag);
+        }
+        public static void HD_SetPState(int lp_integer, string lp_key, string lp_stats)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            lv_tag = HD_RegIntTagAndReturn(lp_integer);
+            // Implementation
+            DataTableSave0(true, ("HD_IntState" + lv_str + "_" + lv_tag), lp_stats);
+        }
+        public static string HD_ReturnIntState(int lp_integer, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            string lv_stats;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            lv_tag = HD_ReturnIntTag(lp_integer);
+            lv_stats = DataTableLoad0(true, ("HD_IntState" + lv_str + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_stats;
+        }
+        public static void HD_SetPCV(int lp_integer, string lp_key, string lp_customValue)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            lv_tag = HD_RegIntTagAndReturn(lp_integer);
+            // Implementation
+            DataTableSave0(true, ("HD_IntCV" + lv_str + "_" + lv_tag), lp_customValue);
+        }
+        public static string HD_ReturnIntCV(int lp_integer, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            string lv_customValue;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            lv_tag = HD_ReturnIntTag(lp_integer);
+            lv_customValue = DataTableLoad0(true, ("HD_IntCV" + lv_str + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_customValue;
+        }
+        public static string HD_ReturnIntState_Only(int lp_integer)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            string lv_stats;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnIntTag(lp_integer);
+            lv_stats = DataTableLoad0(true, ("HD_IntState" + "" + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_stats;
+        }
+        public static string HD_ReturnIntCV_Only(int lp_integer)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            string lv_customValue;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnIntTag(lp_integer);
+            lv_customValue = DataTableLoad0(true, ("HD_IntCV" + "" + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_customValue;
+        }
+        public static void HD_SetPDouble(int lp_integer, double lp_realNumTag)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_RegIntTagAndReturn(lp_integer);
+            // Implementation
+            DataTableSave0(true, ("HD_CDDouble_T_" + lv_tag), lp_realNumTag);
+        }
+        public static double HD_ReturnIntDouble(int lp_integer)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            double lv_f;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnIntTag(lp_integer);
+            lv_f = (double)DataTableLoad0(true, ("HD_CDDouble_T_" + lv_tag));
+            // Implementation
+            return lv_f;
+        }
+        public static bool HD_ReturnIfIntTag(int lp_integer)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            bool lv_torf;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnIntTag(lp_integer);
+            lv_torf = (bool)DataTableLoad0(true, ("HD_IfIntTag" + "" + "_" + lv_tag));
+            // Implementation
+            return lv_torf;
+        }
+        public static bool HD_ReturnIfIntTagKey(int lp_integer, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            bool lv_torf;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            lv_tag = HD_ReturnIntTag(lp_integer);
+            lv_torf = (bool)DataTableLoad0(true, ("HD_IfIntTag" + lv_str + "_" + lv_tag));
+            // Implementation
+            return lv_torf;
+        }
+        public static void HD_IntegerGSortCV(string lp_key, string lp_cVStr, bool lp_big)
+        {
+            // Automatic Variable Declarations
+            // Implementation
+            // Variable Declarations
+            int lv_a;
+            int lv_b;
+            int lv_c;
+            bool lv_bool;
+            int lv_tag;
+            int lv_tagValue;
+            string lv_str;
+            int lv_num;
+            int lv_intStackOutSize;
+            string lv_tagValuestr;
+            // Automatic Variable Declarations
+            int autoA_ae;
+            const int autoA_ai = 1;
+            int autoB_ae;
+            const int autoB_ai = 1;
+            int autoC_ae;
+            const int autoC_ai = 1;
+            int autoD_ae;
+            const int autoD_ai = -1;
+            int autoE_ae;
+            const int autoE_ai = 1;
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            ThreadWait(lv_str);
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_intStackOutSize = 0;
+            // Implementation
+            autoB_ae = lv_num;
+            lv_a = 1;
+            for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
+            {
+                lv_tag = HD_ReturnIntTagFromRegNum_Int(lv_a, lp_key);
+                lv_tagValuestr = HD_ReturnIntCV(HD_ReturnIntFromTag(lv_tag), lp_cVStr);
+                lv_tagValue = Convert.ToInt32(lv_tagValuestr);
+                //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
+                if ((lv_intStackOutSize == 0))
+                {
+                    lv_intStackOutSize += 1;
+                    DataTableSave1(false, "IntStackOutTag", 1, lv_tag);
+                    DataTableSave1(false, "IntStackOutTagValue", 1, lv_tagValue);
+                    DataTableSave1(false, "IntStackOutTagIteraOrig", 1, lv_a);
+                    //Console.WriteLine("尺寸" + IntToString(lv_intStackOutSize) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue)+"，IteraOrig="+IntToString(lv_a));
+                }
+                else
+                {
+                    lv_bool = false;
+                    autoC_ae = lv_intStackOutSize;
+                    lv_b = 1;
+                    //Console.WriteLine("For" + IntToString(1) +"到"+IntToString(autoC_ae));
+                    for (; ((autoC_ai >= 0 && lv_b <= autoC_ae) || (autoC_ai < 0 && lv_b >= autoC_ae)); lv_b += autoC_ai)
+                    {
+                        if (lp_big == false)
+                        {
+                            //Console.WriteLine("小值靠前");
+                            if (lv_tagValue < (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                lv_intStackOutSize += 1;
+                                autoD_ae = (lv_b + 1);
+                                lv_c = lv_intStackOutSize;
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            //Console.WriteLine("大值靠前"+"，当前lv_b=" +IntToString(lv_b));
+                            if (lv_tagValue > (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnIntTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
+                                //Console.WriteLine("生效的lv_b：" + IntToString(lv_b));
+                                lv_intStackOutSize += 1;
+                                //Console.WriteLine("lv_intStackOutSize：" + IntToString(lv_intStackOutSize));
+                                autoD_ae = (lv_b + 1);
+                                //Console.WriteLine("autoD_ae：" + IntToString(autoD_ae));
+                                lv_c = lv_intStackOutSize;
+                                //Console.WriteLine("lv_c：" + IntToString(lv_c));
+                                //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoD_ae));
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    //Console.WriteLine("交换元素" + IntToString(DataTableLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    //Console.WriteLine("交换值" + IntToString(DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    //Console.WriteLine("交换新序值" + IntToString(DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                //Console.WriteLine("值IteraOrig=lv_a=" + IntToString(lv_a) +"存到序号lv_b="+IntToString(lv_b) +"位置");
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                    }
+                    if ((lv_bool == false))
+                    {
+                        lv_intStackOutSize += 1;
+                        DataTableSave1(false, "IntStackOutTag", lv_intStackOutSize, lv_tag);
+                        //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagValue", lv_intStackOutSize, lv_tagValue);
+                        //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagIteraOrig", lv_intStackOutSize, lv_a);
+                        //Console.WriteLine("IteraOrig=lv_a=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                    }
+                }
+            }
+            autoE_ae = lv_num; //此时lv_intStackOutSize=Num
+            lv_a = 1;
+            //Console.WriteLine("最终处理For 1~" + IntToString(lv_num));
+            for (; ((autoE_ai >= 0 && lv_a <= autoE_ae) || (autoE_ai < 0 && lv_a >= autoE_ae)); lv_a += autoE_ai)
+            {
+                //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
+                //lv_tag = DataTableLoad1(true, (lp_key + "IntTag"), lv_a).ToString(); //原始序号元素
+                lv_tag = (int)DataTableLoad1(false, "IntStackOutTag", lv_a);
+                lv_tagValuestr = HD_ReturnIntCV(HD_ReturnIntFromTag(lv_tag), lp_cVStr);
+                lv_tagValue = Convert.ToInt32(lv_tagValuestr);
+                //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
+                lv_b = (int)DataTableLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                                                                                    //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                if (lv_a != lv_b)
+                {
+                    //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
+                    DataTableSave1(true, (lp_key + "IntTag"), lv_a, lv_tag); //lv_tag放入新序号
+                                                                             //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                }
+            }
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+        }
+        public static void HD_IntegerGSort(string lp_key, bool lp_big)
+        {
+            // Automatic Variable Declarations
+            // Implementation
+            // Variable Declarations
+            int lv_a;
+            int lv_b;
+            int lv_c;
+            bool lv_bool;
+            int lv_tag;
+            int lv_tagValue;
+            string lv_str;
+            int lv_num;
+            int lv_intStackOutSize;
+            // Automatic Variable Declarations
+            int autoA_ae;
+            const int autoA_ai = 1;
+            int autoB_ae;
+            const int autoB_ai = 1;
+            int autoC_ae;
+            const int autoC_ai = 1;
+            int autoD_ae;
+            const int autoD_ai = -1;
+            int autoE_ae;
+            const int autoE_ai = 1;
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            ThreadWait(lv_str);
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_intStackOutSize = 0;
+            // Implementation
+            autoB_ae = lv_num;
+            lv_a = 1;
+            for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
+            {
+                lv_tag = HD_ReturnIntTagFromRegNum_Int(lv_a, lp_key);
+                lv_tagValue = lv_tag;
+                //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
+                if ((lv_intStackOutSize == 0))
+                {
+                    lv_intStackOutSize += 1;
+                    DataTableSave1(false, "IntStackOutTag", 1, lv_tag);
+                    DataTableSave1(false, "IntStackOutTagValue", 1, lv_tagValue);
+                    DataTableSave1(false, "IntStackOutTagIteraOrig", 1, lv_a);
+                    //Console.WriteLine("尺寸" + IntToString(lv_intStackOutSize) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue)+"，IteraOrig="+IntToString(lv_a));
+                }
+                else
+                {
+                    lv_bool = false;
+                    autoC_ae = lv_intStackOutSize;
+                    lv_b = 1;
+                    //Console.WriteLine("For" + IntToString(1) +"到"+IntToString(autoC_ae));
+                    for (; ((autoC_ai >= 0 && lv_b <= autoC_ae) || (autoC_ai < 0 && lv_b >= autoC_ae)); lv_b += autoC_ai)
+                    {
+                        if (lp_big == false)
+                        {
+                            //Console.WriteLine("小值靠前");
+                            if (lv_tagValue < (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                lv_intStackOutSize += 1;
+                                autoD_ae = (lv_b + 1);
+                                lv_c = lv_intStackOutSize;
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            //Console.WriteLine("大值靠前"+"，当前lv_b=" +IntToString(lv_b));
+                            if (lv_tagValue > (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnIntTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
+                                //Console.WriteLine("生效的lv_b：" + IntToString(lv_b));
+                                lv_intStackOutSize += 1;
+                                //Console.WriteLine("lv_intStackOutSize：" + IntToString(lv_intStackOutSize));
+                                autoD_ae = (lv_b + 1);
+                                //Console.WriteLine("autoD_ae：" + IntToString(autoD_ae));
+                                lv_c = lv_intStackOutSize;
+                                //Console.WriteLine("lv_c：" + IntToString(lv_c));
+                                //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoD_ae));
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    //Console.WriteLine("交换元素" + IntToString(DataTableLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    //Console.WriteLine("交换值" + IntToString(DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    //Console.WriteLine("交换新序值" + IntToString(DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                //Console.WriteLine("值IteraOrig=lv_a=" + IntToString(lv_a) +"存到序号lv_b="+IntToString(lv_b) +"位置");
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                    }
+                    if ((lv_bool == false))
+                    {
+                        lv_intStackOutSize += 1;
+                        DataTableSave1(false, "IntStackOutTag", lv_intStackOutSize, lv_tag);
+                        //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagValue", lv_intStackOutSize, lv_tagValue);
+                        //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagIteraOrig", lv_intStackOutSize, lv_a);
+                        //Console.WriteLine("IteraOrig=lv_a=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                    }
+                }
+            }
+            autoE_ae = lv_num; //此时lv_intStackOutSize=Num
+            lv_a = 1;
+            //Console.WriteLine("最终处理For 1~" + IntToString(lv_num));
+            for (; ((autoE_ai >= 0 && lv_a <= autoE_ae) || (autoE_ai < 0 && lv_a >= autoE_ae)); lv_a += autoE_ai)
+            {
+                //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
+                //lv_tag = DataTableLoad1(true, (lp_key + "IntTag"), lv_a).ToString(); //原始序号元素
+                lv_tag = (int)DataTableLoad1(false, "IntStackOutTag", lv_a);
+                lv_tagValue = lv_tag;
+                //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
+                lv_b = (int)DataTableLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                                                                                    //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                if (lv_a != lv_b)
+                {
+                    //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
+                    DataTableSave1(true, (lp_key + "IntTag"), lv_a, lv_tag); //lv_tag放入新序号
+                                                                             //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                }
+            }
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+        }
+        public static int HD_ReturnIntFromPGFunc(int lp_regNum, string lp_gs)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            int lv_integer;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_gs + "Int");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            lv_integer = (int)DataTableLoad0(true, ("HD_Int_" + lv_tag));
+            // Implementation
+            return lv_integer;
+        }
+        public static int HD_ReturnIntGNumMax_StateTrueFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            int lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnIntNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnIntFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnIntState(lv_c, lp_gs);
+                if ((lv_b == "true"))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static int HD_ReturnIntGNumMax_StateFalseFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            int lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnIntNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnIntFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnIntState(lv_c, lp_gs);
+                if ((lv_b == "false"))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static int HD_ReturnIntGNumMax_StateUselessFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            int lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnIntNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnIntFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnIntState(lv_c, lp_gs);
+                if (((lv_b == "false") || (lv_b == "") || (lv_b == null)))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static int HD_ReturnIntGNumMax_StateFunc_Specify(string lp_gs, string lp_State)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            int lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnIntNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnIntFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnIntState(lv_c, lp_gs);
+                if ((lv_b == lp_State))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static int HD_ReturnRandomIntFromPGFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_num;
+            int lv_a;
+            int lv_c = 0;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_num = HD_ReturnIntNumMax(lp_gs);
+            // Implementation
+            if ((lv_num >= 1))
+            {
+                lv_a = RandomInt(1, lv_num);
+                lv_c = HD_ReturnIntFromRegNum(lv_a, lp_gs);
+            }
+            return lv_c;
+        }
+        public static void HD_RemoveIntGAll(string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            string lv_tag = "";
+            int lv_a;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "Int");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            // Implementation
+            ThreadWait(lv_str);
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
+            {
+                lv_tag = DataTableLoad1(true, (lp_key + "IntTag"), lv_a).ToString();
+                lv_num -= 1;
+                DataTableClear0(true, "HD_IfIntTag" + lv_str + "_" + lv_tag);
+                DataTableClear0(true, "HD_IntCV" + lv_str + "_" + lv_tag);
+                DataTableClear0(true, "HD_IntState" + lv_str + "_" + lv_tag);
+                DataTableSave0(true, (lp_key + "TNum"), lv_num);
+            }
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+        }
+
+        //--------------------------------------------------------------------------------------------------
+        // 数字组End
+        //--------------------------------------------------------------------------------------------------
+
+        #endregion
+
+        #region 字符
+
+        //--------------------------------------------------------------------------------------------------
+        // 字符组Start
+        //--------------------------------------------------------------------------------------------------
+        public static int HD_RegStringTagAndReturn_Int(string lp_string)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_StringJBNum");
+            // Implementation
+            if ((lv_jBNum == 0))
+            {
+                lv_j = (lv_jBNum + 1);
+                DataTableSave0(true, "HD_StringJBNum", lv_j);
+                DataTableSave0(true, ("HD_String_" + lv_j.ToString()), lp_string);
+            }
+            else
+            {
+                auto_ae = lv_jBNum;
+                auto_var = 1;
+                for (; auto_var <= auto_ae; auto_var += 1)
+                {
+                    lv_j = auto_var;
+                    if ((string)DataTableLoad0(true, ("HD_String_" + lv_j.ToString())) == lp_string)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        if ((lv_j == lv_jBNum))
+                        {
+                            lv_j = (lv_jBNum + 1);
+                            DataTableSave0(true, "HD_StringJBNum", lv_j);
+                            DataTableSave0(true, ("HD_String_" + lv_j.ToString()), lp_string);
+                        }
+                    }
+                }
+            }
+            return lv_j;
+        }
+        public static int HD_ReturnStringTag_Int(string lp_string)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_StringJBNum");
+            // Implementation
+            auto_ae = lv_jBNum;
+            auto_var = 1;
+            for (; auto_var <= auto_ae; auto_var += 1)
+            {
+                lv_j = auto_var;
+                if ((string)DataTableLoad0(true, "HD_String_" + lv_j.ToString()) == lp_string)
+                {
+                    break;
+                }
+            }
+            return lv_j;
+        }
+        public static string HD_RegStringTagAndReturn(string lp_string)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            string lv_tag = "";
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_StringJBNum");
+            lv_tag = "";
+            // Implementation
+            if ((lv_jBNum == 0))
+            {
+                lv_j = (lv_jBNum + 1);
+                DataTableSave0(true, "HD_StringJBNum", lv_j);
+                DataTableSave0(true, ("HD_String_" + lv_j.ToString()), lp_string);
+            }
+            else
+            {
+                auto_ae = lv_jBNum;
+                auto_var = 1;
+                for (; auto_var <= auto_ae; auto_var += 1)
+                {
+                    lv_j = auto_var;
+                    if ((string)DataTableLoad0(true, "HD_String_" + lv_j.ToString()) == lp_string)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        if ((lv_j == lv_jBNum))
+                        {
+                            lv_j = (lv_jBNum + 1);
+                            DataTableSave0(true, "HD_StringJBNum", lv_j);
+                            DataTableSave0(true, ("HD_String_" + lv_j.ToString()), lp_string);
+                        }
+                    }
+                }
+            }
+            lv_tag = lv_j.ToString();
+            //Console.WriteLine(("Tag：" + lv_tag));
+            return lv_tag;
+        }
+        public static string HD_ReturnStringTag(string lp_string)
+        {
+            // Variable Declarations
+            int lv_jBNum;
+            string lv_tag = "";
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_jBNum = (int)DataTableLoad0(true, "HD_StringJBNum");
+            // Implementation
+            auto_ae = lv_jBNum;
+            auto_var = 1;
+            for (; auto_var <= auto_ae; auto_var += 1)
+            {
+                lv_j = auto_var;
+                if ((string)DataTableLoad0(true, "HD_String_" + lv_j.ToString()) == lp_string)
+                {
+                    lv_tag = lv_j.ToString();
+                    break;
+                }
+            }
+            return lv_tag;
+        }
+        public static void HD_RegString(string lp_string, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            int lv_jBNum;
+            string lv_tagStr;
+            int lv_tag;
+            int lv_i;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_jBNum = (int)DataTableLoad0(true, (lv_str + "JBNum"));
+            lv_tagStr = "";
+            // Implementation
+            ThreadWait(lv_str);
+            lv_tagStr = HD_RegStringTagAndReturn(lp_string);
+            lv_tag = Convert.ToInt32(lv_tagStr);
+            if ((lv_num == 0))
+            {
+                lv_i = (lv_num + 1);
+                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                DataTableSave0(true, (("HD_IfStringTag" + "") + "_" + lv_tagStr), true);
+                DataTableSave1(true, ("HD_IfStringTag" + lv_str), lv_tag, true);
+            }
+            else
+            {
+                if ((lv_num >= 1))
+                {
+                    auto_ae = lv_num;
+                    auto_var = 1;
+                    for (; auto_var <= auto_ae; auto_var += 1)
+                    {
+                        lv_i = auto_var;
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            if ((lv_i == lv_num))
+                            {
+                                lv_i = (lv_num + 1);
+                                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                                DataTableSave0(true, (("HD_IfStringTag" + "") + "_" + lv_tagStr), true);
+                                DataTableSave1(true, ("HD_IfStringTag" + lv_str), lv_tag, true);
+                            }
+                        }
+                    }
+                }
+            }
+            DataTableSave0(true, ("HD_StringState" + "" + "_" + lv_tagStr), lp_inherentStats);
+            DataTableSave0(true, ("HD_StringCV" + "" + "_" + lv_tagStr), lp_inherentCustomValue);
+        }
+        public static void HD_RegString_Simple(string lp_string, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            int lv_jBNum;
+            string lv_tagStr;
+            int lv_tag;
+            int lv_i;
+            int lv_j = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_jBNum = (int)DataTableLoad0(true, (lv_str + "JBNum"));
+            lv_tagStr = "";
+            // Implementation
+            ThreadWait(lv_str);
+            lv_tagStr = HD_RegStringTagAndReturn(lp_string);
+            lv_tag = Convert.ToInt32(lv_tagStr);
+            if ((lv_num == 0))
+            {
+                lv_i = (lv_num + 1);
+                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                DataTableSave0(true, (("HD_IfStringTag" + "") + "_" + lv_tagStr), true);
+                DataTableSave1(true, ("HD_IfStringTag" + lv_str), lv_tag, true);
+            }
+            else
+            {
+                if ((lv_num >= 1))
+                {
+                    auto_ae = lv_num;
+                    auto_var = 1;
+                    for (; auto_var <= auto_ae; auto_var += 1)
+                    {
+                        lv_i = auto_var;
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            if ((lv_i == lv_num))
+                            {
+                                lv_i = (lv_num + 1);
+                                DataTableSave0(true, (lv_str + "Num"), lv_i);
+                                DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
+                                DataTableSave0(true, (("HD_IfStringTag" + "") + "_" + lv_tagStr), true);
+                                DataTableSave1(true, ("HD_IfStringTag" + lv_str), lv_tag, true);
+                            }
+                        }
+                    }
+                }
+            }
+            if ((DataTableKeyExists(true, ("HD_String" + "State" + "_" + lv_tag.ToString())) == false))
+            {
+                DataTableSave1(true, (("HD_String" + "State")), lv_tag, "true");
+            }
+        }
+        public static void HD_DestroyP(string lp_string, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            string lv_tag = "";
+            int lv_a;
+            int lv_b;
+            string lv_c;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_tag = HD_ReturnStringTag(lp_string);
+            lv_c = "";
+            // Implementation
+            if ((lv_tag != null))
+            {
+                ThreadWait(lv_str);
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
+                {
+                    if ((DataTableLoad1(true, (lp_key + "StringTag"), lv_a).ToString() == lv_tag))
+                    {
+                        lv_num -= 1;
+                        DataTableClear0(true, "HD_IfStringTag_" + lv_tag);
+                        DataTableClear0(true, "HD_IfStringTag" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_String_" + lv_tag);
+                        DataTableClear0(true, "HD_StringCV_" + lv_tag);
+                        DataTableClear0(true, "HD_StringState_" + lv_tag);
+                        DataTableClear0(true, "HD_StringCV" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_StringState" + lv_str + "_" + lv_tag);
+                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
+                        {
+                            lv_c = DataTableLoad1(true, (lp_key + "StringTag"), lv_b + 1).ToString();
+                            DataTableSave1(true, (lp_key + "StringTag"), lv_b, lv_c);
+                        }
+                        //注销后触发序号重列，这里-1可以让挑选回滚，以再次检查重排后的当前挑选序号
+                        lv_a -= 1;
+                    }
+                }
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            }
+        }
+        public static void HD_RemoveString(string lp_string, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            string lv_tag = "";
+            int lv_a;
+            int lv_b;
+            string lv_c;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_tag = HD_ReturnStringTag(lp_string);
+            lv_c = "";
+            // Implementation
+            if ((lv_tag != null))
+            {
+                ThreadWait(lv_str);
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
+                {
+                    if ((DataTableLoad1(true, (lp_key + "StringTag"), lv_a) == lv_tag))
+                    {
+                        lv_num -= 1;
+                        DataTableClear0(true, "HD_IfStringTag" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_StringCV" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_StringState" + lv_str + "_" + lv_tag);
+                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
+                        {
+                            lv_c = DataTableLoad1(true, (lp_key + "StringTag"), lv_b + 1).ToString();
+                            DataTableSave1(true, (lp_key + "StringTag"), lv_b, lv_c);
+                        }
+                        //注销后触发序号重列，这里-1可以让挑选回滚，以再次检查重排后的当前挑选序号
+                        lv_a -= 1;
+                    }
+                }
+                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            }
+        }
+        public static int HD_ReturnStringNumMax(string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            // Implementation
+            return lv_num;
+        }
+        public static int HD_ReturnStringNum(string lp_string, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            int lv_i;
+            string lv_tag = "";
+            int lv_torf;
+            // Automatic Variable Declarations
+            const int auto_n = 1;
+            int auto_i;
+            int auto_ae;
+            int auto_var;
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_tag = HD_ReturnStringTag(lp_string);
+            lv_torf = -1;
+            // Implementation
+            for (auto_i = 1; auto_i <= auto_n; auto_i += 1)
+            {
+                if ((lv_tag != null))
+                {
+                    lv_torf = -2;
+                    break;
+                }
+                if ((lv_num == 0))
+                {
+                    lv_torf = 0;
+                }
+                else
+                {
+                    if ((lv_num >= 1))
+                    {
+                        auto_ae = lv_num;
+                        auto_var = 1;
+                        for (; auto_var <= auto_ae; auto_var += 1)
+                        {
+                            lv_i = auto_var;
+                            if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tag))
+                            {
+                                lv_torf = lv_i;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return lv_torf;
+        }
+        public static string HD_ReturnStringFromRegNum(int lp_regNum, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            string lv_string;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            lv_string = (string)DataTableLoad0(true, ("HD_String_" + lv_tag));
+            // Implementation
+            return lv_string;
+        }
+        public static string HD_ReturnStringFromTag(int lp_tag)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            string lv_string;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = lp_tag.ToString();
+            lv_string = (string)DataTableLoad0(true, ("HD_String_" + lv_tag));
+            // Implementation
+            return lv_string;
+        }
+        public static string HD_ReturnStringTagFromRegNum_String(int lp_regNum, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            // Implementation
+            return lv_tag;
+        }
+        public static int HD_ReturnStringTagFromRegNum_Int(int lp_regNum, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            // Implementation
+            return Convert.ToInt32(lv_tag);
+        }
+        public static void HD_SetPState(string lp_string, string lp_key, string lp_stats)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            lv_tag = HD_RegStringTagAndReturn(lp_string);
+            // Implementation
+            DataTableSave0(true, ("HD_StringState" + lv_str + "_" + lv_tag), lp_stats);
+        }
+        public static string HD_ReturnStringState(string lp_string, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            string lv_stats;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            lv_tag = HD_ReturnStringTag(lp_string);
+            lv_stats = DataTableLoad0(true, ("HD_StringState" + lv_str + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_stats;
+        }
+        public static void HD_SetPCV(string lp_string, string lp_key, string lp_customValue)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            lv_tag = HD_RegStringTagAndReturn(lp_string);
+            // Implementation
+            DataTableSave0(true, ("HD_StringCV" + lv_str + "_" + lv_tag), lp_customValue);
+        }
+        public static string HD_ReturnStringCV(string lp_string, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            string lv_customValue;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            lv_tag = HD_ReturnStringTag(lp_string);
+            lv_customValue = DataTableLoad0(true, ("HD_StringCV" + lv_str + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_customValue;
+        }
+        public static string HD_ReturnStringState_Only(string lp_string)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            string lv_stats;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnStringTag(lp_string);
+            lv_stats = DataTableLoad0(true, ("HD_StringState" + "" + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_stats;
+        }
+        public static string HD_ReturnStringCV_Only(string lp_string)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            string lv_customValue;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnStringTag(lp_string);
+            lv_customValue = DataTableLoad0(true, ("HD_StringCV" + "" + "_" + lv_tag)).ToString();
+            // Implementation
+            return lv_customValue;
+        }
+        public static void HD_SetPDouble(string lp_string, double lp_realNumTag)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_RegStringTagAndReturn(lp_string);
+            // Implementation
+            DataTableSave0(true, ("HD_CDDouble_T_" + lv_tag), lp_realNumTag);
+        }
+        public static double HD_ReturnStringDouble(string lp_string)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            double lv_f;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnStringTag(lp_string);
+            lv_f = (double)DataTableLoad0(true, ("HD_CDDouble_T_" + lv_tag));
+            // Implementation
+            return lv_f;
+        }
+        public static bool HD_ReturnIfStringTag(string lp_string)
+        {
+            // Variable Declarations
+            string lv_tag = "";
+            bool lv_torf;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_tag = HD_ReturnStringTag(lp_string);
+            lv_torf = (bool)DataTableLoad0(true, ("HD_IfStringTag" + "" + "_" + lv_tag));
+            // Implementation
+            return lv_torf;
+        }
+        public static bool HD_ReturnIfStringTagKey(string lp_string, string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            bool lv_torf;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            lv_tag = HD_ReturnStringTag(lp_string);
+            lv_torf = (bool)DataTableLoad0(true, ("HD_IfStringTag" + lv_str + "_" + lv_tag));
+            // Implementation
+            return lv_torf;
+        }
+        public static void HD_StringGSortCV(string lp_key, string lp_cVStr, bool lp_big)
+        {
+            // Automatic Variable Declarations
+            // Implementation
+            // Variable Declarations
+            int lv_a;
+            int lv_b;
+            int lv_c;
+            bool lv_bool;
+            int lv_tag;
+            int lv_tagValue;
+            string lv_str;
+            int lv_num;
+            int lv_intStackOutSize;
+            string lv_tagValuestr;
+            // Automatic Variable Declarations
+            int autoA_ae;
+            const int autoA_ai = 1;
+            int autoB_ae;
+            const int autoB_ai = 1;
+            int autoC_ae;
+            const int autoC_ai = 1;
+            int autoD_ae;
+            const int autoD_ai = -1;
+            int autoE_ae;
+            const int autoE_ai = 1;
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            ThreadWait(lv_str);
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_intStackOutSize = 0;
+            // Implementation
+            autoB_ae = lv_num;
+            lv_a = 1;
+            for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
+            {
+                lv_tag = HD_ReturnStringTagFromRegNum_Int(lv_a, lp_key);
+                lv_tagValuestr = HD_ReturnStringCV(HD_ReturnStringFromTag(lv_tag), lp_cVStr);
+                lv_tagValue = Convert.ToInt32(lv_tagValuestr);
+                //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
+                if ((lv_intStackOutSize == 0))
+                {
+                    lv_intStackOutSize += 1;
+                    DataTableSave1(false, "IntStackOutTag", 1, lv_tag);
+                    DataTableSave1(false, "IntStackOutTagValue", 1, lv_tagValue);
+                    DataTableSave1(false, "IntStackOutTagIteraOrig", 1, lv_a);
+                    //Console.WriteLine("尺寸" + IntToString(lv_intStackOutSize) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue)+"，IteraOrig="+IntToString(lv_a));
+                }
+                else
+                {
+                    lv_bool = false;
+                    autoC_ae = lv_intStackOutSize;
+                    lv_b = 1;
+                    //Console.WriteLine("For" + IntToString(1) +"到"+IntToString(autoC_ae));
+                    for (; ((autoC_ai >= 0 && lv_b <= autoC_ae) || (autoC_ai < 0 && lv_b >= autoC_ae)); lv_b += autoC_ai)
+                    {
+                        if (lp_big == false)
+                        {
+                            //Console.WriteLine("小值靠前");
+                            if (lv_tagValue < (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                lv_intStackOutSize += 1;
+                                autoD_ae = (lv_b + 1);
+                                lv_c = lv_intStackOutSize;
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            //Console.WriteLine("大值靠前"+"，当前lv_b=" +IntToString(lv_b));
+                            if (lv_tagValue > (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnStringTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
+                                //Console.WriteLine("生效的lv_b：" + IntToString(lv_b));
+                                lv_intStackOutSize += 1;
+                                //Console.WriteLine("lv_intStackOutSize：" + IntToString(lv_intStackOutSize));
+                                autoD_ae = (lv_b + 1);
+                                //Console.WriteLine("autoD_ae：" + IntToString(autoD_ae));
+                                lv_c = lv_intStackOutSize;
+                                //Console.WriteLine("lv_c：" + IntToString(lv_c));
+                                //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoD_ae));
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    //Console.WriteLine("交换元素" + IntToString(DataTableLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    //Console.WriteLine("交换值" + IntToString(DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    //Console.WriteLine("交换新序值" + IntToString(DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                //Console.WriteLine("值IteraOrig=lv_a=" + IntToString(lv_a) +"存到序号lv_b="+IntToString(lv_b) +"位置");
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                    }
+                    if ((lv_bool == false))
+                    {
+                        lv_intStackOutSize += 1;
+                        DataTableSave1(false, "IntStackOutTag", lv_intStackOutSize, lv_tag);
+                        //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagValue", lv_intStackOutSize, lv_tagValue);
+                        //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagIteraOrig", lv_intStackOutSize, lv_a);
+                        //Console.WriteLine("IteraOrig=lv_a=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                    }
+                }
+            }
+            autoE_ae = lv_num; //此时lv_intStackOutSize=Num
+            lv_a = 1;
+            //Console.WriteLine("最终处理For 1~" + IntToString(lv_num));
+            for (; ((autoE_ai >= 0 && lv_a <= autoE_ae) || (autoE_ai < 0 && lv_a >= autoE_ae)); lv_a += autoE_ai)
+            {
+                //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
+                //lv_tag = DataTableLoad1(true, (lp_key + "StringTag"), lv_a).ToString(); //原始序号元素
+                lv_tag = (int)DataTableLoad1(false, "IntStackOutTag", lv_a);
+                lv_tagValuestr = HD_ReturnStringCV(HD_ReturnStringFromTag(lv_tag), lp_cVStr);
+                lv_tagValue = Convert.ToInt32(lv_tagValuestr);
+                //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
+                lv_b = (int)DataTableLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                                                                                    //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                if (lv_a != lv_b)
+                {
+                    //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
+                    DataTableSave1(true, (lp_key + "StringTag"), lv_a, lv_tag); //lv_tag放入新序号
+                                                                                //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                }
+            }
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+        }
+        public static void HD_StringGSort(string lp_key, bool lp_big)
+        {
+            // Automatic Variable Declarations
+            // Implementation
+            // Variable Declarations
+            int lv_a;
+            int lv_b;
+            int lv_c;
+            bool lv_bool;
+            int lv_tag;
+            int lv_tagValue;
+            string lv_str;
+            int lv_num;
+            int lv_intStackOutSize;
+            // Automatic Variable Declarations
+            int autoA_ae;
+            const int autoA_ai = 1;
+            int autoB_ae;
+            const int autoB_ai = 1;
+            int autoC_ae;
+            const int autoC_ai = 1;
+            int autoD_ae;
+            const int autoD_ai = -1;
+            int autoE_ae;
+            const int autoE_ai = 1;
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            ThreadWait(lv_str);
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            lv_intStackOutSize = 0;
+            // Implementation
+            autoB_ae = lv_num;
+            lv_a = 1;
+            for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
+            {
+                lv_tag = HD_ReturnStringTagFromRegNum_Int(lv_a, lp_key);
+                lv_tagValue = lv_tag;
+                //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
+                if ((lv_intStackOutSize == 0))
+                {
+                    lv_intStackOutSize += 1;
+                    DataTableSave1(false, "IntStackOutTag", 1, lv_tag);
+                    DataTableSave1(false, "IntStackOutTagValue", 1, lv_tagValue);
+                    DataTableSave1(false, "IntStackOutTagIteraOrig", 1, lv_a);
+                    //Console.WriteLine("尺寸" + IntToString(lv_intStackOutSize) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue)+"，IteraOrig="+IntToString(lv_a));
+                }
+                else
+                {
+                    lv_bool = false;
+                    autoC_ae = lv_intStackOutSize;
+                    lv_b = 1;
+                    //Console.WriteLine("For" + IntToString(1) +"到"+IntToString(autoC_ae));
+                    for (; ((autoC_ai >= 0 && lv_b <= autoC_ae) || (autoC_ai < 0 && lv_b >= autoC_ae)); lv_b += autoC_ai)
+                    {
+                        if (lp_big == false)
+                        {
+                            //Console.WriteLine("小值靠前");
+                            if (lv_tagValue < (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                lv_intStackOutSize += 1;
+                                autoD_ae = (lv_b + 1);
+                                lv_c = lv_intStackOutSize;
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            //Console.WriteLine("大值靠前"+"，当前lv_b=" +IntToString(lv_b));
+                            if (lv_tagValue > (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
+                            {
+                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnStringTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
+                                //Console.WriteLine("生效的lv_b：" + IntToString(lv_b));
+                                lv_intStackOutSize += 1;
+                                //Console.WriteLine("lv_intStackOutSize：" + IntToString(lv_intStackOutSize));
+                                autoD_ae = (lv_b + 1);
+                                //Console.WriteLine("autoD_ae：" + IntToString(autoD_ae));
+                                lv_c = lv_intStackOutSize;
+                                //Console.WriteLine("lv_c：" + IntToString(lv_c));
+                                //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoD_ae));
+                                for (; ((autoD_ai >= 0 && lv_c <= autoD_ae) || (autoD_ai < 0 && lv_c >= autoD_ae)); lv_c += autoD_ai)
+                                {
+                                    DataTableSave1(false, "IntStackOutTag", lv_c, DataTableLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    //Console.WriteLine("交换元素" + IntToString(DataTableLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagValue", lv_c, DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    //Console.WriteLine("交换值" + IntToString(DataTableLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                    DataTableSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    //Console.WriteLine("交换新序值" + IntToString(DataTableLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
+                                }
+                                DataTableSave1(false, "IntStackOutTag", lv_b, lv_tag);
+                                //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
+                                //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到lv_b="+IntToString(lv_b) +"位置");
+                                DataTableSave1(false, "IntStackOutTagIteraOrig", lv_b, lv_a);
+                                //Console.WriteLine("值IteraOrig=lv_a=" + IntToString(lv_a) +"存到序号lv_b="+IntToString(lv_b) +"位置");
+                                lv_bool = true;
+                                break;
+                            }
+                        }
+                    }
+                    if ((lv_bool == false))
+                    {
+                        lv_intStackOutSize += 1;
+                        DataTableSave1(false, "IntStackOutTag", lv_intStackOutSize, lv_tag);
+                        //Console.WriteLine("lv_tag=" + IntToString(lv_tag) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagValue", lv_intStackOutSize, lv_tagValue);
+                        //Console.WriteLine("lv_tagValue=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                        DataTableSave1(false, "IntStackOutTagIteraOrig", lv_intStackOutSize, lv_a);
+                        //Console.WriteLine("IteraOrig=lv_a=" + IntToString(lv_tagValue) +"存到尺寸="+IntToString(lv_intStackOutSize) +"位置");
+                    }
+                }
+            }
+            autoE_ae = lv_num; //此时lv_intStackOutSize=Num
+            lv_a = 1;
+            //Console.WriteLine("最终处理For 1~" + IntToString(lv_num));
+            for (; ((autoE_ai >= 0 && lv_a <= autoE_ae) || (autoE_ai < 0 && lv_a >= autoE_ae)); lv_a += autoE_ai)
+            {
+                //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
+                //lv_tag = DataTableLoad1(true, (lp_key + "StringTag"), lv_a).ToString(); //原始序号元素
+                lv_tag = (int)DataTableLoad1(false, "IntStackOutTag", lv_a);
+                lv_tagValue = lv_tag;
+                //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
+                lv_b = (int)DataTableLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                                                                                    //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                if (lv_a != lv_b)
+                {
+                    //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
+                    DataTableSave1(true, (lp_key + "StringTag"), lv_a, lv_tag); //lv_tag放入新序号
+                                                                                //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                }
+            }
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+        }
+        public static string HD_ReturnStringFromPGFunc(int lp_regNum, string lp_gs)
+        {
+            // Variable Declarations
+            string lv_str;
+            string lv_tag = "";
+            string lv_string;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_gs + "String");
+            lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
+            lv_string = (string)DataTableLoad0(true, ("HD_String_" + lv_tag));
+            // Implementation
+            return lv_string;
+        }
+        public static int HD_ReturnStringGNumMax_StateTrueFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            string lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnStringNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnStringFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnStringState(lv_c, lp_gs);
+                if ((lv_b == "true"))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static int HD_ReturnStringGNumMax_StateFalseFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            string lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnStringNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnStringFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnStringState(lv_c, lp_gs);
+                if ((lv_b == "false"))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static int HD_ReturnStringGNumMax_StateUselessFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            string lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnStringNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnStringFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnStringState(lv_c, lp_gs);
+                if (((lv_b == "false") || (lv_b == "") || (lv_b == null)))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static int HD_ReturnStringGNumMax_StateFunc_Specify(string lp_gs, string lp_State)
+        {
+            // Variable Declarations
+            int lv_a;
+            string lv_b;
+            string lv_c;
+            int lv_i = 0;
+            // Automatic Variable Declarations
+            int auto_ae;
+            const int auto_ai = 1;
+            // Variable Initialization
+            lv_b = "";
+            // Implementation
+            auto_ae = HD_ReturnStringNumMax(lp_gs);
+            lv_a = 1;
+            for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
+            {
+                lv_c = HD_ReturnStringFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnStringState(lv_c, lp_gs);
+                if ((lv_b == lp_State))
+                {
+                    lv_i += 1;
+                }
+            }
+            return lv_i;
+        }
+        public static string HD_ReturnRandomStringFromPGFunc(string lp_gs)
+        {
+            // Variable Declarations
+            int lv_num;
+            int lv_a;
+            string lv_c = null;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_num = HD_ReturnStringNumMax(lp_gs);
+            // Implementation
+            if ((lv_num >= 1))
+            {
+                lv_a = RandomInt(1, lv_num);
+                lv_c = HD_ReturnStringFromRegNum(lv_a, lp_gs);
+            }
+            return lv_c;
+        }
+        public static void HD_RemoveStringGAll(string lp_key)
+        {
+            // Variable Declarations
+            string lv_str;
+            int lv_num;
+            string lv_tag = "";
+            int lv_a;
+            // Automatic Variable Declarations
+            // Variable Initialization
+            lv_str = (lp_key + "String");
+            lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
+            // Implementation
+            ThreadWait(lv_str);
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
+            {
+                lv_tag = DataTableLoad1(true, (lp_key + "StringTag"), lv_a).ToString();
+                lv_num -= 1;
+                DataTableClear0(true, "HD_IfStringTag" + lv_str + "_" + lv_tag);
+                DataTableClear0(true, "HD_StringCV" + lv_str + "_" + lv_tag);
+                DataTableClear0(true, "HD_StringState" + lv_str + "_" + lv_tag);
+                DataTableSave0(true, (lp_key + "TNum"), lv_num);
+            }
+            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+        }
+
+        //--------------------------------------------------------------------------------------------------
+        // 字符组End
+        //--------------------------------------------------------------------------------------------------
+
+        #endregion
+
+        #endregion
     }
 
     /// <summary>
@@ -3026,96 +8243,184 @@ namespace MetalMaxSystem
     {
         #region 变量、字段及其属性方法
 
-        public static Unit[] hero = new Unit[MMCore.c_maxPlayers + 1];
-        public static bool[] canNotOperation = new bool[MMCore.c_maxPlayers + 1];
-        public static bool[] moveLoop = new bool[MMCore.c_maxPlayers + 1];
+        public static Unit[] _hero = new Unit[MMCore.c_maxPlayers + 1];
+        public static bool[] _canNotOperation = new bool[MMCore.c_maxPlayers + 1];
+        public static bool[] _moveLoop = new bool[MMCore.c_maxPlayers + 1];
 
-        public static bool[,] keyDown = new bool[MMCore.c_maxPlayers + 1, MMCore.c_keyMax + 1];
-        public static bool[,] keyDownState = new bool[MMCore.c_maxPlayers + 1, MMCore.c_keyMax + 1];
-        public static int[] keyDownLoopOneBitNum = new int[MMCore.c_maxPlayers + 1];
+        public static bool[,] _keyDown = new bool[MMCore.c_maxPlayers + 1, MMCore.c_keyMax + 1];
+        public static bool[,] _keyDownState = new bool[MMCore.c_maxPlayers + 1, MMCore.c_keyMax + 1];
+        public static int[] _keyDownLoopOneBitNum = new int[MMCore.c_maxPlayers + 1];
 
-        public static bool[] mouseLeftDown = new bool[MMCore.c_maxPlayers + 1];
-        public static bool[] mouseRightDown = new bool[MMCore.c_maxPlayers + 1];
-        public static bool[] mouseRightDownLoop = new bool[MMCore.c_maxPlayers + 1];
-        public static bool[] mouseMiddleDown = new bool[MMCore.c_maxPlayers + 1];
-        public static bool[,] mouseDownState = new bool[MMCore.c_maxPlayers + 1, MMCore.c_mouseMax + 1];
-        public static int[] mouseDownLoopOneBitNum = new int[MMCore.c_maxPlayers + 1];
+        public static bool[] _mouseLeftDown = new bool[MMCore.c_maxPlayers + 1];
+        public static bool[] _mouseRightDown = new bool[MMCore.c_maxPlayers + 1];
+        public static bool[] _mouseRightDownLoop = new bool[MMCore.c_maxPlayers + 1];
+        public static bool[] _mouseMiddleDown = new bool[MMCore.c_maxPlayers + 1];
+        public static bool[,] _mouseDownState = new bool[MMCore.c_maxPlayers + 1, MMCore.c_mouseMax + 1];
+        public static int[] _mouseDownLoopOneBitNum = new int[MMCore.c_maxPlayers + 1];
 
-        public static int[] mouseUIX = new int[MMCore.c_maxPlayers + 1];
-        public static int[] mouseUIY = new int[MMCore.c_maxPlayers + 1];
+        public static int[] _mouseUIX = new int[MMCore.c_maxPlayers + 1];
+        public static int[] _mouseUIY = new int[MMCore.c_maxPlayers + 1];
 
-        public static double[] mouseVectorX = new double[MMCore.c_maxPlayers + 1];
-        public static double[] mouseVectorY = new double[MMCore.c_maxPlayers + 1];
+        public static double[] _mouseVectorX = new double[MMCore.c_maxPlayers + 1];
+        public static double[] _mouseVectorY = new double[MMCore.c_maxPlayers + 1];
 
         /// <summary>
         /// 鼠标点高度，mouseVectorZ=MapHeight+TerrainHeight+Unit.TerrainHeight+Unit.Height
         /// 悬崖、地形物件及单位在移动、诞生摧毁时应将高度信息刷新，以便实时获取
         /// </summary>
-        public static double[] mouseVectorZ = new double[MMCore.c_maxPlayers + 1];
+        public static double[] _mouseVectorZ = new double[MMCore.c_maxPlayers + 1];
 
         /// <summary>
         /// 修正后的鼠标点高度（扣减了地面高度，所以这是相对地面的高度），mouseVectorZFixed=mouseVectorZ-MapHeight=TerrainHeight+Unit.TerrainHeight+Unit.Height
         /// </summary>
-        public static double[] mouseVectorZFixed = new double[MMCore.c_maxPlayers + 1];
+        public static double[] _mouseVectorZFixed = new double[MMCore.c_maxPlayers + 1];
 
         /// <summary>
         /// 世界中鼠标与玩家控制英雄形成的2D角度，象限分布：右=0度，上=90°，左=180°，下=270°
         /// </summary>
-        public static double[] mouseToHeroAngle = new double[MMCore.c_maxPlayers + 1];
+        public static double[] _mouseToHeroAngle = new double[MMCore.c_maxPlayers + 1];
 
         /// <summary>
         /// 世界中鼠标与玩家控制英雄形成的2D距离
         /// </summary>
-        public static double[] mouseToHeroRange = new double[MMCore.c_maxPlayers + 1];
+        public static double[] _mouseToHeroRange = new double[MMCore.c_maxPlayers + 1];
 
         /// <summary>
         /// 世界中鼠标与玩家控制英雄形成的3D距离
         /// </summary>
-        public static double[] mouseToHeroRange3D = new double[MMCore.c_maxPlayers + 1];
+        public static double[] _mouseToHeroRange3D = new double[MMCore.c_maxPlayers + 1];
 
         /// <summary>
         /// 玩家镜头位置点
         /// </summary>
-        public static Vector3D[] cameraVector3D = new Vector3D[MMCore.c_maxPlayers + 1];
+        public static Vector3D[] _cameraVector3D = new Vector3D[MMCore.c_maxPlayers + 1];
 
         /// <summary>
         /// 鼠标3D点向量坐标，修正了鼠标点高度（扣减了地图高度，所以这是相对地面的高度），mouseVectorZFixed=mouseVectorZ-MapHeight=TerrainHeight+Unit.TerrainHeight+Unit.Height
         /// </summary>
-        public static Vector3D[] mouseVector3DFixed = new Vector3D[MMCore.c_maxPlayers + 1];
+        public static Vector3D[] _mouseVector3DFixed = new Vector3D[MMCore.c_maxPlayers + 1];
 
         /// <summary>
         /// 鼠标3D点向量坐标，鼠标Z点在单位高度顶部，Z=MapHeight+TerrainHeight+Unit.TerrainHeight+Unit.Height
         /// </summary>
-        public static Vector3D[] mouseVector3D = new Vector3D[MMCore.c_maxPlayers + 1];
+        public static Vector3D[] _mouseVector3D = new Vector3D[MMCore.c_maxPlayers + 1];
 
         /// <summary>
         /// 鼠标3D点向量坐标，鼠标Z点在单位层地形物件高度顶部（单位脚底），Z=MapHeight+TerrainHeight+Unit.TerrainHeight
         /// </summary>
-        public static Vector3D[] mouseVector3DUnitTerrain = new Vector3D[MMCore.c_maxPlayers + 1];
+        public static Vector3D[] _mouseVector3DUnitTerrain = new Vector3D[MMCore.c_maxPlayers + 1];
 
         /// <summary>
         /// 鼠标3D点向量坐标，鼠标Z点在悬崖、地形物件顶部，Z=MapHeight+TerrainHeight
         /// </summary>
-        public static Vector3D[] mouseVector3DTerrain = new Vector3D[MMCore.c_maxPlayers + 1];
+        public static Vector3D[] _mouseVector3DTerrain = new Vector3D[MMCore.c_maxPlayers + 1];
 
         /// <summary>
         /// 鼠标2D点向量坐标
         /// </summary>
-        public static Vector[] mouseVector = new Vector[MMCore.c_maxPlayers + 1];
+        public static Vector[] _mouseVector = new Vector[MMCore.c_maxPlayers + 1];
 
         #endregion
 
-        #region 键鼠委托
+        public static Unit[] Hero { get => _hero; set => _hero = value; }
+        public static bool[] CanNotOperation { get => _canNotOperation; set => _canNotOperation = value; }
+        public static bool[] MoveLoop { get => _moveLoop; set => _moveLoop = value; }
+        public static bool[,] KeyDown { get => _keyDown; set => _keyDown = value; }
+        public static bool[,] KeyDownState { get => _keyDownState; set => _keyDownState = value; }
+        public static int[] KeyDownLoopOneBitNum { get => _keyDownLoopOneBitNum; set => _keyDownLoopOneBitNum = value; }
+        public static bool[] MouseLeftDown { get => _mouseLeftDown; set => _mouseLeftDown = value; }
+        public static bool[] MouseRightDown { get => _mouseRightDown; set => _mouseRightDown = value; }
+        public static bool[] MouseRightDownLoop { get => _mouseRightDownLoop; set => _mouseRightDownLoop = value; }
+        public static bool[] MouseMiddleDown { get => _mouseMiddleDown; set => _mouseMiddleDown = value; }
+        public static bool[,] MouseDownState { get => _mouseDownState; set => _mouseDownState = value; }
+        public static int[] MouseDownLoopOneBitNum { get => _mouseDownLoopOneBitNum; set => _mouseDownLoopOneBitNum = value; }
+        public static int[] MouseUIX { get => _mouseUIX; set => _mouseUIX = value; }
+        public static int[] MouseUIY { get => _mouseUIY; set => _mouseUIY = value; }
+        public static double[] MouseVectorX { get => _mouseVectorX; set => _mouseVectorX = value; }
+        public static double[] MouseVectorY { get => _mouseVectorY; set => _mouseVectorY = value; }
+        public static double[] MouseVectorZ { get => _mouseVectorZ; set => _mouseVectorZ = value; }
+        public static double[] MouseVectorZFixed { get => _mouseVectorZFixed; set => _mouseVectorZFixed = value; }
+        public static double[] MouseToHeroAngle { get => _mouseToHeroAngle; set => _mouseToHeroAngle = value; }
+        public static double[] MouseToHeroRange { get => _mouseToHeroRange; set => _mouseToHeroRange = value; }
+        public static double[] MouseToHeroRange3D { get => _mouseToHeroRange3D; set => _mouseToHeroRange3D = value; }
+        public static Vector3D[] CameraVector3D { get => _cameraVector3D; set => _cameraVector3D = value; }
+        public static Vector3D[] MouseVector3DFixed { get => _mouseVector3DFixed; set => _mouseVector3DFixed = value; }
+        public static Vector3D[] MouseVector3D { get => _mouseVector3D; set => _mouseVector3D = value; }
+        public static Vector3D[] MouseVector3DUnitTerrain { get => _mouseVector3DUnitTerrain; set => _mouseVector3DUnitTerrain = value; }
+        public static Vector3D[] MouseVector3DTerrain { get => _mouseVector3DTerrain; set => _mouseVector3DTerrain = value; }
+        public static Vector[] MouseVector { get => _mouseVector; set => _mouseVector = value; }
+    }
+
+    #endregion
+
+    #region 内置按键监听功能
+
+    /// <summary>
+    /// 键盘按键监听类，可获取键盘按键的状态，也可给指定键注册委托函数
+    /// </summary>
+    public static class KeyListen
+    {
+        //创建键盘钩子实例
+        public static KeyboardHook keyboardHook = new KeyboardHook();
+
+        //要运行的按键事件委托函数
+        public static void KeyDownEvent(object sender, KeyEventArgs e)
+        {
+            //这里写具体实现，默认采用系统按键ID
+            KeyDown(1, (int)e.KeyCode);
+
+            //如果按下截图键做某某事，若想将系统按键KeyCode的ID一一对应上自定义按键数字实现映射，使用如下方法
+            //if (e.KeyCode.Equals(Keys.PrintScreen))
+            //{
+            //    //实现PrintScreen键（系统数字ID）做(int)e.KeyCode（自定义数字ID）的事，然后将委托函数注册在自定义数字ID的事件上
+            //    KeyDown(1, (int)e.KeyCode);
+            //}
+        }
+        public static void KeyPressEvent(object sender, KeyPressEventArgs e)
+        {
+            //键盘输入事件（按下按键每插入一个字符会发生 keypress 事件）
+        }
+        public static void KeyUpEvent(object sender, KeyEventArgs e)
+        {
+            KeyUp(1, (int)e.KeyCode);
+        }
+
+        /// <summary>
+        /// 开始监听
+        /// </summary>
+        public static void Start()
+        {
+            keyboardHook.KeyDownEvent += new KeyEventHandler(KeyDownEvent); ;//钩住键按下
+            keyboardHook.KeyPressEvent += new KeyPressEventHandler(KeyPressEvent); ;//钩住键按下
+            keyboardHook.KeyUpEvent += new KeyEventHandler(KeyUpEvent); ;//钩住键按下
+            keyboardHook.Start();//安装键盘钩子
+        }
+
+        /// <summary>
+        /// 结束监听
+        /// </summary>
+        public static void Stop()
+        {
+            if (keyboardHook != null)
+            {
+                keyboardHook.KeyDownEvent -= new KeyEventHandler(KeyDownEvent); ;//钩住键按下
+                keyboardHook.KeyPressEvent -= new KeyPressEventHandler(KeyPressEvent); ;//钩住键按下
+                keyboardHook.KeyUpEvent -= new KeyEventHandler(KeyUpEvent); ;//钩住键按下
+                keyboardHook.Stop();//关闭键盘钩子
+            }
+        }
+
+        #region 键鼠委托主要动作（加入按键监听并传参执行）
 
         public static void KeyDown(int player, int key)
         {
             if (MMCore.stopKeyMouseEvent[player] == false)
             {
-                keyDown[player, key] = true;  //当前按键值（决定内部函数运行状态）
-                keyDownState[player, key] = true;  //当前按键状态值
+                Player.KeyDown[player, key] = true;  //当前按键值（决定内部函数运行状态）
+                Player.KeyDownState[player, key] = true;  //当前按键状态值
                 //---------------------------------------------------------------------
-                keyDownLoopOneBitNum[player] += 1; //玩家当前注册的按键队列数量
-                MMCore.DataTableSave2(true, "KeyDownLoopOneBit", player, keyDownLoopOneBitNum[player], key);
+                Player.KeyDownLoopOneBitNum[player] += 1; //玩家当前注册的按键队列数量
+                MMCore.DataTableSave2(true, "KeyDownLoopOneBit", player, Player.KeyDownLoopOneBitNum[player], key);
                 //↑存储玩家注册序号对应按键队列键位
                 MMCore.DataTableSave2(true, "KeyDownLoopOneBitKey", player, key, "true"); //玩家按键队列键位状态
                 //---------------------------------------------------------------------蓄力管理
@@ -3150,7 +8455,7 @@ namespace MetalMaxSystem
                 if (MMCore.stopKeyMouseEvent[player] == true)
                 {
                     //由于按键时状态为真，阻止按键事件时，强制取消按键状态（延迟弹起成功也会自动置为false）
-                    keyDown[player, key] = false;
+                    Player.KeyDown[player, key] = false;
                     torf = false;
                     break;
                 }
@@ -3165,11 +8470,11 @@ namespace MetalMaxSystem
 
         public static void KeyUp(int player, int key)
         {
-            keyDownState[player, key] = false;  //当前按键状态
+            Player.KeyDownState[player, key] = false;  //当前按键状态
             if ((MMCore.DataTableLoad2(true, "KeyDownLoopOneBitKey", player, key).ToString() == "true"))
             {
                 //弹起时无按键队列（由延迟弹起清空造成），直接执行函数，清空按键状态
-                keyDown[player, key] = false;
+                Player.KeyDown[player, key] = false;
                 KeyUpFunc(player, key);
             }
             else
@@ -3199,13 +8504,52 @@ namespace MetalMaxSystem
             return torf;
         }
 
+        public static void MouseMove(int player, Vector3D lp_mouseVector3D, Vector3D cameraVector, int uiX, int uiY)
+        {
+            if (MMCore.stopKeyMouseEvent[player] == false)
+            {
+                Player.MouseVector[player] = new Vector(lp_mouseVector3D.X, lp_mouseVector3D.Y);
+
+                //↓注意取出来的是该点最高位Unit
+                double unitTerrainHeight = double.Parse(MMCore.HD_ReturnPCV(Player.MouseVector[player], "Unit.TerrainHeight"));
+                double unitHeight = double.Parse(MMCore.HD_ReturnPCV(Player.MouseVector[player], "Unit.Height"));
+
+                Player.MouseVectorX[player] = lp_mouseVector3D.X;
+                Player.MouseVectorY[player] = lp_mouseVector3D.Y;
+                Player.MouseVectorZ[player] = lp_mouseVector3D.Z;
+                Player.MouseVectorZFixed[player] = lp_mouseVector3D.Z - MMCore.MapHeight;
+
+                Player.MouseUIX[player] = uiX;
+                Player.MouseUIY[player] = uiY;
+
+                Player.MouseVector3DFixed[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, Player.MouseVectorZFixed[player]);
+                Player.MouseVector3D[player] = lp_mouseVector3D;
+                //下面2个动作应该要从二维点读取单位（可多个），将最高的单位的头顶坐标填入以修正鼠标Z点
+                Player.MouseVector3DUnitTerrain[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight);
+                Player.MouseVector3DTerrain[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight - unitHeight);
+                
+
+                //玩家英雄单位存在时，计算鼠标距离英雄的2D角度和3D距离
+                if (Player.Hero[player] != null)
+                {
+                    //计算鼠标与英雄的2D角度，用于调整角色在二维坐标系四象限内的的朝向
+                    Player.MouseToHeroAngle[player] = MMCore.AngleBetween(Player.Hero[player].Vector, Player.MouseVector[player]);
+                    //计算鼠标与英雄的2D距离（由于点击的位置是单位头顶位置，2个单位重叠则返回最高位的，所以玩家会点到最高位单位）
+                    Player.MouseToHeroRange[player] = MMCore.Distance(Player.Hero[player].Vector, Player.MouseVector[player]);
+                    //计算鼠标与英雄的3D距离（由于点击的位置是单位头顶位置，2个单位重叠则返回最高位的，所以玩家会点到最高位单位）
+                    Player.MouseToHeroRange3D[player] = MMCore.Distance(Player.Hero[player].Vector3D, lp_mouseVector3D);
+                }
+            }
+        }
+
+
         #endregion
 
     }
 
     #endregion
 
-    #region 键盘钩子类
+    #region 键盘钩子
 
     /// <summary>
     /// 键盘钩子
@@ -3213,19 +8557,19 @@ namespace MetalMaxSystem
     public class KeyboardHook
     {
         //声明事件委托类型
-        public event KeyEventHandler KeyDownEvent;
         public event KeyPressEventHandler KeyPressEvent;
+        public event KeyEventHandler KeyDownEvent;
         public event KeyEventHandler KeyUpEvent;
 
         //声明常规委托类型（类型名：钩子，拥有三个参数）
         public delegate int HookProc(int nCode, Int32 wParam, IntPtr lParam);
 
         //声明键盘钩子处理的初始值（值在Microsoft SDK的Winuser.h里查询）
-        static int hKeyboardHook = 0;
+        public int hKeyboardHook = 0;
         //线程键盘钩子监听鼠标消息设为2，全局键盘监听鼠标消息设为13
         public const int WH_KEYBOARD_LL = 13;
         //声明HookProc委托类型的变量KeyboardHookProcedure
-        HookProc KeyboardHookProcedure;
+        public HookProc KeyboardHookProcedure;
         //键盘结构
         [StructLayout(LayoutKind.Sequential)]
         public class KeyboardHookStruct
@@ -3253,7 +8597,7 @@ namespace MetalMaxSystem
 
         //取得当前线程编号（线程钩子需要用到）
         [DllImport("kernel32.dll")]
-        static extern int GetCurrentThreadId();
+        public static extern int GetCurrentThreadId();
 
         //使用WINDOWS API函数代替获取当前实例的函数,防止钩子失效
         [DllImport("kernel32.dll")]
@@ -3316,7 +8660,6 @@ namespace MetalMaxSystem
         [DllImport("user32")]
         public static extern int GetKeyboardState(byte[] pbKeyState);
 
-
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         private static extern short GetKeyState(int vKey);
 
@@ -3331,7 +8674,7 @@ namespace MetalMaxSystem
             if ((nCode >= 0) && (KeyDownEvent != null || KeyUpEvent != null || KeyPressEvent != null))
             {
                 KeyboardHookStruct MyKeyboardHookStruct = (KeyboardHookStruct)Marshal.PtrToStructure(lParam, typeof(KeyboardHookStruct));
-                // raise KeyDown
+                // KeyDownEvent
                 if (KeyDownEvent != null && (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN))
                 {
                     Keys keyData = (Keys)MyKeyboardHookStruct.vkCode;
@@ -3339,7 +8682,7 @@ namespace MetalMaxSystem
                     KeyDownEvent(this, e);
                 }
 
-                //键盘按下
+                //KeyPressEvent
                 if (KeyPressEvent != null && wParam == WM_KEYDOWN)
                 {
                     byte[] keyState = new byte[256];
@@ -3353,7 +8696,7 @@ namespace MetalMaxSystem
                     }
                 }
 
-                // 键盘抬起
+                // KeyUpEvent
                 if (KeyUpEvent != null && (wParam == WM_KEYUP || wParam == WM_SYSKEYUP))
                 {
                     Keys keyData = (Keys)MyKeyboardHookStruct.vkCode;
@@ -3374,54 +8717,56 @@ namespace MetalMaxSystem
         }
     }
 
-    #endregion
-
     #region 键盘钩子类使用示范
 
     /// <summary>
-    /// 按键测试
+    /// 按键监听使用示范
     /// </summary>
-    public class KeyUpDown
-    {
-        //创建实例
-        KeyboardHook keyhook = new KeyboardHook();
-        KeyEventHandler myKeyEventHandeler;
+    //public static class KeyUpDown
+    //{
+    //    //创建实例
+    //    public static KeyboardHook keyboardHook = new KeyboardHook();
+    //    public static KeyEventHandler myKeyEventHandeler;
 
-        //要运行的按键事件委托函数
-        private void KeyDown(object sender, KeyEventArgs e)
-        {
-            //如果按下截图键做某某事
-            if (e.KeyCode.Equals(Keys.PrintScreen))
-            {
-                //这里写具体实现
-            }
-        }
+    //    //要运行的按键事件委托函数
+    //    public static void KeyDown(object sender, KeyEventArgs e)
+    //    {
+    //        //如果按下截图键做某某事
+    //        if (e.KeyCode.Equals(Keys.PrintScreen))
+    //        {
+    //            //这里写具体实现
+    //        }
+    //    }
 
-        /// <summary>
-        /// 开始监听
-        /// </summary>
-        public void StartListen()
-        {
-            myKeyEventHandeler = new KeyEventHandler(KeyDown);
-            keyhook.KeyDownEvent += myKeyEventHandeler;//钩住键按下
-            keyhook.Start();//安装键盘钩子
-        }
+    //    /// <summary>
+    //    /// 开始监听
+    //    /// </summary>
+    //    public static void StartListen()
+    //    {
+    //        myKeyEventHandeler = new KeyEventHandler(KeyDown);
+    //        keyboardHook.KeyDownEvent += myKeyEventHandeler;//钩住键按下
+    //        keyboardHook.Start();//安装键盘钩子
+    //    }
 
-        /// <summary>
-        /// 结束监听
-        /// </summary>
-        public void StopListen()
-        {
-            if (myKeyEventHandeler != null)
-            {
-                keyhook.KeyDownEvent -= myKeyEventHandeler;//取消按键事件
-                myKeyEventHandeler = null;
-                keyhook.Stop();//关闭键盘钩子
-            }
-        }
-    }
+    //    /// <summary>
+    //    /// 结束监听
+    //    /// </summary>
+    //    public static void StopListen()
+    //    {
+    //        if (myKeyEventHandeler != null)
+    //        {
+    //            keyboardHook.KeyDownEvent -= myKeyEventHandeler;//取消按键事件
+    //            myKeyEventHandeler = null;
+    //            keyboardHook.Stop();//关闭键盘钩子
+    //        }
+    //    }
+    //}
 
     #endregion
+
+    #endregion
+
+
 
 }
 
