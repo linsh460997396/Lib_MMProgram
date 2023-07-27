@@ -12,6 +12,7 @@ using HtmlAgilityPack;
 
 namespace MMWFM
 {
+    //【范例】WinForm引用MM_函数库进行测试
     public partial class Form1 : Form
     {
         public Form1()
@@ -22,7 +23,7 @@ namespace MMWFM
         private void Form1_Load(object sender, EventArgs e)
         {
             //MMCore.UnZip(@"C:\Users\linsh\Desktop\Test\1122.7z", @"C:\Users\linsh\Desktop\TestOut", "1122");
-            
         }
+
     }
 }

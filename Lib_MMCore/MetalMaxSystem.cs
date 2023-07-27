@@ -38,8 +38,9 @@ using MessageBox = System.Windows.MessageBox;
 using Timer = System.Threading.Timer;
 using System.Windows;
 using System.Windows.Media.Media3D;
-using System.Windows.Forms;
 using Point = System.Windows.Point;
+using static MetalMaxSystem.MouseHook;
+using static MetalMaxSystem.KeyboardHook;
 
 #endregion
 
@@ -51,19 +52,49 @@ namespace MetalMaxSystem
     #region 枚举存放区
 
     /// <summary>
-    /// 主副循环入口索引
+    /// 【MetalMaxSystem】主副循环的入口索引
     /// </summary>
     public enum Entry
     {
+        /// <summary>
+        /// 主循环唤醒阶段
+        /// </summary>
         MainAwake,
+        /// <summary>
+        /// 主循环开始阶段
+        /// </summary>
         MainStart,
+        /// <summary>
+        /// 主循环Update阶段
+        /// </summary>
         MainUpdate,
+        /// <summary>
+        /// 主循环结束阶段
+        /// </summary>
         MainEnd,
+        /// <summary>
+        /// 主循环摧毁阶段
+        /// </summary>
         MainDestroy,
+        /// <summary>
+        /// 副循环唤醒阶段
+        /// </summary>
         SubAwake,
+        /// <summary>
+        /// 副循环开始阶段
+        /// </summary>
         SubStart,
+        /// <summary>
+        /// 副循环Update阶段
+        /// </summary>
         SubUpdate,
+        /// <summary>
+        /// 副循环结束阶段
+        /// </summary>
         SubEnd,
+        /// <summary>
+        /// 副循环摧毁阶段
+        /// </summary>
         SubDestroy,
     }
 
@@ -71,51 +102,60 @@ namespace MetalMaxSystem
 
     #region 结构存放区
 
-
+    //暂无
 
     #endregion
 
-    #region 委托类型存放区
+    #region 委托类型
 
     //个人书写习惯↓
-    //声明的委托类型首字母大写、委托类型的变量（当函数调用）首字母大写；
-    //Funcref 无事件event记号的委托类型（不安全）
-    //Handler 有事件event记号的委托类型（安全）
+    //声明的委托类型首字母大写、委托类型变量（执行函数）首字母大写；
+    //结尾Funcref 表示无事件event记号的委托类型（不安全使用）
+    //结尾Handler 表示有事件event记号的委托类型（安全使用）
 
     /// <summary>
-    /// 声明键鼠事件函数引用（委托类型）
+    /// 键鼠常规函数引用（委托类型），特征：void KeyMouseEventFuncref(bool ifKeyDown, int player)
     /// </summary>
     /// <param name="ifKeyDown"></param>
     /// <param name="player"></param>
     public delegate void KeyMouseEventFuncref(bool ifKeyDown, int player);
 
     /// <summary>
-    /// 声明主副循环入口事件函数引用（委托类型）
+    /// 主副循环入口常规函数引用（委托类型），特征：void EntryEventFuncref()
     /// </summary>
     public delegate void EntryEventFuncref();
 
     /// <summary>
-    /// 声明计时器事件函数引用（委托类型）
+    /// 计时器事件函数引用（委托类型），特征：void TimerEventHandler(object sender, EventArgs e)
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     public delegate void TimerEventHandler(object sender, EventArgs e);
 
+    /// <summary>
+    /// 动作集合常规函数引用（委托类型），特征：void SubActionEventFuncref(int lp_var)
+    /// </summary>
+    public delegate void SubActionEventFuncref(object sender);
+
     #endregion
 
-    #region 类存放区
+    #region 类
 
-    //公开静态类，数据在内存中唯一（从模板只产生一个可修改副本），其他程序集可调用。类的访问修饰符只有public和internal，internal修饰后只能在自身程序集（dll或exe）使用。前缀加partial（分部类型）则是定义要拆分到多个文件中的类
-    //提供给程序集外或用户使用的函数全部标public，不让直接操作或需隐藏在内部使用则不标
-    //若需额外让派生类（子类）可使用则标protected，会限制在基类派生类（父子类）中，但要注意其结合privite（修饰成员）、internal（修饰类）时反而是扩大使用范围
-    //静态类只有1个活动副本，所有静态数据的副本创建后只有在程序结束才会清理
+    //静态类数据在内存中唯一（从模板也只产生一个可修改副本），公开的静态类可供其他程序集调用。
+    //类的访问修饰符只有public和internal，其中internal修饰后只能在自身程序集（dll或exe）使用，类中创建类默认为internal（内部类）。
+    //前缀加partial（分部类型）用来定义要拆分到多个文件中的类，亦称"部分类"
+    //提供给程序集外或用户无限制使用的类及成员（字段、方法）标public，不让外部操作或需隐藏则不标
+    //若需额外让派生类（子类）使用则标protected，会限制在基类派生类（父子类）中，要注意其结合privite（修饰成员）、internal（修饰类）时反而是扩大使用范围
+    //静态数据的副本创建后只有在程序结束才会清理
 
     /// <summary>
-    /// 【MM_函数库】核心类
+    /// 【MetalMaxSystem】核心类
     /// </summary>
     public static class MMCore
     {
-        #region 常量存放区
+        #region 常量
+
+        //【MM_函数库】键盘按键映射
 
         public const int c_keyNone = -1;
         public const int c_keyShift = 0;
@@ -218,6 +258,8 @@ namespace MetalMaxSystem
         public const int c_keyF11 = 97;
         public const int c_keyF12 = 98;
 
+        //【MM_函数库】鼠标按键映射
+
         public const int c_mouseButtonNone = 0;
         public const int c_mouseButtonLeft = 1;
         public const int c_mouseButtonMiddle = 2;
@@ -225,129 +267,263 @@ namespace MetalMaxSystem
         public const int c_mouseButtonXButton1 = 4;
         public const int c_mouseButtonXButton2 = 5;
 
-        public const int c_keyMax = 98;//键盘按键句柄数组下标上限（按键0~98，无按键-1）
-        public const int c_regKeyMax = 8;//每个键盘按键可注册函数的数组下标上限
-        public const int c_mouseMax = 5;//鼠标按键句柄数组下标上限（按键1~5，无按键0）
-        public const int c_regMouseMax = 24;//每个鼠标按键可注册函数的数组下标上限
+        //【MM_函数库】键鼠函数引用上限及单键注册上限
 
-        private const int c_entryMax = 9;//主副循环入口句柄数组下标上限（0~9）
-        private const int c_regEntryMax = 1;//每个主副循环入口可注册函数数组下标上限
+        /// <summary>
+        /// 【MM_函数库】键盘按键句柄上限（句柄范围0~98，无按键-1）
+        /// </summary>
+        public const int c_keyMax = 98;
+        /// <summary>
+        /// 【MM_函数库】每个键盘按键可注册函数上限
+        /// </summary>
+        public const int c_regKeyMax = 8;
+        /// <summary>
+        /// 【MM_函数库】鼠标按键句柄上限（句柄范围1~5，无按键0）
+        /// </summary>
+        public const int c_mouseMax = 5;
+        /// <summary>
+        /// 【MM_函数库】每个鼠标按键可注册函数上限
+        /// </summary>
+        public const int c_regMouseMax = 24;
 
-        public const int c_playerAny = 16;//0默认中立玩家，1用户本人，2-14玩家（电脑或其他用户），15默认敌对玩家，16由系统触发，活动玩家=用户+电脑（不含中立）
-        public const int c_maxPlayers = 16;//限制最大玩家数，0-15共16个
+        //【MM_函数库】主副循环入口函数引用上限及单入口注册上限
+
+        /// <summary>
+        /// 【MM_函数库】主副循环入口句柄上限（句柄范围0~9）
+        /// </summary>
+        private const int c_entryMax = 9;//内部使用，无需给用户使用
+        /// <summary>
+        /// 【MM_函数库】每个主副循环入口可注册函数上限
+        /// </summary>
+        private const int c_regEntryMax = 1;//内部使用，无需给用户使用
+
+        //【MM_函数库】玩家句柄及其上限
+
+        /// <summary>
+        /// 【MM_函数库】玩家句柄（0默认中立玩家，1用户本人，2-14玩家（电脑或其他用户），15默认敌对玩家，16由系统触发，活动玩家=用户+电脑（不含中立））
+        /// </summary>
+        public const int c_playerAny = 16;
+        /// <summary>
+        /// 【MM_函数库】玩家句柄上限（限制最大玩家数，玩家句柄从0-15共16个，16是上帝（由系统执行））
+        /// </summary>
+        public const int c_maxPlayers = 16;
 
         #endregion
 
-        #region 变量
+        #region 全局和局部"变量"（无属性字段）
 
-        //虽然类只有字段没全局变量，但理论上公用静态变量才是该程序在内存中唯一的全局变量，无论类实例化多次或多线程从模板调用，它只生成一次副本。而非静态（实例）类每次实例化都复制一份模板去形成多个副本
-        //私有实例变量相当于类/函数的局部变量，不标Static则类/函数结束时垃圾回收，标Static则副本唯一且只有程序集结束才从内存消失，所以静态局部变量在函数结束不参与垃圾回收，以便相同函数重复访问
-        //静态数据是从模板形成的内存中唯一的可修改副本（不同类起相同名称其实是不一样的，要考虑命名空间和类名路径，无需担心重复）
+        //类只有字段没变量，但理论上公有静态字段是该程序在内存中唯一的全局变量，无论类实例化多次或多线程从模板调用，它只生成一次副本直到程序结束才清理
+        //而非静态（实例）类每次实例化都复制一份模板去形成多个副本，私有实例字段相当于类的局部变量
+        //不标Static则类及其成员在结束时垃圾回收，标Static则副本唯一且程序结束才从内存消失
+        //静态局部变量在函数结束时不参与垃圾回收，以便相同函数重复访问
+        //静态数据是从模板形成的内存中唯一的可修改副本（不同类同名也不一样，要考虑命名空间和类名路径，无需担心重复）
+        //数组元素数量上限均+1是习惯问题，防止某些循环以数组判断时最后退出还+1导致超限
 
-        private static int[] keyEventFuncrefGroupNum = new int[c_keyMax + 1];//键盘按键已注册数量（每下标算1个，即使+=多个委托函数）
-        private static int[] mouseEventFuncrefGroupNum = new int[c_mouseMax + 1];//鼠标按键的已注册数量（每下标算1个，即使+=多个委托函数）
-        public static bool[] stopKeyMouseEvent = new bool[c_maxPlayers + 1];//停用用户的按键事件
+        /// <summary>
+        /// 【MM_函数库】键盘按键已注册数量（每个数组元素算1个，即使它们+=多个委托函数）
+        /// </summary>
+        private static int[] keyEventFuncrefGroupNum = new int[c_keyMax + 1];//内部使用
+        /// <summary>
+        /// 【MM_函数库】鼠标按键的已注册数量（每个数组元素算1个，即使它们+=多个委托函数）
+        /// </summary>
+        private static int[] mouseEventFuncrefGroupNum = new int[c_mouseMax + 1];//内部使用
+        /// <summary>
+        /// 【MM_函数库】用户按键事件禁用状态（用于过场、剧情对话、特殊技能如禁锢时强制停用用户的按键事件）
+        /// </summary>
+        public static bool[] stopKeyMouseEvent = new bool[c_maxPlayers + 1];
+        /// <summary>
+        /// 【MM_函数库】主副循环每个入口的已注册数量（每个数组元素算1个，即使它们+=多个委托函数）
+        /// </summary>
+        private static int[] entryEventFuncrefGroupNum = new int[c_entryMax + 1];//内部使用
+        /// <summary>
+        /// 【MM_函数库】主副循环事件禁用状态（用于特殊情况如个人处理队列过多、玩家间未同步时间过长情况下停用用户主副循环事件）
+        /// </summary>
+        public static bool[] stopEntryEvent = new bool[c_maxPlayers + 1];
 
-        private static int[] entryEventFuncrefGroupNum = new int[c_entryMax + 1];//主副循环每个入口的已注册数量（每下标算1个，即使+=多个委托函数）
-        public static bool[] stopEntryEvent = new bool[c_maxPlayers + 1];//停用用户主副循环事件
+        /// <summary>
+        /// 【MM_函数库】主循环线程
+        /// </summary>
+        private static Thread mainUpdateThread;
+        /// <summary>
+        /// 【MM_函数库】副循环线程
+        /// </summary>
+        private static Thread subUpdateThread;
 
-        private static Thread mainUpdateThread;//主循环线程
-        private static Thread subUpdateThread;//副循环线程
+        /// <summary>
+        /// 【MM_函数库】全局数据表（不排泄，直到程序结束）
+        /// </summary>
+        private static Hashtable systemDataTable = new Hashtable();//内部使用
+        /// <summary>
+        /// 【MM_函数库】局部数据表（函数或动作集结束时应手动排泄）
+        /// </summary>
+        private static Hashtable tempDataTable = new Hashtable();//内部使用
 
-        private static Hashtable systemDataTable = new Hashtable();//系统全局数据表（不排泄）
-        private static Hashtable tempDataTable = new Hashtable();//临时局部数据表（设计过程中，函数结束时应手动排泄）
+        //声明用于存放键盘、鼠标"按键事件引用类型"委托变量的二维数组集合（单元素也是集合能+=多个委托函数），C#自带委托列表类型能继续存储这些委托类型变量
 
-        //注：C#自带委托列表类型可用于存储这些委托类型变量↓
-
-        //声明用于存放键盘、鼠标"按键事件引用类型"委托变量二维数组集合（单个元素也是集合能添加多个委托函数）
-        private static KeyMouseEventFuncref[,] keyEventFuncrefGroup = new KeyMouseEventFuncref[c_keyMax + 1, c_regKeyMax + 1];
-        private static KeyMouseEventFuncref[,] mouseEventFuncrefGroup = new KeyMouseEventFuncref[c_mouseMax + 1, c_regMouseMax + 1];
+        /// <summary>
+        /// 【MM_函数库】键盘按键事件引用委托类型变量数组[c_keyMax + 1, c_regKeyMax + 1]，用于自定义委托函数注册
+        /// </summary>
+        private static KeyMouseEventFuncref[,] keyEventFuncrefGroup = new KeyMouseEventFuncref[c_keyMax + 1, c_regKeyMax + 1];//内部使用
+        /// <summary>
+        /// 【MM_函数库】鼠标按键事件引用委托类型变量数组[c_mouseMax + 1, c_regMouseMax + 1]，用于自定义委托函数注册
+        /// </summary>
+        private static KeyMouseEventFuncref[,] mouseEventFuncrefGroup = new KeyMouseEventFuncref[c_mouseMax + 1, c_regMouseMax + 1];//内部使用
 
         //声明用于存放"主副循环入口事件引用类型"委托变量二维数组集合
-        private static EntryEventFuncref[,] entryEventFuncrefGroup = new EntryEventFuncref[c_entryMax + 1, c_regEntryMax + 1];
+
+        /// <summary>
+        /// 【MM_函数库】主副循环入口事件引用委托类型变量数组[c_entryMax + 1, c_regEntryMax + 1]，用于自定义委托函数注册
+        /// </summary>
+        private static EntryEventFuncref[,] entryEventFuncrefGroup = new EntryEventFuncref[c_entryMax + 1, c_regEntryMax + 1];//内部使用
 
         #endregion
 
-        #region 字段及其属性方法
+        #region 字段及其属性方法（避免不安全读写）
 
-        //字段及其属性方法（private保护和隐藏字段防止用户直接修改引发错误，设计成只允许通过public修饰的属性方法间接去安全修改）
-        //静态全局字段会形成内存中唯一的可修改副本，静态属性是提供用户给字段赋值并保护字段不出错的方法
-        //在使用中，所有字段的读写通过属性来安全操作
+        //字段及其属性方法（private保护和隐藏字段，设计成只允许通过public修饰的属性方法间接去安全读写）
 
         private static int _directoryEmptyUserDefIndex = 0;
         /// <summary>
-        /// 用户定义空文件夹形式，0是子文件（夹）数量为0，1是文件夹大小为0，2是前两者必须都符合
+        /// 【MM_函数库】用户定义的空文件夹形式，以供内部判断：0是子文件（夹）数量为0，1是文件夹大小为0，2是前两者必须都符合，如果用户输入错误，本属性方法将纠正为默认值0
         /// </summary>
-        public static int DirectoryEmptyUserDefIndex { get => _directoryEmptyUserDefIndex; set => _directoryEmptyUserDefIndex = value; }
+        public static int DirectoryEmptyUserDefIndex
+        {
+            get => _directoryEmptyUserDefIndex;
+            //如果用户输入错误，纠正为默认值0
+            set
+            {
+                if (value >= 0 && value <= 2)
+                {
+                    _directoryEmptyUserDefIndex = value;
+                }
+                else
+                {
+                    _directoryEmptyUserDefIndex = 0;
+                }
+            }
+        }
 
-        private static AutoResetEvent _autoResetEvent_MainUpdate;//声明一个主循环自动复位事件对象（用来控制主循环线程信号）
-        public static AutoResetEvent AutoResetEvent_MainUpdate { get => _autoResetEvent_MainUpdate; }
+        private static AutoResetEvent _autoResetEvent_MainUpdate;
+        /// <summary>
+        /// 【MM_函数库】主循环自动复位事件对象（用来向主循环线程发送信号），属性动作AutoResetEvent_MainUpdate.Set()可让触发器线程终止（效果等同MMCore.MainUpdateChecker.TimerState = true）
+        /// </summary>
+        public static AutoResetEvent AutoResetEvent_MainUpdate { get => _autoResetEvent_MainUpdate; }//不提供外部赋值
 
-        private static AutoResetEvent _autoResetEvent_SubUpdate;//声明一个副循环自动复位事件对象（用来控制副循环线程信号）
-        public static AutoResetEvent AutoResetEvent_SubUpdate { get => _autoResetEvent_SubUpdate; }
+        private static AutoResetEvent _autoResetEvent_SubUpdate;
+        /// <summary>
+        /// 【MM_函数库】副循环自动复位事件对象（用来向主循环线程发送信号），属性动作AutoResetEvent_SubUpdate.Set()可让触发器线程终止（效果等同MMCore.SubUpdateChecker.TimerState = true）
+        /// </summary>
+        public static AutoResetEvent AutoResetEvent_SubUpdate { get => _autoResetEvent_SubUpdate; }//不提供外部赋值
 
         private static Timer _mainUpdateTimer, _subUpdateTimer;
-        public static Timer MainUpdateTimer { get => _mainUpdateTimer; }
-        public static Timer SubUpdateTimer { get => _subUpdateTimer; }
+        /// <summary>
+        /// 【MM_函数库】主循环Update阶段，用来实现周期循环的计时器
+        /// </summary>
+        public static Timer MainUpdateTimer { get => _mainUpdateTimer; }//不提供外部赋值
+        /// <summary>
+        /// 【MM_函数库】主循环Update阶段，用来实现周期循环的计时器
+        /// </summary>
+        public static Timer SubUpdateTimer { get => _subUpdateTimer; }//不提供外部赋值
 
         private static int _mainUpdateDuetime, _mainUpdatePeriod, _subUpdateDuetime, _subUpdatePeriod;
+        /// <summary>
+        /// 【MM_函数库】主循环Update阶段前摇时间，设置后每次循环前都会等待
+        /// </summary>
         public static int MainUpdateDuetime { get => _mainUpdateDuetime; set => _mainUpdateDuetime = value; }
+        /// <summary>
+        /// 【MM_函数库】主循环Update阶段间隔运行时间
+        /// </summary>
         public static int MainUpdatePeriod { get => _mainUpdatePeriod; set => _mainUpdatePeriod = value; }
+        /// <summary>
+        /// 【MM_函数库】副循环Update阶段前摇时间，设置后每次循环前都会等待
+        /// </summary>
         public static int SubUpdateDuetime { get => _subUpdateDuetime; set => _subUpdateDuetime = value; }
+        /// <summary>
+        /// 【MM_函数库】副循环Update阶段间隔运行时间
+        /// </summary>
         public static int SubUpdatePeriod { get => _subUpdatePeriod; set => _subUpdatePeriod = value; }
 
-        //地图相关↓
+        //地图相关字段↓
 
         private static double _mapHeight;
         private static double[,] _terrainHeight = new double[2560 + 1, 2560 + 1];
-        private static double[,,] _terrainThickness;
+        private static double[,,] _terrainType;
 
         /// <summary>
-        /// 地图首个纹理图层顶面高度，默认值=8（m），称地面高度或地图高度均可
+        /// 【MM_函数库】地图首个纹理图层顶面高度，默认值=8（m），亦称地面高度或地图高度
         /// </summary>
         public static double MapHeight { get => _mapHeight; set => _mapHeight = value; }
 
         /// <summary>
-        /// 地面上附加的悬崖、地形物件的高度，二维坐标数组元素[2560+1,2560+1]（设计精度0.1m，按256m计）
+        /// 【MM_函数库】地面上附加的悬崖、地形物件的高度，二维坐标数组元素[2560+1,2560+1]（设计精度0.1m，按256m计）
         /// </summary>
         public static double[,] TerrainHeight { get => _terrainHeight; set => _terrainHeight = value; }
 
         /// <summary>
-        /// 地层厚度，数组元素[2560+1,2560+1,16+1]，前2个数组纬度表示平面坐标（设计精度0.1m，按256m计），最后1个数组纬度表示地面高度往下的地层数（0为地图面层）
+        /// 【MM_函数库】土、矿、水、气等空间内每个点的属性类型和数量（密度），数组元素[2560+1,2560+1,2560+1]，设计精度0.1m，小数点左侧表示土的类型，右侧为数值（密度）
         /// </summary>
-        public static double[,,] TerrainThickness { get => _terrainThickness; set => _terrainThickness = value; }
+        public static double[,,] TerrainType { get => _terrainType; set => _terrainType = value; }
 
         #endregion
 
-        #region Functions 数学公式区
+        #region Functions 数学公式
 
+        /// <summary>
+        /// 【MM_函数库】随机整数
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
         public static int RandomInt(int min, int max)
         {
             Random r = new Random(Guid.NewGuid().GetHashCode());
             return r.Next(min, max);
         }
 
+        /// <summary>
+        /// 【MM_函数库】将Vector3D转Vector（去掉Z轴）
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
         public static Vector ToVector(Vector3D vector)
         {
             return new Vector(vector.X, vector.Y);
         }
 
+        /// <summary>
+        ///  【MM_函数库】以实数返回二维坐标（x,y）与（a,b）形成的角度（单位：度）
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static double AngleBetween(double x, double y, double a, double b)
         {
             return Vector.AngleBetween(new Vector(x, y), new Vector(a, b));
         }
 
+        /// <summary>
+        /// 【MM_函数库】以实数返回三维坐标（x,y,z）与（a,b,c）形成的角度（单位：度）
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
+        /// <returns></returns>
         public static double AngleBetween(double x, double y, double z, double a, double b, double c)
         {
             return Vector3D.AngleBetween(new Vector3D(x, y, z), new Vector3D(a, b, z));
         }
 
         /// <summary>
-        /// 返回从点1到点2的角度作为实数，以度为单位。
+        /// 【MM_函数库】以实数返回二维点1点2形成的角度（单位：度）
         /// Returns the angle from point 1 to point 2 as a real value, in degrees
         /// </summary>
-        /// <param name="point1"></param>
-        /// <param name="point2"></param>
+        /// <param name="point1">二维点</param>
+        /// <param name="point2">二维点</param>
         /// <returns></returns>
         public static double AngleBetween(Point point1, Point point2)
         {
@@ -356,21 +532,47 @@ namespace MetalMaxSystem
             return Vector.AngleBetween(new Vector(point1.X, point1.Y), new Vector(point2.X, point2.Y));
         }
 
+        /// <summary>
+        /// 【MM_函数库】以实数返回三维点1点2形成的角度（单位：度）
+        /// </summary>
+        /// <param name="point1">三维点</param>
+        /// <param name="point2">三维点</param>
+        /// <returns></returns>
         public static double AngleBetween(Point3D point1, Point3D point2)
         {
             return Vector3D.AngleBetween(new Vector3D(point1.X, point1.Y, point1.Z), new Vector3D(point2.X, point2.Y, point2.Z));
         }
 
+        /// <summary>
+        /// 【MM_函数库】以实数返回二维向量之间形成的角度（单位：度）
+        /// </summary>
+        /// <param name="vector1"></param>
+        /// <param name="vector2"></param>
+        /// <returns></returns>
         public static double AngleBetween(Vector vector1, Vector vector2)
         {
             return Vector.AngleBetween(vector1, vector2);
         }
 
+        /// <summary>
+        /// 【MM_函数库】以实数返回三维向量之间形成的角度（单位：度）
+        /// </summary>
+        /// <param name="vector1"></param>
+        /// <param name="vector2"></param>
+        /// <returns></returns>
         public static double AngleBetween(Vector3D vector1, Vector3D vector2)
         {
             return Vector3D.AngleBetween(vector1, vector2);
         }
 
+        /// <summary>
+        /// 【MM_函数库】以实数返回二维坐标（x,y）与（a,b）形成的距离（单位：m）
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static double Distance(double x, double y, double a, double b)
         {
             double x1 = x;
@@ -383,6 +585,12 @@ namespace MetalMaxSystem
             return result;
         }
 
+        /// <summary>
+        /// 【MM_函数库】以实数返回二维点之间形成的距离（单位：m）
+        /// </summary>
+        /// <param name="point1"></param>
+        /// <param name="point2"></param>
+        /// <returns></returns>
         public static double Distance(Point point1, Point point2)
         {
             double x1 = point1.X;
@@ -395,6 +603,12 @@ namespace MetalMaxSystem
             return result;
         }
 
+        /// <summary>
+        /// 【MM_函数库】以实数返回二维向量之间形成的距离（单位：m）
+        /// </summary>
+        /// <param name="vector1"></param>
+        /// <param name="vector2"></param>
+        /// <returns></returns>
         public static double Distance(Vector vector1, Vector vector2)
         {
             double x1 = vector1.X;
@@ -407,6 +621,16 @@ namespace MetalMaxSystem
             return result;
         }
 
+        /// <summary>
+        /// 【MM_函数库】以实数返回三维坐标（x,y,z）与（a,b,c）形成的距离（单位：度）
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
+        /// <returns></returns>
         public static double Distance(double x, double y, double z, double a, double b, double c)
         {
             double x1 = x;
@@ -421,6 +645,12 @@ namespace MetalMaxSystem
             return result;
         }
 
+        /// <summary>
+        /// 【MM_函数库】以实数返回三维点之间形成的距离（单位：m）
+        /// </summary>
+        /// <param name="point1"></param>
+        /// <param name="point2"></param>
+        /// <returns></returns>
         public static double Distance(Point3D point1, Point3D point2)
         {
             double x1 = point1.X;
@@ -435,6 +665,12 @@ namespace MetalMaxSystem
             return result;
         }
 
+        /// <summary>
+        /// 【MM_函数库】以实数返回三维向量之间形成的距离（单位：m）
+        /// </summary>
+        /// <param name="vector1"></param>
+        /// <param name="vector2"></param>
+        /// <returns></returns>
         public static double Distance(Vector3D vector1, Vector3D vector2)
         {
             double x1 = vector1.X;
@@ -451,10 +687,10 @@ namespace MetalMaxSystem
 
         #endregion
 
-        #region Functions 通用功能区
+        #region Functions 通用功能
 
         /// <summary>
-        /// 递归强制删除文件夹（进最里层删除文件使文件夹为空后删除这个空文件夹，层层递出时重复动作），删除前会去掉文件（夹）的Archive、ReadOnly、Hidden属性以确保删除
+        /// 【MM_函数库】递归方式强制删除文件夹（进最里层删除文件使文件夹为空后删除这个空文件夹，层层递出时重复动作），删除前会去掉文件（夹）的Archive、ReadOnly、Hidden属性以确保删除
         /// </summary>
         /// <param name="dirInfo"></param>
         public static void DelDirectoryRecursively(DirectoryInfo dirInfo)
@@ -475,7 +711,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 递归强制删除文件夹（进最里层删除文件使文件夹为空后删除这个空文件夹，层层递出时重复动作），删除前会去掉文件（夹）的Archive、ReadOnly、Hidden属性以确保删除
+        /// 【MM_函数库】递归方式强制删除文件夹（进最里层删除文件使文件夹为空后删除这个空文件夹，层层递出时重复动作），删除前会去掉文件（夹）的Archive、ReadOnly、Hidden属性以确保删除
         /// </summary>
         /// <param name="dirPath"></param>
         public static void DelDirectoryRecursively(string dirPath)
@@ -496,7 +732,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 删除文件夹
+        /// 【MM_函数库】删除文件夹
         /// </summary>
         /// <param name="dirInfo"></param>
         /// <returns>删除成功返回真，否则返回假</returns>
@@ -512,7 +748,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 删除文件夹
+        /// 【MM_函数库】删除文件夹
         /// </summary>
         /// <param name="dirPath"></param>
         /// <returns>删除返回真，否则返回假</returns>
@@ -529,7 +765,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 添加Shell API特性[DllImport("shell32.dll", CharSet = CharSet.Unicode)]到SHFileOperation静态函数，删除文件到回收站功能专用
+        /// 【MM_函数库】删除文件到回收站功能专用属性，已添加Shell API特性[DllImport("shell32.dll", CharSet = CharSet.Unicode)]
         /// </summary>
         /// <param name="lpFileOp"></param>
         /// <returns></returns>
@@ -537,7 +773,7 @@ namespace MetalMaxSystem
         public static extern int SHFileOperation(ref SHFILEOPSTRUCT lpFileOp);
 
         /// <summary>
-        /// 删除文件到回收站功能专用结构体，已添加特性[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        /// 【MM_函数库】删除文件到回收站功能专用结构体，已添加特性[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         public struct SHFILEOPSTRUCT
@@ -553,7 +789,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 删除文件到回收站功能专用枚举，已添加特性[Flags]
+        /// 【MM_函数库】删除文件到回收站功能专用枚举，已添加特性[Flags]
         /// </summary>
         [Flags]
         public enum SHFileOperationFlags : ushort
@@ -577,7 +813,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 删除文件到回收站
+        /// 【MM_函数库】删除文件到回收站
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="torf"></param>
@@ -606,7 +842,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 删除文件夹到回收站
+        /// 【MM_函数库】删除文件夹到回收站
         /// </summary>
         /// <param name="dirPath"></param>
         /// <param name="torf">回收站删除提示</param>
@@ -635,10 +871,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 输入long型Size，将字节大小转字符串Byte、KB、MB、GB、TB、PB、EB、ZB、YB、NB形式
+        /// 【MM_函数库】将字节大小转字符串Byte、KB、MB、GB、TB、PB、EB、ZB、YB、NB形式
         /// </summary>
         /// <param name="Size">字节大小</param>
-        /// <param name="Byte">true强制输出字节单位</param>
+        /// <param name="Byte">true=强制输出字节单位</param>
         /// <returns></returns>
         public static string CountSize(long Size, bool Byte)
         {
@@ -676,10 +912,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 输入double型Size，将字节大小转字符串Byte、KB、MB、GB、TB、PB、EB、ZB、YB、NB形式
+        /// 【MM_函数库】将字节大小转字符串Byte、KB、MB、GB、TB、PB、EB、ZB、YB、NB形式
         /// </summary>
         /// <param name="Size">字节大小</param>
-        /// <param name="Byte">true强制输出字节单位</param>
+        /// <param name="Byte">true=强制输出字节单位</param>
         /// <returns></returns>
         public static string CountSize(double Size, bool Byte)
         {
@@ -717,7 +953,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 为字符串str每隔every位添加symbol
+        /// 【MM_函数库】为字符串str每隔every位添加symbol
         /// </summary>
         /// <param name="str"></param>
         /// <param name="every"></param>
@@ -740,7 +976,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 获取文件大小
+        /// 【MM_函数库】获取文件大小
         /// </summary>
         /// <param name="fileInfo"></param>
         /// <returns></returns>
@@ -755,7 +991,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 获取文件大小
+        /// 【MM_函数库】获取文件大小
         /// </summary>
         /// <param name="filePath">文件名完整路径</param>
         /// <returns></returns>
@@ -770,7 +1006,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 获取文件夹大小，递归方法较耗时
+        /// 【MM_函数库】递归方法获取文件夹大小
         /// </summary>
         /// <param name="dirPath">文件夹完整路径</param>
         /// <returns></returns>
@@ -802,7 +1038,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 取得设备硬盘的卷序列号
+        /// 【MM_函数库】取得设备硬盘的卷序列号
         /// </summary>
         /// <param name="diskSymbol">盘符</param>
         /// <returns>成功返回卷序列号，失败返回"uHnIk"</returns>
@@ -825,7 +1061,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 验证字符串是否为整数
+        /// 【MM_函数库】验证字符串是否为整数
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
@@ -836,7 +1072,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 验证字符串是否为合法文件（夹）名称，可以是虚拟路径（本函数不验证其真实存在）
+        /// 【MM_函数库】验证字符串是否为合法文件（夹）名称，可以是虚拟路径（本函数不验证其真实存在）
         /// </summary>
         /// <param name="path">文件（夹）路径全名</param>
         /// <returns></returns>
@@ -850,7 +1086,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 验证字符串路径的文件（夹）是否真实存在
+        /// 【MM_函数库】验证字符串路径的文件（夹）是否真实存在
         /// </summary>
         /// <param name="path">文件（夹）路径全名</param>
         /// <returns></returns>
@@ -865,7 +1101,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 判断目标属性是否为真实文件夹
+        /// 【MM_函数库】判断目标属性是否为真实文件夹
         /// </summary>
         /// <param name="path">文件夹路径全名</param>
         /// <returns></returns>
@@ -895,7 +1131,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 验证字符串路径的文件夹是否真实存在
+        /// 【MM_函数库】验证字符串路径的文件夹是否真实存在
         /// </summary>
         /// <param name="path">文件夹路径全名</param>
         /// <returns></returns>
@@ -910,7 +1146,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 验证字符串路径的文件是否真实存在
+        /// 【MM_函数库】验证字符串路径的文件是否真实存在
         /// </summary>
         /// <param name="path">文件路径全名</param>
         /// <returns></returns>
@@ -925,7 +1161,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 验证目录是否为空
+        /// 【MM_函数库】验证目录是否为空
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
@@ -942,7 +1178,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 验证路径是否为用户定义的空文件夹，通过MMCore.DirectoryEmptyUserDefIndex属性可定义空文件夹形式
+        /// 【MM_函数库】验证路径是否为用户定义的空文件夹，通过MMCore.DirectoryEmptyUserDefIndex属性可定义空文件夹形式
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
@@ -980,7 +1216,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 写文本每行，文件若不存在则自动新建
+        /// 【MM_函数库】写文本每行，文件若不存在则自动新建
         /// </summary>
         /// <param name="path"></param>
         /// <param name="value"></param>
@@ -995,7 +1231,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 验证文件大小是否在用户定义的[a,b]范围
+        /// 【MM_函数库】验证文件大小是否在用户定义的[a,b]范围
         /// </summary>
         /// <param name="path"></param>
         /// <param name="a"></param>
@@ -1025,7 +1261,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 创建GET请求
+        /// 【MM_函数库】创建GET请求
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
@@ -1051,7 +1287,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 创建POST请求
+        /// 【MM_函数库】创建POST请求
         /// </summary>
         /// <param name="url"></param>
         /// <param name="parameters"></param>
@@ -1111,7 +1347,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 下载指定网站的指定节点内容到指定文件夹并保存为自定义文件名
+        /// 【MM_函数库】下载指定网站的指定节点内容到指定文件夹并保存为自定义文件名
         /// 使用范例：
         /// HtmlDocument doc = new();
         /// doc.LoadHtml(MMCore.CreateGetHttpResponse("https://ac.qq.com/Comic/ComicInfo/id/542330"));
@@ -1184,7 +1420,7 @@ namespace MetalMaxSystem
         }
 
         ///<summary>
-        ///生成随机字符串 
+        ///【MM_函数库】生成随机字符串 
         ///</summary>
         ///<param name="length">目标字符串的长度</param>
         ///<param name="useNum">是否包含数字，1=包含，默认为包含</param>
@@ -1211,7 +1447,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 创建文件夹，若已存在则什么也不干
+        /// 【MM_函数库】创建文件夹，若已存在则什么也不干
         /// </summary>
         /// <param name="path"></param>
         public static void CreatDirectory(string path)
@@ -1224,7 +1460,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 创建文件，若已存在则什么也不干
+        /// 【MM_函数库】创建文件，若已存在则什么也不干
         /// </summary>
         /// <param name="filepath"></param>
         public static void CreatFile(string filepath)
@@ -1236,7 +1472,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 用WinRAR解压带密码的压缩包
+        /// 【MM_函数库】用WinRAR解压带密码的压缩包
         /// </summary>
         /// <param name="zipFilePath">压缩包路径</param>
         /// <param name="unZipPath">解压后文件夹的路径</param>
@@ -1266,7 +1502,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 判断系统上是否安装winrar
+        /// 【MM_函数库】判断系统上是否安装WinRAR
         /// </summary>
         /// <returns></returns>
         public static bool IsOwnWinRAR()
@@ -1279,30 +1515,32 @@ namespace MetalMaxSystem
         }
         #endregion
 
-        #region Functions 数据表功能区
+        #region Functions 数据表功能
 
         /// <summary>
-        /// 内部函数，添加数据表键值对的原始动作（重复添加则覆盖）
+        /// 【MM_函数库】添加数据表键值对（重复添加则覆盖）
         /// </summary>
-        /// <param name="place"></param>
+        /// <param name="place">true=全局，false=局部</param>
         /// <param name="key"></param>
         /// <param name="val"></param>
-        private static void DataTableSet(bool place, string key, object val)
+        private static void DataTableSet(bool place, string key, object val)//内部使用
         {
             if (place)
             {
+                //存入全局数据表
                 if (systemDataTable.Contains(key)) { systemDataTable.Remove(key); }
                 systemDataTable.Add(key, val);
             }
             else
             {
+                //存入局部数据表
                 if (tempDataTable.Contains(key)) { tempDataTable.Remove(key); }
                 tempDataTable.Add(key, val);
             }
         }
 
         /// <summary>
-        /// 判断数据表键是否存在
+        /// 【MM_函数库】判断数据表键是否存在
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1314,7 +1552,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 获取数据表键对应的值
+        /// 【MM_函数库】获取数据表键对应的值
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1326,7 +1564,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 从数据表中清除Key
+        /// 【MM_函数库】从数据表中清除Key
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1336,7 +1574,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 从数据表中清除Key[]，模拟1维数组
+        /// 【MM_函数库】从数据表中清除Key[]，模拟1维数组
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1347,7 +1585,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 从数据表中清除Key[,]，模拟2维数组
+        /// 【MM_函数库】从数据表中清除Key[,]，模拟2维数组
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1359,7 +1597,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 从数据表中清除Key[,,]，模拟3维数组
+        /// 【MM_函数库】从数据表中清除Key[,,]，模拟3维数组
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1372,7 +1610,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 从数据表中清除Key[,,,]，模拟4维数组
+        /// 【MM_函数库】从数据表中清除Key[,,,]，模拟4维数组
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1386,18 +1624,18 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 移除数据表键值对
+        /// 【MM_函数库】移除数据表键值对
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
-        private static void DataTableRemove(bool place, string key)
+        private static void DataTableRemove(bool place, string key)//内部函数
         {
             if (place) { systemDataTable.Remove(key); }
             else { tempDataTable.Remove(key); }
         }
 
         /// <summary>
-        /// 保存数据表键值对
+        /// 【MM_函数库】保存数据表键值对
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1408,7 +1646,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 保存数据表键值对，模拟1维数组
+        /// 【MM_函数库】保存数据表键值对，模拟1维数组
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1420,7 +1658,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 保存数据表键值对，模拟2维数组
+        /// 【MM_函数库】保存数据表键值对，模拟2维数组
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1433,7 +1671,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 保存数据表键值对，模拟3维数组
+        /// 【MM_函数库】保存数据表键值对，模拟3维数组
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1447,7 +1685,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 保存数据表键值对，模拟4维数组
+        /// 【MM_函数库】保存数据表键值对，模拟4维数组
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1462,7 +1700,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 读取数据表键值对
+        /// 【MM_函数库】读取数据表键值对
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1477,7 +1715,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 读取数据表键值对，模拟1维数组
+        /// 【MM_函数库】读取数据表键值对，模拟1维数组
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1493,7 +1731,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 读取数据表键值对，模拟2维数组
+        /// 【MM_函数库】读取数据表键值对，模拟2维数组
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1510,7 +1748,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 读取数据表键值对，模拟3维数组
+        /// 【MM_函数库】读取数据表键值对，模拟3维数组
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1528,7 +1766,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 读取数据表键值对，模拟4维数组
+        /// 【MM_函数库】读取数据表键值对，模拟4维数组
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -1547,7 +1785,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 存储区容错处理函数，当数据表键值存在时执行线程等待。常用于多线程触发器频繁写值，如大量注册注销动作使存储区数据重排序的，因数据表正在使用需排队等待完成才给执行下一个。执行原理：将调用该函数的当前线程反复挂起50毫秒，直到动作要写入的存储区闲置。
+        /// 【MM_函数库】存储区容错处理函数，当数据表键值存在时执行线程等待。常用于多线程触发器频繁写值，如大量注册注销动作使存储区数据重排序的，因数据表正在使用需排队等待完成才给执行下一个。执行原理：将调用该函数的当前线程反复挂起50毫秒，直到动作要写入的存储区闲置
         /// </summary>
         /// <param name="key"></param>
         public static void ThreadWait(string key)
@@ -1562,7 +1800,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 存储区容错处理函数，当数据表键值存在时执行线程等待。常用于多线程触发器频繁写值，如大量注册注销动作使存储区数据重排序的，因数据表正在使用需排队等待完成才给执行下一个。执行原理：将调用该函数的当前线程反复挂起period毫秒，直到动作要写入的存储区闲置。
+        /// 【MM_函数库】存储区容错处理函数，当数据表键值存在时执行线程等待。常用于多线程触发器频繁写值，如大量注册注销动作使存储区数据重排序的，因数据表正在使用需排队等待完成才给执行下一个。执行原理：将调用该函数的当前线程反复挂起period毫秒，直到动作要写入的存储区闲置
         /// </summary>
         /// <param name="key"></param>
         /// <param name="period"></param>
@@ -1578,7 +1816,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 存储区容错处理函数，引发注册注销等存储区频繁重排序的动作，在函数开始/完成写入存储区时，设置线程等待（val=1）/闲置（val=0）
+        /// 【MM_函数库】存储区容错处理函数，引发注册注销等存储区频繁重排序的动作，在函数开始/完成写入存储区时，应设置线程等待（val=1）/闲置（val=0）
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val">函数动作完成，所写入存储区闲置时填"0"，反之填"1"</param>
@@ -1589,11 +1827,12 @@ namespace MetalMaxSystem
 
         #endregion
 
-        #region Functions 按键事件功能区
+        #region Functions 键盘、鼠标按键事件函数引用（委托函数），注册注销查询更换归并执行等管理功能
 
         //------------------------------------↓KeyDownEventStart↓-----------------------------------------
 
         /// <summary>
+        /// 【MM_函数库】将（1个或多个）委托函数注册到键盘按键事件（或者说给委托函数添加指定事件，完成事件注册）。
         /// 注册指定键盘按键的委托函数，每个键盘按键最大注册数量限制（8），超过则什么也不做
         /// </summary>
         /// <param name="key"></param>
@@ -1606,12 +1845,12 @@ namespace MetalMaxSystem
             {
                 return;
             }
-            keyEventFuncrefGroupNum[key] += 1;
-            keyEventFuncrefGroup[key, keyEventFuncrefGroupNum[key]] = funcref;
+            keyEventFuncrefGroupNum[key] += 1;//注册成功记录+1
+            keyEventFuncrefGroup[key, keyEventFuncrefGroupNum[key]] = funcref;//这里采用等于，设计为覆盖
             ThreadWaitSet("MMCore_KeyEventFuncref_", "0");
         }
         /// <summary>
-        /// 注册指定键盘按键的委托函数（登录在指定注册序号num位置）
+        /// 【MM_函数库】注册指定键盘按键的委托函数（登录在指定注册序号num位置）
         /// </summary>
         /// <param name="key"></param>
         /// <param name="num">不能超过最大注册数量限制（8）</param>
@@ -1625,7 +1864,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 注销指定键盘按键的委托函数（发生序号重排）
+        /// 【MM_函数库】注销指定键盘按键的委托函数（发生序号重排）
         /// </summary>
         /// <param name="key"></param>
         /// <param name="funcref"></param>
@@ -1653,7 +1892,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 返回指定键盘按键注册函数的序号
+        /// 【MM_函数库】返回指定键盘按键注册函数的序号
         /// </summary>
         /// <param name="key"></param>
         /// <param name="funcref"></param>
@@ -1675,7 +1914,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 返回指定键盘按键指定函数的注册数量（>1则注册了多个同样的函数）
+        /// 【MM_函数库】返回指定键盘按键指定函数的注册数量（>1则注册了多个同样的函数）
         /// </summary>
         /// <param name="key"></param>
         /// <param name="funcref"></param>
@@ -1696,7 +1935,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 归并键盘按键指定函数（如存在则移除该函数注册并序号重排，之后重新注册1次）
+        /// 【MM_函数库】归并键盘按键指定函数（如存在则移除该函数注册并序号重排，之后重新注册1次）
         /// </summary>
         /// <param name="key"></param>
         /// <param name="funcref"></param>
@@ -1719,7 +1958,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 全局键盘按键事件，对指定键盘按键执行委托函数动作集合
+        /// 【MM_函数库】全局键盘按键事件，对指定键盘按键执行委托函数动作集合
         /// </summary>
         /// <param name="key"></param>
         /// <param name="keydown"></param>
@@ -1738,6 +1977,7 @@ namespace MetalMaxSystem
         //------------------------------------↓MouseDownEventStart↓---------------------------------------
 
         /// <summary>
+        /// 【MM_函数库】将（1个或多个）委托函数注册到鼠标按键事件（或者说给委托函数添加指定事件，完成事件注册）。
         /// 注册指定鼠标键位的委托函数，每个鼠标按键最大注册数量限制（24），超过则什么也不做
         /// </summary>
         /// <param name="key"></param>
@@ -1750,13 +1990,13 @@ namespace MetalMaxSystem
             {
                 return;
             }
-            mouseEventFuncrefGroupNum[key] += 1;
-            mouseEventFuncrefGroup[key, mouseEventFuncrefGroupNum[key]] = funcref;
+            mouseEventFuncrefGroupNum[key] += 1;//注册成功记录+1
+            mouseEventFuncrefGroup[key, mouseEventFuncrefGroupNum[key]] = funcref;//这里采用等于，设计为覆盖
             ThreadWaitSet("MouseEventFuncref", "0");
         }
 
         /// <summary>
-        /// 注册指定鼠标键位的委托函数（登录在指定注册序号num位置）
+        /// 【MM_函数库】注册指定鼠标键位的委托函数（登录在指定注册序号num位置）
         /// </summary>
         /// <param name="key"></param>
         /// <param name="num">不能超过最大注册数量限制（24）</param>
@@ -1770,7 +2010,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 注销指定鼠标键位的委托函数（发生序号重排）
+        /// 【MM_函数库】注销指定鼠标键位的委托函数（发生序号重排）
         /// </summary>
         /// <param name="key"></param>
         /// <param name="funcref"></param>
@@ -1794,7 +2034,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 返回指定鼠标键位注册函数的序号
+        /// 【MM_函数库】返回指定鼠标键位注册函数的序号
         /// </summary>
         /// <param name="key"></param>
         /// <param name="funcref"></param>
@@ -1816,7 +2056,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 返回指定鼠标键位指定注册函数的数量（>1则注册了多个同样的函数）
+        /// 【MM_函数库】返回指定鼠标键位指定注册函数的数量（>1则注册了多个同样的函数）
         /// </summary>
         /// <param name="key"></param>
         /// <param name="funcref"></param>
@@ -1836,7 +2076,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 归并鼠标按键指定函数（如存在则移除该函数注册并序号重排，之后重新注册1次）
+        /// 【MM_函数库】归并鼠标按键指定函数（如存在则移除该函数注册并序号重排，之后重新注册1次）
         /// </summary>
         /// <param name="key"></param>
         /// <param name="funcref"></param>
@@ -1856,7 +2096,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 全局鼠标按键事件，对指定鼠标按键执行委托函数动作集合
+        /// 【MM_函数库】全局鼠标按键事件，对指定鼠标按键执行委托函数动作集合
         /// </summary>
         /// <param name="key"></param>
         /// <param name="keydown"></param>
@@ -1875,11 +2115,12 @@ namespace MetalMaxSystem
 
         #endregion
 
-        #region Functions 入口事件功能区
+        #region Functions 主副循环入口事件函数引用（委托函数），注册注销查询更换归并执行等管理功能
 
         //------------------------------------↓EntryFuncStart↓-----------------------------------------
 
         /// <summary>
+        /// 【MM_函数库】将（1个或多个）委托函数注册到主副循环入口事件（或者说给委托函数添加指定事件，完成事件注册）。
         /// 注册指定主副循环入口的委托函数，每个入口最大注册数量限制（1），超过则什么也不做
         /// </summary>
         /// <param name="entry"></param>
@@ -1892,13 +2133,13 @@ namespace MetalMaxSystem
             {
                 return;
             }
-            entryEventFuncrefGroupNum[(int)entry] += 1;
-            entryEventFuncrefGroup[(int)entry, entryEventFuncrefGroupNum[(int)entry]] = funcref;
+            entryEventFuncrefGroupNum[(int)entry] += 1;//注册成功记录+1
+            entryEventFuncrefGroup[(int)entry, entryEventFuncrefGroupNum[(int)entry]] = funcref;//这里采用等于，设计为覆盖
             ThreadWaitSet("EntryEventFuncref", "0");
         }
 
         /// <summary>
-        /// 注册指定主副循环入口的委托函数（登录在指定注册序号num位置）
+        /// 【MM_函数库】注册指定主副循环入口的委托函数（登录在指定注册序号num位置）
         /// </summary>
         /// <param name="entry"></param>
         /// <param name="num">不能超过最大注册数量限制（8）</param>
@@ -1912,7 +2153,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 注销指定主副循环入口的委托函数（发生序号重排）
+        /// 【MM_函数库】注销指定主副循环入口的委托函数（发生序号重排）
         /// </summary>
         /// <param name="entry"></param>
         /// <param name="funcref"></param>
@@ -1940,7 +2181,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 返回指定主副循环入口注册函数的序号
+        /// 【MM_函数库】返回指定主副循环入口注册函数的序号
         /// </summary>
         /// <param name="entry"></param>
         /// <param name="funcref"></param>
@@ -1962,7 +2203,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 返回指定主副循环入口指定函数的注册数量（>1则注册了多个同样的函数）
+        /// 【MM_函数库】返回指定主副循环入口指定函数的注册数量（>1则注册了多个同样的函数）
         /// </summary>
         /// <param name="entry"></param>
         /// <param name="funcref"></param>
@@ -1983,7 +2224,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 归并主副循环入口指定函数（如存在则移除该函数注册并序号重排，之后重新注册1次）
+        /// 【MM_函数库】归并主副循环入口指定函数（如存在则移除该函数注册并序号重排，之后重新注册1次）
         /// </summary>
         /// <param name="entry"></param>
         /// <param name="funcref"></param>
@@ -2003,7 +2244,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 全局主副循环入口事件，对指定入口执行委托函数动作集合
+        /// 【MM_函数库】全局主副循环入口事件，对指定入口执行委托函数动作集合
         /// </summary>
         /// <param name="entry"></param>
         public static void EntryGlobalEvent(Entry entry)
@@ -2018,10 +2259,10 @@ namespace MetalMaxSystem
 
         #endregion
 
-        #region 循环体（周期触发器、运行时钟）功能区
+        #region 循环体（周期触发器、运行时钟）功能
 
         /// <summary>
-        /// 开启主循环（默认0.05现实时间秒，如需修改请在开启前用属性方法MainUpdatePeriod、MainUpdateDuetime来调整计时器Update阶段的间隔、前摇，若已经开启想要修改，可使用MMCore.MainUpdateTimer.Change）
+        /// 【MM_函数库】开启主循环（默认0.05现实时间秒，如需修改请在开启前用属性方法MainUpdatePeriod、MainUpdateDuetime来调整计时器Update阶段的间隔、前摇，若已经开启想要修改，可使用MMCore.MainUpdateTimer.Change）
         /// </summary>
         /// <param name="isBackground"></param>
         public static void MainUpdateStart(bool isBackground)
@@ -2034,7 +2275,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 开启副循环（默认1.0现实时间秒，如需修改请在开启前用属性方法SubUpdatePeriod、SubUpdateDuetime来调整计时器Update阶段的间隔、前摇，若已经开启想要修改，可使用MMCore.SubUpdateTimer.Change）
+        /// 【MM_函数库】开启副循环（默认1.0现实时间秒，如需修改请在开启前用属性方法SubUpdatePeriod、SubUpdateDuetime来调整计时器Update阶段的间隔、前摇，若已经开启想要修改，可使用MMCore.SubUpdateTimer.Change）
         /// </summary>
         /// <param name="isBackground"></param>
         public static void SubUpdateStart(bool isBackground)
@@ -2047,9 +2288,9 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 主循环方法，若Update阶段属性未定义则默认每轮前摇0ms、间隔50ms
+        /// 【MM_函数库】主循环方法，若Update阶段属性未定义则默认每轮前摇0ms、间隔50ms
         /// </summary>
-        private static void MainUpdateFunc()
+        private static void MainUpdateFunc()//内部使用
         {
             if (MainUpdateDuetime < 0) { MainUpdateDuetime = 0; }
             if (MainUpdatePeriod <= 0) { MainUpdatePeriod = 50; }
@@ -2057,9 +2298,9 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 副循环方法，若Update阶段属性未定义则默认每轮前摇0ms、间隔50ms
+        /// 【MM_函数库】副循环方法，若Update阶段属性未定义则默认每轮前摇0ms、间隔50ms
         /// </summary>
-        private static void SubUpdateFunc()
+        private static void SubUpdateFunc()//内部使用
         {
             if (SubUpdateDuetime < 0) { SubUpdateDuetime = 0; }
             if (SubUpdatePeriod <= 0) { SubUpdatePeriod = 1000; }
@@ -2067,7 +2308,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 主循环唤醒阶段运行一次
+        /// 【MM_函数库】主循环唤醒阶段运行一次，允许主动调用
         /// </summary>
         public static void MainAwake()
         {
@@ -2075,7 +2316,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 主循环开始阶段运行一次
+        /// 【MM_函数库】主循环开始阶段运行一次，允许主动调用
         /// </summary>
         public static void MainStart()
         {
@@ -2083,7 +2324,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 主循环每轮更新运行
+        /// 【MM_函数库】主循环每轮更新运行，主动调用时跟Unity引擎一样只运行一次
         /// </summary>
         public static void MainUpdate()
         {
@@ -2091,7 +2332,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 主循环结束阶段运行一次
+        /// 【MM_函数库】主循环结束阶段运行一次，允许主动调用
         /// </summary>
         public static void MainEnd()
         {
@@ -2099,7 +2340,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 主循环摧毁阶段运行一次
+        /// 【MM_函数库】主循环摧毁阶段运行一次，允许主动调用
         /// </summary>
         public static void MainDestroy()
         {
@@ -2107,7 +2348,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 副循环唤醒阶段运行一次
+        /// 【MM_函数库】副循环唤醒阶段运行一次，允许主动调用
         /// </summary>
         public static void SubAwake()
         {
@@ -2115,7 +2356,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 副循环开始阶段运行一次
+        /// 【MM_函数库】副循环开始阶段运行一次，允许主动调用
         /// </summary>
         public static void SubStart()
         {
@@ -2123,7 +2364,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 副循环每轮更新运行
+        /// 【MM_函数库】副循环每轮更新运行，主动调用时跟Unity引擎一样只运行一次
         /// </summary>
         public static void SubUpdate()
         {
@@ -2131,7 +2372,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 副循环结束阶段运行一次
+        /// 【MM_函数库】副循环结束阶段运行一次，允许主动调用
         /// </summary>
         public static void SubEnd()
         {
@@ -2139,7 +2380,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 副循环摧毁阶段运行一次
+        /// 【MM_函数库】副循环摧毁阶段运行一次，允许主动调用
         /// </summary>
         public static void SubDestroy()
         {
@@ -2147,9 +2388,9 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 主循环主体事件发布动作（重复执行则什么也不做），若Update阶段属性未定义则默认每轮前摇0ms、间隔50ms
+        /// 【MM_函数库】主循环主体事件发布动作（重复执行则什么也不做），若Update阶段属性未定义则默认每轮前摇0ms、间隔50ms
         /// </summary>
-        private static void MainUpdateAction()
+        private static void MainUpdateAction()//内部使用
         {
             if (AutoResetEvent_MainUpdate == null)
             {
@@ -2170,11 +2411,11 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 主循环主体事件发布动作（重复执行则什么也不做），可自定义Update阶段属性Duetime（前摇）、Period（间隔）
+        /// 【MM_函数库】主循环主体事件发布动作（重复执行则什么也不做），可自定义Update阶段属性Duetime（前摇）、Period（间隔）
         /// </summary>
         /// <param name="duetime">Updata阶段执行开始前等待（毫秒），仅生效一次</param>
         /// <param name="period">Updata阶段执行间隔（毫秒）</param>
-        private static void MainUpdateAction(int duetime, int period)
+        private static void MainUpdateAction(int duetime, int period)//内部使用
         {
             if (AutoResetEvent_MainUpdate == null)
             {
@@ -2195,9 +2436,9 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 副循环主体事件发布动作（重复执行则什么也不做），若Update阶段属性未定义则默认每轮前摇0ms、间隔1000ms
+        /// 【MM_函数库】副循环主体事件发布动作（重复执行则什么也不做），若Update阶段属性未定义则默认每轮前摇0ms、间隔1000ms
         /// </summary>
-        private static void SubUpdateAction()
+        private static void SubUpdateAction()//内部使用
         {
             if (AutoResetEvent_SubUpdate == null)
             {
@@ -2217,11 +2458,11 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 副循环主体事件发布动作（重复执行则什么也不做），可自定义Update阶段属性Duetime（前摇）、Period（间隔）
+        /// 【MM_函数库】副循环主体事件发布动作（重复执行则什么也不做），可自定义Update阶段属性Duetime（前摇）、Period（间隔）
         /// </summary>
         /// <param name="duetime">Updata阶段执行开始前等待（毫秒），仅生效一次</param>
         /// <param name="period">Updata阶段执行间隔（毫秒）</param>
-        private static void SubUpdateAction(int duetime, int period)
+        private static void SubUpdateAction(int duetime, int period)//内部使用
         {
             if (AutoResetEvent_SubUpdate == null)
             {
@@ -2242,14 +2483,23 @@ namespace MetalMaxSystem
 
         #endregion
 
-        #region 互动功能区
+        #region 互动管理（利用数据表实现不同类型的数据互动及信息管理）
 
         #region 任意类型
+
+        //提示：可以将任意类型作为模板修改后产生其他类型
+        //提示：尽可能使用对口类型，以防值类型与引用类型发生转换时拆装箱降低性能
 
         //--------------------------------------------------------------------------------------------------
         // 任意类型组Start
         //--------------------------------------------------------------------------------------------------
-        public static int HD_RegObjectTagAndReturn_Int(Object lp_object)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_注册Object标签句柄并返回。为Object自动设置新的标签句柄，重复时会返回已注册的Object标签。这是一个内部函数，一般不需要自动使用
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <returns></returns>
+        private static int HD_RegObjectTagAndReturn_Int(object lp_object)//内部使用
         {
             // Variable Declarations
             int lv_jBNum;
@@ -2273,7 +2523,7 @@ namespace MetalMaxSystem
                 for (; auto_var <= auto_ae; auto_var += 1)
                 {
                     lv_j = auto_var;
-                    if ((Object)DataTableLoad0(true, ("HD_Object_" + lv_j.ToString())) == lp_object)
+                    if ((object)DataTableLoad0(true, ("HD_Object_" + lv_j.ToString())) == lp_object)
                     {
                         break;
                     }
@@ -2290,7 +2540,13 @@ namespace MetalMaxSystem
             }
             return lv_j;
         }
-        public static int HD_ReturnObjectTag_Int(Object lp_object)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_返回Object已注册标签句柄。返回一个Object的已注册标签，如果失败返回null
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <returns></returns>
+        public static int HD_ReturnObjectTag_Int(object lp_object)
         {
             // Variable Declarations
             int lv_jBNum;
@@ -2306,14 +2562,20 @@ namespace MetalMaxSystem
             for (; auto_var <= auto_ae; auto_var += 1)
             {
                 lv_j = auto_var;
-                if ((Object)DataTableLoad0(true, "HD_Object_" + lv_j.ToString()) == lp_object)
+                if ((object)DataTableLoad0(true, "HD_Object_" + lv_j.ToString()) == lp_object)
                 {
                     break;
                 }
             }
             return lv_j;
         }
-        public static string HD_RegObjectTagAndReturn(Object lp_object)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_注册Object标签句柄并返回。为Object自动设置新的标签句柄，重复时会返回已注册的Object标签。这是一个内部函数，一般不需要自动使用
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <returns></returns>
+        private static string HD_RegObjectTagAndReturn(object lp_object)//内部使用
         {
             // Variable Declarations
             int lv_jBNum;
@@ -2339,7 +2601,7 @@ namespace MetalMaxSystem
                 for (; auto_var <= auto_ae; auto_var += 1)
                 {
                     lv_j = auto_var;
-                    if ((Object)DataTableLoad0(true, "HD_Object_" + lv_j.ToString()) == lp_object)
+                    if ((object)DataTableLoad0(true, "HD_Object_" + lv_j.ToString()) == lp_object)
                     {
                         break;
                     }
@@ -2358,7 +2620,13 @@ namespace MetalMaxSystem
             //Console.WriteLine(("Tag：" + lv_tag));
             return lv_tag;
         }
-        public static string HD_ReturnObjectTag(Object lp_object)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_返回Object已注册标签句柄。返回一个Object的已注册标签，如果失败返回null
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <returns></returns>
+        public static string HD_ReturnObjectTag(object lp_object)
         {
             // Variable Declarations
             int lv_jBNum;
@@ -2375,7 +2643,7 @@ namespace MetalMaxSystem
             for (; auto_var <= auto_ae; auto_var += 1)
             {
                 lv_j = auto_var;
-                if ((Object)DataTableLoad0(true, "HD_Object_" + lv_j.ToString()) == lp_object)
+                if ((object)DataTableLoad0(true, "HD_Object_" + lv_j.ToString()) == lp_object)
                 {
                     lv_tag = lv_j.ToString();
                     break;
@@ -2383,7 +2651,15 @@ namespace MetalMaxSystem
             }
             return lv_tag;
         }
-        public static void HD_RegObject(Object lp_object, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_注册Object(高级)。在指定Key存入Object，固有状态、自定义值是Object独一无二的标志（本函数重复注册会刷新），之后可用互动O_"返回Object注册总数"、"返回Object序号"、"返回序号对应Object"、"返回序号对应Object标签"、"返回Object自定义值"。Object组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Object组转为Key。首次注册时固有状态为true（相当于单位组单位活体），如需另外设置多个标记可使用"互动O_设定Object状态/自定义值"
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <param name="lp_key">存储键区，默认值"_Object"</param>
+        /// <param name="lp_inherentStats">固有状态</param>
+        /// <param name="lp_inherentCustomValue">固有自定义值</param>
+        public static void HD_RegObject(object lp_object, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
         {
             // Variable Declarations
             string lv_str;
@@ -2443,7 +2719,13 @@ namespace MetalMaxSystem
             DataTableSave0(true, ("HD_ObjectState" + "" + "_" + lv_tagStr), lp_inherentStats);
             DataTableSave0(true, ("HD_ObjectCV" + "" + "_" + lv_tagStr), lp_inherentCustomValue);
         }
-        public static void HD_RegObject_Simple(Object lp_object, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_注册Object。在指定Key存入Object，固有状态、自定义值是Object独一无二的标志（本函数重复注册不会刷新），之后可用互动O_"返回Object注册总数"、"返回Object序号"、"返回序号对应Object"、"返回Object自定义值"。Object组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Object组转为Key。首次注册时固有状态为true（相当于单位组单位活体），之后只能通过"互动O_注册Object（高级）"改写，如需另外设置多个标记可使用"互动O_设定Object状态/自定义值"
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <param name="lp_key">存储键区，默认值"_Object"</param>
+        public static void HD_RegObject_Simple(object lp_object, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -2505,7 +2787,13 @@ namespace MetalMaxSystem
                 DataTableSave1(true, (("HD_Object" + "State")), lv_tag, "true");
             }
         }
-        public static void HD_DestroyP(Object lp_object, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_注销Object。用"互动O_注册Object"到Key，之后可用本函数彻底摧毁注册信息并将序号重排（包括Object标签有效状态、固有状态及自定义值）。注册注销同时进行会排队等待0.0625s直到没有注销动作，注销并不提升多少内存只是变量内容清空并序号重利用，非特殊要求一般不注销，而是用"互动O_设定Object状态"让Object状态失效（类似单位组的单位活体状态）。Object组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Object组转为Key。本函数无法摧毁用"互动O_设定Object状态/自定义值"创建的状态和自定义值，需手工填入""来排泄（非大量注销则提升内存量极小，可不管）。本函数参数Key若填Object组变量ID时会清空Object组专用状态
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <param name="lp_key">存储键区，默认值"_Object"</param>
+        public static void HD_DestroyObject(object lp_object, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -2514,7 +2802,6 @@ namespace MetalMaxSystem
             int lv_a;
             int lv_b;
             string lv_c;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Object");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
@@ -2524,7 +2811,7 @@ namespace MetalMaxSystem
             if ((lv_tag != null))
             {
                 ThreadWait(lv_str);
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                DataTableSave0(true, "Key_ObjectGroup" + lv_str, 1);
                 for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
                 {
                     if ((DataTableLoad1(true, (lp_key + "ObjectTag"), lv_a).ToString() == lv_tag))
@@ -2537,7 +2824,7 @@ namespace MetalMaxSystem
                         DataTableClear0(true, "HD_ObjectState_" + lv_tag);
                         DataTableClear0(true, "HD_ObjectCV" + lv_str + "_" + lv_tag);
                         DataTableClear0(true, "HD_ObjectState" + lv_str + "_" + lv_tag);
-                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        DataTableSave0(true, (lp_key + "ObjectNum"), lv_num);
                         for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
                         {
                             lv_c = DataTableLoad1(true, (lp_key + "ObjectTag"), lv_b + 1).ToString();
@@ -2547,10 +2834,16 @@ namespace MetalMaxSystem
                         lv_a -= 1;
                     }
                 }
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+                DataTableSave0(true, "Key_ObjectGroup" + lv_str, 0);
             }
         }
-        public static void HD_RemoveObject(Object lp_object, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_移除Object。用"互动O_注册Object"到Key，之后可用本函数仅摧毁Key区注册的信息并将序号重排，用于Object组或多个键区仅移除Object（保留Object标签有效状态、固有值）。注册注销同时进行会排队等待0.0625s直到没有注销动作，注销并不提升多少内存只是变量内容清空并序号重利用，非特殊要求一般不注销，而是用"互动O_设定Object状态"让Object状态失效（类似单位组的单位活体状态）。Object组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Object组转为Key。本函数无法摧毁用"互动O_设定Object状态/自定义值"创建的状态和自定义值，需手工填入""来排泄（非大量注销则提升内存量极小，可不管）。本函数参数Key若填Object组变量ID时会清空Object组专用状态
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <param name="lp_key">存储键区，默认值"_Object"</param>
+        public static void HD_RemoveObject(object lp_object, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -2559,7 +2852,6 @@ namespace MetalMaxSystem
             int lv_a;
             int lv_b;
             string lv_c;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Object");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
@@ -2569,7 +2861,7 @@ namespace MetalMaxSystem
             if ((lv_tag != null))
             {
                 ThreadWait(lv_str);
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                DataTableSave0(true, "Key_ObjectGroup" + lv_str, 1);
                 for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
                 {
                     if ((DataTableLoad1(true, (lp_key + "ObjectTag"), lv_a) == lv_tag))
@@ -2578,7 +2870,7 @@ namespace MetalMaxSystem
                         DataTableClear0(true, "HD_IfObjectTag" + lv_str + "_" + lv_tag);
                         DataTableClear0(true, "HD_ObjectCV" + lv_str + "_" + lv_tag);
                         DataTableClear0(true, "HD_ObjectState" + lv_str + "_" + lv_tag);
-                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        DataTableSave0(true, (lp_key + "ObjectNum"), lv_num);
                         for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
                         {
                             lv_c = DataTableLoad1(true, (lp_key + "ObjectTag"), lv_b + 1).ToString();
@@ -2588,22 +2880,34 @@ namespace MetalMaxSystem
                         lv_a -= 1;
                     }
                 }
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+                DataTableSave0(true, "Key_ObjectGroup" + lv_str, 0);
             }
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动O_返回Object注册总数。必须先使用"互动O_注册Object"才能返回指定Key里的注册总数。Object组使用时，可用"获取变量的内部名称"将Object组转为Key。
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认值"_Object"</param>
+        /// <returns></returns>
         public static int HD_ReturnObjectNumMax(string lp_key)
         {
             // Variable Declarations
             string lv_str;
             int lv_num;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Object");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             // Implementation
             return lv_num;
         }
-        public static int HD_ReturnObjectNum(Object lp_object, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_返回Object序号。使用"互动O_注册Object"后使用本函数可返回Key里的注册序号，Key无元素返回0，Key有元素但对象不在里面则返回-1，Object标签尚未注册则返回-2。Object组使用时，可用"获取变量的内部名称"将Object组转为Key
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <param name="lp_key">存储键区，默认值"_Object"</param>
+        /// <returns></returns>
+        public static int HD_ReturnObjectNum(object lp_object, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -2653,75 +2957,110 @@ namespace MetalMaxSystem
             }
             return lv_torf;
         }
-        public static Object HD_ReturnObjectFromRegNum(int lp_regNum, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_返回序号对应Object。使用"互动O_注册Object"后，在参数填入注册序号可返回Object。Object组使用时，可用"获取变量的内部名称"将Object组转为Key
+        /// </summary>
+        /// <param name="lp_regNum"></param>
+        /// <param name="lp_key">存储键区，默认值"_Object"</param>
+        /// <returns></returns>
+        public static object HD_ReturnObjectFromRegNum(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            Object lv_object;
-            // Automatic Variable Declarations
+            object lv_object;
             // Variable Initialization
             lv_str = (lp_key + "Object");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
-            lv_object = (Object)DataTableLoad0(true, ("HD_Object_" + lv_tag));
+            lv_object = (object)DataTableLoad0(true, ("HD_Object_" + lv_tag));
             // Implementation
             return lv_object;
         }
-        public static Object HD_ReturnObjectFromTag(int lp_tag)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_返回句柄标签对应Object。使用"互动O_注册Object"后，在参数填入句柄标签（整数）可返回Object，标签是Object的句柄。Object组使用时，可用"获取变量的内部名称"将Object组转为Key
+        /// </summary>
+        /// <param name="lp_tag">句柄标签</param>
+        /// <returns></returns>
+        public static object HD_ReturnObjectFromTag(int lp_tag)
         {
             // Variable Declarations
             string lv_tag = "";
-            Object lv_object;
-            // Automatic Variable Declarations
+            object lv_object;
             // Variable Initialization
             lv_tag = lp_tag.ToString();
-            lv_object = (Object)DataTableLoad0(true, ("HD_Object_" + lv_tag));
+            lv_object = (object)DataTableLoad0(true, ("HD_Object_" + lv_tag));
             // Implementation
             return lv_object;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动O_返回序号对应Object标签句柄。使用"互动O_注册Object"后，在参数填入注册序号可返回Object标签（字符串）。Object组使用时，可用"获取变量的内部名称"将Object组转为Key
+        /// </summary>
+        /// <param name="lp_regNum">注册序号</param>
+        /// <param name="lp_key">存储键区，默认值"_Object"</param>
+        /// <returns></returns>
         public static string HD_ReturnObjectTagFromRegNum_String(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Object");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return lv_tag;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动O_返回序号对应Object标签句柄。使用"互动O_注册Object"后，在参数填入注册序号可返回Object标签（整数）。Object组使用时，可用"获取变量的内部名称"将Object组转为Key
+        /// </summary>
+        /// <param name="lp_regNum">注册序号</param>
+        /// <param name="lp_key">存储键区，默认值"_Object"</param>
+        /// <returns></returns>
         public static int HD_ReturnObjectTagFromRegNum_Int(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Object");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return Convert.ToInt32(lv_tag);
         }
-        public static void HD_SetPState(Object lp_object, string lp_key, string lp_stats)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_设置Object状态。必须先"注册"获得功能库内部句柄，再使用本函数给Object设定一个状态值，之后可用"互动O_返回Object状态"。类型参数用以记录多个不同状态，仅当"类型"参数填Object组ID转的Object串时，状态值"true"和"false"是Object的Object组专用状态值，用于内部函数筛选Object状态（相当于单位组单位索引是否有效），其他类型不会干扰系统内部，可随意填写。虽然注销时反向清空注册信息，但用"互动O_设定Object状态/自定义值"创建的值需要手工填入""来排泄（非大量注销则提升内存量极小，可不管）。注：固有状态值是注册函数赋予的系统内部变量（相当于单位组单位是否活体），只能通过"互动O_注册Object（高级）"函数或将本函数参数"类型"设为空时改写
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <param name="lp_key">存储类型，默认值"State"</param>
+        /// <param name="lp_stats">状态</param>
+        public static void HD_SetObjectState(object lp_object, string lp_key, string lp_stats)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Object");
             lv_tag = HD_RegObjectTagAndReturn(lp_object);
             // Implementation
             DataTableSave0(true, ("HD_ObjectState" + lv_str + "_" + lv_tag), lp_stats);
         }
-        public static string HD_ReturnObjectState(Object lp_object, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_返回Object状态。使用"互动O_设定Object状态"后可使用本函数，将本函数参数"类型"设为空时返回固有值。类型参数用以记录多个不同状态，仅当"类型"参数为Object组ID转的字符串时，返回的状态值"true"和"false"是Object的Object组专用状态值，用于内部函数筛选Object状态（相当于单位组单位索引是否有效）
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <param name="lp_key">存储类型，默认值"State"</param>
+        /// <returns></returns>
+        public static string HD_ReturnObjectState(object lp_object, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_stats;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Object");
             lv_tag = HD_ReturnObjectTag(lp_object);
@@ -2729,25 +3068,37 @@ namespace MetalMaxSystem
             // Implementation
             return lv_stats;
         }
-        public static void HD_SetPCV(Object lp_object, string lp_key, string lp_customValue)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_设置Object自定义值。必须先"注册"获得功能库内部句柄，再使用本函数设定Object的自定义值，之后可使用"互动O_返回Object自定义值"，类型参数用以记录多个不同自定义值。注：固有自定义值是注册函数赋予的系统内部变量，只能通过"互动O_注册Object（高级）"函数或将本函数参数"类型"设为空时改写
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <param name="lp_key">存储类型，默认值"A"</param>
+        /// <param name="lp_customValue">自定义值</param>
+        public static void HD_SetObjectCV(object lp_object, string lp_key, string lp_customValue)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Object");
             lv_tag = HD_RegObjectTagAndReturn(lp_object);
             // Implementation
             DataTableSave0(true, ("HD_ObjectCV" + lv_str + "_" + lv_tag), lp_customValue);
         }
-        public static string HD_ReturnObjectCV(Object lp_object, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_返回Object自定义值。使用"互动O_设定Object自定义值"后可使用本函数，将本函数参数"类型"设为空时返回固有值，该参数用以记录多个不同自定义值
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <param name="lp_key">存储类型，默认值"A"</param>
+        /// <returns></returns>
+        public static string HD_ReturnObjectCV(object lp_object, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_customValue;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Object");
             lv_tag = HD_ReturnObjectTag(lp_object);
@@ -2755,71 +3106,102 @@ namespace MetalMaxSystem
             // Implementation
             return lv_customValue;
         }
-        public static string HD_ReturnObjectState_Only(Object lp_object)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_返回Object固有状态。必须先使用"互动O_注册Object"才能返回到该值，固有状态是独一无二的标记（相当于单位组单位是否活体）
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <returns></returns>
+        public static string HD_ReturnObjectState_Only(object lp_object)
         {
             // Variable Declarations
             string lv_tag = "";
             string lv_stats;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = HD_ReturnObjectTag(lp_object);
             lv_stats = DataTableLoad0(true, ("HD_ObjectState" + "" + "_" + lv_tag)).ToString();
             // Implementation
             return lv_stats;
         }
-        public static string HD_ReturnObjectCV_Only(Object lp_object)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_返回Object固有自定义值。必须先使用"互动O_注册Object"才能返回到该值，固有值是独一无二的标记
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <returns></returns>
+        public static string HD_ReturnObjectCV_Only(object lp_object)
         {
             // Variable Declarations
             string lv_tag = "";
             string lv_customValue;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = HD_ReturnObjectTag(lp_object);
             lv_customValue = DataTableLoad0(true, ("HD_ObjectCV" + "" + "_" + lv_tag)).ToString();
             // Implementation
             return lv_customValue;
         }
-        public static void HD_SetPDouble(Object lp_object, double lp_realNumTag)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_设置Object的实数标记。必须先"注册"获得功能库内部句柄，再使用本函数让Object携带一个实数值，之后可使用"互动O_返回Object的实数标记"。Object组使用时，可用"获取变量的内部名称"将Object组转为Key
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <param name="lp_realNumTag">实数标记</param>
+        public static void HD_SetObjectDouble(object lp_object, double lp_realNumTag)
         {
             // Variable Declarations
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = HD_RegObjectTagAndReturn(lp_object);
             // Implementation
             DataTableSave0(true, ("HD_CDDouble_T_" + lv_tag), lp_realNumTag);
         }
-        public static double HD_ReturnObjectDouble(Object lp_object)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_返回Object的实数标记。使用"互动O_设定Object的实数标记"后可使用本函数。Object组使用时，可用"获取变量的内部名称"将Object组转为Key
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <returns></returns>
+        public static double HD_ReturnObjectDouble(object lp_object)
         {
             // Variable Declarations
             string lv_tag = "";
             double lv_f;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = HD_ReturnObjectTag(lp_object);
             lv_f = (double)DataTableLoad0(true, ("HD_CDDouble_T_" + lv_tag));
             // Implementation
             return lv_f;
         }
-        public static bool HD_ReturnIfObjectTag(Object lp_object)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_返回Object标签句柄有效状态。将Object视作独一无二的个体，标签是它本身，有效状态则类似"单位是否有效"，当使用"互动O_注册Object"或"互动OG_添加Object到Object组"后激活Object有效状态（值为"true"），除非使用"互动O_注册Object（高级）"改写，否则直到注销才会摧毁
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <returns></returns>
+        public static bool HD_ReturnIfObjectTag(object lp_object)
         {
             // Variable Declarations
             string lv_tag = "";
             bool lv_torf;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = HD_ReturnObjectTag(lp_object);
             lv_torf = (bool)DataTableLoad0(true, ("HD_IfObjectTag" + "" + "_" + lv_tag));
             // Implementation
             return lv_torf;
         }
-        public static bool HD_ReturnIfObjectTagKey(Object lp_object, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动O_返回Object注册状态。使用"互动O_注册Object"或"互动OG_添加Object到Object组"后可使用本函数获取注册Object在Key中的注册状态，该状态只能注销或从Object组中移除时清空。Object组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Object组转为Key
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <param name="lp_key">存储键区，默认值"_Object"</param>
+        /// <returns></returns>
+        public static bool HD_ReturnIfObjectTagKey(object lp_object, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             bool lv_torf;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Object");
             lv_tag = HD_ReturnObjectTag(lp_object);
@@ -2827,6 +3209,13 @@ namespace MetalMaxSystem
             // Implementation
             return lv_torf;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_根据自定义值类型将Object组排序。根据Object携带的自定义值类型，对指定的Object组元素进行冒泡排序。Object组变量字符可通过"转换变量内部名称"获得
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认填Object组名称</param>
+        /// <param name="lp_cVStr">自定义值类型</param>
+        /// <param name="lp_big">是否大值靠前</param>
         public static void HD_ObjectGSortCV(string lp_key, string lp_cVStr, bool lp_big)
         {
             // Automatic Variable Declarations
@@ -2856,7 +3245,7 @@ namespace MetalMaxSystem
             // Variable Initialization
             lv_str = (lp_key + "Object");
             ThreadWait(lv_str);
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            DataTableSave0(true, "Key_ObjectGroup" + lv_str, 1);
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
@@ -2963,16 +3352,22 @@ namespace MetalMaxSystem
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
                 lv_b = (int)DataTableLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
-                                                                                    //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
                     //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
                     DataTableSave1(true, (lp_key + "ObjectTag"), lv_a, lv_tag); //lv_tag放入新序号
-                                                                                //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                    //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
                 }
             }
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            DataTableSave0(true, "Key_ObjectGroup" + lv_str, 0);
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_Object组排序。对指定的Object组元素进行冒泡排序（根据元素句柄）。Object组变量字符可通过"转换变量内部名称"获得
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认填Object组名称</param>
+        /// <param name="lp_big">是否大值靠前</param>
         public static void HD_ObjectGSort(string lp_key, bool lp_big)
         {
             // Automatic Variable Declarations
@@ -3001,7 +3396,7 @@ namespace MetalMaxSystem
             // Variable Initialization
             lv_str = (lp_key + "Object");
             ThreadWait(lv_str);
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            DataTableSave0(true, "Key_ObjectGroup" + lv_str, 1);
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
@@ -3114,28 +3509,71 @@ namespace MetalMaxSystem
                                                                                 //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
                 }
             }
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            DataTableSave0(true, "Key_ObjectGroup" + lv_str, 0);
         }
-        public static Object HD_ReturnObjectFromPGFunc(int lp_regNum, string lp_gs)
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_设定Object的Object组专用状态。给Object组的Object设定一个状态值（字符串），之后可用"互动O_返回Object、互动OG_返回Object组的Object状态"。状态值"true"和"false"是Object的Object组专用状态值，用于内部函数筛选字符状态（相当于单位组单位索引是否有效），而本函数可以重设干预，影响函数"互动OG_返回Object组元素数量（仅检索XX状态）"。与"互动O_设定Object状态"功能相同，只是状态参数在Object组中被固定为"Object组变量的内部ID"。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <param name="lp_objectGroup"></param>
+        /// <param name="lp_groupState"></param>
+        public static void HD_SetObjectGState(object lp_object, string lp_objectGroup, string lp_groupState)
+        {
+            HD_SetObjectState(lp_object, lp_objectGroup, lp_groupState);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_返回Object的Object组专用状态。使用"互动O_设定Object、互动OG_设定Object组的Object状态"后可使用本函数。与"互动O_返回Object状态"功能相同，只是状态参数在Object组中被固定为"Object组变量的内部ID"。状态值"true"和"false"是Object的Object组专用状态值，用于内部函数筛选字符状态（相当于单位组单位索引是否有效）。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <param name="lp_objectGroup"></param>
+        public static void HD_ReturnObjectGState(object lp_object, string lp_objectGroup)
+        {
+            HD_ReturnObjectState(lp_object, lp_objectGroup);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_返回Object组元素序号对应元素。返回Object组元素序号指定Object。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_regNum">注册序号</param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static object HD_ReturnObjectFromObjectGFunc(int lp_regNum, string lp_gs)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            Object lv_object;
-            // Automatic Variable Declarations
+            object lv_object;
             // Variable Initialization
             lv_str = (lp_gs + "Object");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
-            lv_object = (Object)DataTableLoad0(true, ("HD_Object_" + lv_tag));
+            lv_object = (object)DataTableLoad0(true, ("HD_Object_" + lv_tag));
             // Implementation
             return lv_object;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_返回Object组元素总数。返回指定Object组的元素数量。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static int HD_ReturnObjectGNumMax(string lp_gs)
+        {
+            return (int)DataTableLoad0(true, lp_gs + "ObjectNum");
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_返回Object组元素总数（仅检测Object组专用状态="true"）。返回指定Object组的元素数量。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
         public static int HD_ReturnObjectGNumMax_StateTrueFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_a;
             string lv_b;
-            Object lv_c;
+            object lv_c;
             int lv_i = 0;
             // Automatic Variable Declarations
             int auto_ae;
@@ -3156,12 +3594,18 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_返回Object组元素总数（仅检测Object组专用状态="false"）。返回指定Object组的元素数量。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
         public static int HD_ReturnObjectGNumMax_StateFalseFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_a;
             string lv_b;
-            Object lv_c;
+            object lv_c;
             int lv_i = 0;
             // Automatic Variable Declarations
             int auto_ae;
@@ -3182,12 +3626,18 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_返回Object组元素总数（仅检测Object组无效专用状态："false"或""）。返回指定Object组的元素数量（false、""、null）。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
         public static int HD_ReturnObjectGNumMax_StateUselessFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_a;
             string lv_b;
-            Object lv_c;
+            object lv_c;
             int lv_i = 0;
             // Automatic Variable Declarations
             int auto_ae;
@@ -3208,12 +3658,19 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_返回Object组元素总数（仅检测Object组指定专用状态）。返回指定Object组的元素数量。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <param name="lp_State">Object组专用状态</param>
+        /// <returns></returns>
         public static int HD_ReturnObjectGNumMax_StateFunc_Specify(string lp_gs, string lp_State)
         {
             // Variable Declarations
             int lv_a;
             string lv_b;
-            Object lv_c;
+            object lv_c;
             int lv_i = 0;
             // Automatic Variable Declarations
             int auto_ae;
@@ -3234,13 +3691,121 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
-        public static Object HD_ReturnRandomObjectFromPGFunc(string lp_gs)
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_添加Object到Object组。相同Object被认为是同一个，非高级功能不提供专用状态检查，如果Object没有设置过Object组专用状态，那么首次添加到Object组不会赋予"true"（之后可通过"互动O_设定Object状态"、"互动OG_设定Object组的Object状态"修改）。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        public static void HD_AddObjectToGroup_Simple(object lp_object, string lp_gs)
+        {
+            HD_RegObject_Simple(lp_object, lp_gs);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_添加Object到Object组（高级）。相同Object被认为是同一个，高级功能提供专用状态检查，如果Object没有设置过Object组专用状态，那么首次添加到Object组会赋予"true"（之后可通过"互动O_设定Object状态"、"互动OG_设定Object组的Object状态"修改）。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        public static void HD_AddObjectToGroup(object lp_object, string lp_gs)
+        {
+            HD_RegObject_Simple(lp_object, lp_gs);
+            if (DataTableKeyExists(true, ("HD_ObjectState" + lp_gs + "Object_" + HD_RegObjectTagAndReturn(lp_object))) == false)
+            {
+                DataTableSave0(true, ("HD_ObjectState" + lp_gs + "Object_" + HD_RegObjectTagAndReturn(lp_object)), "true");
+                //Console.WriteLine(lp_gs + "=>" + HD_RegObjectTagAndReturn(lp_object));
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_移除Object组中的元素。使用"互动OG_添加Object到Object组"后可使用本函数进行移除元素。移除使用了"互动O_移除Object"，同一个存储区（Object组ID）序号重排，移除时该存储区如有其他操作会排队等待。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_object"></param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        public static void HD_ClearObjectFromGroup(object lp_object, string lp_gs)
+        {
+            HD_RemoveObject(lp_object, lp_gs);
+        }
+
+        //互动OG_为Object组中的每个序号
+        //GE（星际2的Galaxy Editor）的宏让编辑器保存时自动生成脚本并整合进脚本进行格式调整，C#仅参考需自行编写
+        // #AUTOVAR(vs, string) = "#PARAM(group)";//"#PARAM(group)"是与字段、变量名一致的元素组名称，宏去声明string类型名为“Auto随机编号_vs”的自动变量，然后=右侧字符
+        // #AUTOVAR(ae) = HD_ReturnObjectNumMax(#AUTOVAR(vs));//宏去声明默认int类型名为“Auto随机编号_ae”的自动变量，然后=右侧字符
+        // #INITAUTOVAR(ai,increment)//宏去声明int类型名为“Auto随机编号_ai”的自动变量，用于下面for循环增量（increment是传入参数）
+        // #PARAM(var) = #PARAM(s);//#PARAM(var)是传进来的参数，用作“当前被挑选到的元素”（任意变量-整数 lp_var）， #PARAM(s)是传进来的参数用作"开始"（int lp_s）
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #PARAM(var) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #PARAM(var) >= #AUTOVAR(ae)) ) ; #PARAM(var) += #AUTOVAR(ai) ) {
+        //     #SUBFUNCS(actions)//代表用户GUI填写的所有动作
+        // }
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_为Object组中的每个序号。每次挑选的元素序号会自行在动作组（委托函数）中使用，委托函数特征：void SubActionTest(int lp_var)，参数lp_var即每次遍历到的元素序号，请自行组织它在委托函数内如何使用，SubActionTest可直接作为本函数最后一个参数填入，填入多个动作范例：SubActionEventFuncref Actions += SubActionTest，然后Actions作为参数填入。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <param name="lp_start">开始</param>
+        /// <param name="lp_increment">增量</param>
+        /// <param name="lp_funcref">委托类型变量或函数引用</param>
+        public static void HD_ForEachObjectNumFromGroup(string lp_gs, int lp_start, int lp_increment, SubActionEventFuncref lp_funcref)
+        {
+            int lv_ae = HD_ReturnObjectNumMax(lp_gs);
+            int lv_var = lp_start;
+            int lv_ai = lp_increment;
+            for (; (lv_ai >= 0 && lv_var <= lv_ae) || (lv_ai < 0 && lv_var >= lv_ae); lv_var += lv_ai)
+            {
+                lp_funcref(lv_var);//用户填写的所有动作
+            }
+        }
+
+        //互动OG_为Object组中的每个元素
+        // #AUTOVAR(vs, string) = "#PARAM(group)";
+        // #AUTOVAR(ae) = HD_ReturnObjectNumMax(#AUTOVAR(vs));
+        // #AUTOVAR(va)= #PARAM(s);
+        // #INITAUTOVAR(ai,increment)
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     DataTableSave(false, "ObjectGFor"+ #AUTOVAR(vs) + IntToString(#AUTOVAR(va)), HD_ReturnObjectFromRegNum(#AUTOVAR(va),#AUTOVAR(vs)));
+        // }
+        // #AUTOVAR(va)= #PARAM(s);
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     #PARAM(var) = DataTableLoad(false, "ObjectGFor"+ #AUTOVAR(vs) + IntToString(#AUTOVAR(va)));
+        //     #SUBFUNCS(actions)
+        // }
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_为Object组中的每个元素。每次挑选的元素会自行在动作组（委托函数）中使用，委托函数特征：void SubActionTest(int lp_var)，参数lp_var即每次遍历到的元素，请自行组织它在委托函数内如何使用，SubActionTest可直接作为本函数最后一个参数填入，填入多个动作范例：SubActionEventFuncref Actions += SubActionTest，然后Actions作为参数填入。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <param name="lp_start">开始</param>
+        /// <param name="lp_increment">增量</param>
+        /// <param name="lp_funcref">委托类型变量或函数引用</param>
+        public static void HD_ForEachObjectFromGroup(string lp_gs, int lp_start, int lp_increment, SubActionEventFuncref lp_funcref)
+        {
+            string lv_vs = lp_gs;
+            int lv_ae = HD_ReturnObjectNumMax(lv_vs);
+            int lv_va = lp_start;
+            int lv_ai = lp_increment;
+            object lv_object;
+            for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
+            {
+                DataTableSave0(false, "ObjectGFor" + lv_vs + lv_va.ToString(), HD_ReturnObjectFromRegNum(lv_va, lv_vs));
+            }
+            lv_va = lp_start;
+            for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
+            {
+                lv_object = DataTableLoad0(false, "ObjectGFor" + lv_vs + lv_va.ToString());
+                lp_funcref(lv_object);//用户填写的所有动作
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_返回Object组中随机元素。返回指定Object组中的随机Object。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static object HD_ReturnRandomObjectFromObjectGFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_num;
             int lv_a;
-            Object lv_c = null;
-            // Automatic Variable Declarations
+            object lv_c = null;
             // Variable Initialization
             lv_num = HD_ReturnObjectNumMax(lp_gs);
             // Implementation
@@ -3251,6 +3816,76 @@ namespace MetalMaxSystem
             }
             return lv_c;
         }
+
+        //互动OG_添加Object组到Object组
+        // #AUTOVAR(vs, string) = "#PARAM(groupA)";
+        // #AUTOVAR(vsb, string) = "#PARAM(groupB)";
+        // #AUTOVAR(ae) = HD_ReturnObjectNumMax(#AUTOVAR(vs));
+        // #AUTOVAR(va)= 1;
+        // #AUTOVAR(ai)= 1;
+        // #AUTOVAR(var);
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     #AUTOVAR(var) = HD_ReturnObjectFromRegNum(#AUTOVAR(va), #AUTOVAR(vs));
+        //     HD_AddObjectToGroup(#AUTOVAR(var), #AUTOVAR(vsb));
+        // }
+
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_添加Object组到Object组。添加一个Object组A的元素到另一个Object组B，相同Object被认为是同一个。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_groupA"></param>
+        /// <param name="lp_groupB"></param>
+        public static void HD_AddObjectGToObjectG(string lp_groupA, string lp_groupB)
+        {
+            string lv_vsa = lp_groupA;
+            string lv_vsb = lp_groupB;
+            int lv_ae = HD_ReturnObjectNumMax(lv_vsa);
+            int lv_va = 1;
+            int lv_ai = 1;
+            object lv_var;
+            for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
+            {
+                lv_var = HD_ReturnObjectFromRegNum(lv_va, lv_vsa);
+                HD_AddObjectToGroup(lv_var, lv_vsb);
+            }
+        }
+
+        //互动OG_从Object组移除Object组
+        // #AUTOVAR(vs, string) = "#PARAM(groupA)";
+        // #AUTOVAR(vsb, string) = "#PARAM(groupB)";
+        // #AUTOVAR(ae) = HD_ReturnObjectNumMax(#AUTOVAR(vs));
+        // #AUTOVAR(va)= 1;
+        // #AUTOVAR(ai)= 1;
+        // #AUTOVAR(var);
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     #AUTOVAR(var) = HD_ReturnObjectFromRegNum(#AUTOVAR(va), #AUTOVAR(vs));
+        //     HD_RemoveObject(#AUTOVAR(var), #AUTOVAR(vsb));
+        // }
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_从Object组移除Object组。将Object组A的元素从Object组B中移除，相同Object被认为是同一个。移除使用了"互动O_移除Object"，同一个存储区（Object组ID）序号重排，移除时该存储区如有其他操作会排队等待。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_groupA"></param>
+        /// <param name="lp_groupB"></param>
+        public static void HD_ClearObjectGFromObjectG(string lp_groupA, string lp_groupB)
+        {
+            string lv_vsa = lp_groupA;
+            string lv_vsb = lp_groupB;
+            int lv_ae = HD_ReturnObjectNumMax(lv_vsa);
+            int lv_va = 1;
+            int lv_ai = 1;
+            object lv_var;
+            for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
+            {
+                lv_var = HD_ReturnObjectFromRegNum(lv_va, lv_vsa);
+                HD_RemoveObject(lv_var, lv_vsb);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动OG_移除Object组全部元素。将Object组（Key区）存储的元素全部移除，相同Object被认为是同一个。移除时同一个存储区（Object组ID）序号不进行重排，但该存储区如有其他操作会排队等待。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认填Object组名称</param>
         public static void HD_RemoveObjectGAll(string lp_key)
         {
             // Variable Declarations
@@ -3258,13 +3893,12 @@ namespace MetalMaxSystem
             int lv_num;
             string lv_tag = "";
             int lv_a;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Object");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             // Implementation
             ThreadWait(lv_str);
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            DataTableSave0(true, "Key_ObjectGroup" + lv_str, 1);
             for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
             {
                 lv_tag = DataTableLoad1(true, (lp_key + "ObjectTag"), lv_a).ToString();
@@ -3272,9 +3906,9 @@ namespace MetalMaxSystem
                 DataTableClear0(true, "HD_IfObjectTag" + lv_str + "_" + lv_tag);
                 DataTableClear0(true, "HD_ObjectCV" + lv_str + "_" + lv_tag);
                 DataTableClear0(true, "HD_ObjectState" + lv_str + "_" + lv_tag);
-                DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                DataTableSave0(true, (lp_key + "ObjectNum"), lv_num);
             }
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            DataTableSave0(true, "Key_ObjectGroup" + lv_str, 0);
         }
 
         //--------------------------------------------------------------------------------------------------
@@ -3283,12 +3917,20 @@ namespace MetalMaxSystem
 
         #endregion
 
-        #region 点
+        #region 二维向量
+
+        //提示：尽可能使用对口类型，以防值类型与引用类型发生转换时拆装箱降低性能
 
         //--------------------------------------------------------------------------------------------------
-        // 点组Start
+        // 二维向量组Start
         //--------------------------------------------------------------------------------------------------
-        public static int HD_RegPTagAndReturn_Int(Vector lp_vector)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_注册Vector标签句柄并返回。为Vector自动设置新的标签句柄，重复时会返回已注册的Vector标签。这是一个内部函数，一般不需要自动使用
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <returns></returns>
+        private static int HD_RegVectorTagAndReturn_Int(Vector lp_vector)//内部使用
         {
             // Variable Declarations
             int lv_jBNum;
@@ -3329,7 +3971,13 @@ namespace MetalMaxSystem
             }
             return lv_j;
         }
-        public static int HD_ReturnPTag_Int(Vector lp_vector)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_返回Vector已注册标签句柄。返回一个Vector的已注册标签，如果失败返回null
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <returns></returns>
+        public static int HD_ReturnVectorTag_Int(Vector lp_vector)
         {
             // Variable Declarations
             int lv_jBNum;
@@ -3352,7 +4000,13 @@ namespace MetalMaxSystem
             }
             return lv_j;
         }
-        public static string HD_RegPTagAndReturn(Vector lp_vector)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_注册Vector标签句柄并返回。为Vector自动设置新的标签句柄，重复时会返回已注册的Vector标签。这是一个内部函数，一般不需要自动使用
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <returns></returns>
+        private static string HD_RegVectorTagAndReturn(Vector lp_vector)//内部使用
         {
             // Variable Declarations
             int lv_jBNum;
@@ -3397,7 +4051,13 @@ namespace MetalMaxSystem
             //Console.WriteLine(("Tag：" + lv_tag));
             return lv_tag;
         }
-        public static string HD_ReturnPTag(Vector lp_vector)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_返回Vector已注册标签句柄。返回一个Vector的已注册标签，如果失败返回null
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <returns></returns>
+        public static string HD_ReturnVectorTag(Vector lp_vector)
         {
             // Variable Declarations
             int lv_jBNum;
@@ -3422,7 +4082,15 @@ namespace MetalMaxSystem
             }
             return lv_tag;
         }
-        public static void HD_RegP(Vector lp_vector, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_注册Vector(高级)。在指定Key存入Vector，固有状态、自定义值是Vector独一无二的标志（本函数重复注册会刷新），之后可用互动V_"返回Vector注册总数"、"返回Vector序号"、"返回序号对应Vector"、"返回序号对应Vector标签"、"返回Vector自定义值"。Vector组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Vector组转为Key。首次注册时固有状态为true（相当于单位组单位活体），如需另外设置多个标记可使用"互动V_设定Vector状态/自定义值"
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <param name="lp_key">存储键区，默认值"_Vector"</param>
+        /// <param name="lp_inherentStats">固有状态</param>
+        /// <param name="lp_inherentCustomValue">固有自定义值</param>
+        public static void HD_RegVector(Vector lp_vector, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
         {
             // Variable Declarations
             string lv_str;
@@ -3436,21 +4104,21 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_str = (lp_key + "P");
+            lv_str = (lp_key + "Vector");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             lv_jBNum = (int)DataTableLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
             // Implementation
             ThreadWait(lv_str);
-            lv_tagStr = HD_RegPTagAndReturn(lp_vector);
+            lv_tagStr = HD_RegVectorTagAndReturn(lp_vector);
             lv_tag = Convert.ToInt32(lv_tagStr);
             if ((lv_num == 0))
             {
                 lv_i = (lv_num + 1);
                 DataTableSave0(true, (lv_str + "Num"), lv_i);
                 DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
-                DataTableSave0(true, (("HD_IfPTag" + "") + "_" + lv_tagStr), true);
-                DataTableSave1(true, ("HD_IfPTag" + lv_str), lv_tag, true);
+                DataTableSave0(true, (("HD_IfVectorTag" + "") + "_" + lv_tagStr), true);
+                DataTableSave1(true, ("HD_IfVectorTag" + lv_str), lv_tag, true);
             }
             else
             {
@@ -3472,8 +4140,8 @@ namespace MetalMaxSystem
                                 lv_i = (lv_num + 1);
                                 DataTableSave0(true, (lv_str + "Num"), lv_i);
                                 DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
-                                DataTableSave0(true, (("HD_IfPTag" + "") + "_" + lv_tagStr), true);
-                                DataTableSave1(true, ("HD_IfPTag" + lv_str), lv_tag, true);
+                                DataTableSave0(true, (("HD_IfVectorTag" + "") + "_" + lv_tagStr), true);
+                                DataTableSave1(true, ("HD_IfVectorTag" + lv_str), lv_tag, true);
                             }
                         }
                     }
@@ -3482,7 +4150,13 @@ namespace MetalMaxSystem
             DataTableSave0(true, ("HD_VectorState" + "" + "_" + lv_tagStr), lp_inherentStats);
             DataTableSave0(true, ("HD_VectorCV" + "" + "_" + lv_tagStr), lp_inherentCustomValue);
         }
-        public static void HD_RegP_Simple(Vector lp_vector, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_注册Vector。在指定Key存入Vector，固有状态、自定义值是Vector独一无二的标志（本函数重复注册不会刷新），之后可用互动V_"返回Vector注册总数"、"返回Vector序号"、"返回序号对应Vector"、"返回Vector自定义值"。Vector组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Vector组转为Key。首次注册时固有状态为true（相当于单位组单位活体），之后只能通过"互动V_注册Vector（高级）"改写，如需另外设置多个标记可使用"互动V_设定Vector状态/自定义值"
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <param name="lp_key">存储键区，默认值"_Vector"</param>
+        public static void HD_RegVector_Simple(Vector lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -3496,21 +4170,21 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_str = (lp_key + "P");
+            lv_str = (lp_key + "Vector");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             lv_jBNum = (int)DataTableLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
             // Implementation
             ThreadWait(lv_str);
-            lv_tagStr = HD_RegPTagAndReturn(lp_vector);
+            lv_tagStr = HD_RegVectorTagAndReturn(lp_vector);
             lv_tag = Convert.ToInt32(lv_tagStr);
             if ((lv_num == 0))
             {
                 lv_i = (lv_num + 1);
                 DataTableSave0(true, (lv_str + "Num"), lv_i);
                 DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
-                DataTableSave0(true, (("HD_IfPTag" + "") + "_" + lv_tagStr), true);
-                DataTableSave1(true, ("HD_IfPTag" + lv_str), lv_tag, true);
+                DataTableSave0(true, (("HD_IfVectorTag" + "") + "_" + lv_tagStr), true);
+                DataTableSave1(true, ("HD_IfVectorTag" + lv_str), lv_tag, true);
             }
             else
             {
@@ -3532,8 +4206,8 @@ namespace MetalMaxSystem
                                 lv_i = (lv_num + 1);
                                 DataTableSave0(true, (lv_str + "Num"), lv_i);
                                 DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
-                                DataTableSave0(true, (("HD_IfPTag" + "") + "_" + lv_tagStr), true);
-                                DataTableSave1(true, ("HD_IfPTag" + lv_str), lv_tag, true);
+                                DataTableSave0(true, (("HD_IfVectorTag" + "") + "_" + lv_tagStr), true);
+                                DataTableSave1(true, ("HD_IfVectorTag" + lv_str), lv_tag, true);
                             }
                         }
                     }
@@ -3544,7 +4218,13 @@ namespace MetalMaxSystem
                 DataTableSave1(true, (("HD_Vector" + "State")), lv_tag, "true");
             }
         }
-        public static void HD_DestroyP(Vector lp_vector, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_注销Vector。用"互动V_注册Vector"到Key，之后可用本函数彻底摧毁注册信息并将序号重排（包括Vector标签有效状态、固有状态及自定义值）。注册注销同时进行会排队等待0.0625s直到没有注销动作，注销并不提升多少内存只是变量内容清空并序号重利用，非特殊要求一般不注销，而是用"互动V_设定Vector状态"让Vector状态失效（类似单位组的单位活体状态）。Vector组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Vector组转为Key。本函数无法摧毁用"互动V_设定Vector状态/自定义值"创建的状态和自定义值，需手工填入""来排泄（非大量注销则提升内存量极小，可不管）。本函数参数Key若填Vector组变量ID时会清空Vector组专用状态
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <param name="lp_key">存储键区，默认值"_Vector"</param>
+        public static void HD_DestroyVector(Vector lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -3553,43 +4233,48 @@ namespace MetalMaxSystem
             int lv_a;
             int lv_b;
             string lv_c;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "P");
+            lv_str = (lp_key + "Vector");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
-            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_tag = HD_ReturnVectorTag(lp_vector);
             lv_c = "";
             // Implementation
             if ((lv_tag != null))
             {
                 ThreadWait(lv_str);
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                DataTableSave0(true, "Key_VectorGroup" + lv_str, 1);
                 for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
                 {
-                    if ((DataTableLoad1(true, (lp_key + "PTag"), lv_a).ToString() == lv_tag))
+                    if ((DataTableLoad1(true, (lp_key + "VectorTag"), lv_a).ToString() == lv_tag))
                     {
                         lv_num -= 1;
-                        DataTableClear0(true, "HD_IfPTag_" + lv_tag);
-                        DataTableClear0(true, "HD_IfPTag" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_IfVectorTag_" + lv_tag);
+                        DataTableClear0(true, "HD_IfVectorTag" + lv_str + "_" + lv_tag);
                         DataTableClear0(true, "HD_Vector_" + lv_tag);
                         DataTableClear0(true, "HD_VectorCV_" + lv_tag);
                         DataTableClear0(true, "HD_VectorState_" + lv_tag);
                         DataTableClear0(true, "HD_VectorCV" + lv_str + "_" + lv_tag);
                         DataTableClear0(true, "HD_VectorState" + lv_str + "_" + lv_tag);
-                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        DataTableSave0(true, (lp_key + "VectorNum"), lv_num);
                         for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
                         {
-                            lv_c = DataTableLoad1(true, (lp_key + "PTag"), lv_b + 1).ToString();
-                            DataTableSave1(true, (lp_key + "PTag"), lv_b, lv_c);
+                            lv_c = DataTableLoad1(true, (lp_key + "VectorTag"), lv_b + 1).ToString();
+                            DataTableSave1(true, (lp_key + "VectorTag"), lv_b, lv_c);
                         }
                         //注销后触发序号重列，这里-1可以让挑选回滚，以再次检查重排后的当前挑选序号
                         lv_a -= 1;
                     }
                 }
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+                DataTableSave0(true, "Key_VectorGroup" + lv_str, 0);
             }
         }
-        public static void HD_RemoveP(Vector lp_vector, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_移除Vector。用"互动V_注册Vector"到Key，之后可用本函数仅摧毁Key区注册的信息并将序号重排，用于Vector组或多个键区仅移除Vector（保留Vector标签有效状态、固有值）。注册注销同时进行会排队等待0.0625s直到没有注销动作，注销并不提升多少内存只是变量内容清空并序号重利用，非特殊要求一般不注销，而是用"互动V_设定Vector状态"让Vector状态失效（类似单位组的单位活体状态）。Vector组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Vector组转为Key。本函数无法摧毁用"互动V_设定Vector状态/自定义值"创建的状态和自定义值，需手工填入""来排泄（非大量注销则提升内存量极小，可不管）。本函数参数Key若填Vector组变量ID时会清空Vector组专用状态
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <param name="lp_key">存储键区，默认值"_Vector"</param>
+        public static void HD_RemoveVector(Vector lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -3598,51 +4283,62 @@ namespace MetalMaxSystem
             int lv_a;
             int lv_b;
             string lv_c;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "P");
+            lv_str = (lp_key + "Vector");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
-            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_tag = HD_ReturnVectorTag(lp_vector);
             lv_c = "";
             // Implementation
             if ((lv_tag != null))
             {
                 ThreadWait(lv_str);
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                DataTableSave0(true, "Key_VectorGroup" + lv_str, 1);
                 for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
                 {
-                    if ((DataTableLoad1(true, (lp_key + "PTag"), lv_a) == lv_tag))
+                    if ((DataTableLoad1(true, (lp_key + "VectorTag"), lv_a) == lv_tag))
                     {
                         lv_num -= 1;
-                        DataTableClear0(true, "HD_IfPTag" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_IfVectorTag" + lv_str + "_" + lv_tag);
                         DataTableClear0(true, "HD_VectorCV" + lv_str + "_" + lv_tag);
                         DataTableClear0(true, "HD_VectorState" + lv_str + "_" + lv_tag);
-                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        DataTableSave0(true, (lp_key + "VectorNum"), lv_num);
                         for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
                         {
-                            lv_c = DataTableLoad1(true, (lp_key + "PTag"), lv_b + 1).ToString();
-                            DataTableSave1(true, (lp_key + "PTag"), lv_b, lv_c);
+                            lv_c = DataTableLoad1(true, (lp_key + "VectorTag"), lv_b + 1).ToString();
+                            DataTableSave1(true, (lp_key + "VectorTag"), lv_b, lv_c);
                         }
                         //注销后触发序号重列，这里-1可以让挑选回滚，以再次检查重排后的当前挑选序号
                         lv_a -= 1;
                     }
                 }
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+                DataTableSave0(true, "Key_VectorGroup" + lv_str, 0);
             }
         }
-        public static int HD_ReturnPNumMax(string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_返回Vector注册总数。必须先使用"互动V_注册Vector"才能返回指定Key里的注册总数。Vector组使用时，可用"获取变量的内部名称"将Vector组转为Key。
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认值"_Vector"</param>
+        /// <returns></returns>
+        public static int HD_ReturnVectorNumMax(string lp_key)
         {
             // Variable Declarations
             string lv_str;
             int lv_num;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "P");
+            lv_str = (lp_key + "Vector");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             // Implementation
             return lv_num;
         }
-        public static int HD_ReturnPNum(Vector lp_vector, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_返回Vector序号。使用"互动V_注册Vector"后使用本函数可返回Key里的注册序号，Key无元素返回0，Key有元素但对象不在里面则返回-1，Vector标签尚未注册则返回-2。Vector组使用时，可用"获取变量的内部名称"将Vector组转为Key
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <param name="lp_key">存储键区，默认值"_Vector"</param>
+        /// <returns></returns>
+        public static int HD_ReturnVectorNum(Vector lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -3656,9 +4352,9 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_str = (lp_key + "P");
+            lv_str = (lp_key + "Vector");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
-            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_tag = HD_ReturnVectorTag(lp_vector);
             lv_torf = -1;
             // Implementation
             for (auto_i = 1; auto_i <= auto_n; auto_i += 1)
@@ -3692,181 +4388,266 @@ namespace MetalMaxSystem
             }
             return lv_torf;
         }
-        public static Vector HD_ReturnPFromRegNum(int lp_regNum, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_返回序号对应Vector。使用"互动V_注册Vector"后，在参数填入注册序号可返回Vector。Vector组使用时，可用"获取变量的内部名称"将Vector组转为Key
+        /// </summary>
+        /// <param name="lp_regNum"></param>
+        /// <param name="lp_key">存储键区，默认值"_Vector"</param>
+        /// <returns></returns>
+        public static Vector HD_ReturnVectorFromRegNum(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             Vector lv_vector;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "P");
+            lv_str = (lp_key + "Vector");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             lv_vector = (Vector)DataTableLoad0(true, ("HD_Vector_" + lv_tag));
             // Implementation
             return lv_vector;
         }
-        public static Vector HD_ReturnPFromTag(int lp_tag)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_返回句柄标签对应Vector。使用"互动V_注册Vector"后，在参数填入句柄标签（整数）可返回Vector，标签是Vector的句柄。Vector组使用时，可用"获取变量的内部名称"将Vector组转为Key
+        /// </summary>
+        /// <param name="lp_tag">句柄标签</param>
+        /// <returns></returns>
+        public static Vector HD_ReturnVectorFromTag(int lp_tag)
         {
             // Variable Declarations
             string lv_tag = "";
             Vector lv_vector;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = lp_tag.ToString();
             lv_vector = (Vector)DataTableLoad0(true, ("HD_Vector_" + lv_tag));
             // Implementation
             return lv_vector;
         }
-        public static string HD_ReturnPTagFromRegNum_String(int lp_regNum, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_返回序号对应Vector标签句柄。使用"互动V_注册Vector"后，在参数填入注册序号可返回Vector标签（字符串）。Vector组使用时，可用"获取变量的内部名称"将Vector组转为Key
+        /// </summary>
+        /// <param name="lp_regNum">注册序号</param>
+        /// <param name="lp_key">存储键区，默认值"_Vector"</param>
+        /// <returns></returns>
+        public static string HD_ReturnVectorTagFromRegNum_String(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "P");
+            lv_str = (lp_key + "Vector");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return lv_tag;
         }
-        public static int HD_ReturnPTagFromRegNum_Int(int lp_regNum, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_返回序号对应Vector标签句柄。使用"互动V_注册Vector"后，在参数填入注册序号可返回Vector标签（整数）。Vector组使用时，可用"获取变量的内部名称"将Vector组转为Key
+        /// </summary>
+        /// <param name="lp_regNum">注册序号</param>
+        /// <param name="lp_key">存储键区，默认值"_Vector"</param>
+        /// <returns></returns>
+        public static int HD_ReturnVectorTagFromRegNum_Int(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "P");
+            lv_str = (lp_key + "Vector");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return Convert.ToInt32(lv_tag);
         }
-        public static void HD_SetPState(Vector lp_vector, string lp_key, string lp_stats)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_设置Vector状态。必须先"注册"获得功能库内部句柄，再使用本函数给Vector设定一个状态值，之后可用"互动V_返回Vector状态"。类型参数用以记录多个不同状态，仅当"类型"参数填Vector组ID转的Vector串时，状态值"true"和"false"是Vector的Vector组专用状态值，用于内部函数筛选Vector状态（相当于单位组单位索引是否有效），其他类型不会干扰系统内部，可随意填写。虽然注销时反向清空注册信息，但用"互动V_设定Vector状态/自定义值"创建的值需要手工填入""来排泄（非大量注销则提升内存量极小，可不管）。注：固有状态值是注册函数赋予的系统内部变量（相当于单位组单位是否活体），只能通过"互动V_注册Vector（高级）"函数或将本函数参数"类型"设为空时改写
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <param name="lp_key">存储类型，默认值"State"</param>
+        /// <param name="lp_stats">状态</param>
+        public static void HD_SetVectorState(Vector lp_vector, string lp_key, string lp_stats)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "P");
-            lv_tag = HD_RegPTagAndReturn(lp_vector);
+            lv_str = (lp_key + "Vector");
+            lv_tag = HD_RegVectorTagAndReturn(lp_vector);
             // Implementation
             DataTableSave0(true, ("HD_VectorState" + lv_str + "_" + lv_tag), lp_stats);
         }
-        public static string HD_ReturnPState(Vector lp_vector, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_返回Vector状态。使用"互动V_设定Vector状态"后可使用本函数，将本函数参数"类型"设为空时返回固有值。类型参数用以记录多个不同状态，仅当"类型"参数为Vector组ID转的字符串时，返回的状态值"true"和"false"是Vector的Vector组专用状态值，用于内部函数筛选Vector状态（相当于单位组单位索引是否有效）
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <param name="lp_key">存储类型，默认值"State"</param>
+        /// <returns></returns>
+        public static string HD_ReturnVectorState(Vector lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_stats;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "P");
-            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_str = (lp_key + "Vector");
+            lv_tag = HD_ReturnVectorTag(lp_vector);
             lv_stats = DataTableLoad0(true, ("HD_VectorState" + lv_str + "_" + lv_tag)).ToString();
             // Implementation
             return lv_stats;
         }
-        public static void HD_SetPCV(Vector lp_vector, string lp_key, string lp_customValue)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_设置Vector自定义值。必须先"注册"获得功能库内部句柄，再使用本函数设定Vector的自定义值，之后可使用"互动V_返回Vector自定义值"，类型参数用以记录多个不同自定义值。注：固有自定义值是注册函数赋予的系统内部变量，只能通过"互动V_注册Vector（高级）"函数或将本函数参数"类型"设为空时改写
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <param name="lp_key">存储类型，默认值"A"</param>
+        /// <param name="lp_customValue">自定义值</param>
+        public static void HD_SetVectorCV(Vector lp_vector, string lp_key, string lp_customValue)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "P");
-            lv_tag = HD_RegPTagAndReturn(lp_vector);
+            lv_str = (lp_key + "Vector");
+            lv_tag = HD_RegVectorTagAndReturn(lp_vector);
             // Implementation
             DataTableSave0(true, ("HD_VectorCV" + lv_str + "_" + lv_tag), lp_customValue);
         }
-        public static string HD_ReturnPCV(Vector lp_vector, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_返回Vector自定义值。使用"互动V_设定Vector自定义值"后可使用本函数，将本函数参数"类型"设为空时返回固有值，该参数用以记录多个不同自定义值
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <param name="lp_key">存储类型，默认值"A"</param>
+        /// <returns></returns>
+        public static string HD_ReturnVectorCV(Vector lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_customValue;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "P");
-            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_str = (lp_key + "Vector");
+            lv_tag = HD_ReturnVectorTag(lp_vector);
             lv_customValue = DataTableLoad0(true, ("HD_VectorCV" + lv_str + "_" + lv_tag)).ToString();
             // Implementation
             return lv_customValue;
         }
-        public static string HD_ReturnPState_Only(Vector lp_vector)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_返回Vector固有状态。必须先使用"互动V_注册Vector"才能返回到该值，固有状态是独一无二的标记（相当于单位组单位是否活体）
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <returns></returns>
+        public static string HD_ReturnVectorState_Only(Vector lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
             string lv_stats;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_tag = HD_ReturnVectorTag(lp_vector);
             lv_stats = DataTableLoad0(true, ("HD_VectorState" + "" + "_" + lv_tag)).ToString();
             // Implementation
             return lv_stats;
         }
-        public static string HD_ReturnPCV_Only(Vector lp_vector)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_返回Vector固有自定义值。必须先使用"互动V_注册Vector"才能返回到该值，固有值是独一无二的标记
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <returns></returns>
+        public static string HD_ReturnVectorCV_Only(Vector lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
             string lv_customValue;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_tag = HD_ReturnVectorTag(lp_vector);
             lv_customValue = DataTableLoad0(true, ("HD_VectorCV" + "" + "_" + lv_tag)).ToString();
             // Implementation
             return lv_customValue;
         }
-        public static void HD_SetPDouble(Vector lp_vector, double lp_realNumTag)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_设置Vector的实数标记。必须先"注册"获得功能库内部句柄，再使用本函数让Vector携带一个实数值，之后可使用"互动V_返回Vector的实数标记"。Vector组使用时，可用"获取变量的内部名称"将Vector组转为Key
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <param name="lp_realNumTag">实数标记</param>
+        public static void HD_SetVectorDouble(Vector lp_vector, double lp_realNumTag)
         {
             // Variable Declarations
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_tag = HD_RegPTagAndReturn(lp_vector);
+            lv_tag = HD_RegVectorTagAndReturn(lp_vector);
             // Implementation
             DataTableSave0(true, ("HD_CDDouble_T_" + lv_tag), lp_realNumTag);
         }
-        public static double HD_ReturnPDouble(Vector lp_vector)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_返回Vector的实数标记。使用"互动V_设定Vector的实数标记"后可使用本函数。Vector组使用时，可用"获取变量的内部名称"将Vector组转为Key
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <returns></returns>
+        public static double HD_ReturnVectorDouble(Vector lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
             double lv_f;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_tag = HD_ReturnPTag(lp_vector);
+            lv_tag = HD_ReturnVectorTag(lp_vector);
             lv_f = (double)DataTableLoad0(true, ("HD_CDDouble_T_" + lv_tag));
             // Implementation
             return lv_f;
         }
-        public static bool HD_ReturnIfPTag(Vector lp_vector)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_返回Vector标签句柄有效状态。将Vector视作独一无二的个体，标签是它本身，有效状态则类似"单位是否有效"，当使用"互动V_注册Vector"或"互动VG_添加Vector到Vector组"后激活Vector有效状态（值为"true"），除非使用"互动V_注册Vector（高级）"改写，否则直到注销才会摧毁
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <returns></returns>
+        public static bool HD_ReturnIfVectorTag(Vector lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
             bool lv_torf;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_tag = HD_ReturnPTag(lp_vector);
-            lv_torf = (bool)DataTableLoad0(true, ("HD_IfPTag" + "" + "_" + lv_tag));
+            lv_tag = HD_ReturnVectorTag(lp_vector);
+            lv_torf = (bool)DataTableLoad0(true, ("HD_IfVectorTag" + "" + "_" + lv_tag));
             // Implementation
             return lv_torf;
         }
-        public static bool HD_ReturnIfPTagKey(Vector lp_vector, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动V_返回Vector注册状态。使用"互动V_注册Vector"或"互动VG_添加Vector到Vector组"后可使用本函数获取注册Vector在Key中的注册状态，该状态只能注销或从Vector组中移除时清空。Vector组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Vector组转为Key
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <param name="lp_key">存储键区，默认值"_Vector"</param>
+        /// <returns></returns>
+        public static bool HD_ReturnIfVectorTagKey(Vector lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             bool lv_torf;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "P");
-            lv_tag = HD_ReturnPTag(lp_vector);
-            lv_torf = (bool)DataTableLoad0(true, ("HD_IfPTag" + lv_str + "_" + lv_tag));
+            lv_str = (lp_key + "Vector");
+            lv_tag = HD_ReturnVectorTag(lp_vector);
+            lv_torf = (bool)DataTableLoad0(true, ("HD_IfVectorTag" + lv_str + "_" + lv_tag));
             // Implementation
             return lv_torf;
         }
-        public static void HD_PGSortCV(string lp_key, string lp_cVStr, bool lp_big)
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_根据自定义值类型将Vector组排序。根据Vector携带的自定义值类型，对指定的Vector组元素进行冒泡排序。Vector组变量字符可通过"转换变量内部名称"获得
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认填Vector组名称</param>
+        /// <param name="lp_cVStr">自定义值类型</param>
+        /// <param name="lp_big">是否大值靠前</param>
+        public static void HD_VectorGSortCV(string lp_key, string lp_cVStr, bool lp_big)
         {
             // Automatic Variable Declarations
             // Implementation
@@ -3893,9 +4674,9 @@ namespace MetalMaxSystem
             int autoE_ae;
             const int autoE_ai = 1;
             // Variable Initialization
-            lv_str = (lp_key + "P");
+            lv_str = (lp_key + "Vector");
             ThreadWait(lv_str);
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            DataTableSave0(true, "Key_VectorGroup" + lv_str, 1);
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
@@ -3903,8 +4684,8 @@ namespace MetalMaxSystem
             lv_a = 1;
             for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
             {
-                lv_tag = HD_ReturnPTagFromRegNum_Int(lv_a, lp_key);
-                lv_tagValuestr = HD_ReturnPCV(HD_ReturnPFromTag(lv_tag), lp_cVStr);
+                lv_tag = HD_ReturnVectorTagFromRegNum_Int(lv_a, lp_key);
+                lv_tagValuestr = HD_ReturnVectorCV(HD_ReturnVectorFromTag(lv_tag), lp_cVStr);
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
                 if ((lv_intStackOutSize == 0))
@@ -3949,7 +4730,7 @@ namespace MetalMaxSystem
                             //Console.WriteLine("大值靠前"+"，当前lv_b=" +IntToString(lv_b));
                             if (lv_tagValue > (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
                             {
-                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnPTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
+                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnVectorTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
                                 //Console.WriteLine("生效的lv_b：" + IntToString(lv_b));
                                 lv_intStackOutSize += 1;
                                 //Console.WriteLine("lv_intStackOutSize：" + IntToString(lv_intStackOutSize));
@@ -3996,23 +4777,29 @@ namespace MetalMaxSystem
             for (; ((autoE_ai >= 0 && lv_a <= autoE_ae) || (autoE_ai < 0 && lv_a >= autoE_ae)); lv_a += autoE_ai)
             {
                 //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
-                //lv_tag = DataTableLoad1(true, (lp_key + "PTag"), lv_a).ToString(); //原始序号元素
+                //lv_tag = DataTableLoad1(true, (lp_key + "VectorTag"), lv_a).ToString(); //原始序号元素
                 lv_tag = (int)DataTableLoad1(false, "IntStackOutTag", lv_a);
-                lv_tagValuestr = HD_ReturnPCV(HD_ReturnPFromTag(lv_tag), lp_cVStr);
+                lv_tagValuestr = HD_ReturnVectorCV(HD_ReturnVectorFromTag(lv_tag), lp_cVStr);
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
                 lv_b = (int)DataTableLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
-                                                                               //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
                     //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
-                    DataTableSave1(true, (lp_key + "PTag"), lv_a, lv_tag); //lv_tag放入新序号
-                                                                           //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                    DataTableSave1(true, (lp_key + "VectorTag"), lv_a, lv_tag); //lv_tag放入新序号
+                    //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
                 }
             }
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            DataTableSave0(true, "Key_VectorGroup" + lv_str, 0);
         }
-        public static void HD_PGSort(string lp_key, bool lp_big)
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_Vector组排序。对指定的Vector组元素进行冒泡排序（根据元素句柄）。Vector组变量字符可通过"转换变量内部名称"获得
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认填Vector组名称</param>
+        /// <param name="lp_big">是否大值靠前</param>
+        public static void HD_VectorGSort(string lp_key, bool lp_big)
         {
             // Automatic Variable Declarations
             // Implementation
@@ -4038,9 +4825,9 @@ namespace MetalMaxSystem
             int autoE_ae;
             const int autoE_ai = 1;
             // Variable Initialization
-            lv_str = (lp_key + "P");
+            lv_str = (lp_key + "Vector");
             ThreadWait(lv_str);
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            DataTableSave0(true, "Key_VectorGroup" + lv_str, 1);
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
@@ -4048,7 +4835,7 @@ namespace MetalMaxSystem
             lv_a = 1;
             for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
             {
-                lv_tag = HD_ReturnPTagFromRegNum_Int(lv_a, lp_key);
+                lv_tag = HD_ReturnVectorTagFromRegNum_Int(lv_a, lp_key);
                 lv_tagValue = lv_tag;
                 //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
                 if ((lv_intStackOutSize == 0))
@@ -4093,7 +4880,7 @@ namespace MetalMaxSystem
                             //Console.WriteLine("大值靠前"+"，当前lv_b=" +IntToString(lv_b));
                             if (lv_tagValue > (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
                             {
-                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnPTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
+                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnVectorTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
                                 //Console.WriteLine("生效的lv_b：" + IntToString(lv_b));
                                 lv_intStackOutSize += 1;
                                 //Console.WriteLine("lv_intStackOutSize：" + IntToString(lv_intStackOutSize));
@@ -4140,36 +4927,79 @@ namespace MetalMaxSystem
             for (; ((autoE_ai >= 0 && lv_a <= autoE_ae) || (autoE_ai < 0 && lv_a >= autoE_ae)); lv_a += autoE_ai)
             {
                 //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
-                //lv_tag = DataTableLoad1(true, (lp_key + "PTag"), lv_a).ToString(); //原始序号元素
+                //lv_tag = DataTableLoad1(true, (lp_key + "VectorTag"), lv_a).ToString(); //原始序号元素
                 lv_tag = (int)DataTableLoad1(false, "IntStackOutTag", lv_a);
                 lv_tagValue = lv_tag;
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
                 lv_b = (int)DataTableLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
-                                                                               //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                                                                                    //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
                     //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
-                    DataTableSave1(true, (lp_key + "PTag"), lv_a, lv_tag); //lv_tag放入新序号
-                                                                           //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                    DataTableSave1(true, (lp_key + "VectorTag"), lv_a, lv_tag); //lv_tag放入新序号
+                                                                                //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
                 }
             }
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            DataTableSave0(true, "Key_VectorGroup" + lv_str, 0);
         }
-        public static Vector HD_ReturnPFromPGFunc(int lp_regNum, string lp_gs)
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_设定Vector的Vector组专用状态。给Vector组的Vector设定一个状态值（字符串），之后可用"互动V_返回Vector、互动VG_返回Vector组的Vector状态"。状态值"true"和"false"是Vector的Vector组专用状态值，用于内部函数筛选字符状态（相当于单位组单位索引是否有效），而本函数可以重设干预，影响函数"互动VG_返回Vector组元素数量（仅检索XX状态）"。与"互动V_设定Vector状态"功能相同，只是状态参数在Vector组中被固定为"Vector组变量的内部ID"。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <param name="lp_vectorGroup"></param>
+        /// <param name="lp_groupState"></param>
+        public static void HD_SetVectorGState(Vector lp_vector, string lp_vectorGroup, string lp_groupState)
+        {
+            HD_SetVectorState(lp_vector, lp_vectorGroup, lp_groupState);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_返回Vector的Vector组专用状态。使用"互动V_设定Vector、互动VG_设定Vector组的Vector状态"后可使用本函数。与"互动V_返回Vector状态"功能相同，只是状态参数在Vector组中被固定为"Vector组变量的内部ID"。状态值"true"和"false"是Vector的Vector组专用状态值，用于内部函数筛选字符状态（相当于单位组单位索引是否有效）。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <param name="lp_vectorGroup"></param>
+        public static void HD_ReturnVectorGState(Vector lp_vector, string lp_vectorGroup)
+        {
+            HD_ReturnVectorState(lp_vector, lp_vectorGroup);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_返回Vector组元素序号对应元素。返回Vector组元素序号指定Vector。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_regNum">注册序号</param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static Vector HD_ReturnVectorFromVectorGFunc(int lp_regNum, string lp_gs)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             Vector lv_vector;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_gs + "P");
+            lv_str = (lp_gs + "Vector");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             lv_vector = (Vector)DataTableLoad0(true, ("HD_Vector_" + lv_tag));
             // Implementation
             return lv_vector;
         }
-        public static int HD_ReturnPGNumMax_StateTrueFunc(string lp_gs)
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_返回Vector组元素总数。返回指定Vector组的元素数量。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static int HD_ReturnVectorGNumMax(string lp_gs)
+        {
+            return (int)DataTableLoad0(true, lp_gs + "VectorNum");
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_返回Vector组元素总数（仅检测Vector组专用状态="true"）。返回指定Vector组的元素数量。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static int HD_ReturnVectorGNumMax_StateTrueFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_a;
@@ -4182,12 +5012,12 @@ namespace MetalMaxSystem
             // Variable Initialization
             lv_b = "";
             // Implementation
-            auto_ae = HD_ReturnPNumMax(lp_gs);
+            auto_ae = HD_ReturnVectorNumMax(lp_gs);
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = HD_ReturnPFromRegNum(lv_a, lp_gs);
-                lv_b = HD_ReturnPState(lv_c, lp_gs);
+                lv_c = HD_ReturnVectorFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnVectorState(lv_c, lp_gs);
                 if ((lv_b == "true"))
                 {
                     lv_i += 1;
@@ -4195,7 +5025,13 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
-        public static int HD_ReturnPGNumMax_StateFalseFunc(string lp_gs)
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_返回Vector组元素总数（仅检测Vector组专用状态="false"）。返回指定Vector组的元素数量。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static int HD_ReturnVectorGNumMax_StateFalseFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_a;
@@ -4208,12 +5044,12 @@ namespace MetalMaxSystem
             // Variable Initialization
             lv_b = "";
             // Implementation
-            auto_ae = HD_ReturnPNumMax(lp_gs);
+            auto_ae = HD_ReturnVectorNumMax(lp_gs);
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = HD_ReturnPFromRegNum(lv_a, lp_gs);
-                lv_b = HD_ReturnPState(lv_c, lp_gs);
+                lv_c = HD_ReturnVectorFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnVectorState(lv_c, lp_gs);
                 if ((lv_b == "false"))
                 {
                     lv_i += 1;
@@ -4221,7 +5057,13 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
-        public static int HD_ReturnPGNumMax_StateUselessFunc(string lp_gs)
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_返回Vector组元素总数（仅检测Vector组无效专用状态："false"或""）。返回指定Vector组的元素数量（false、""、null）。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static int HD_ReturnVectorGNumMax_StateUselessFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_a;
@@ -4234,12 +5076,12 @@ namespace MetalMaxSystem
             // Variable Initialization
             lv_b = "";
             // Implementation
-            auto_ae = HD_ReturnPNumMax(lp_gs);
+            auto_ae = HD_ReturnVectorNumMax(lp_gs);
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = HD_ReturnPFromRegNum(lv_a, lp_gs);
-                lv_b = HD_ReturnPState(lv_c, lp_gs);
+                lv_c = HD_ReturnVectorFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnVectorState(lv_c, lp_gs);
                 if (((lv_b == "false") || (lv_b == "") || (lv_b == null)))
                 {
                     lv_i += 1;
@@ -4247,7 +5089,14 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
-        public static int HD_ReturnPGNumMax_StateFunc_Specify(string lp_gs, string lp_State)
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_返回Vector组元素总数（仅检测Vector组指定专用状态）。返回指定Vector组的元素数量。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <param name="lp_State">Vector组专用状态</param>
+        /// <returns></returns>
+        public static int HD_ReturnVectorGNumMax_StateFunc_Specify(string lp_gs, string lp_State)
         {
             // Variable Declarations
             int lv_a;
@@ -4260,12 +5109,12 @@ namespace MetalMaxSystem
             // Variable Initialization
             lv_b = "";
             // Implementation
-            auto_ae = HD_ReturnPNumMax(lp_gs);
+            auto_ae = HD_ReturnVectorNumMax(lp_gs);
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = HD_ReturnPFromRegNum(lv_a, lp_gs);
-                lv_b = HD_ReturnPState(lv_c, lp_gs);
+                lv_c = HD_ReturnVectorFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnVectorState(lv_c, lp_gs);
                 if ((lv_b == lp_State))
                 {
                     lv_i += 1;
@@ -4273,61 +5122,246 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
-        public static Vector? HD_ReturnRandomVectorFromPGFunc(string lp_gs)
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_添加Vector到Vector组。相同Vector被认为是同一个，非高级功能不提供专用状态检查，如果Vector没有设置过Vector组专用状态，那么首次添加到Vector组不会赋予"true"（之后可通过"互动V_设定Vector状态"、"互动VG_设定Vector组的Vector状态"修改）。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        public static void HD_AddVectorToGroup_Simple(Vector lp_vector, string lp_gs)
+        {
+            HD_RegVector_Simple(lp_vector, lp_gs);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_添加Vector到Vector组（高级）。相同Vector被认为是同一个，高级功能提供专用状态检查，如果Vector没有设置过Vector组专用状态，那么首次添加到Vector组会赋予"true"（之后可通过"互动V_设定Vector状态"、"互动VG_设定Vector组的Vector状态"修改）。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        public static void HD_AddVectorToGroup(Vector lp_vector, string lp_gs)
+        {
+            HD_RegVector_Simple(lp_vector, lp_gs);
+            if (DataTableKeyExists(true, ("HD_VectorState" + lp_gs + "Vector_" + HD_RegVectorTagAndReturn(lp_vector))) == false)
+            {
+                DataTableSave0(true, ("HD_VectorState" + lp_gs + "Vector_" + HD_RegVectorTagAndReturn(lp_vector)), "true");
+                //Console.WriteLine(lp_gs + "=>" + HD_RegVectorTagAndReturn(lp_vector));
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_移除Vector组中的元素。使用"互动VG_添加Vector到Vector组"后可使用本函数进行移除元素。移除使用了"互动V_移除Vector"，同一个存储区（Vector组ID）序号重排，移除时该存储区如有其他操作会排队等待。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_vector"></param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        public static void HD_ClearVectorFromGroup(Vector lp_vector, string lp_gs)
+        {
+            HD_RemoveVector(lp_vector, lp_gs);
+        }
+
+        //互动VG_为Vector组中的每个序号
+        //GE（星际2的Galaxy Editor）的宏让编辑器保存时自动生成脚本并整合进脚本进行格式调整，C#仅参考需自行编写
+        // #AUTOVAR(vs, string) = "#PARAM(group)";//"#PARAM(group)"是与字段、变量名一致的元素组名称，宏去声明string类型名为“Auto随机编号_vs”的自动变量，然后=右侧字符
+        // #AUTOVAR(ae) = HD_ReturnVectorNumMax(#AUTOVAR(vs));//宏去声明默认int类型名为“Auto随机编号_ae”的自动变量，然后=右侧字符
+        // #INITAUTOVAR(ai,increment)//宏去声明int类型名为“Auto随机编号_ai”的自动变量，用于下面for循环增量（increment是传入参数）
+        // #PARAM(var) = #PARAM(s);//#PARAM(var)是传进来的参数，用作“当前被挑选到的元素”（任意变量-整数 lp_var）， #PARAM(s)是传进来的参数用作"开始"（int lp_s）
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #PARAM(var) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #PARAM(var) >= #AUTOVAR(ae)) ) ; #PARAM(var) += #AUTOVAR(ai) ) {
+        //     #SUBFUNCS(actions)//代表用户GUI填写的所有动作
+        // }
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_为Vector组中的每个序号。每次挑选的元素序号会自行在动作组（委托函数）中使用，委托函数特征：void SubActionTest(int lp_var)，参数lp_var即每次遍历到的元素序号，请自行组织它在委托函数内如何使用，SubActionTest可直接作为本函数最后一个参数填入，填入多个动作范例：SubActionEventFuncref Actions += SubActionTest，然后Actions作为参数填入。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <param name="lp_start">开始</param>
+        /// <param name="lp_increment">增量</param>
+        /// <param name="lp_funcref">委托类型变量或函数引用</param>
+        public static void HD_ForEachVectorNumFromGroup(string lp_gs, int lp_start, int lp_increment, SubActionEventFuncref lp_funcref)
+        {
+            int lv_ae = HD_ReturnVectorNumMax(lp_gs);
+            int lv_var = lp_start;
+            int lv_ai = lp_increment;
+            for (; (lv_ai >= 0 && lv_var <= lv_ae) || (lv_ai < 0 && lv_var >= lv_ae); lv_var += lv_ai)
+            {
+                lp_funcref(lv_var);//用户填写的所有动作
+            }
+        }
+
+        //互动VG_为Vector组中的每个元素
+        // #AUTOVAR(vs, string) = "#PARAM(group)";
+        // #AUTOVAR(ae) = HD_ReturnVectorNumMax(#AUTOVAR(vs));
+        // #AUTOVAR(va)= #PARAM(s);
+        // #INITAUTOVAR(ai,increment)
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     DataTableSave(false, "VectorGFor"+ #AUTOVAR(vs) + IntToString(#AUTOVAR(va)), HD_ReturnVectorFromRegNum(#AUTOVAR(va),#AUTOVAR(vs)));
+        // }
+        // #AUTOVAR(va)= #PARAM(s);
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     #PARAM(var) = DataTableLoad(false, "VectorGFor"+ #AUTOVAR(vs) + IntToString(#AUTOVAR(va)));
+        //     #SUBFUNCS(actions)
+        // }
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_为Vector组中的每个元素。每次挑选的元素会自行在动作组（委托函数）中使用，委托函数特征：void SubActionTest(int lp_var)，参数lp_var即每次遍历到的元素，请自行组织它在委托函数内如何使用，SubActionTest可直接作为本函数最后一个参数填入，填入多个动作范例：SubActionEventFuncref Actions += SubActionTest，然后Actions作为参数填入。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <param name="lp_start">开始</param>
+        /// <param name="lp_increment">增量</param>
+        /// <param name="lp_funcref">委托类型变量或函数引用</param>
+        public static void HD_ForEachVectorFromGroup(string lp_gs, int lp_start, int lp_increment, SubActionEventFuncref lp_funcref)
+        {
+            string lv_vs = lp_gs;
+            int lv_ae = HD_ReturnVectorNumMax(lv_vs);
+            int lv_va = lp_start;
+            int lv_ai = lp_increment;
+            Vector lv_vector;
+            for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
+            {
+                DataTableSave0(false, "VectorGFor" + lv_vs + lv_va.ToString(), HD_ReturnVectorFromRegNum(lv_va, lv_vs));
+            }
+            lv_va = lp_start;
+            for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
+            {
+                lv_vector = (Vector)DataTableLoad0(false, "VectorGFor" + lv_vs + lv_va.ToString());
+                lp_funcref(lv_vector);//用户填写的所有动作
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_返回Vector组中随机元素。返回指定Vector组中的随机Vector。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static Vector? HD_ReturnRandomVectorFromVectorGFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_num;
             int lv_a;
             Vector? lv_c = null;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_num = HD_ReturnPNumMax(lp_gs);
+            lv_num = HD_ReturnVectorNumMax(lp_gs);
             // Implementation
             if ((lv_num >= 1))
             {
                 lv_a = RandomInt(1, lv_num);
-                lv_c = HD_ReturnPFromRegNum(lv_a, lp_gs);
+                lv_c = HD_ReturnVectorFromRegNum(lv_a, lp_gs);
             }
             return lv_c;
         }
-        public static void HD_RemovePGAll(string lp_key)
+
+        //互动VG_添加Vector组到Vector组
+        // #AUTOVAR(vs, string) = "#PARAM(groupA)";
+        // #AUTOVAR(vsb, string) = "#PARAM(groupB)";
+        // #AUTOVAR(ae) = HD_ReturnVectorNumMax(#AUTOVAR(vs));
+        // #AUTOVAR(va)= 1;
+        // #AUTOVAR(ai)= 1;
+        // #AUTOVAR(var);
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     #AUTOVAR(var) = HD_ReturnVectorFromRegNum(#AUTOVAR(va), #AUTOVAR(vs));
+        //     HD_AddVectorToGroup(#AUTOVAR(var), #AUTOVAR(vsb));
+        // }
+
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_添加Vector组到Vector组。添加一个Vector组A的元素到另一个Vector组B，相同Vector被认为是同一个。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_groupA"></param>
+        /// <param name="lp_groupB"></param>
+        public static void HD_AddVectorGToVectorG(string lp_groupA, string lp_groupB)
+        {
+            string lv_vsa = lp_groupA;
+            string lv_vsb = lp_groupB;
+            int lv_ae = HD_ReturnVectorNumMax(lv_vsa);
+            int lv_va = 1;
+            int lv_ai = 1;
+            Vector lv_var;
+            for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
+            {
+                lv_var = HD_ReturnVectorFromRegNum(lv_va, lv_vsa);
+                HD_AddVectorToGroup(lv_var, lv_vsb);
+            }
+        }
+
+        //互动VG_从Vector组移除Vector组
+        // #AUTOVAR(vs, string) = "#PARAM(groupA)";
+        // #AUTOVAR(vsb, string) = "#PARAM(groupB)";
+        // #AUTOVAR(ae) = HD_ReturnVectorNumMax(#AUTOVAR(vs));
+        // #AUTOVAR(va)= 1;
+        // #AUTOVAR(ai)= 1;
+        // #AUTOVAR(var);
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     #AUTOVAR(var) = HD_ReturnVectorFromRegNum(#AUTOVAR(va), #AUTOVAR(vs));
+        //     HD_RemoveVector(#AUTOVAR(var), #AUTOVAR(vsb));
+        // }
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_从Vector组移除Vector组。将Vector组A的元素从Vector组B中移除，相同Vector被认为是同一个。移除使用了"互动V_移除Vector"，同一个存储区（Vector组ID）序号重排，移除时该存储区如有其他操作会排队等待。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_groupA"></param>
+        /// <param name="lp_groupB"></param>
+        public static void HD_ClearVectorGFromVectorG(string lp_groupA, string lp_groupB)
+        {
+            string lv_vsa = lp_groupA;
+            string lv_vsb = lp_groupB;
+            int lv_ae = HD_ReturnVectorNumMax(lv_vsa);
+            int lv_va = 1;
+            int lv_ai = 1;
+            Vector lv_var;
+            for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
+            {
+                lv_var = HD_ReturnVectorFromRegNum(lv_va, lv_vsa);
+                HD_RemoveVector(lv_var, lv_vsb);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动VG_移除Vector组全部元素。将Vector组（Key区）存储的元素全部移除，相同Vector被认为是同一个。移除时同一个存储区（Vector组ID）序号不进行重排，但该存储区如有其他操作会排队等待。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认填Vector组名称</param>
+        public static void HD_RemoveVectorGAll(string lp_key)
         {
             // Variable Declarations
             string lv_str;
             int lv_num;
             string lv_tag = "";
             int lv_a;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "P");
+            lv_str = (lp_key + "Vector");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             // Implementation
             ThreadWait(lv_str);
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            DataTableSave0(true, "Key_VectorGroup" + lv_str, 1);
             for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
             {
-                lv_tag = DataTableLoad1(true, (lp_key + "PTag"), lv_a).ToString();
+                lv_tag = DataTableLoad1(true, (lp_key + "VectorTag"), lv_a).ToString();
                 lv_num -= 1;
-                DataTableClear0(true, "HD_IfPTag" + lv_str + "_" + lv_tag);
+                DataTableClear0(true, "HD_IfVectorTag" + lv_str + "_" + lv_tag);
                 DataTableClear0(true, "HD_VectorCV" + lv_str + "_" + lv_tag);
                 DataTableClear0(true, "HD_VectorState" + lv_str + "_" + lv_tag);
-                DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                DataTableSave0(true, (lp_key + "VectorNum"), lv_num);
             }
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            DataTableSave0(true, "Key_VectorGroup" + lv_str, 0);
         }
 
         //--------------------------------------------------------------------------------------------------
-        // 点组End
+        // 二维向量组End
         //--------------------------------------------------------------------------------------------------
 
         #endregion
 
         #region 计时器
 
+        //提示：尽可能使用对口类型，以防值类型与引用类型发生转换时拆装箱降低性能
+
         //--------------------------------------------------------------------------------------------------
         // 计时器组Start
         //--------------------------------------------------------------------------------------------------
-        public static int HD_RegTimerTagAndReturn_Int(Timer lp_timer)
+
+        /// <summary>
+        /// 【MM_函数库】互动T_注册Timer标签句柄并返回。为Timer自动设置新的标签句柄，重复时会返回已注册的Timer标签。这是一个内部函数，一般不需要自动使用
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <returns></returns>
+        private static int HD_RegTimerTagAndReturn_Int(Timer lp_timer)//内部使用
         {
             // Variable Declarations
             int lv_jBNum;
@@ -4368,6 +5402,12 @@ namespace MetalMaxSystem
             }
             return lv_j;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_返回Timer已注册标签句柄。返回一个Timer的已注册标签，如果失败返回null
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <returns></returns>
         public static int HD_ReturnTimerTag_Int(Timer lp_timer)
         {
             // Variable Declarations
@@ -4391,7 +5431,13 @@ namespace MetalMaxSystem
             }
             return lv_j;
         }
-        public static string HD_RegTimerTagAndReturn(Timer lp_timer)
+
+        /// <summary>
+        /// 【MM_函数库】互动T_注册Timer标签句柄并返回。为Timer自动设置新的标签句柄，重复时会返回已注册的Timer标签。这是一个内部函数，一般不需要自动使用
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <returns></returns>
+        private static string HD_RegTimerTagAndReturn(Timer lp_timer)//内部使用
         {
             // Variable Declarations
             int lv_jBNum;
@@ -4436,6 +5482,12 @@ namespace MetalMaxSystem
             //Console.WriteLine(("Tag：" + lv_tag));
             return lv_tag;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_返回Timer已注册标签句柄。返回一个Timer的已注册标签，如果失败返回null
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <returns></returns>
         public static string HD_ReturnTimerTag(Timer lp_timer)
         {
             // Variable Declarations
@@ -4461,6 +5513,14 @@ namespace MetalMaxSystem
             }
             return lv_tag;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_注册Timer(高级)。在指定Key存入Timer，固有状态、自定义值是Timer独一无二的标志（本函数重复注册会刷新），之后可用互动T_"返回Timer注册总数"、"返回Timer序号"、"返回序号对应Timer"、"返回序号对应Timer标签"、"返回Timer自定义值"。Timer组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Timer组转为Key。首次注册时固有状态为true（相当于单位组单位活体），如需另外设置多个标记可使用"互动T_设定Timer状态/自定义值"
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <param name="lp_key">存储键区，默认值"_Timer"</param>
+        /// <param name="lp_inherentStats">固有状态</param>
+        /// <param name="lp_inherentCustomValue">固有自定义值</param>
         public static void HD_RegTimer(Timer lp_timer, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
         {
             // Variable Declarations
@@ -4521,6 +5581,12 @@ namespace MetalMaxSystem
             DataTableSave0(true, ("HD_TimerState" + "" + "_" + lv_tagStr), lp_inherentStats);
             DataTableSave0(true, ("HD_TimerCV" + "" + "_" + lv_tagStr), lp_inherentCustomValue);
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_注册Timer。在指定Key存入Timer，固有状态、自定义值是Timer独一无二的标志（本函数重复注册不会刷新），之后可用互动T_"返回Timer注册总数"、"返回Timer序号"、"返回序号对应Timer"、"返回Timer自定义值"。Timer组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Timer组转为Key。首次注册时固有状态为true（相当于单位组单位活体），之后只能通过"互动T_注册Timer（高级）"改写，如需另外设置多个标记可使用"互动T_设定Timer状态/自定义值"
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <param name="lp_key">存储键区，默认值"_Timer"</param>
         public static void HD_RegTimer_Simple(Timer lp_timer, string lp_key)
         {
             // Variable Declarations
@@ -4583,7 +5649,13 @@ namespace MetalMaxSystem
                 DataTableSave1(true, (("HD_Timer" + "State")), lv_tag, "true");
             }
         }
-        public static void HD_DestroyP(Timer lp_timer, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动T_注销Timer。用"互动T_注册Timer"到Key，之后可用本函数彻底摧毁注册信息并将序号重排（包括Timer标签有效状态、固有状态及自定义值）。注册注销同时进行会排队等待0.0625s直到没有注销动作，注销并不提升多少内存只是变量内容清空并序号重利用，非特殊要求一般不注销，而是用"互动T_设定Timer状态"让Timer状态失效（类似单位组的单位活体状态）。Timer组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Timer组转为Key。本函数无法摧毁用"互动T_设定Timer状态/自定义值"创建的状态和自定义值，需手工填入""来排泄（非大量注销则提升内存量极小，可不管）。本函数参数Key若填Timer组变量ID时会清空Timer组专用状态
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <param name="lp_key">存储键区，默认值"_Timer"</param>
+        public static void HD_DestroyTimer(Timer lp_timer, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -4592,7 +5664,6 @@ namespace MetalMaxSystem
             int lv_a;
             int lv_b;
             string lv_c;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Timer");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
@@ -4602,7 +5673,7 @@ namespace MetalMaxSystem
             if ((lv_tag != null))
             {
                 ThreadWait(lv_str);
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                DataTableSave0(true, "Key_TimerGroup" + lv_str, 1);
                 for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
                 {
                     if ((DataTableLoad1(true, (lp_key + "TimerTag"), lv_a).ToString() == lv_tag))
@@ -4615,7 +5686,7 @@ namespace MetalMaxSystem
                         DataTableClear0(true, "HD_TimerState_" + lv_tag);
                         DataTableClear0(true, "HD_TimerCV" + lv_str + "_" + lv_tag);
                         DataTableClear0(true, "HD_TimerState" + lv_str + "_" + lv_tag);
-                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        DataTableSave0(true, (lp_key + "TimerNum"), lv_num);
                         for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
                         {
                             lv_c = DataTableLoad1(true, (lp_key + "TimerTag"), lv_b + 1).ToString();
@@ -4625,9 +5696,15 @@ namespace MetalMaxSystem
                         lv_a -= 1;
                     }
                 }
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+                DataTableSave0(true, "Key_TimerGroup" + lv_str, 0);
             }
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_移除Timer。用"互动T_注册Timer"到Key，之后可用本函数仅摧毁Key区注册的信息并将序号重排，用于Timer组或多个键区仅移除Timer（保留Timer标签有效状态、固有值）。注册注销同时进行会排队等待0.0625s直到没有注销动作，注销并不提升多少内存只是变量内容清空并序号重利用，非特殊要求一般不注销，而是用"互动T_设定Timer状态"让Timer状态失效（类似单位组的单位活体状态）。Timer组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Timer组转为Key。本函数无法摧毁用"互动T_设定Timer状态/自定义值"创建的状态和自定义值，需手工填入""来排泄（非大量注销则提升内存量极小，可不管）。本函数参数Key若填Timer组变量ID时会清空Timer组专用状态
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <param name="lp_key">存储键区，默认值"_Timer"</param>
         public static void HD_RemoveTimer(Timer lp_timer, string lp_key)
         {
             // Variable Declarations
@@ -4637,7 +5714,6 @@ namespace MetalMaxSystem
             int lv_a;
             int lv_b;
             string lv_c;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Timer");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
@@ -4647,7 +5723,7 @@ namespace MetalMaxSystem
             if ((lv_tag != null))
             {
                 ThreadWait(lv_str);
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                DataTableSave0(true, "Key_TimerGroup" + lv_str, 1);
                 for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
                 {
                     if ((DataTableLoad1(true, (lp_key + "TimerTag"), lv_a) == lv_tag))
@@ -4656,7 +5732,7 @@ namespace MetalMaxSystem
                         DataTableClear0(true, "HD_IfTimerTag" + lv_str + "_" + lv_tag);
                         DataTableClear0(true, "HD_TimerCV" + lv_str + "_" + lv_tag);
                         DataTableClear0(true, "HD_TimerState" + lv_str + "_" + lv_tag);
-                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        DataTableSave0(true, (lp_key + "TimerNum"), lv_num);
                         for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
                         {
                             lv_c = DataTableLoad1(true, (lp_key + "TimerTag"), lv_b + 1).ToString();
@@ -4666,21 +5742,33 @@ namespace MetalMaxSystem
                         lv_a -= 1;
                     }
                 }
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+                DataTableSave0(true, "Key_TimerGroup" + lv_str, 0);
             }
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_返回Timer注册总数。必须先使用"互动T_注册Timer"才能返回指定Key里的注册总数。Timer组使用时，可用"获取变量的内部名称"将Timer组转为Key。
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认值"_Timer"</param>
+        /// <returns></returns>
         public static int HD_ReturnTimerNumMax(string lp_key)
         {
             // Variable Declarations
             string lv_str;
             int lv_num;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Timer");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             // Implementation
             return lv_num;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_返回Timer序号。使用"互动T_注册Timer"后使用本函数可返回Key里的注册序号，Key无元素返回0，Key有元素但对象不在里面则返回-1，Timer标签尚未注册则返回-2。Timer组使用时，可用"获取变量的内部名称"将Timer组转为Key
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <param name="lp_key">存储键区，默认值"_Timer"</param>
+        /// <returns></returns>
         public static int HD_ReturnTimerNum(Timer lp_timer, string lp_key)
         {
             // Variable Declarations
@@ -4731,13 +5819,19 @@ namespace MetalMaxSystem
             }
             return lv_torf;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_返回序号对应Timer。使用"互动T_注册Timer"后，在参数填入注册序号可返回Timer。Timer组使用时，可用"获取变量的内部名称"将Timer组转为Key
+        /// </summary>
+        /// <param name="lp_regNum"></param>
+        /// <param name="lp_key">存储键区，默认值"_Timer"</param>
+        /// <returns></returns>
         public static Timer HD_ReturnTimerFromRegNum(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             Timer lv_timer;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Timer");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
@@ -4745,61 +5839,90 @@ namespace MetalMaxSystem
             // Implementation
             return lv_timer;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_返回句柄标签对应Timer。使用"互动T_注册Timer"后，在参数填入句柄标签（整数）可返回Timer，标签是Timer的句柄。Timer组使用时，可用"获取变量的内部名称"将Timer组转为Key
+        /// </summary>
+        /// <param name="lp_tag">句柄标签</param>
+        /// <returns></returns>
         public static Timer HD_ReturnTimerFromTag(int lp_tag)
         {
             // Variable Declarations
             string lv_tag = "";
             Timer lv_timer;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = lp_tag.ToString();
             lv_timer = (Timer)DataTableLoad0(true, ("HD_Timer_" + lv_tag));
             // Implementation
             return lv_timer;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_返回序号对应Timer标签句柄。使用"互动T_注册Timer"后，在参数填入注册序号可返回Timer标签（字符串）。Timer组使用时，可用"获取变量的内部名称"将Timer组转为Key
+        /// </summary>
+        /// <param name="lp_regNum">注册序号</param>
+        /// <param name="lp_key">存储键区，默认值"_Timer"</param>
+        /// <returns></returns>
         public static string HD_ReturnTimerTagFromRegNum_String(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Timer");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return lv_tag;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_返回序号对应Timer标签句柄。使用"互动T_注册Timer"后，在参数填入注册序号可返回Timer标签（整数）。Timer组使用时，可用"获取变量的内部名称"将Timer组转为Key
+        /// </summary>
+        /// <param name="lp_regNum">注册序号</param>
+        /// <param name="lp_key">存储键区，默认值"_Timer"</param>
+        /// <returns></returns>
         public static int HD_ReturnTimerTagFromRegNum_Int(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Timer");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return Convert.ToInt32(lv_tag);
         }
-        public static void HD_SetPState(Timer lp_timer, string lp_key, string lp_stats)
+
+        /// <summary>
+        /// 【MM_函数库】互动T_设置Timer状态。必须先"注册"获得功能库内部句柄，再使用本函数给Timer设定一个状态值，之后可用"互动T_返回Timer状态"。类型参数用以记录多个不同状态，仅当"类型"参数填Timer组ID转的Timer串时，状态值"true"和"false"是Timer的Timer组专用状态值，用于内部函数筛选Timer状态（相当于单位组单位索引是否有效），其他类型不会干扰系统内部，可随意填写。虽然注销时反向清空注册信息，但用"互动T_设定Timer状态/自定义值"创建的值需要手工填入""来排泄（非大量注销则提升内存量极小，可不管）。注：固有状态值是注册函数赋予的系统内部变量（相当于单位组单位是否活体），只能通过"互动T_注册Timer（高级）"函数或将本函数参数"类型"设为空时改写
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <param name="lp_key">存储类型，默认值"State"</param>
+        /// <param name="lp_stats">状态</param>
+        public static void HD_SetTimerState(Timer lp_timer, string lp_key, string lp_stats)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Timer");
             lv_tag = HD_RegTimerTagAndReturn(lp_timer);
             // Implementation
             DataTableSave0(true, ("HD_TimerState" + lv_str + "_" + lv_tag), lp_stats);
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_返回Timer状态。使用"互动T_设定Timer状态"后可使用本函数，将本函数参数"类型"设为空时返回固有值。类型参数用以记录多个不同状态，仅当"类型"参数为Timer组ID转的字符串时，返回的状态值"true"和"false"是Timer的Timer组专用状态值，用于内部函数筛选Timer状态（相当于单位组单位索引是否有效）
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <param name="lp_key">存储类型，默认值"State"</param>
+        /// <returns></returns>
         public static string HD_ReturnTimerState(Timer lp_timer, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_stats;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Timer");
             lv_tag = HD_ReturnTimerTag(lp_timer);
@@ -4807,25 +5930,37 @@ namespace MetalMaxSystem
             // Implementation
             return lv_stats;
         }
-        public static void HD_SetPCV(Timer lp_timer, string lp_key, string lp_customValue)
+
+        /// <summary>
+        /// 【MM_函数库】互动T_设置Timer自定义值。必须先"注册"获得功能库内部句柄，再使用本函数设定Timer的自定义值，之后可使用"互动T_返回Timer自定义值"，类型参数用以记录多个不同自定义值。注：固有自定义值是注册函数赋予的系统内部变量，只能通过"互动T_注册Timer（高级）"函数或将本函数参数"类型"设为空时改写
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <param name="lp_key">存储类型，默认值"A"</param>
+        /// <param name="lp_customValue">自定义值</param>
+        public static void HD_SetTimerCV(Timer lp_timer, string lp_key, string lp_customValue)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Timer");
             lv_tag = HD_RegTimerTagAndReturn(lp_timer);
             // Implementation
             DataTableSave0(true, ("HD_TimerCV" + lv_str + "_" + lv_tag), lp_customValue);
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_返回Timer自定义值。使用"互动T_设定Timer自定义值"后可使用本函数，将本函数参数"类型"设为空时返回固有值，该参数用以记录多个不同自定义值
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <param name="lp_key">存储类型，默认值"A"</param>
+        /// <returns></returns>
         public static string HD_ReturnTimerCV(Timer lp_timer, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_customValue;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Timer");
             lv_tag = HD_ReturnTimerTag(lp_timer);
@@ -4833,71 +5968,102 @@ namespace MetalMaxSystem
             // Implementation
             return lv_customValue;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_返回Timer固有状态。必须先使用"互动T_注册Timer"才能返回到该值，固有状态是独一无二的标记（相当于单位组单位是否活体）
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <returns></returns>
         public static string HD_ReturnTimerState_Only(Timer lp_timer)
         {
             // Variable Declarations
             string lv_tag = "";
             string lv_stats;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = HD_ReturnTimerTag(lp_timer);
             lv_stats = DataTableLoad0(true, ("HD_TimerState" + "" + "_" + lv_tag)).ToString();
             // Implementation
             return lv_stats;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_返回Timer固有自定义值。必须先使用"互动T_注册Timer"才能返回到该值，固有值是独一无二的标记
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <returns></returns>
         public static string HD_ReturnTimerCV_Only(Timer lp_timer)
         {
             // Variable Declarations
             string lv_tag = "";
             string lv_customValue;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = HD_ReturnTimerTag(lp_timer);
             lv_customValue = DataTableLoad0(true, ("HD_TimerCV" + "" + "_" + lv_tag)).ToString();
             // Implementation
             return lv_customValue;
         }
-        public static void HD_SetPDouble(Timer lp_timer, double lp_realNumTag)
+
+        /// <summary>
+        /// 【MM_函数库】互动T_设置Timer的实数标记。必须先"注册"获得功能库内部句柄，再使用本函数让Timer携带一个实数值，之后可使用"互动T_返回Timer的实数标记"。Timer组使用时，可用"获取变量的内部名称"将Timer组转为Key
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <param name="lp_realNumTag">实数标记</param>
+        public static void HD_SetTimerDouble(Timer lp_timer, double lp_realNumTag)
         {
             // Variable Declarations
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = HD_RegTimerTagAndReturn(lp_timer);
             // Implementation
             DataTableSave0(true, ("HD_CDDouble_T_" + lv_tag), lp_realNumTag);
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_返回Timer的实数标记。使用"互动T_设定Timer的实数标记"后可使用本函数。Timer组使用时，可用"获取变量的内部名称"将Timer组转为Key
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <returns></returns>
         public static double HD_ReturnTimerDouble(Timer lp_timer)
         {
             // Variable Declarations
             string lv_tag = "";
             double lv_f;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = HD_ReturnTimerTag(lp_timer);
             lv_f = (double)DataTableLoad0(true, ("HD_CDDouble_T_" + lv_tag));
             // Implementation
             return lv_f;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_返回Timer标签句柄有效状态。将Timer视作独一无二的个体，标签是它本身，有效状态则类似"单位是否有效"，当使用"互动T_注册Timer"或"互动TG_添加Timer到Timer组"后激活Timer有效状态（值为"true"），除非使用"互动T_注册Timer（高级）"改写，否则直到注销才会摧毁
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <returns></returns>
         public static bool HD_ReturnIfTimerTag(Timer lp_timer)
         {
             // Variable Declarations
             string lv_tag = "";
             bool lv_torf;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = HD_ReturnTimerTag(lp_timer);
             lv_torf = (bool)DataTableLoad0(true, ("HD_IfTimerTag" + "" + "_" + lv_tag));
             // Implementation
             return lv_torf;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动T_返回Timer注册状态。使用"互动T_注册Timer"或"互动TG_添加Timer到Timer组"后可使用本函数获取注册Timer在Key中的注册状态，该状态只能注销或从Timer组中移除时清空。Timer组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Timer组转为Key
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <param name="lp_key">存储键区，默认值"_Timer"</param>
+        /// <returns></returns>
         public static bool HD_ReturnIfTimerTagKey(Timer lp_timer, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             bool lv_torf;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Timer");
             lv_tag = HD_ReturnTimerTag(lp_timer);
@@ -4905,6 +6071,13 @@ namespace MetalMaxSystem
             // Implementation
             return lv_torf;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_根据自定义值类型将Timer组排序。根据Timer携带的自定义值类型，对指定的Timer组元素进行冒泡排序。Timer组变量字符可通过"转换变量内部名称"获得
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认填Timer组名称</param>
+        /// <param name="lp_cVStr">自定义值类型</param>
+        /// <param name="lp_big">是否大值靠前</param>
         public static void HD_TimerGSortCV(string lp_key, string lp_cVStr, bool lp_big)
         {
             // Automatic Variable Declarations
@@ -4934,7 +6107,7 @@ namespace MetalMaxSystem
             // Variable Initialization
             lv_str = (lp_key + "Timer");
             ThreadWait(lv_str);
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            DataTableSave0(true, "Key_TimerGroup" + lv_str, 1);
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
@@ -5041,16 +6214,22 @@ namespace MetalMaxSystem
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
                 lv_b = (int)DataTableLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
-                                                                                    //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
                     //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
                     DataTableSave1(true, (lp_key + "TimerTag"), lv_a, lv_tag); //lv_tag放入新序号
-                                                                               //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                    //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
                 }
             }
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            DataTableSave0(true, "Key_TimerGroup" + lv_str, 0);
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_Timer组排序。对指定的Timer组元素进行冒泡排序（根据元素句柄）。Timer组变量字符可通过"转换变量内部名称"获得
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认填Timer组名称</param>
+        /// <param name="lp_big">是否大值靠前</param>
         public static void HD_TimerGSort(string lp_key, bool lp_big)
         {
             // Automatic Variable Declarations
@@ -5079,7 +6258,7 @@ namespace MetalMaxSystem
             // Variable Initialization
             lv_str = (lp_key + "Timer");
             ThreadWait(lv_str);
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            DataTableSave0(true, "Key_TimerGroup" + lv_str, 1);
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
@@ -5192,15 +6371,42 @@ namespace MetalMaxSystem
                                                                                //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
                 }
             }
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            DataTableSave0(true, "Key_TimerGroup" + lv_str, 0);
         }
-        public static Timer HD_ReturnTimerFromPGFunc(int lp_regNum, string lp_gs)
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_设定Timer的Timer组专用状态。给Timer组的Timer设定一个状态值（字符串），之后可用"互动T_返回Timer、互动TG_返回Timer组的Timer状态"。状态值"true"和"false"是Timer的Timer组专用状态值，用于内部函数筛选字符状态（相当于单位组单位索引是否有效），而本函数可以重设干预，影响函数"互动TG_返回Timer组元素数量（仅检索XX状态）"。与"互动T_设定Timer状态"功能相同，只是状态参数在Timer组中被固定为"Timer组变量的内部ID"。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <param name="lp_timerGroup"></param>
+        /// <param name="lp_groupState"></param>
+        public static void HD_SetTimerGState(Timer lp_timer, string lp_timerGroup, string lp_groupState)
+        {
+            HD_SetTimerState(lp_timer, lp_timerGroup, lp_groupState);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_返回Timer的Timer组专用状态。使用"互动T_设定Timer、互动TG_设定Timer组的Timer状态"后可使用本函数。与"互动T_返回Timer状态"功能相同，只是状态参数在Timer组中被固定为"Timer组变量的内部ID"。状态值"true"和"false"是Timer的Timer组专用状态值，用于内部函数筛选字符状态（相当于单位组单位索引是否有效）。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <param name="lp_timerGroup"></param>
+        public static void HD_ReturnTimerGState(Timer lp_timer, string lp_timerGroup)
+        {
+            HD_ReturnTimerState(lp_timer, lp_timerGroup);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_返回Timer组元素序号对应元素。返回Timer组元素序号指定Timer。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_regNum">注册序号</param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static Timer HD_ReturnTimerFromTimerGFunc(int lp_regNum, string lp_gs)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             Timer lv_timer;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_gs + "Timer");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
@@ -5208,6 +6414,22 @@ namespace MetalMaxSystem
             // Implementation
             return lv_timer;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_返回Timer组元素总数。返回指定Timer组的元素数量。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static int HD_ReturnTimerGNumMax(string lp_gs)
+        {
+            return (int)DataTableLoad0(true, lp_gs + "TimerNum");
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_返回Timer组元素总数（仅检测Timer组专用状态="true"）。返回指定Timer组的元素数量。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
         public static int HD_ReturnTimerGNumMax_StateTrueFunc(string lp_gs)
         {
             // Variable Declarations
@@ -5234,6 +6456,12 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_返回Timer组元素总数（仅检测Timer组专用状态="false"）。返回指定Timer组的元素数量。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
         public static int HD_ReturnTimerGNumMax_StateFalseFunc(string lp_gs)
         {
             // Variable Declarations
@@ -5260,6 +6488,12 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_返回Timer组元素总数（仅检测Timer组无效专用状态："false"或""）。返回指定Timer组的元素数量（false、""、null）。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
         public static int HD_ReturnTimerGNumMax_StateUselessFunc(string lp_gs)
         {
             // Variable Declarations
@@ -5286,6 +6520,13 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_返回Timer组元素总数（仅检测Timer组指定专用状态）。返回指定Timer组的元素数量。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <param name="lp_State">Timer组专用状态</param>
+        /// <returns></returns>
         public static int HD_ReturnTimerGNumMax_StateFunc_Specify(string lp_gs, string lp_State)
         {
             // Variable Declarations
@@ -5312,13 +6553,121 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
-        public static Timer HD_ReturnRandomTimerFromPGFunc(string lp_gs)
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_添加Timer到Timer组。相同Timer被认为是同一个，非高级功能不提供专用状态检查，如果Timer没有设置过Timer组专用状态，那么首次添加到Timer组不会赋予"true"（之后可通过"互动T_设定Timer状态"、"互动TG_设定Timer组的Timer状态"修改）。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        public static void HD_AddTimerToGroup_Simple(Timer lp_timer, string lp_gs)
+        {
+            HD_RegTimer_Simple(lp_timer, lp_gs);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_添加Timer到Timer组（高级）。相同Timer被认为是同一个，高级功能提供专用状态检查，如果Timer没有设置过Timer组专用状态，那么首次添加到Timer组会赋予"true"（之后可通过"互动T_设定Timer状态"、"互动TG_设定Timer组的Timer状态"修改）。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        public static void HD_AddTimerToGroup(Timer lp_timer, string lp_gs)
+        {
+            HD_RegTimer_Simple(lp_timer, lp_gs);
+            if (DataTableKeyExists(true, ("HD_TimerState" + lp_gs + "Timer_" + HD_RegTimerTagAndReturn(lp_timer))) == false)
+            {
+                DataTableSave0(true, ("HD_TimerState" + lp_gs + "Timer_" + HD_RegTimerTagAndReturn(lp_timer)), "true");
+                //Console.WriteLine(lp_gs + "=>" + HD_RegTimerTagAndReturn(lp_timer));
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_移除Timer组中的元素。使用"互动TG_添加Timer到Timer组"后可使用本函数进行移除元素。移除使用了"互动T_移除Timer"，同一个存储区（Timer组ID）序号重排，移除时该存储区如有其他操作会排队等待。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_timer"></param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        public static void HD_ClearTimerFromGroup(Timer lp_timer, string lp_gs)
+        {
+            HD_RemoveTimer(lp_timer, lp_gs);
+        }
+
+        //互动TG_为Timer组中的每个序号
+        //GE（星际2的Galaxy Editor）的宏让编辑器保存时自动生成脚本并整合进脚本进行格式调整，C#仅参考需自行编写
+        // #AUTOVAR(vs, string) = "#PARAM(group)";//"#PARAM(group)"是与字段、变量名一致的元素组名称，宏去声明string类型名为“Auto随机编号_vs”的自动变量，然后=右侧字符
+        // #AUTOVAR(ae) = HD_ReturnTimerNumMax(#AUTOVAR(vs));//宏去声明默认int类型名为“Auto随机编号_ae”的自动变量，然后=右侧字符
+        // #INITAUTOVAR(ai,increment)//宏去声明int类型名为“Auto随机编号_ai”的自动变量，用于下面for循环增量（increment是传入参数）
+        // #PARAM(var) = #PARAM(s);//#PARAM(var)是传进来的参数，用作“当前被挑选到的元素”（任意变量-整数 lp_var）， #PARAM(s)是传进来的参数用作"开始"（int lp_s）
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #PARAM(var) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #PARAM(var) >= #AUTOVAR(ae)) ) ; #PARAM(var) += #AUTOVAR(ai) ) {
+        //     #SUBFUNCS(actions)//代表用户GUI填写的所有动作
+        // }
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_为Timer组中的每个序号。每次挑选的元素序号会自行在动作组（委托函数）中使用，委托函数特征：void SubActionTest(int lp_var)，参数lp_var即每次遍历到的元素序号，请自行组织它在委托函数内如何使用，SubActionTest可直接作为本函数最后一个参数填入，填入多个动作范例：SubActionEventFuncref Actions += SubActionTest，然后Actions作为参数填入。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <param name="lp_start">开始</param>
+        /// <param name="lp_increment">增量</param>
+        /// <param name="lp_funcref">委托类型变量或函数引用</param>
+        public static void HD_ForEachTimerNumFromGroup(string lp_gs, int lp_start, int lp_increment, SubActionEventFuncref lp_funcref)
+        {
+            int lv_ae = HD_ReturnTimerNumMax(lp_gs);
+            int lv_var = lp_start;
+            int lv_ai = lp_increment;
+            for (; (lv_ai >= 0 && lv_var <= lv_ae) || (lv_ai < 0 && lv_var >= lv_ae); lv_var += lv_ai)
+            {
+                lp_funcref(lv_var);//用户填写的所有动作
+            }
+        }
+
+        //互动TG_为Timer组中的每个元素
+        // #AUTOVAR(vs, string) = "#PARAM(group)";
+        // #AUTOVAR(ae) = HD_ReturnTimerNumMax(#AUTOVAR(vs));
+        // #AUTOVAR(va)= #PARAM(s);
+        // #INITAUTOVAR(ai,increment)
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     DataTableSave(false, "TimerGFor"+ #AUTOVAR(vs) + IntToString(#AUTOVAR(va)), HD_ReturnTimerFromRegNum(#AUTOVAR(va),#AUTOVAR(vs)));
+        // }
+        // #AUTOVAR(va)= #PARAM(s);
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     #PARAM(var) = DataTableLoad(false, "TimerGFor"+ #AUTOVAR(vs) + IntToString(#AUTOVAR(va)));
+        //     #SUBFUNCS(actions)
+        // }
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_为Timer组中的每个元素。每次挑选的元素会自行在动作组（委托函数）中使用，委托函数特征：void SubActionTest(int lp_var)，参数lp_var即每次遍历到的元素，请自行组织它在委托函数内如何使用，SubActionTest可直接作为本函数最后一个参数填入，填入多个动作范例：SubActionEventFuncref Actions += SubActionTest，然后Actions作为参数填入。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <param name="lp_start">开始</param>
+        /// <param name="lp_increment">增量</param>
+        /// <param name="lp_funcref">委托类型变量或函数引用</param>
+        public static void HD_ForEachTimerFromGroup(string lp_gs, int lp_start, int lp_increment, SubActionEventFuncref lp_funcref)
+        {
+            string lv_vs = lp_gs;
+            int lv_ae = HD_ReturnTimerNumMax(lv_vs);
+            int lv_va = lp_start;
+            int lv_ai = lp_increment;
+            Timer lv_timer;
+            for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
+            {
+                DataTableSave0(false, "TimerGFor" + lv_vs + lv_va.ToString(), HD_ReturnTimerFromRegNum(lv_va, lv_vs));
+            }
+            lv_va = lp_start;
+            for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
+            {
+                lv_timer = (Timer)DataTableLoad0(false, "TimerGFor" + lv_vs + lv_va.ToString());
+                lp_funcref(lv_timer);//用户填写的所有动作
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_返回Timer组中随机元素。返回指定Timer组中的随机Timer。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static Timer HD_ReturnRandomTimerFromTimerGFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_num;
             int lv_a;
             Timer lv_c = null;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_num = HD_ReturnTimerNumMax(lp_gs);
             // Implementation
@@ -5329,6 +6678,76 @@ namespace MetalMaxSystem
             }
             return lv_c;
         }
+
+        //互动TG_添加Timer组到Timer组
+        // #AUTOVAR(vs, string) = "#PARAM(groupA)";
+        // #AUTOVAR(vsb, string) = "#PARAM(groupB)";
+        // #AUTOVAR(ae) = HD_ReturnTimerNumMax(#AUTOVAR(vs));
+        // #AUTOVAR(va)= 1;
+        // #AUTOVAR(ai)= 1;
+        // #AUTOVAR(var);
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     #AUTOVAR(var) = HD_ReturnTimerFromRegNum(#AUTOVAR(va), #AUTOVAR(vs));
+        //     HD_AddTimerToGroup(#AUTOVAR(var), #AUTOVAR(vsb));
+        // }
+
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_添加Timer组到Timer组。添加一个Timer组A的元素到另一个Timer组B，相同Timer被认为是同一个。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_groupA"></param>
+        /// <param name="lp_groupB"></param>
+        public static void HD_AddTimerGToTimerG(string lp_groupA, string lp_groupB)
+        {
+            string lv_vsa = lp_groupA;
+            string lv_vsb = lp_groupB;
+            int lv_ae = HD_ReturnTimerNumMax(lv_vsa);
+            int lv_va = 1;
+            int lv_ai = 1;
+            Timer lv_var;
+            for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
+            {
+                lv_var = HD_ReturnTimerFromRegNum(lv_va, lv_vsa);
+                HD_AddTimerToGroup(lv_var, lv_vsb);
+            }
+        }
+
+        //互动TG_从Timer组移除Timer组
+        // #AUTOVAR(vs, string) = "#PARAM(groupA)";
+        // #AUTOVAR(vsb, string) = "#PARAM(groupB)";
+        // #AUTOVAR(ae) = HD_ReturnTimerNumMax(#AUTOVAR(vs));
+        // #AUTOVAR(va)= 1;
+        // #AUTOVAR(ai)= 1;
+        // #AUTOVAR(var);
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     #AUTOVAR(var) = HD_ReturnTimerFromRegNum(#AUTOVAR(va), #AUTOVAR(vs));
+        //     HD_RemoveTimer(#AUTOVAR(var), #AUTOVAR(vsb));
+        // }
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_从Timer组移除Timer组。将Timer组A的元素从Timer组B中移除，相同Timer被认为是同一个。移除使用了"互动T_移除Timer"，同一个存储区（Timer组ID）序号重排，移除时该存储区如有其他操作会排队等待。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_groupA"></param>
+        /// <param name="lp_groupB"></param>
+        public static void HD_ClearTimerGFromTimerG(string lp_groupA, string lp_groupB)
+        {
+            string lv_vsa = lp_groupA;
+            string lv_vsb = lp_groupB;
+            int lv_ae = HD_ReturnTimerNumMax(lv_vsa);
+            int lv_va = 1;
+            int lv_ai = 1;
+            Timer lv_var;
+            for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
+            {
+                lv_var = HD_ReturnTimerFromRegNum(lv_va, lv_vsa);
+                HD_RemoveTimer(lv_var, lv_vsb);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动TG_移除Timer组全部元素。将Timer组（Key区）存储的元素全部移除，相同Timer被认为是同一个。移除时同一个存储区（Timer组ID）序号不进行重排，但该存储区如有其他操作会排队等待。Timer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Timer组到Timer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认填Timer组名称</param>
         public static void HD_RemoveTimerGAll(string lp_key)
         {
             // Variable Declarations
@@ -5336,13 +6755,12 @@ namespace MetalMaxSystem
             int lv_num;
             string lv_tag = "";
             int lv_a;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "Timer");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             // Implementation
             ThreadWait(lv_str);
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            DataTableSave0(true, "Key_TimerGroup" + lv_str, 1);
             for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
             {
                 lv_tag = DataTableLoad1(true, (lp_key + "TimerTag"), lv_a).ToString();
@@ -5350,9 +6768,9 @@ namespace MetalMaxSystem
                 DataTableClear0(true, "HD_IfTimerTag" + lv_str + "_" + lv_tag);
                 DataTableClear0(true, "HD_TimerCV" + lv_str + "_" + lv_tag);
                 DataTableClear0(true, "HD_TimerState" + lv_str + "_" + lv_tag);
-                DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                DataTableSave0(true, (lp_key + "TimerNum"), lv_num);
             }
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            DataTableSave0(true, "Key_TimerGroup" + lv_str, 0);
         }
 
         //--------------------------------------------------------------------------------------------------
@@ -5363,10 +6781,19 @@ namespace MetalMaxSystem
 
         #region 数字
 
+        //提示：可以将数字作为模板修改后产生其他类型
+        //提示：尽可能使用对口类型，以防值类型与引用类型发生转换时拆装箱降低性能
+
         //--------------------------------------------------------------------------------------------------
         // 数字组Start
         //--------------------------------------------------------------------------------------------------
-        public static int HD_RegIntTagAndReturn_Int(int lp_integer)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_注册Integer标签句柄并返回。为Integer自动设置新的标签句柄，重复时会返回已注册的Integer标签。这是一个内部函数，一般不需要自动使用
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <returns></returns>
+        private static int HD_RegIntegerTagAndReturn_Int(int lp_integer)//内部使用
         {
             // Variable Declarations
             int lv_jBNum;
@@ -5375,13 +6802,13 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableLoad0(true, "HD_IntJBNum");
+            lv_jBNum = (int)DataTableLoad0(true, "HD_IntegerJBNum");
             // Implementation
             if ((lv_jBNum == 0))
             {
                 lv_j = (lv_jBNum + 1);
-                DataTableSave0(true, "HD_IntJBNum", lv_j);
-                DataTableSave0(true, ("HD_Int_" + lv_j.ToString()), lp_integer);
+                DataTableSave0(true, "HD_IntegerJBNum", lv_j);
+                DataTableSave0(true, ("HD_Integer_" + lv_j.ToString()), lp_integer);
             }
             else
             {
@@ -5390,7 +6817,7 @@ namespace MetalMaxSystem
                 for (; auto_var <= auto_ae; auto_var += 1)
                 {
                     lv_j = auto_var;
-                    if ((int)DataTableLoad0(true, ("HD_Int_" + lv_j.ToString())) == lp_integer)
+                    if ((int)DataTableLoad0(true, ("HD_Integer_" + lv_j.ToString())) == lp_integer)
                     {
                         break;
                     }
@@ -5399,15 +6826,21 @@ namespace MetalMaxSystem
                         if ((lv_j == lv_jBNum))
                         {
                             lv_j = (lv_jBNum + 1);
-                            DataTableSave0(true, "HD_IntJBNum", lv_j);
-                            DataTableSave0(true, ("HD_Int_" + lv_j.ToString()), lp_integer);
+                            DataTableSave0(true, "HD_IntegerJBNum", lv_j);
+                            DataTableSave0(true, ("HD_Integer_" + lv_j.ToString()), lp_integer);
                         }
                     }
                 }
             }
             return lv_j;
         }
-        public static int HD_ReturnIntTag_Int(int lp_integer)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_返回Integer已注册标签句柄。返回一个Integer的已注册标签，如果失败返回null
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <returns></returns>
+        public static int HD_ReturnIntegerTag_Int(int lp_integer)
         {
             // Variable Declarations
             int lv_jBNum;
@@ -5416,21 +6849,27 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableLoad0(true, "HD_IntJBNum");
+            lv_jBNum = (int)DataTableLoad0(true, "HD_IntegerJBNum");
             // Implementation
             auto_ae = lv_jBNum;
             auto_var = 1;
             for (; auto_var <= auto_ae; auto_var += 1)
             {
                 lv_j = auto_var;
-                if ((int)DataTableLoad0(true, "HD_Int_" + lv_j.ToString()) == lp_integer)
+                if ((int)DataTableLoad0(true, "HD_Integer_" + lv_j.ToString()) == lp_integer)
                 {
                     break;
                 }
             }
             return lv_j;
         }
-        public static string HD_RegIntTagAndReturn(int lp_integer)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_注册Integer标签句柄并返回。为Integer自动设置新的标签句柄，重复时会返回已注册的Integer标签。这是一个内部函数，一般不需要自动使用
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <returns></returns>
+        private static string HD_RegIntegerTagAndReturn(int lp_integer)//内部使用
         {
             // Variable Declarations
             int lv_jBNum;
@@ -5440,14 +6879,14 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableLoad0(true, "HD_IntJBNum");
+            lv_jBNum = (int)DataTableLoad0(true, "HD_IntegerJBNum");
             lv_tag = "";
             // Implementation
             if ((lv_jBNum == 0))
             {
                 lv_j = (lv_jBNum + 1);
-                DataTableSave0(true, "HD_IntJBNum", lv_j);
-                DataTableSave0(true, ("HD_Int_" + lv_j.ToString()), lp_integer);
+                DataTableSave0(true, "HD_IntegerJBNum", lv_j);
+                DataTableSave0(true, ("HD_Integer_" + lv_j.ToString()), lp_integer);
             }
             else
             {
@@ -5456,7 +6895,7 @@ namespace MetalMaxSystem
                 for (; auto_var <= auto_ae; auto_var += 1)
                 {
                     lv_j = auto_var;
-                    if ((int)DataTableLoad0(true, "HD_Int_" + lv_j.ToString()) == lp_integer)
+                    if ((int)DataTableLoad0(true, "HD_Integer_" + lv_j.ToString()) == lp_integer)
                     {
                         break;
                     }
@@ -5465,8 +6904,8 @@ namespace MetalMaxSystem
                         if ((lv_j == lv_jBNum))
                         {
                             lv_j = (lv_jBNum + 1);
-                            DataTableSave0(true, "HD_IntJBNum", lv_j);
-                            DataTableSave0(true, ("HD_Int_" + lv_j.ToString()), lp_integer);
+                            DataTableSave0(true, "HD_IntegerJBNum", lv_j);
+                            DataTableSave0(true, ("HD_Integer_" + lv_j.ToString()), lp_integer);
                         }
                     }
                 }
@@ -5475,7 +6914,13 @@ namespace MetalMaxSystem
             //Console.WriteLine(("Tag：" + lv_tag));
             return lv_tag;
         }
-        public static string HD_ReturnIntTag(int lp_integer)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_返回Integer已注册标签句柄。返回一个Integer的已注册标签，如果失败返回null
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <returns></returns>
+        public static string HD_ReturnIntegerTag(int lp_integer)
         {
             // Variable Declarations
             int lv_jBNum;
@@ -5485,14 +6930,14 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableLoad0(true, "HD_IntJBNum");
+            lv_jBNum = (int)DataTableLoad0(true, "HD_IntegerJBNum");
             // Implementation
             auto_ae = lv_jBNum;
             auto_var = 1;
             for (; auto_var <= auto_ae; auto_var += 1)
             {
                 lv_j = auto_var;
-                if ((int)DataTableLoad0(true, "HD_Int_" + lv_j.ToString()) == lp_integer)
+                if ((int)DataTableLoad0(true, "HD_Integer_" + lv_j.ToString()) == lp_integer)
                 {
                     lv_tag = lv_j.ToString();
                     break;
@@ -5500,7 +6945,15 @@ namespace MetalMaxSystem
             }
             return lv_tag;
         }
-        public static void HD_RegInt(int lp_integer, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_注册Integer(高级)。在指定Key存入Integer，固有状态、自定义值是Integer独一无二的标志（本函数重复注册会刷新），之后可用互动I_"返回Integer注册总数"、"返回Integer序号"、"返回序号对应Integer"、"返回序号对应Integer标签"、"返回Integer自定义值"。Integer组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Integer组转为Key。首次注册时固有状态为true（相当于单位组单位活体），如需另外设置多个标记可使用"互动I_设定Integer状态/自定义值"
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <param name="lp_key">存储键区，默认值"_Integer"</param>
+        /// <param name="lp_inherentStats">固有状态</param>
+        /// <param name="lp_inherentCustomValue">固有自定义值</param>
+        public static void HD_RegInteger(int lp_integer, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
         {
             // Variable Declarations
             string lv_str;
@@ -5514,21 +6967,21 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_str = (lp_key + "Int");
+            lv_str = (lp_key + "Integer");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             lv_jBNum = (int)DataTableLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
             // Implementation
             ThreadWait(lv_str);
-            lv_tagStr = HD_RegIntTagAndReturn(lp_integer);
+            lv_tagStr = HD_RegIntegerTagAndReturn(lp_integer);
             lv_tag = Convert.ToInt32(lv_tagStr);
             if ((lv_num == 0))
             {
                 lv_i = (lv_num + 1);
                 DataTableSave0(true, (lv_str + "Num"), lv_i);
                 DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
-                DataTableSave0(true, (("HD_IfIntTag" + "") + "_" + lv_tagStr), true);
-                DataTableSave1(true, ("HD_IfIntTag" + lv_str), lv_tag, true);
+                DataTableSave0(true, (("HD_IfIntegerTag" + "") + "_" + lv_tagStr), true);
+                DataTableSave1(true, ("HD_IfIntegerTag" + lv_str), lv_tag, true);
             }
             else
             {
@@ -5550,17 +7003,23 @@ namespace MetalMaxSystem
                                 lv_i = (lv_num + 1);
                                 DataTableSave0(true, (lv_str + "Num"), lv_i);
                                 DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
-                                DataTableSave0(true, (("HD_IfIntTag" + "") + "_" + lv_tagStr), true);
-                                DataTableSave1(true, ("HD_IfIntTag" + lv_str), lv_tag, true);
+                                DataTableSave0(true, (("HD_IfIntegerTag" + "") + "_" + lv_tagStr), true);
+                                DataTableSave1(true, ("HD_IfIntegerTag" + lv_str), lv_tag, true);
                             }
                         }
                     }
                 }
             }
-            DataTableSave0(true, ("HD_IntState" + "" + "_" + lv_tagStr), lp_inherentStats);
-            DataTableSave0(true, ("HD_IntCV" + "" + "_" + lv_tagStr), lp_inherentCustomValue);
+            DataTableSave0(true, ("HD_IntegerState" + "" + "_" + lv_tagStr), lp_inherentStats);
+            DataTableSave0(true, ("HD_IntegerCV" + "" + "_" + lv_tagStr), lp_inherentCustomValue);
         }
-        public static void HD_RegInt_Simple(int lp_integer, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_注册Integer。在指定Key存入Integer，固有状态、自定义值是Integer独一无二的标志（本函数重复注册不会刷新），之后可用互动I_"返回Integer注册总数"、"返回Integer序号"、"返回序号对应Integer"、"返回Integer自定义值"。Integer组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Integer组转为Key。首次注册时固有状态为true（相当于单位组单位活体），之后只能通过"互动I_注册Integer（高级）"改写，如需另外设置多个标记可使用"互动I_设定Integer状态/自定义值"
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <param name="lp_key">存储键区，默认值"_Integer"</param>
+        public static void HD_RegInteger_Simple(int lp_integer, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -5574,21 +7033,21 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_str = (lp_key + "Int");
+            lv_str = (lp_key + "Integer");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             lv_jBNum = (int)DataTableLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
             // Implementation
             ThreadWait(lv_str);
-            lv_tagStr = HD_RegIntTagAndReturn(lp_integer);
+            lv_tagStr = HD_RegIntegerTagAndReturn(lp_integer);
             lv_tag = Convert.ToInt32(lv_tagStr);
             if ((lv_num == 0))
             {
                 lv_i = (lv_num + 1);
                 DataTableSave0(true, (lv_str + "Num"), lv_i);
                 DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
-                DataTableSave0(true, (("HD_IfIntTag" + "") + "_" + lv_tagStr), true);
-                DataTableSave1(true, ("HD_IfIntTag" + lv_str), lv_tag, true);
+                DataTableSave0(true, (("HD_IfIntegerTag" + "") + "_" + lv_tagStr), true);
+                DataTableSave1(true, ("HD_IfIntegerTag" + lv_str), lv_tag, true);
             }
             else
             {
@@ -5610,19 +7069,25 @@ namespace MetalMaxSystem
                                 lv_i = (lv_num + 1);
                                 DataTableSave0(true, (lv_str + "Num"), lv_i);
                                 DataTableSave1(true, (lv_str + "Tag"), lv_i, lv_tagStr);
-                                DataTableSave0(true, (("HD_IfIntTag" + "") + "_" + lv_tagStr), true);
-                                DataTableSave1(true, ("HD_IfIntTag" + lv_str), lv_tag, true);
+                                DataTableSave0(true, (("HD_IfIntegerTag" + "") + "_" + lv_tagStr), true);
+                                DataTableSave1(true, ("HD_IfIntegerTag" + lv_str), lv_tag, true);
                             }
                         }
                     }
                 }
             }
-            if ((DataTableKeyExists(true, ("HD_Int" + "State" + "_" + lv_tag.ToString())) == false))
+            if ((DataTableKeyExists(true, ("HD_Integer" + "State" + "_" + lv_tag.ToString())) == false))
             {
-                DataTableSave1(true, (("HD_Int" + "State")), lv_tag, "true");
+                DataTableSave1(true, (("HD_Integer" + "State")), lv_tag, "true");
             }
         }
-        public static void HD_DestroyP(int lp_integer, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_注销Integer。用"互动I_注册Integer"到Key，之后可用本函数彻底摧毁注册信息并将序号重排（包括Integer标签有效状态、固有状态及自定义值）。注册注销同时进行会排队等待0.0625s直到没有注销动作，注销并不提升多少内存只是变量内容清空并序号重利用，非特殊要求一般不注销，而是用"互动I_设定Integer状态"让Integer状态失效（类似单位组的单位活体状态）。Integer组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Integer组转为Key。本函数无法摧毁用"互动I_设定Integer状态/自定义值"创建的状态和自定义值，需手工填入""来排泄（非大量注销则提升内存量极小，可不管）。本函数参数Key若填Integer组变量ID时会清空Integer组专用状态
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <param name="lp_key">存储键区，默认值"_Integer"</param>
+        public static void HD_DestroyInteger(int lp_integer, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -5631,43 +7096,48 @@ namespace MetalMaxSystem
             int lv_a;
             int lv_b;
             string lv_c;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "Int");
+            lv_str = (lp_key + "Integer");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
-            lv_tag = HD_ReturnIntTag(lp_integer);
+            lv_tag = HD_ReturnIntegerTag(lp_integer);
             lv_c = "";
             // Implementation
             if ((lv_tag != null))
             {
                 ThreadWait(lv_str);
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                DataTableSave0(true, "Key_IntegerGroup" + lv_str, 1);
                 for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
                 {
-                    if ((DataTableLoad1(true, (lp_key + "IntTag"), lv_a).ToString() == lv_tag))
+                    if ((DataTableLoad1(true, (lp_key + "IntegerTag"), lv_a).ToString() == lv_tag))
                     {
                         lv_num -= 1;
-                        DataTableClear0(true, "HD_IfIntTag_" + lv_tag);
-                        DataTableClear0(true, "HD_IfIntTag" + lv_str + "_" + lv_tag);
-                        DataTableClear0(true, "HD_Int_" + lv_tag);
-                        DataTableClear0(true, "HD_IntCV_" + lv_tag);
-                        DataTableClear0(true, "HD_IntState_" + lv_tag);
-                        DataTableClear0(true, "HD_IntCV" + lv_str + "_" + lv_tag);
-                        DataTableClear0(true, "HD_IntState" + lv_str + "_" + lv_tag);
-                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        DataTableClear0(true, "HD_IfIntegerTag_" + lv_tag);
+                        DataTableClear0(true, "HD_IfIntegerTag" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_Integer_" + lv_tag);
+                        DataTableClear0(true, "HD_IntegerCV_" + lv_tag);
+                        DataTableClear0(true, "HD_IntegerState_" + lv_tag);
+                        DataTableClear0(true, "HD_IntegerCV" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_IntegerState" + lv_str + "_" + lv_tag);
+                        DataTableSave0(true, (lp_key + "IntegerNum"), lv_num);
                         for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
                         {
-                            lv_c = DataTableLoad1(true, (lp_key + "IntTag"), lv_b + 1).ToString();
-                            DataTableSave1(true, (lp_key + "IntTag"), lv_b, lv_c);
+                            lv_c = DataTableLoad1(true, (lp_key + "IntegerTag"), lv_b + 1).ToString();
+                            DataTableSave1(true, (lp_key + "IntegerTag"), lv_b, lv_c);
                         }
                         //注销后触发序号重列，这里-1可以让挑选回滚，以再次检查重排后的当前挑选序号
                         lv_a -= 1;
                     }
                 }
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+                DataTableSave0(true, "Key_IntegerGroup" + lv_str, 0);
             }
         }
-        public static void HD_RemoveInt(int lp_integer, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_移除Integer。用"互动I_注册Integer"到Key，之后可用本函数仅摧毁Key区注册的信息并将序号重排，用于Integer组或多个键区仅移除Integer（保留Integer标签有效状态、固有值）。注册注销同时进行会排队等待0.0625s直到没有注销动作，注销并不提升多少内存只是变量内容清空并序号重利用，非特殊要求一般不注销，而是用"互动I_设定Integer状态"让Integer状态失效（类似单位组的单位活体状态）。Integer组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Integer组转为Key。本函数无法摧毁用"互动I_设定Integer状态/自定义值"创建的状态和自定义值，需手工填入""来排泄（非大量注销则提升内存量极小，可不管）。本函数参数Key若填Integer组变量ID时会清空Integer组专用状态
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <param name="lp_key">存储键区，默认值"_Integer"</param>
+        public static void HD_RemoveInteger(int lp_integer, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -5676,51 +7146,62 @@ namespace MetalMaxSystem
             int lv_a;
             int lv_b;
             string lv_c;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "Int");
+            lv_str = (lp_key + "Integer");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
-            lv_tag = HD_ReturnIntTag(lp_integer);
+            lv_tag = HD_ReturnIntegerTag(lp_integer);
             lv_c = "";
             // Implementation
             if ((lv_tag != null))
             {
                 ThreadWait(lv_str);
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                DataTableSave0(true, "Key_IntegerGroup" + lv_str, 1);
                 for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
                 {
-                    if ((DataTableLoad1(true, (lp_key + "IntTag"), lv_a) == lv_tag))
+                    if ((DataTableLoad1(true, (lp_key + "IntegerTag"), lv_a) == lv_tag))
                     {
                         lv_num -= 1;
-                        DataTableClear0(true, "HD_IfIntTag" + lv_str + "_" + lv_tag);
-                        DataTableClear0(true, "HD_IntCV" + lv_str + "_" + lv_tag);
-                        DataTableClear0(true, "HD_IntState" + lv_str + "_" + lv_tag);
-                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        DataTableClear0(true, "HD_IfIntegerTag" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_IntegerCV" + lv_str + "_" + lv_tag);
+                        DataTableClear0(true, "HD_IntegerState" + lv_str + "_" + lv_tag);
+                        DataTableSave0(true, (lp_key + "IntegerNum"), lv_num);
                         for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
                         {
-                            lv_c = DataTableLoad1(true, (lp_key + "IntTag"), lv_b + 1).ToString();
-                            DataTableSave1(true, (lp_key + "IntTag"), lv_b, lv_c);
+                            lv_c = DataTableLoad1(true, (lp_key + "IntegerTag"), lv_b + 1).ToString();
+                            DataTableSave1(true, (lp_key + "IntegerTag"), lv_b, lv_c);
                         }
                         //注销后触发序号重列，这里-1可以让挑选回滚，以再次检查重排后的当前挑选序号
                         lv_a -= 1;
                     }
                 }
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+                DataTableSave0(true, "Key_IntegerGroup" + lv_str, 0);
             }
         }
-        public static int HD_ReturnIntNumMax(string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_返回Integer注册总数。必须先使用"互动I_注册Integer"才能返回指定Key里的注册总数。Integer组使用时，可用"获取变量的内部名称"将Integer组转为Key。
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认值"_Integer"</param>
+        /// <returns></returns>
+        public static int HD_ReturnIntegerNumMax(string lp_key)
         {
             // Variable Declarations
             string lv_str;
             int lv_num;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "Int");
+            lv_str = (lp_key + "Integer");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             // Implementation
             return lv_num;
         }
-        public static int HD_ReturnIntNum(int lp_integer, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_返回Integer序号。使用"互动I_注册Integer"后使用本函数可返回Key里的注册序号，Key无元素返回0，Key有元素但对象不在里面则返回-1，Integer标签尚未注册则返回-2。Integer组使用时，可用"获取变量的内部名称"将Integer组转为Key
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <param name="lp_key">存储键区，默认值"_Integer"</param>
+        /// <returns></returns>
+        public static int HD_ReturnIntegerNum(int lp_integer, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -5734,9 +7215,9 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_str = (lp_key + "Int");
+            lv_str = (lp_key + "Integer");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
-            lv_tag = HD_ReturnIntTag(lp_integer);
+            lv_tag = HD_ReturnIntegerTag(lp_integer);
             lv_torf = -1;
             // Implementation
             for (auto_i = 1; auto_i <= auto_n; auto_i += 1)
@@ -5770,180 +7251,265 @@ namespace MetalMaxSystem
             }
             return lv_torf;
         }
-        public static int HD_ReturnIntFromRegNum(int lp_regNum, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_返回序号对应Integer。使用"互动I_注册Integer"后，在参数填入注册序号可返回Integer。Integer组使用时，可用"获取变量的内部名称"将Integer组转为Key
+        /// </summary>
+        /// <param name="lp_regNum"></param>
+        /// <param name="lp_key">存储键区，默认值"_Integer"</param>
+        /// <returns></returns>
+        public static int HD_ReturnIntegerFromRegNum(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             int lv_integer;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "Int");
+            lv_str = (lp_key + "Integer");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
-            lv_integer = (int)DataTableLoad0(true, ("HD_Int_" + lv_tag));
+            lv_integer = (int)DataTableLoad0(true, ("HD_Integer_" + lv_tag));
             // Implementation
             return lv_integer;
         }
-        public static int HD_ReturnIntFromTag(int lp_tag)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_返回句柄标签对应Integer。使用"互动I_注册Integer"后，在参数填入句柄标签（整数）可返回Integer，标签是Integer的句柄。Integer组使用时，可用"获取变量的内部名称"将Integer组转为Key
+        /// </summary>
+        /// <param name="lp_tag">句柄标签</param>
+        /// <returns></returns>
+        public static int HD_ReturnIntegerFromTag(int lp_tag)
         {
             // Variable Declarations
             string lv_tag = "";
             int lv_integer;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = lp_tag.ToString();
-            lv_integer = (int)DataTableLoad0(true, ("HD_Int_" + lv_tag));
+            lv_integer = (int)DataTableLoad0(true, ("HD_Integer_" + lv_tag));
             // Implementation
             return lv_integer;
         }
-        public static string HD_ReturnIntTagFromRegNum_String(int lp_regNum, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_返回序号对应Integer标签句柄。使用"互动I_注册Integer"后，在参数填入注册序号可返回Integer标签（字符串）。Integer组使用时，可用"获取变量的内部名称"将Integer组转为Key
+        /// </summary>
+        /// <param name="lp_regNum">注册序号</param>
+        /// <param name="lp_key">存储键区，默认值"_Integer"</param>
+        /// <returns></returns>
+        public static string HD_ReturnIntegerTagFromRegNum_String(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "Int");
+            lv_str = (lp_key + "Integer");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return lv_tag;
         }
-        public static int HD_ReturnIntTagFromRegNum_Int(int lp_regNum, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_返回序号对应Integer标签句柄。使用"互动I_注册Integer"后，在参数填入注册序号可返回Integer标签（整数）。Integer组使用时，可用"获取变量的内部名称"将Integer组转为Key
+        /// </summary>
+        /// <param name="lp_regNum">注册序号</param>
+        /// <param name="lp_key">存储键区，默认值"_Integer"</param>
+        /// <returns></returns>
+        public static int HD_ReturnIntegerTagFromRegNum_Int(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "Int");
+            lv_str = (lp_key + "Integer");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return Convert.ToInt32(lv_tag);
         }
-        public static void HD_SetPState(int lp_integer, string lp_key, string lp_stats)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_设置Integer状态。必须先"注册"获得功能库内部句柄，再使用本函数给Integer设定一个状态值，之后可用"互动I_返回Integer状态"。类型参数用以记录多个不同状态，仅当"类型"参数填Integer组ID转的Integer串时，状态值"true"和"false"是Integer的Integer组专用状态值，用于内部函数筛选Integer状态（相当于单位组单位索引是否有效），其他类型不会干扰系统内部，可随意填写。虽然注销时反向清空注册信息，但用"互动I_设定Integer状态/自定义值"创建的值需要手工填入""来排泄（非大量注销则提升内存量极小，可不管）。注：固有状态值是注册函数赋予的系统内部变量（相当于单位组单位是否活体），只能通过"互动I_注册Integer（高级）"函数或将本函数参数"类型"设为空时改写
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <param name="lp_key">存储类型，默认值"State"</param>
+        /// <param name="lp_stats">状态</param>
+        public static void HD_SetIntegerState(int lp_integer, string lp_key, string lp_stats)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "Int");
-            lv_tag = HD_RegIntTagAndReturn(lp_integer);
+            lv_str = (lp_key + "Integer");
+            lv_tag = HD_RegIntegerTagAndReturn(lp_integer);
             // Implementation
-            DataTableSave0(true, ("HD_IntState" + lv_str + "_" + lv_tag), lp_stats);
+            DataTableSave0(true, ("HD_IntegerState" + lv_str + "_" + lv_tag), lp_stats);
         }
-        public static string HD_ReturnIntState(int lp_integer, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_返回Integer状态。使用"互动I_设定Integer状态"后可使用本函数，将本函数参数"类型"设为空时返回固有值。类型参数用以记录多个不同状态，仅当"类型"参数为Integer组ID转的字符串时，返回的状态值"true"和"false"是Integer的Integer组专用状态值，用于内部函数筛选Integer状态（相当于单位组单位索引是否有效）
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <param name="lp_key">存储类型，默认值"State"</param>
+        /// <returns></returns>
+        public static string HD_ReturnIntegerState(int lp_integer, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_stats;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "Int");
-            lv_tag = HD_ReturnIntTag(lp_integer);
-            lv_stats = DataTableLoad0(true, ("HD_IntState" + lv_str + "_" + lv_tag)).ToString();
+            lv_str = (lp_key + "Integer");
+            lv_tag = HD_ReturnIntegerTag(lp_integer);
+            lv_stats = DataTableLoad0(true, ("HD_IntegerState" + lv_str + "_" + lv_tag)).ToString();
             // Implementation
             return lv_stats;
         }
-        public static void HD_SetPCV(int lp_integer, string lp_key, string lp_customValue)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_设置Integer自定义值。必须先"注册"获得功能库内部句柄，再使用本函数设定Integer的自定义值，之后可使用"互动I_返回Integer自定义值"，类型参数用以记录多个不同自定义值。注：固有自定义值是注册函数赋予的系统内部变量，只能通过"互动I_注册Integer（高级）"函数或将本函数参数"类型"设为空时改写
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <param name="lp_key">存储类型，默认值"A"</param>
+        /// <param name="lp_customValue">自定义值</param>
+        public static void HD_SetIntegerCV(int lp_integer, string lp_key, string lp_customValue)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "Int");
-            lv_tag = HD_RegIntTagAndReturn(lp_integer);
+            lv_str = (lp_key + "Integer");
+            lv_tag = HD_RegIntegerTagAndReturn(lp_integer);
             // Implementation
-            DataTableSave0(true, ("HD_IntCV" + lv_str + "_" + lv_tag), lp_customValue);
+            DataTableSave0(true, ("HD_IntegerCV" + lv_str + "_" + lv_tag), lp_customValue);
         }
-        public static string HD_ReturnIntCV(int lp_integer, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_返回Integer自定义值。使用"互动I_设定Integer自定义值"后可使用本函数，将本函数参数"类型"设为空时返回固有值，该参数用以记录多个不同自定义值
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <param name="lp_key">存储类型，默认值"A"</param>
+        /// <returns></returns>
+        public static string HD_ReturnIntegerCV(int lp_integer, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_customValue;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "Int");
-            lv_tag = HD_ReturnIntTag(lp_integer);
-            lv_customValue = DataTableLoad0(true, ("HD_IntCV" + lv_str + "_" + lv_tag)).ToString();
+            lv_str = (lp_key + "Integer");
+            lv_tag = HD_ReturnIntegerTag(lp_integer);
+            lv_customValue = DataTableLoad0(true, ("HD_IntegerCV" + lv_str + "_" + lv_tag)).ToString();
             // Implementation
             return lv_customValue;
         }
-        public static string HD_ReturnIntState_Only(int lp_integer)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_返回Integer固有状态。必须先使用"互动I_注册Integer"才能返回到该值，固有状态是独一无二的标记（相当于单位组单位是否活体）
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <returns></returns>
+        public static string HD_ReturnIntegerState_Only(int lp_integer)
         {
             // Variable Declarations
             string lv_tag = "";
             string lv_stats;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_tag = HD_ReturnIntTag(lp_integer);
-            lv_stats = DataTableLoad0(true, ("HD_IntState" + "" + "_" + lv_tag)).ToString();
+            lv_tag = HD_ReturnIntegerTag(lp_integer);
+            lv_stats = DataTableLoad0(true, ("HD_IntegerState" + "" + "_" + lv_tag)).ToString();
             // Implementation
             return lv_stats;
         }
-        public static string HD_ReturnIntCV_Only(int lp_integer)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_返回Integer固有自定义值。必须先使用"互动I_注册Integer"才能返回到该值，固有值是独一无二的标记
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <returns></returns>
+        public static string HD_ReturnIntegerCV_Only(int lp_integer)
         {
             // Variable Declarations
             string lv_tag = "";
             string lv_customValue;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_tag = HD_ReturnIntTag(lp_integer);
-            lv_customValue = DataTableLoad0(true, ("HD_IntCV" + "" + "_" + lv_tag)).ToString();
+            lv_tag = HD_ReturnIntegerTag(lp_integer);
+            lv_customValue = DataTableLoad0(true, ("HD_IntegerCV" + "" + "_" + lv_tag)).ToString();
             // Implementation
             return lv_customValue;
         }
-        public static void HD_SetPDouble(int lp_integer, double lp_realNumTag)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_设置Integer的实数标记。必须先"注册"获得功能库内部句柄，再使用本函数让Integer携带一个实数值，之后可使用"互动I_返回Integer的实数标记"。Integer组使用时，可用"获取变量的内部名称"将Integer组转为Key
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <param name="lp_realNumTag">实数标记</param>
+        public static void HD_SetIntegerDouble(int lp_integer, double lp_realNumTag)
         {
             // Variable Declarations
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_tag = HD_RegIntTagAndReturn(lp_integer);
+            lv_tag = HD_RegIntegerTagAndReturn(lp_integer);
             // Implementation
             DataTableSave0(true, ("HD_CDDouble_T_" + lv_tag), lp_realNumTag);
         }
-        public static double HD_ReturnIntDouble(int lp_integer)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_返回Integer的实数标记。使用"互动I_设定Integer的实数标记"后可使用本函数。Integer组使用时，可用"获取变量的内部名称"将Integer组转为Key
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <returns></returns>
+        public static double HD_ReturnIntegerDouble(int lp_integer)
         {
             // Variable Declarations
             string lv_tag = "";
             double lv_f;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_tag = HD_ReturnIntTag(lp_integer);
+            lv_tag = HD_ReturnIntegerTag(lp_integer);
             lv_f = (double)DataTableLoad0(true, ("HD_CDDouble_T_" + lv_tag));
             // Implementation
             return lv_f;
         }
-        public static bool HD_ReturnIfIntTag(int lp_integer)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_返回Integer标签句柄有效状态。将Integer视作独一无二的个体，标签是它本身，有效状态则类似"单位是否有效"，当使用"互动I_注册Integer"或"互动IG_添加Integer到Integer组"后激活Integer有效状态（值为"true"），除非使用"互动I_注册Integer（高级）"改写，否则直到注销才会摧毁
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <returns></returns>
+        public static bool HD_ReturnIfIntegerTag(int lp_integer)
         {
             // Variable Declarations
             string lv_tag = "";
             bool lv_torf;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_tag = HD_ReturnIntTag(lp_integer);
-            lv_torf = (bool)DataTableLoad0(true, ("HD_IfIntTag" + "" + "_" + lv_tag));
+            lv_tag = HD_ReturnIntegerTag(lp_integer);
+            lv_torf = (bool)DataTableLoad0(true, ("HD_IfIntegerTag" + "" + "_" + lv_tag));
             // Implementation
             return lv_torf;
         }
-        public static bool HD_ReturnIfIntTagKey(int lp_integer, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动I_返回Integer注册状态。使用"互动I_注册Integer"或"互动IG_添加Integer到Integer组"后可使用本函数获取注册Integer在Key中的注册状态，该状态只能注销或从Integer组中移除时清空。Integer组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将Integer组转为Key
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <param name="lp_key">存储键区，默认值"_Integer"</param>
+        /// <returns></returns>
+        public static bool HD_ReturnIfIntegerTagKey(int lp_integer, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             bool lv_torf;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "Int");
-            lv_tag = HD_ReturnIntTag(lp_integer);
-            lv_torf = (bool)DataTableLoad0(true, ("HD_IfIntTag" + lv_str + "_" + lv_tag));
+            lv_str = (lp_key + "Integer");
+            lv_tag = HD_ReturnIntegerTag(lp_integer);
+            lv_torf = (bool)DataTableLoad0(true, ("HD_IfIntegerTag" + lv_str + "_" + lv_tag));
             // Implementation
             return lv_torf;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_根据自定义值类型将Integer组排序。根据Integer携带的自定义值类型，对指定的Integer组元素进行冒泡排序。Integer组变量字符可通过"转换变量内部名称"获得
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认填Integer组名称</param>
+        /// <param name="lp_cVStr">自定义值类型</param>
+        /// <param name="lp_big">是否大值靠前</param>
         public static void HD_IntegerGSortCV(string lp_key, string lp_cVStr, bool lp_big)
         {
             // Automatic Variable Declarations
@@ -5971,9 +7537,9 @@ namespace MetalMaxSystem
             int autoE_ae;
             const int autoE_ai = 1;
             // Variable Initialization
-            lv_str = (lp_key + "Int");
+            lv_str = (lp_key + "Integer");
             ThreadWait(lv_str);
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            DataTableSave0(true, "Key_IntegerGroup" + lv_str, 1);
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
@@ -5981,8 +7547,8 @@ namespace MetalMaxSystem
             lv_a = 1;
             for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
             {
-                lv_tag = HD_ReturnIntTagFromRegNum_Int(lv_a, lp_key);
-                lv_tagValuestr = HD_ReturnIntCV(HD_ReturnIntFromTag(lv_tag), lp_cVStr);
+                lv_tag = HD_ReturnIntegerTagFromRegNum_Int(lv_a, lp_key);
+                lv_tagValuestr = HD_ReturnIntegerCV(HD_ReturnIntegerFromTag(lv_tag), lp_cVStr);
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
                 if ((lv_intStackOutSize == 0))
@@ -6027,7 +7593,7 @@ namespace MetalMaxSystem
                             //Console.WriteLine("大值靠前"+"，当前lv_b=" +IntToString(lv_b));
                             if (lv_tagValue > (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
                             {
-                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnIntTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
+                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnIntegerTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
                                 //Console.WriteLine("生效的lv_b：" + IntToString(lv_b));
                                 lv_intStackOutSize += 1;
                                 //Console.WriteLine("lv_intStackOutSize：" + IntToString(lv_intStackOutSize));
@@ -6074,22 +7640,28 @@ namespace MetalMaxSystem
             for (; ((autoE_ai >= 0 && lv_a <= autoE_ae) || (autoE_ai < 0 && lv_a >= autoE_ae)); lv_a += autoE_ai)
             {
                 //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
-                //lv_tag = DataTableLoad1(true, (lp_key + "IntTag"), lv_a).ToString(); //原始序号元素
+                //lv_tag = DataTableLoad1(true, (lp_key + "IntegerTag"), lv_a).ToString(); //原始序号元素
                 lv_tag = (int)DataTableLoad1(false, "IntStackOutTag", lv_a);
-                lv_tagValuestr = HD_ReturnIntCV(HD_ReturnIntFromTag(lv_tag), lp_cVStr);
+                lv_tagValuestr = HD_ReturnIntegerCV(HD_ReturnIntegerFromTag(lv_tag), lp_cVStr);
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
                 lv_b = (int)DataTableLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
-                                                                                    //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
                     //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
-                    DataTableSave1(true, (lp_key + "IntTag"), lv_a, lv_tag); //lv_tag放入新序号
-                                                                             //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                    DataTableSave1(true, (lp_key + "IntegerTag"), lv_a, lv_tag); //lv_tag放入新序号
+                    //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
                 }
             }
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            DataTableSave0(true, "Key_IntegerGroup" + lv_str, 0);
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_Integer组排序。对指定的Integer组元素进行冒泡排序（根据元素句柄）。Integer组变量字符可通过"转换变量内部名称"获得
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认填Integer组名称</param>
+        /// <param name="lp_big">是否大值靠前</param>
         public static void HD_IntegerGSort(string lp_key, bool lp_big)
         {
             // Automatic Variable Declarations
@@ -6116,9 +7688,9 @@ namespace MetalMaxSystem
             int autoE_ae;
             const int autoE_ai = 1;
             // Variable Initialization
-            lv_str = (lp_key + "Int");
+            lv_str = (lp_key + "Integer");
             ThreadWait(lv_str);
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            DataTableSave0(true, "Key_IntegerGroup" + lv_str, 1);
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
@@ -6126,7 +7698,7 @@ namespace MetalMaxSystem
             lv_a = 1;
             for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
             {
-                lv_tag = HD_ReturnIntTagFromRegNum_Int(lv_a, lp_key);
+                lv_tag = HD_ReturnIntegerTagFromRegNum_Int(lv_a, lp_key);
                 lv_tagValue = lv_tag;
                 //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
                 if ((lv_intStackOutSize == 0))
@@ -6171,7 +7743,7 @@ namespace MetalMaxSystem
                             //Console.WriteLine("大值靠前"+"，当前lv_b=" +IntToString(lv_b));
                             if (lv_tagValue > (int)DataTableLoad1(false, "IntStackOutTagValue", lv_b))
                             {
-                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnIntTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
+                                //Console.WriteLine("Num" + IntToString(lv_a) +"元素"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue) + ">第Lv_b="+IntToString(lv_b)+"元素"+IntToString(HD_ReturnIntegerTagFromRegNum(lv_b, lp_key))+"值"+IntToString(DataTableLoad1(false, "IntStackOutTagValue", lv_b)));
                                 //Console.WriteLine("生效的lv_b：" + IntToString(lv_b));
                                 lv_intStackOutSize += 1;
                                 //Console.WriteLine("lv_intStackOutSize：" + IntToString(lv_intStackOutSize));
@@ -6218,7 +7790,7 @@ namespace MetalMaxSystem
             for (; ((autoE_ai >= 0 && lv_a <= autoE_ae) || (autoE_ai < 0 && lv_a >= autoE_ae)); lv_a += autoE_ai)
             {
                 //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
-                //lv_tag = DataTableLoad1(true, (lp_key + "IntTag"), lv_a).ToString(); //原始序号元素
+                //lv_tag = DataTableLoad1(true, (lp_key + "IntegerTag"), lv_a).ToString(); //原始序号元素
                 lv_tag = (int)DataTableLoad1(false, "IntStackOutTag", lv_a);
                 lv_tagValue = lv_tag;
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
@@ -6227,27 +7799,70 @@ namespace MetalMaxSystem
                 if (lv_a != lv_b)
                 {
                     //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
-                    DataTableSave1(true, (lp_key + "IntTag"), lv_a, lv_tag); //lv_tag放入新序号
-                                                                             //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                    DataTableSave1(true, (lp_key + "IntegerTag"), lv_a, lv_tag); //lv_tag放入新序号
+                                                                                 //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
                 }
             }
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            DataTableSave0(true, "Key_IntegerGroup" + lv_str, 0);
         }
-        public static int HD_ReturnIntFromPGFunc(int lp_regNum, string lp_gs)
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_设定Integer的Integer组专用状态。给Integer组的Integer设定一个状态值（字符串），之后可用"互动I_返回Integer、互动IG_返回Integer组的Integer状态"。状态值"true"和"false"是Integer的Integer组专用状态值，用于内部函数筛选字符状态（相当于单位组单位索引是否有效），而本函数可以重设干预，影响函数"互动IG_返回Integer组元素数量（仅检索XX状态）"。与"互动I_设定Integer状态"功能相同，只是状态参数在Integer组中被固定为"Integer组变量的内部ID"。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <param name="lp_integerGroup"></param>
+        /// <param name="lp_groupState"></param>
+        public static void HD_SetIntegerGState(int lp_integer, string lp_integerGroup, string lp_groupState)
+        {
+            HD_SetIntegerState(lp_integer, lp_integerGroup, lp_groupState);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_返回Integer的Integer组专用状态。使用"互动I_设定Integer、互动IG_设定Integer组的Integer状态"后可使用本函数。与"互动I_返回Integer状态"功能相同，只是状态参数在Integer组中被固定为"Integer组变量的内部ID"。状态值"true"和"false"是Integer的Integer组专用状态值，用于内部函数筛选字符状态（相当于单位组单位索引是否有效）。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <param name="lp_integerGroup"></param>
+        public static void HD_ReturnIntegerGState(int lp_integer, string lp_integerGroup)
+        {
+            HD_ReturnIntegerState(lp_integer, lp_integerGroup);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_返回Integer组元素序号对应元素。返回Integer组元素序号指定Integer。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_regNum">注册序号</param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static int HD_ReturnIntegerFromIntegerGFunc(int lp_regNum, string lp_gs)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             int lv_integer;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_gs + "Int");
+            lv_str = (lp_gs + "Integer");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
-            lv_integer = (int)DataTableLoad0(true, ("HD_Int_" + lv_tag));
+            lv_integer = (int)DataTableLoad0(true, ("HD_Integer_" + lv_tag));
             // Implementation
             return lv_integer;
         }
-        public static int HD_ReturnIntGNumMax_StateTrueFunc(string lp_gs)
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_返回Integer组元素总数。返回指定Integer组的元素数量。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static int HD_ReturnIntegerGNumMax(string lp_gs)
+        {
+            return (int)DataTableLoad0(true, lp_gs + "IntegerNum");
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_返回Integer组元素总数（仅检测Integer组专用状态="true"）。返回指定Integer组的元素数量。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static int HD_ReturnIntegerGNumMax_StateTrueFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_a;
@@ -6260,12 +7875,12 @@ namespace MetalMaxSystem
             // Variable Initialization
             lv_b = "";
             // Implementation
-            auto_ae = HD_ReturnIntNumMax(lp_gs);
+            auto_ae = HD_ReturnIntegerNumMax(lp_gs);
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = HD_ReturnIntFromRegNum(lv_a, lp_gs);
-                lv_b = HD_ReturnIntState(lv_c, lp_gs);
+                lv_c = HD_ReturnIntegerFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnIntegerState(lv_c, lp_gs);
                 if ((lv_b == "true"))
                 {
                     lv_i += 1;
@@ -6273,7 +7888,13 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
-        public static int HD_ReturnIntGNumMax_StateFalseFunc(string lp_gs)
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_返回Integer组元素总数（仅检测Integer组专用状态="false"）。返回指定Integer组的元素数量。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static int HD_ReturnIntegerGNumMax_StateFalseFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_a;
@@ -6286,12 +7907,12 @@ namespace MetalMaxSystem
             // Variable Initialization
             lv_b = "";
             // Implementation
-            auto_ae = HD_ReturnIntNumMax(lp_gs);
+            auto_ae = HD_ReturnIntegerNumMax(lp_gs);
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = HD_ReturnIntFromRegNum(lv_a, lp_gs);
-                lv_b = HD_ReturnIntState(lv_c, lp_gs);
+                lv_c = HD_ReturnIntegerFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnIntegerState(lv_c, lp_gs);
                 if ((lv_b == "false"))
                 {
                     lv_i += 1;
@@ -6299,7 +7920,13 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
-        public static int HD_ReturnIntGNumMax_StateUselessFunc(string lp_gs)
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_返回Integer组元素总数（仅检测Integer组无效专用状态："false"或""）。返回指定Integer组的元素数量（false、""、null）。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static int HD_ReturnIntegerGNumMax_StateUselessFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_a;
@@ -6312,12 +7939,12 @@ namespace MetalMaxSystem
             // Variable Initialization
             lv_b = "";
             // Implementation
-            auto_ae = HD_ReturnIntNumMax(lp_gs);
+            auto_ae = HD_ReturnIntegerNumMax(lp_gs);
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = HD_ReturnIntFromRegNum(lv_a, lp_gs);
-                lv_b = HD_ReturnIntState(lv_c, lp_gs);
+                lv_c = HD_ReturnIntegerFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnIntegerState(lv_c, lp_gs);
                 if (((lv_b == "false") || (lv_b == "") || (lv_b == null)))
                 {
                     lv_i += 1;
@@ -6325,7 +7952,14 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
-        public static int HD_ReturnIntGNumMax_StateFunc_Specify(string lp_gs, string lp_State)
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_返回Integer组元素总数（仅检测Integer组指定专用状态）。返回指定Integer组的元素数量。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <param name="lp_State">Integer组专用状态</param>
+        /// <returns></returns>
+        public static int HD_ReturnIntegerGNumMax_StateFunc_Specify(string lp_gs, string lp_State)
         {
             // Variable Declarations
             int lv_a;
@@ -6338,12 +7972,12 @@ namespace MetalMaxSystem
             // Variable Initialization
             lv_b = "";
             // Implementation
-            auto_ae = HD_ReturnIntNumMax(lp_gs);
+            auto_ae = HD_ReturnIntegerNumMax(lp_gs);
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = HD_ReturnIntFromRegNum(lv_a, lp_gs);
-                lv_b = HD_ReturnIntState(lv_c, lp_gs);
+                lv_c = HD_ReturnIntegerFromRegNum(lv_a, lp_gs);
+                lv_b = HD_ReturnIntegerState(lv_c, lp_gs);
                 if ((lv_b == lp_State))
                 {
                     lv_i += 1;
@@ -6351,47 +7985,224 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
-        public static int HD_ReturnRandomIntFromPGFunc(string lp_gs)
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_添加Integer到Integer组。相同Integer被认为是同一个，非高级功能不提供专用状态检查，如果Integer没有设置过Integer组专用状态，那么首次添加到Integer组不会赋予"true"（之后可通过"互动I_设定Integer状态"、"互动IG_设定Integer组的Integer状态"修改）。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        public static void HD_AddIntegerToGroup_Simple(int lp_integer, string lp_gs)
+        {
+            HD_RegInteger_Simple(lp_integer, lp_gs);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_添加Integer到Integer组（高级）。相同Integer被认为是同一个，高级功能提供专用状态检查，如果Integer没有设置过Integer组专用状态，那么首次添加到Integer组会赋予"true"（之后可通过"互动I_设定Integer状态"、"互动IG_设定Integer组的Integer状态"修改）。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        public static void HD_AddIntegerToGroup(int lp_integer, string lp_gs)
+        {
+            HD_RegInteger_Simple(lp_integer, lp_gs);
+            if (DataTableKeyExists(true, ("HD_IntegerState" + lp_gs + "Integer_" + HD_RegIntegerTagAndReturn(lp_integer))) == false)
+            {
+                DataTableSave0(true, ("HD_IntegerState" + lp_gs + "Integer_" + HD_RegIntegerTagAndReturn(lp_integer)), "true");
+                //Console.WriteLine(lp_gs + "=>" + HD_RegIntegerTagAndReturn(lp_integer));
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_移除Integer组中的元素。使用"互动IG_添加Integer到Integer组"后可使用本函数进行移除元素。移除使用了"互动I_移除Integer"，同一个存储区（Integer组ID）序号重排，移除时该存储区如有其他操作会排队等待。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_integer"></param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        public static void HD_ClearIntegerFromGroup(int lp_integer, string lp_gs)
+        {
+            HD_RemoveInteger(lp_integer, lp_gs);
+        }
+
+        //互动IG_为Integer组中的每个序号
+        //GE（星际2的Galaxy Editor）的宏让编辑器保存时自动生成脚本并整合进脚本进行格式调整，C#仅参考需自行编写
+        // #AUTOVAR(vs, string) = "#PARAM(group)";//"#PARAM(group)"是与字段、变量名一致的元素组名称，宏去声明string类型名为“Auto随机编号_vs”的自动变量，然后=右侧字符
+        // #AUTOVAR(ae) = HD_ReturnIntegerNumMax(#AUTOVAR(vs));//宏去声明默认int类型名为“Auto随机编号_ae”的自动变量，然后=右侧字符
+        // #INITAUTOVAR(ai,increment)//宏去声明int类型名为“Auto随机编号_ai”的自动变量，用于下面for循环增量（increment是传入参数）
+        // #PARAM(var) = #PARAM(s);//#PARAM(var)是传进来的参数，用作“当前被挑选到的元素”（任意变量-整数 lp_var）， #PARAM(s)是传进来的参数用作"开始"（int lp_s）
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #PARAM(var) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #PARAM(var) >= #AUTOVAR(ae)) ) ; #PARAM(var) += #AUTOVAR(ai) ) {
+        //     #SUBFUNCS(actions)//代表用户GUI填写的所有动作
+        // }
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_为Integer组中的每个序号。每次挑选的元素序号会自行在动作组（委托函数）中使用，委托函数特征：void SubActionTest(int lp_var)，参数lp_var即每次遍历到的元素序号，请自行组织它在委托函数内如何使用，SubActionTest可直接作为本函数最后一个参数填入，填入多个动作范例：SubActionEventFuncref Actions += SubActionTest，然后Actions作为参数填入。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <param name="lp_start">开始</param>
+        /// <param name="lp_increment">增量</param>
+        /// <param name="lp_funcref">委托类型变量或函数引用</param>
+        public static void HD_ForEachIntegerNumFromGroup(string lp_gs, int lp_start, int lp_increment, SubActionEventFuncref lp_funcref)
+        {
+            int lv_ae = HD_ReturnIntegerNumMax(lp_gs);
+            int lv_var = lp_start;
+            int lv_ai = lp_increment;
+            for (; (lv_ai >= 0 && lv_var <= lv_ae) || (lv_ai < 0 && lv_var >= lv_ae); lv_var += lv_ai)
+            {
+                lp_funcref(lv_var);//用户填写的所有动作
+            }
+        }
+
+        //互动IG_为Integer组中的每个元素
+        // #AUTOVAR(vs, string) = "#PARAM(group)";
+        // #AUTOVAR(ae) = HD_ReturnIntegerNumMax(#AUTOVAR(vs));
+        // #AUTOVAR(va)= #PARAM(s);
+        // #INITAUTOVAR(ai,increment)
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     DataTableSave(false, "IntegerGFor"+ #AUTOVAR(vs) + IntToString(#AUTOVAR(va)), HD_ReturnIntegerFromRegNum(#AUTOVAR(va),#AUTOVAR(vs)));
+        // }
+        // #AUTOVAR(va)= #PARAM(s);
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     #PARAM(var) = DataTableLoad(false, "IntegerGFor"+ #AUTOVAR(vs) + IntToString(#AUTOVAR(va)));
+        //     #SUBFUNCS(actions)
+        // }
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_为Integer组中的每个元素。每次挑选的元素会自行在动作组（委托函数）中使用，委托函数特征：void SubActionTest(int lp_var)，参数lp_var即每次遍历到的元素，请自行组织它在委托函数内如何使用，SubActionTest可直接作为本函数最后一个参数填入，填入多个动作范例：SubActionEventFuncref Actions += SubActionTest，然后Actions作为参数填入。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <param name="lp_start">开始</param>
+        /// <param name="lp_increment">增量</param>
+        /// <param name="lp_funcref">委托类型变量或函数引用</param>
+        public static void HD_ForEachIntegerFromGroup(string lp_gs, int lp_start, int lp_increment, SubActionEventFuncref lp_funcref)
+        {
+            string lv_vs = lp_gs;
+            int lv_ae = HD_ReturnIntegerNumMax(lv_vs);
+            int lv_va = lp_start;
+            int lv_ai = lp_increment;
+            int lv_integer;
+            for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
+            {
+                DataTableSave0(false, "IntegerGFor" + lv_vs + lv_va.ToString(), HD_ReturnIntegerFromRegNum(lv_va, lv_vs));
+            }
+            lv_va = lp_start;
+            for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
+            {
+                lv_integer = (int)DataTableLoad0(false, "IntegerGFor" + lv_vs + lv_va.ToString());
+                lp_funcref(lv_integer);//用户填写的所有动作
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_返回Integer组中随机元素。返回指定Integer组中的随机Integer。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static int HD_ReturnRandomIntegerFromIntegerGFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_num;
             int lv_a;
             int lv_c = 0;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_num = HD_ReturnIntNumMax(lp_gs);
+            lv_num = HD_ReturnIntegerNumMax(lp_gs);
             // Implementation
             if ((lv_num >= 1))
             {
                 lv_a = RandomInt(1, lv_num);
-                lv_c = HD_ReturnIntFromRegNum(lv_a, lp_gs);
+                lv_c = HD_ReturnIntegerFromRegNum(lv_a, lp_gs);
             }
             return lv_c;
         }
-        public static void HD_RemoveIntGAll(string lp_key)
+
+        //互动IG_添加Integer组到Integer组
+        // #AUTOVAR(vs, string) = "#PARAM(groupA)";
+        // #AUTOVAR(vsb, string) = "#PARAM(groupB)";
+        // #AUTOVAR(ae) = HD_ReturnIntegerNumMax(#AUTOVAR(vs));
+        // #AUTOVAR(va)= 1;
+        // #AUTOVAR(ai)= 1;
+        // #AUTOVAR(var);
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     #AUTOVAR(var) = HD_ReturnIntegerFromRegNum(#AUTOVAR(va), #AUTOVAR(vs));
+        //     HD_AddIntegerToGroup(#AUTOVAR(var), #AUTOVAR(vsb));
+        // }
+
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_添加Integer组到Integer组。添加一个Integer组A的元素到另一个Integer组B，相同Integer被认为是同一个。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_groupA"></param>
+        /// <param name="lp_groupB"></param>
+        public static void HD_AddIntegerGToIntegerG(string lp_groupA, string lp_groupB)
+        {
+            string lv_vsa = lp_groupA;
+            string lv_vsb = lp_groupB;
+            int lv_ae = HD_ReturnIntegerNumMax(lv_vsa);
+            int lv_va = 1;
+            int lv_ai = 1;
+            int lv_var;
+            for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
+            {
+                lv_var = HD_ReturnIntegerFromRegNum(lv_va, lv_vsa);
+                HD_AddIntegerToGroup(lv_var, lv_vsb);
+            }
+        }
+
+        //互动IG_从Integer组移除Integer组
+        // #AUTOVAR(vs, string) = "#PARAM(groupA)";
+        // #AUTOVAR(vsb, string) = "#PARAM(groupB)";
+        // #AUTOVAR(ae) = HD_ReturnIntegerNumMax(#AUTOVAR(vs));
+        // #AUTOVAR(va)= 1;
+        // #AUTOVAR(ai)= 1;
+        // #AUTOVAR(var);
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     #AUTOVAR(var) = HD_ReturnIntegerFromRegNum(#AUTOVAR(va), #AUTOVAR(vs));
+        //     HD_RemoveInteger(#AUTOVAR(var), #AUTOVAR(vsb));
+        // }
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_从Integer组移除Integer组。将Integer组A的元素从Integer组B中移除，相同Integer被认为是同一个。移除使用了"互动I_移除Integer"，同一个存储区（Integer组ID）序号重排，移除时该存储区如有其他操作会排队等待。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_groupA"></param>
+        /// <param name="lp_groupB"></param>
+        public static void HD_ClearIntegerGFromIntegerG(string lp_groupA, string lp_groupB)
+        {
+            string lv_vsa = lp_groupA;
+            string lv_vsb = lp_groupB;
+            int lv_ae = HD_ReturnIntegerNumMax(lv_vsa);
+            int lv_va = 1;
+            int lv_ai = 1;
+            int lv_var;
+            for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
+            {
+                lv_var = HD_ReturnIntegerFromRegNum(lv_va, lv_vsa);
+                HD_RemoveInteger(lv_var, lv_vsb);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动IG_移除Integer组全部元素。将Integer组（Key区）存储的元素全部移除，相同Integer被认为是同一个。移除时同一个存储区（Integer组ID）序号不进行重排，但该存储区如有其他操作会排队等待。Integer组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Integer组到Integer组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认填Integer组名称</param>
+        public static void HD_RemoveIntegerGAll(string lp_key)
         {
             // Variable Declarations
             string lv_str;
             int lv_num;
             string lv_tag = "";
             int lv_a;
-            // Automatic Variable Declarations
             // Variable Initialization
-            lv_str = (lp_key + "Int");
+            lv_str = (lp_key + "Integer");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             // Implementation
             ThreadWait(lv_str);
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            DataTableSave0(true, "Key_IntegerGroup" + lv_str, 1);
             for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
             {
-                lv_tag = DataTableLoad1(true, (lp_key + "IntTag"), lv_a).ToString();
+                lv_tag = DataTableLoad1(true, (lp_key + "IntegerTag"), lv_a).ToString();
                 lv_num -= 1;
-                DataTableClear0(true, "HD_IfIntTag" + lv_str + "_" + lv_tag);
-                DataTableClear0(true, "HD_IntCV" + lv_str + "_" + lv_tag);
-                DataTableClear0(true, "HD_IntState" + lv_str + "_" + lv_tag);
-                DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                DataTableClear0(true, "HD_IfIntegerTag" + lv_str + "_" + lv_tag);
+                DataTableClear0(true, "HD_IntegerCV" + lv_str + "_" + lv_tag);
+                DataTableClear0(true, "HD_IntegerState" + lv_str + "_" + lv_tag);
+                DataTableSave0(true, (lp_key + "IntegerNum"), lv_num);
             }
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            DataTableSave0(true, "Key_IntegerGroup" + lv_str, 0);
         }
 
         //--------------------------------------------------------------------------------------------------
@@ -6402,10 +8213,19 @@ namespace MetalMaxSystem
 
         #region 字符
 
+        //提示：可以将字符作为模板修改后产生其他类型
+        //提示：尽可能使用对口类型，以防值类型与引用类型发生转换时拆装箱降低性能
+
         //--------------------------------------------------------------------------------------------------
         // 字符组Start
         //--------------------------------------------------------------------------------------------------
-        public static int HD_RegStringTagAndReturn_Int(string lp_string)
+
+        /// <summary>
+        /// 【MM_函数库】互动S_注册String标签句柄并返回。为String自动设置新的标签句柄，重复时会返回已注册的String标签。这是一个内部函数，一般不需要自动使用
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <returns></returns>
+        private static int HD_RegStringTagAndReturn_Int(string lp_string)//内部使用
         {
             // Variable Declarations
             int lv_jBNum;
@@ -6446,6 +8266,12 @@ namespace MetalMaxSystem
             }
             return lv_j;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_返回String已注册标签句柄。返回一个String的已注册标签，如果失败返回null
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <returns></returns>
         public static int HD_ReturnStringTag_Int(string lp_string)
         {
             // Variable Declarations
@@ -6469,7 +8295,13 @@ namespace MetalMaxSystem
             }
             return lv_j;
         }
-        public static string HD_RegStringTagAndReturn(string lp_string)
+
+        /// <summary>
+        /// 【MM_函数库】互动S_注册String标签句柄并返回。为String自动设置新的标签句柄，重复时会返回已注册的String标签。这是一个内部函数，一般不需要自动使用
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <returns></returns>
+        private static string HD_RegStringTagAndReturn(string lp_string)//内部使用
         {
             // Variable Declarations
             int lv_jBNum;
@@ -6514,6 +8346,12 @@ namespace MetalMaxSystem
             //Console.WriteLine(("Tag：" + lv_tag));
             return lv_tag;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_返回String已注册标签句柄。返回一个String的已注册标签，如果失败返回null
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <returns></returns>
         public static string HD_ReturnStringTag(string lp_string)
         {
             // Variable Declarations
@@ -6539,6 +8377,14 @@ namespace MetalMaxSystem
             }
             return lv_tag;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_注册String(高级)。在指定Key存入String，固有状态、自定义值是String独一无二的标志（本函数重复注册会刷新），之后可用互动S_"返回String注册总数"、"返回String序号"、"返回序号对应String"、"返回序号对应String标签"、"返回String自定义值"。String组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将String组转为Key。首次注册时固有状态为true（相当于单位组单位活体），如需另外设置多个标记可使用"互动S_设定String状态/自定义值"
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <param name="lp_key">存储键区，默认值"_String"</param>
+        /// <param name="lp_inherentStats">固有状态</param>
+        /// <param name="lp_inherentCustomValue">固有自定义值</param>
         public static void HD_RegString(string lp_string, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
         {
             // Variable Declarations
@@ -6599,6 +8445,12 @@ namespace MetalMaxSystem
             DataTableSave0(true, ("HD_StringState" + "" + "_" + lv_tagStr), lp_inherentStats);
             DataTableSave0(true, ("HD_StringCV" + "" + "_" + lv_tagStr), lp_inherentCustomValue);
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_注册String。在指定Key存入String，固有状态、自定义值是String独一无二的标志（本函数重复注册不会刷新），之后可用互动S_"返回String注册总数"、"返回String序号"、"返回序号对应String"、"返回String自定义值"。String组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将String组转为Key。首次注册时固有状态为true（相当于单位组单位活体），之后只能通过"互动S_注册String（高级）"改写，如需另外设置多个标记可使用"互动S_设定String状态/自定义值"
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <param name="lp_key">存储键区，默认值"_String"</param>
         public static void HD_RegString_Simple(string lp_string, string lp_key)
         {
             // Variable Declarations
@@ -6661,7 +8513,13 @@ namespace MetalMaxSystem
                 DataTableSave1(true, (("HD_String" + "State")), lv_tag, "true");
             }
         }
-        public static void HD_DestroyP(string lp_string, string lp_key)
+
+        /// <summary>
+        /// 【MM_函数库】互动S_注销String。用"互动S_注册String"到Key，之后可用本函数彻底摧毁注册信息并将序号重排（包括String标签有效状态、固有状态及自定义值）。注册注销同时进行会排队等待0.0625s直到没有注销动作，注销并不提升多少内存只是变量内容清空并序号重利用，非特殊要求一般不注销，而是用"互动S_设定String状态"让String状态失效（类似单位组的单位活体状态）。String组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将String组转为Key。本函数无法摧毁用"互动S_设定String状态/自定义值"创建的状态和自定义值，需手工填入""来排泄（非大量注销则提升内存量极小，可不管）。本函数参数Key若填String组变量ID时会清空String组专用状态
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <param name="lp_key">存储键区，默认值"_String"</param>
+        public static void HD_DestroyString(string lp_string, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -6670,7 +8528,6 @@ namespace MetalMaxSystem
             int lv_a;
             int lv_b;
             string lv_c;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "String");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
@@ -6680,7 +8537,7 @@ namespace MetalMaxSystem
             if ((lv_tag != null))
             {
                 ThreadWait(lv_str);
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                DataTableSave0(true, "Key_StringGroup" + lv_str, 1);
                 for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
                 {
                     if ((DataTableLoad1(true, (lp_key + "StringTag"), lv_a).ToString() == lv_tag))
@@ -6693,7 +8550,7 @@ namespace MetalMaxSystem
                         DataTableClear0(true, "HD_StringState_" + lv_tag);
                         DataTableClear0(true, "HD_StringCV" + lv_str + "_" + lv_tag);
                         DataTableClear0(true, "HD_StringState" + lv_str + "_" + lv_tag);
-                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        DataTableSave0(true, (lp_key + "StringNum"), lv_num);
                         for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
                         {
                             lv_c = DataTableLoad1(true, (lp_key + "StringTag"), lv_b + 1).ToString();
@@ -6703,9 +8560,15 @@ namespace MetalMaxSystem
                         lv_a -= 1;
                     }
                 }
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+                DataTableSave0(true, "Key_StringGroup" + lv_str, 0);
             }
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_移除String。用"互动S_注册String"到Key，之后可用本函数仅摧毁Key区注册的信息并将序号重排，用于String组或多个键区仅移除String（保留String标签有效状态、固有值）。注册注销同时进行会排队等待0.0625s直到没有注销动作，注销并不提升多少内存只是变量内容清空并序号重利用，非特殊要求一般不注销，而是用"互动S_设定String状态"让String状态失效（类似单位组的单位活体状态）。String组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将String组转为Key。本函数无法摧毁用"互动S_设定String状态/自定义值"创建的状态和自定义值，需手工填入""来排泄（非大量注销则提升内存量极小，可不管）。本函数参数Key若填String组变量ID时会清空String组专用状态
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <param name="lp_key">存储键区，默认值"_String"</param>
         public static void HD_RemoveString(string lp_string, string lp_key)
         {
             // Variable Declarations
@@ -6715,7 +8578,6 @@ namespace MetalMaxSystem
             int lv_a;
             int lv_b;
             string lv_c;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "String");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
@@ -6725,7 +8587,7 @@ namespace MetalMaxSystem
             if ((lv_tag != null))
             {
                 ThreadWait(lv_str);
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+                DataTableSave0(true, "Key_StringGroup" + lv_str, 1);
                 for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
                 {
                     if ((DataTableLoad1(true, (lp_key + "StringTag"), lv_a) == lv_tag))
@@ -6734,7 +8596,7 @@ namespace MetalMaxSystem
                         DataTableClear0(true, "HD_IfStringTag" + lv_str + "_" + lv_tag);
                         DataTableClear0(true, "HD_StringCV" + lv_str + "_" + lv_tag);
                         DataTableClear0(true, "HD_StringState" + lv_str + "_" + lv_tag);
-                        DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                        DataTableSave0(true, (lp_key + "StringNum"), lv_num);
                         for (lv_b = lv_a; lv_b <= lv_num; lv_b += 1)
                         {
                             lv_c = DataTableLoad1(true, (lp_key + "StringTag"), lv_b + 1).ToString();
@@ -6744,21 +8606,33 @@ namespace MetalMaxSystem
                         lv_a -= 1;
                     }
                 }
-                DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+                DataTableSave0(true, "Key_StringGroup" + lv_str, 0);
             }
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_返回String注册总数。必须先使用"互动S_注册String"才能返回指定Key里的注册总数。String组使用时，可用"获取变量的内部名称"将String组转为Key。
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认值"_String"</param>
+        /// <returns></returns>
         public static int HD_ReturnStringNumMax(string lp_key)
         {
             // Variable Declarations
             string lv_str;
             int lv_num;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "String");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             // Implementation
             return lv_num;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_返回String序号。使用"互动S_注册String"后使用本函数可返回Key里的注册序号，Key无元素返回0，Key有元素但对象不在里面则返回-1，String标签尚未注册则返回-2。String组使用时，可用"获取变量的内部名称"将String组转为Key
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <param name="lp_key">存储键区，默认值"_String"</param>
+        /// <returns></returns>
         public static int HD_ReturnStringNum(string lp_string, string lp_key)
         {
             // Variable Declarations
@@ -6809,13 +8683,19 @@ namespace MetalMaxSystem
             }
             return lv_torf;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_返回序号对应String。使用"互动S_注册String"后，在参数填入注册序号可返回String。String组使用时，可用"获取变量的内部名称"将String组转为Key
+        /// </summary>
+        /// <param name="lp_regNum"></param>
+        /// <param name="lp_key">存储键区，默认值"_String"</param>
+        /// <returns></returns>
         public static string HD_ReturnStringFromRegNum(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_string;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "String");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
@@ -6823,61 +8703,90 @@ namespace MetalMaxSystem
             // Implementation
             return lv_string;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_返回句柄标签对应String。使用"互动S_注册String"后，在参数填入句柄标签（整数）可返回String，标签是String的句柄。String组使用时，可用"获取变量的内部名称"将String组转为Key
+        /// </summary>
+        /// <param name="lp_tag">句柄标签</param>
+        /// <returns></returns>
         public static string HD_ReturnStringFromTag(int lp_tag)
         {
             // Variable Declarations
             string lv_tag = "";
             string lv_string;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = lp_tag.ToString();
             lv_string = (string)DataTableLoad0(true, ("HD_String_" + lv_tag));
             // Implementation
             return lv_string;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_返回序号对应String标签句柄。使用"互动S_注册String"后，在参数填入注册序号可返回String标签（字符串）。String组使用时，可用"获取变量的内部名称"将String组转为Key
+        /// </summary>
+        /// <param name="lp_regNum">注册序号</param>
+        /// <param name="lp_key">存储键区，默认值"_String"</param>
+        /// <returns></returns>
         public static string HD_ReturnStringTagFromRegNum_String(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "String");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return lv_tag;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_返回序号对应String标签句柄。使用"互动S_注册String"后，在参数填入注册序号可返回String标签（整数）。String组使用时，可用"获取变量的内部名称"将String组转为Key
+        /// </summary>
+        /// <param name="lp_regNum">注册序号</param>
+        /// <param name="lp_key">存储键区，默认值"_String"</param>
+        /// <returns></returns>
         public static int HD_ReturnStringTagFromRegNum_Int(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "String");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return Convert.ToInt32(lv_tag);
         }
-        public static void HD_SetPState(string lp_string, string lp_key, string lp_stats)
+
+        /// <summary>
+        /// 【MM_函数库】互动S_设置String状态。必须先"注册"获得功能库内部句柄，再使用本函数给String设定一个状态值，之后可用"互动S_返回String状态"。类型参数用以记录多个不同状态，仅当"类型"参数填String组ID转的String串时，状态值"true"和"false"是String的String组专用状态值，用于内部函数筛选String状态（相当于单位组单位索引是否有效），其他类型不会干扰系统内部，可随意填写。虽然注销时反向清空注册信息，但用"互动S_设定String状态/自定义值"创建的值需要手工填入""来排泄（非大量注销则提升内存量极小，可不管）。注：固有状态值是注册函数赋予的系统内部变量（相当于单位组单位是否活体），只能通过"互动S_注册String（高级）"函数或将本函数参数"类型"设为空时改写
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <param name="lp_key">存储类型，默认值"State"</param>
+        /// <param name="lp_stats">状态</param>
+        public static void HD_SetStringState(string lp_string, string lp_key, string lp_stats)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "String");
             lv_tag = HD_RegStringTagAndReturn(lp_string);
             // Implementation
             DataTableSave0(true, ("HD_StringState" + lv_str + "_" + lv_tag), lp_stats);
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_返回String状态。使用"互动S_设定String状态"后可使用本函数，将本函数参数"类型"设为空时返回固有值。类型参数用以记录多个不同状态，仅当"类型"参数为String组ID转的字符串时，返回的状态值"true"和"false"是String的String组专用状态值，用于内部函数筛选String状态（相当于单位组单位索引是否有效）
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <param name="lp_key">存储类型，默认值"State"</param>
+        /// <returns></returns>
         public static string HD_ReturnStringState(string lp_string, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_stats;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "String");
             lv_tag = HD_ReturnStringTag(lp_string);
@@ -6885,25 +8794,37 @@ namespace MetalMaxSystem
             // Implementation
             return lv_stats;
         }
-        public static void HD_SetPCV(string lp_string, string lp_key, string lp_customValue)
+
+        /// <summary>
+        /// 【MM_函数库】互动S_设置String自定义值。必须先"注册"获得功能库内部句柄，再使用本函数设定String的自定义值，之后可使用"互动S_返回String自定义值"，类型参数用以记录多个不同自定义值。注：固有自定义值是注册函数赋予的系统内部变量，只能通过"互动S_注册String（高级）"函数或将本函数参数"类型"设为空时改写
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <param name="lp_key">存储类型，默认值"A"</param>
+        /// <param name="lp_customValue">自定义值</param>
+        public static void HD_SetStringCV(string lp_string, string lp_key, string lp_customValue)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "String");
             lv_tag = HD_RegStringTagAndReturn(lp_string);
             // Implementation
             DataTableSave0(true, ("HD_StringCV" + lv_str + "_" + lv_tag), lp_customValue);
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_返回String自定义值。使用"互动S_设定String自定义值"后可使用本函数，将本函数参数"类型"设为空时返回固有值，该参数用以记录多个不同自定义值
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <param name="lp_key">存储类型，默认值"A"</param>
+        /// <returns></returns>
         public static string HD_ReturnStringCV(string lp_string, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_customValue;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "String");
             lv_tag = HD_ReturnStringTag(lp_string);
@@ -6911,71 +8832,102 @@ namespace MetalMaxSystem
             // Implementation
             return lv_customValue;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_返回String固有状态。必须先使用"互动S_注册String"才能返回到该值，固有状态是独一无二的标记（相当于单位组单位是否活体）
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <returns></returns>
         public static string HD_ReturnStringState_Only(string lp_string)
         {
             // Variable Declarations
             string lv_tag = "";
             string lv_stats;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = HD_ReturnStringTag(lp_string);
             lv_stats = DataTableLoad0(true, ("HD_StringState" + "" + "_" + lv_tag)).ToString();
             // Implementation
             return lv_stats;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_返回String固有自定义值。必须先使用"互动S_注册String"才能返回到该值，固有值是独一无二的标记
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <returns></returns>
         public static string HD_ReturnStringCV_Only(string lp_string)
         {
             // Variable Declarations
             string lv_tag = "";
             string lv_customValue;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = HD_ReturnStringTag(lp_string);
             lv_customValue = DataTableLoad0(true, ("HD_StringCV" + "" + "_" + lv_tag)).ToString();
             // Implementation
             return lv_customValue;
         }
-        public static void HD_SetPDouble(string lp_string, double lp_realNumTag)
+
+        /// <summary>
+        /// 【MM_函数库】互动S_设置String的实数标记。必须先"注册"获得功能库内部句柄，再使用本函数让String携带一个实数值，之后可使用"互动S_返回String的实数标记"。String组使用时，可用"获取变量的内部名称"将String组转为Key
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <param name="lp_realNumTag">实数标记</param>
+        public static void HD_SetStringDouble(string lp_string, double lp_realNumTag)
         {
             // Variable Declarations
             string lv_tag = "";
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = HD_RegStringTagAndReturn(lp_string);
             // Implementation
             DataTableSave0(true, ("HD_CDDouble_T_" + lv_tag), lp_realNumTag);
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_返回String的实数标记。使用"互动S_设定String的实数标记"后可使用本函数。String组使用时，可用"获取变量的内部名称"将String组转为Key
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <returns></returns>
         public static double HD_ReturnStringDouble(string lp_string)
         {
             // Variable Declarations
             string lv_tag = "";
             double lv_f;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = HD_ReturnStringTag(lp_string);
             lv_f = (double)DataTableLoad0(true, ("HD_CDDouble_T_" + lv_tag));
             // Implementation
             return lv_f;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_返回String标签句柄有效状态。将String视作独一无二的个体，标签是它本身，有效状态则类似"单位是否有效"，当使用"互动S_注册String"或"互动SG_添加String到String组"后激活String有效状态（值为"true"），除非使用"互动S_注册String（高级）"改写，否则直到注销才会摧毁
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <returns></returns>
         public static bool HD_ReturnIfStringTag(string lp_string)
         {
             // Variable Declarations
             string lv_tag = "";
             bool lv_torf;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_tag = HD_ReturnStringTag(lp_string);
             lv_torf = (bool)DataTableLoad0(true, ("HD_IfStringTag" + "" + "_" + lv_tag));
             // Implementation
             return lv_torf;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动S_返回String注册状态。使用"互动S_注册String"或"互动SG_添加String到String组"后可使用本函数获取注册String在Key中的注册状态，该状态只能注销或从String组中移除时清空。String组使用时，Key被强制为变量ID，可用"获取变量的内部名称"将String组转为Key
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <param name="lp_key">存储键区，默认值"_String"</param>
+        /// <returns></returns>
         public static bool HD_ReturnIfStringTagKey(string lp_string, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             bool lv_torf;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "String");
             lv_tag = HD_ReturnStringTag(lp_string);
@@ -6983,6 +8935,13 @@ namespace MetalMaxSystem
             // Implementation
             return lv_torf;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_根据自定义值类型将String组排序。根据String携带的自定义值类型，对指定的String组元素进行冒泡排序。String组变量字符可通过"转换变量内部名称"获得
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认填String组名称</param>
+        /// <param name="lp_cVStr">自定义值类型</param>
+        /// <param name="lp_big">是否大值靠前</param>
         public static void HD_StringGSortCV(string lp_key, string lp_cVStr, bool lp_big)
         {
             // Automatic Variable Declarations
@@ -7012,7 +8971,7 @@ namespace MetalMaxSystem
             // Variable Initialization
             lv_str = (lp_key + "String");
             ThreadWait(lv_str);
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            DataTableSave0(true, "Key_StringGroup" + lv_str, 1);
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
@@ -7119,16 +9078,22 @@ namespace MetalMaxSystem
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
                 lv_b = (int)DataTableLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
-                                                                                    //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
                     //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
                     DataTableSave1(true, (lp_key + "StringTag"), lv_a, lv_tag); //lv_tag放入新序号
-                                                                                //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
+                    //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
                 }
             }
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            DataTableSave0(true, "Key_StringGroup" + lv_str, 0);
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_String组排序。对指定的String组元素进行冒泡排序（根据元素句柄）。String组变量字符可通过"转换变量内部名称"获得
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认填String组名称</param>
+        /// <param name="lp_big">是否大值靠前</param>
         public static void HD_StringGSort(string lp_key, bool lp_big)
         {
             // Automatic Variable Declarations
@@ -7157,7 +9122,7 @@ namespace MetalMaxSystem
             // Variable Initialization
             lv_str = (lp_key + "String");
             ThreadWait(lv_str);
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            DataTableSave0(true, "Key_StringGroup" + lv_str, 1);
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
@@ -7270,15 +9235,42 @@ namespace MetalMaxSystem
                                                                                 //Console.WriteLine("元素"+IntToString(lv_tag) +"放入lv_b=" + IntToString(lv_b)+"位置");
                 }
             }
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            DataTableSave0(true, "Key_StringGroup" + lv_str, 0);
         }
-        public static string HD_ReturnStringFromPGFunc(int lp_regNum, string lp_gs)
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_设定String的String组专用状态。给String组的String设定一个状态值（字符串），之后可用"互动S_返回String、互动SG_返回String组的String状态"。状态值"true"和"false"是String的String组专用状态值，用于内部函数筛选字符状态（相当于单位组单位索引是否有效），而本函数可以重设干预，影响函数"互动SG_返回String组元素数量（仅检索XX状态）"。与"互动S_设定String状态"功能相同，只是状态参数在String组中被固定为"String组变量的内部ID"。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <param name="lp_stringGroup"></param>
+        /// <param name="lp_groupState"></param>
+        public static void HD_SetStringGState(string lp_string, string lp_stringGroup, string lp_groupState)
+        {
+            HD_SetStringState(lp_string, lp_stringGroup, lp_groupState);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_返回String的String组专用状态。使用"互动S_设定String、互动SG_设定String组的String状态"后可使用本函数。与"互动S_返回String状态"功能相同，只是状态参数在String组中被固定为"String组变量的内部ID"。状态值"true"和"false"是String的String组专用状态值，用于内部函数筛选字符状态（相当于单位组单位索引是否有效）。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <param name="lp_stringGroup"></param>
+        public static void HD_ReturnStringGState(string lp_string, string lp_stringGroup)
+        {
+            HD_ReturnStringState(lp_string, lp_stringGroup);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_返回String组元素序号对应元素。返回String组元素序号指定String。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_regNum">注册序号</param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static string HD_ReturnStringFromStringGFunc(int lp_regNum, string lp_gs)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_string;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_gs + "String");
             lv_tag = DataTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
@@ -7286,6 +9278,22 @@ namespace MetalMaxSystem
             // Implementation
             return lv_string;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_返回String组元素总数。返回指定String组的元素数量。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static int HD_ReturnStringGNumMax(string lp_gs)
+        {
+            return (int)DataTableLoad0(true, lp_gs + "StringNum");
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_返回String组元素总数（仅检测String组专用状态="true"）。返回指定String组的元素数量。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
         public static int HD_ReturnStringGNumMax_StateTrueFunc(string lp_gs)
         {
             // Variable Declarations
@@ -7312,6 +9320,12 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_返回String组元素总数（仅检测String组专用状态="false"）。返回指定String组的元素数量。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
         public static int HD_ReturnStringGNumMax_StateFalseFunc(string lp_gs)
         {
             // Variable Declarations
@@ -7338,6 +9352,12 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_返回String组元素总数（仅检测String组无效专用状态："false"或""）。返回指定String组的元素数量（false、""、null）。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
         public static int HD_ReturnStringGNumMax_StateUselessFunc(string lp_gs)
         {
             // Variable Declarations
@@ -7364,6 +9384,13 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_返回String组元素总数（仅检测String组指定专用状态）。返回指定String组的元素数量。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <param name="lp_State">String组专用状态</param>
+        /// <returns></returns>
         public static int HD_ReturnStringGNumMax_StateFunc_Specify(string lp_gs, string lp_State)
         {
             // Variable Declarations
@@ -7390,13 +9417,121 @@ namespace MetalMaxSystem
             }
             return lv_i;
         }
-        public static string HD_ReturnRandomStringFromPGFunc(string lp_gs)
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_添加String到String组。相同String被认为是同一个，非高级功能不提供专用状态检查，如果String没有设置过String组专用状态，那么首次添加到String组不会赋予"true"（之后可通过"互动S_设定String状态"、"互动SG_设定String组的String状态"修改）。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        public static void HD_AddStringToGroup_Simple(string lp_string, string lp_gs)
+        {
+            HD_RegString_Simple(lp_string, lp_gs);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_添加String到String组（高级）。相同String被认为是同一个，高级功能提供专用状态检查，如果String没有设置过String组专用状态，那么首次添加到String组会赋予"true"（之后可通过"互动S_设定String状态"、"互动SG_设定String组的String状态"修改）。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        public static void HD_AddStringToGroup(string lp_string, string lp_gs)
+        {
+            HD_RegString_Simple(lp_string, lp_gs);
+            if (DataTableKeyExists(true, ("HD_StringState" + lp_gs + "String_" + HD_RegStringTagAndReturn(lp_string))) == false)
+            {
+                DataTableSave0(true, ("HD_StringState" + lp_gs + "String_" + HD_RegStringTagAndReturn(lp_string)), "true");
+                //Console.WriteLine(lp_gs + "=>" + HD_RegStringTagAndReturn(lp_string));
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_移除String组中的元素。使用"互动SG_添加String到String组"后可使用本函数进行移除元素。移除使用了"互动S_移除String"，同一个存储区（String组ID）序号重排，移除时该存储区如有其他操作会排队等待。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_string"></param>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        public static void HD_ClearStringFromGroup(string lp_string, string lp_gs)
+        {
+            HD_RemoveString(lp_string, lp_gs);
+        }
+
+        //互动SG_为String组中的每个序号
+        //GE（星际2的Galaxy Editor）的宏让编辑器保存时自动生成脚本并整合进脚本进行格式调整，C#仅参考需自行编写
+        // #AUTOVAR(vs, string) = "#PARAM(group)";//"#PARAM(group)"是与字段、变量名一致的元素组名称，宏去声明string类型名为“Auto随机编号_vs”的自动变量，然后=右侧字符
+        // #AUTOVAR(ae) = HD_ReturnStringNumMax(#AUTOVAR(vs));//宏去声明默认int类型名为“Auto随机编号_ae”的自动变量，然后=右侧字符
+        // #INITAUTOVAR(ai,increment)//宏去声明int类型名为“Auto随机编号_ai”的自动变量，用于下面for循环增量（increment是传入参数）
+        // #PARAM(var) = #PARAM(s);//#PARAM(var)是传进来的参数，用作“当前被挑选到的元素”（任意变量-整数 lp_var）， #PARAM(s)是传进来的参数用作"开始"（int lp_s）
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #PARAM(var) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #PARAM(var) >= #AUTOVAR(ae)) ) ; #PARAM(var) += #AUTOVAR(ai) ) {
+        //     #SUBFUNCS(actions)//代表用户GUI填写的所有动作
+        // }
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_为String组中的每个序号。每次挑选的元素序号会自行在动作组（委托函数）中使用，委托函数特征：void SubActionTest(int lp_var)，参数lp_var即每次遍历到的元素序号，请自行组织它在委托函数内如何使用，SubActionTest可直接作为本函数最后一个参数填入，填入多个动作范例：SubActionEventFuncref Actions += SubActionTest，然后Actions作为参数填入。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <param name="lp_start">开始</param>
+        /// <param name="lp_increment">增量</param>
+        /// <param name="lp_funcref">委托类型变量或函数引用</param>
+        public static void HD_ForEachStringNumFromGroup(string lp_gs, int lp_start, int lp_increment, SubActionEventFuncref lp_funcref)
+        {
+            int lv_ae = HD_ReturnStringNumMax(lp_gs);
+            int lv_var = lp_start;
+            int lv_ai = lp_increment;
+            for (; (lv_ai >= 0 && lv_var <= lv_ae) || (lv_ai < 0 && lv_var >= lv_ae); lv_var += lv_ai)
+            {
+                lp_funcref(lv_var);//用户填写的所有动作
+            }
+        }
+
+        //互动SG_为String组中的每个元素
+        // #AUTOVAR(vs, string) = "#PARAM(group)";
+        // #AUTOVAR(ae) = HD_ReturnStringNumMax(#AUTOVAR(vs));
+        // #AUTOVAR(va)= #PARAM(s);
+        // #INITAUTOVAR(ai,increment)
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     DataTableSave(false, "StringGFor"+ #AUTOVAR(vs) + IntToString(#AUTOVAR(va)), HD_ReturnStringFromRegNum(#AUTOVAR(va),#AUTOVAR(vs)));
+        // }
+        // #AUTOVAR(va)= #PARAM(s);
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     #PARAM(var) = DataTableLoad(false, "StringGFor"+ #AUTOVAR(vs) + IntToString(#AUTOVAR(va)));
+        //     #SUBFUNCS(actions)
+        // }
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_为String组中的每个元素。每次挑选的元素会自行在动作组（委托函数）中使用，委托函数特征：void SubActionTest(int lp_var)，参数lp_var即每次遍历到的元素，请自行组织它在委托函数内如何使用，SubActionTest可直接作为本函数最后一个参数填入，填入多个动作范例：SubActionEventFuncref Actions += SubActionTest，然后Actions作为参数填入。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <param name="lp_start">开始</param>
+        /// <param name="lp_increment">增量</param>
+        /// <param name="lp_funcref">委托类型变量或函数引用</param>
+        public static void HD_ForEachStringFromGroup(string lp_gs, int lp_start, int lp_increment, SubActionEventFuncref lp_funcref)
+        {
+            string lv_vs = lp_gs;
+            int lv_ae = HD_ReturnStringNumMax(lv_vs);
+            int lv_va = lp_start;
+            int lv_ai = lp_increment;
+            string lv_string;
+            for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
+            {
+                DataTableSave0(false, "StringGFor" + lv_vs + lv_va.ToString(), HD_ReturnStringFromRegNum(lv_va, lv_vs));
+            }
+            lv_va = lp_start;
+            for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
+            {
+                lv_string = (string)DataTableLoad0(false, "StringGFor" + lv_vs + lv_va.ToString());
+                lp_funcref(lv_string);//用户填写的所有动作
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_返回String组中随机元素。返回指定String组中的随机String。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
+        /// <returns></returns>
+        public static string HD_ReturnRandomStringFromStringGFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_num;
             int lv_a;
             string lv_c = null;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_num = HD_ReturnStringNumMax(lp_gs);
             // Implementation
@@ -7407,6 +9542,76 @@ namespace MetalMaxSystem
             }
             return lv_c;
         }
+
+        //互动SG_添加String组到String组
+        // #AUTOVAR(vs, string) = "#PARAM(groupA)";
+        // #AUTOVAR(vsb, string) = "#PARAM(groupB)";
+        // #AUTOVAR(ae) = HD_ReturnStringNumMax(#AUTOVAR(vs));
+        // #AUTOVAR(va)= 1;
+        // #AUTOVAR(ai)= 1;
+        // #AUTOVAR(var);
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     #AUTOVAR(var) = HD_ReturnStringFromRegNum(#AUTOVAR(va), #AUTOVAR(vs));
+        //     HD_AddStringToGroup(#AUTOVAR(var), #AUTOVAR(vsb));
+        // }
+
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_添加String组到String组。添加一个String组A的元素到另一个String组B，相同String被认为是同一个。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_groupA"></param>
+        /// <param name="lp_groupB"></param>
+        public static void HD_AddStringGToStringG(string lp_groupA, string lp_groupB)
+        {
+            string lv_vsa = lp_groupA;
+            string lv_vsb = lp_groupB;
+            int lv_ae = HD_ReturnStringNumMax(lv_vsa);
+            int lv_va = 1;
+            int lv_ai = 1;
+            string lv_var;
+            for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
+            {
+                lv_var = HD_ReturnStringFromRegNum(lv_va, lv_vsa);
+                HD_AddStringToGroup(lv_var, lv_vsb);
+            }
+        }
+
+        //互动SG_从String组移除String组
+        // #AUTOVAR(vs, string) = "#PARAM(groupA)";
+        // #AUTOVAR(vsb, string) = "#PARAM(groupB)";
+        // #AUTOVAR(ae) = HD_ReturnStringNumMax(#AUTOVAR(vs));
+        // #AUTOVAR(va)= 1;
+        // #AUTOVAR(ai)= 1;
+        // #AUTOVAR(var);
+        // for ( ; ( (#AUTOVAR(ai) >= 0 && #AUTOVAR(va) <= #AUTOVAR(ae)) || (#AUTOVAR(ai) < 0 && #AUTOVAR(va) >= #AUTOVAR(ae)) ) ; #AUTOVAR(va) += #AUTOVAR(ai) ) {
+        //     #AUTOVAR(var) = HD_ReturnStringFromRegNum(#AUTOVAR(va), #AUTOVAR(vs));
+        //     HD_RemoveString(#AUTOVAR(var), #AUTOVAR(vsb));
+        // }
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_从String组移除String组。将String组A的元素从String组B中移除，相同String被认为是同一个。移除使用了"互动S_移除String"，同一个存储区（String组ID）序号重排，移除时该存储区如有其他操作会排队等待。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_groupA"></param>
+        /// <param name="lp_groupB"></param>
+        public static void HD_ClearStringGFromStringG(string lp_groupA, string lp_groupB)
+        {
+            string lv_vsa = lp_groupA;
+            string lv_vsb = lp_groupB;
+            int lv_ae = HD_ReturnStringNumMax(lv_vsa);
+            int lv_va = 1;
+            int lv_ai = 1;
+            string lv_var;
+            for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
+            {
+                lv_var = HD_ReturnStringFromRegNum(lv_va, lv_vsa);
+                HD_RemoveString(lv_var, lv_vsb);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】互动SG_移除String组全部元素。将String组（Key区）存储的元素全部移除，相同String被认为是同一个。移除时同一个存储区（String组ID）序号不进行重排，但该存储区如有其他操作会排队等待。String组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加String组到String组"函数来完成赋值需求
+        /// </summary>
+        /// <param name="lp_key">存储键区，默认填String组名称</param>
         public static void HD_RemoveStringGAll(string lp_key)
         {
             // Variable Declarations
@@ -7414,13 +9619,12 @@ namespace MetalMaxSystem
             int lv_num;
             string lv_tag = "";
             int lv_a;
-            // Automatic Variable Declarations
             // Variable Initialization
             lv_str = (lp_key + "String");
             lv_num = (int)DataTableLoad0(true, (lv_str + "Num"));
             // Implementation
             ThreadWait(lv_str);
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 1);
+            DataTableSave0(true, "Key_StringGroup" + lv_str, 1);
             for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
             {
                 lv_tag = DataTableLoad1(true, (lp_key + "StringTag"), lv_a).ToString();
@@ -7428,9 +9632,9 @@ namespace MetalMaxSystem
                 DataTableClear0(true, "HD_IfStringTag" + lv_str + "_" + lv_tag);
                 DataTableClear0(true, "HD_StringCV" + lv_str + "_" + lv_tag);
                 DataTableClear0(true, "HD_StringState" + lv_str + "_" + lv_tag);
-                DataTableSave0(true, (lp_key + "TNum"), lv_num);
+                DataTableSave0(true, (lp_key + "StringNum"), lv_num);
             }
-            DataTableSave0(true, "Key_ReGroup" + lv_str, 0);
+            DataTableSave0(true, "Key_StringGroup" + lv_str, 0);
         }
 
         //--------------------------------------------------------------------------------------------------
@@ -7443,7 +9647,7 @@ namespace MetalMaxSystem
     }
 
     /// <summary>
-    /// 主循环状态监控类（用来读写InvokeCount、TimerState属性），计时器实例创建时本类方法CheckStatus以参数填入被反复执行，主循环Update事件被执行时创建计时器的父线程（mainUpdateThread）将暂停，直到该方法确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
+    /// 【MetalMaxSystem】主循环状态监控类（用来读写InvokeCount、TimerState属性），计时器实例创建时本类方法CheckStatus以参数填入被反复执行，主循环Update事件被执行时创建计时器的父线程（mainUpdateThread）将暂停，直到该方法确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
     /// </summary>
     public static class MainUpdateChecker
     {
@@ -7455,7 +9659,7 @@ namespace MetalMaxSystem
         /// </summary>
         public static int InvokeCount { get => _invokeCount; set => _invokeCount = value; }
         /// <summary>
-        /// 主循环状态字段，手动设置为True则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
+        /// 主循环状态字段，手动设置为false则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
         /// </summary>
         public static bool TimerState { get => _timerState; set => _timerState = value; }
 
@@ -7472,9 +9676,9 @@ namespace MetalMaxSystem
         /// 主循环的计时器实例创建时以参数填入、被反复执行的函数，Update事件被执行时创建计时器的父线程将暂停，直到本函数确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
         /// </summary>
         /// <param name="state"></param>
-        public static void CheckStatus(Object state)
+        public static void CheckStatus(object state)
         {
-            if (TimerState)
+            if (!TimerState)
             {
                 ((AutoResetEvent)state).Set();
             }
@@ -7488,7 +9692,7 @@ namespace MetalMaxSystem
     }
 
     /// <summary>
-    /// 副循环状态监控类（用来读写InvokeCount、TimerState属性），计时器实例创建时本类方法CheckStatus以参数填入被反复执行，副循环Update事件被执行时创建计时器的父线程（subUpdateThread）将暂停，直到该方法确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
+    /// 【MetalMaxSystem】副循环状态监控类（用来读写InvokeCount、TimerState属性），计时器实例创建时本类方法CheckStatus以参数填入被反复执行，副循环Update事件被执行时创建计时器的父线程（subUpdateThread）将暂停，直到该方法确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
     /// </summary>
     public static class SubUpdateChecker
     {
@@ -7502,7 +9706,7 @@ namespace MetalMaxSystem
         /// </summary>
         public static int InvokeCount { get => _invokeCount; set => _invokeCount = value; }
         /// <summary>
-        /// 副循环状态字段，手动设置为True则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
+        /// 副循环状态字段，手动设置为false则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
         /// </summary>
         public static bool TimerState { get => _timerState; set => _timerState = value; }
 
@@ -7528,9 +9732,9 @@ namespace MetalMaxSystem
         /// 副循环的计时器实例创建时以参数填入、被反复执行的函数，Update事件被执行时创建计时器的父线程将暂停，直到本函数确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
         /// </summary>
         /// <param name="state"></param>
-        public static void CheckStatus(Object state)
+        public static void CheckStatus(object state)
         {
-            if (TimerState)
+            if (!TimerState)
             {
                 ((AutoResetEvent)state).Set();
             }
@@ -7544,7 +9748,7 @@ namespace MetalMaxSystem
     }
 
     /// <summary>
-    /// 周期触发器，创建实例后请给函数注册事件（语法：TimerUpdate.Awake/Start/Update/End/Destroy +=/-= 任意符合事件参数格式的函数的名称如MyFunc，其声明为void MyFun(object sender, EventArgs e)，sender传递本类实例（其他类型也可），e传递额外事件参数类的信息），TriggerStart方法将自动创建独立触发器线程并启动周期触发器（主体事件发布动作），启动前可用Duetime、Period属性方法设定Update阶段每次循环的前摇和间隔，启动后按序执行Awake/Start/Update/End/Destroy被这5种事件注册过的委托函数，其中事件Update阶段是一个计时器循环，直到用户手动调用TimerState属性方法，该属性为true时会让计时器到期退出Update循环，而计时器所在父线程（即触发器线程）将运行End和Destory事件
+    /// 【MetalMaxSystem】周期触发器，创建实例后请给函数注册事件（语法：TimerUpdate.Awake/Start/Update/End/Destroy +=/-= 任意符合事件参数格式的函数的名称如MyFunc，其声明为void MyFun(object sender, EventArgs e)，sender传递本类实例（其他类型也可），e传递额外事件参数类的信息），TriggerStart方法将自动创建独立触发器线程并启动周期触发器（主体事件发布动作），启动前可用Duetime、Period属性方法设定Update阶段每次循环的前摇和间隔，启动后按序执行Awake/Start/Update/End/Destroy被这5种事件注册过的委托函数，其中事件Update阶段是一个计时器循环，直到用户手动调用TimerState属性方法，该属性为true时会让计时器到期退出Update循环，而计时器所在父线程（即触发器线程）将运行End和Destory事件
     /// </summary>
     public class TimerUpdate
     {
@@ -7555,7 +9759,7 @@ namespace MetalMaxSystem
         /// </summary>
         private AutoResetEvent _autoResetEvent_TimerUpdate;
         /// <summary>
-        /// 自动复位事件，提供该属性方便随时读取，但不允许不安全赋值
+        /// 自动复位事件，提供该属性方便随时读取，属性动作AutoResetEvent_TimerUpdate.Set()可让触发器线程终止（效果等同TimerUpdate.TimerState = true）
         /// </summary>
         public AutoResetEvent AutoResetEvent_TimerUpdate { get => _autoResetEvent_TimerUpdate; }
 
@@ -7606,11 +9810,11 @@ namespace MetalMaxSystem
         public int Period { get => _period; set => _period = value; }
 
         /// <summary>
-        /// 周期触发器的状态字段，手动设置为True则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
+        /// 周期触发器的状态字段，手动设置为false则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
         /// </summary>
         private bool _timerState;
         /// <summary>
-        /// 周期触发器的状态属性，手动设置为True则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
+        /// 周期触发器的状态属性，手动设置为false则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
         /// </summary>
         public bool TimerState { get => _timerState; set => _timerState = value; }
 
@@ -7648,7 +9852,7 @@ namespace MetalMaxSystem
         //声明事件委托变量（首字母大写），相比常规委托，事件委托因安全考虑无法直接被执行，通过OnAwake内部函数确保安全执行（其实是声明临时常规委托在赋值后执行）
 
         /// <summary>
-        /// 将周期触发器的唤醒事件注册到函数，语法：TimerUpdate.Awake +=/-= 实例或静态函数
+        /// 将周期触发器的唤醒事件注册到函数，语法：TimerUpdate.Awake +=/-= 实例或静态函数（特征格式：void 函数名(object sender, EventArgs e)）
         /// </summary>
         public event TimerEventHandler Awake
         {
@@ -7665,7 +9869,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 将周期触发器的开始事件注册到函数，语法：TimerUpdate.Start +=/-= 实例或静态函数
+        /// 将周期触发器的开始事件注册到函数，语法：TimerUpdate.Start +=/-= 实例或静态函数（特征格式：void 函数名(object sender, EventArgs e)）
         /// </summary>
         public event TimerEventHandler Start
         {
@@ -7680,7 +9884,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 将周期触发器的开始事件注册到函数，语法：TimerUpdate.Update +=/-= 实例或静态函数
+        /// 将周期触发器的开始事件注册到函数，语法：TimerUpdate.Update +=/-= 实例或静态函数（特征格式：void 函数名(object sender, EventArgs e)）
         /// </summary>
         public event TimerEventHandler Update
         {
@@ -7695,7 +9899,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 将周期触发器的开始事件注册到函数，语法：TimerUpdate.End +=/-= 实例或静态函数
+        /// 将周期触发器的开始事件注册到函数，语法：TimerUpdate.End +=/-= 实例或静态函数（特征格式：void 函数名(object sender, EventArgs e)）
         /// </summary>
         public event TimerEventHandler End
         {
@@ -7710,7 +9914,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 将周期触发器的开始事件注册到函数，语法：TimerUpdate.Destroy +=/-= 实例或静态函数
+        /// 将周期触发器的开始事件注册到函数，语法：TimerUpdate.Destroy +=/-= 实例或静态函数（特征格式：void 函数名(object sender, EventArgs e)）
         /// </summary>
         public event TimerEventHandler Destroy
         {
@@ -7757,9 +9961,9 @@ namespace MetalMaxSystem
         /// 计时器实例创建时以参数填入、被反复执行的函数，Update事件被执行时创建计时器的父线程将暂停，直到本函数确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
         /// </summary>
         /// <param name="state"></param>
-        private void CheckStatus(Object state)
+        private void CheckStatus(object state)
         {
-            if (TimerState)
+            if (!TimerState)
             {
                 ((AutoResetEvent)state).Set();
             }
@@ -7897,6 +10101,9 @@ namespace MetalMaxSystem
 
     }
 
+    /// <summary>
+    /// 【MetalMaxSystem】单位类
+    /// </summary>
     public class Unit
     {
         #region 字段声明（字段用于每个实例存储不同的值）
@@ -8239,6 +10446,9 @@ namespace MetalMaxSystem
 
     }
 
+    /// <summary>
+    /// 【MetalMaxSystem】玩家类
+    /// </summary>
     public static class Player
     {
         #region 变量、字段及其属性方法
@@ -8326,6 +10536,9 @@ namespace MetalMaxSystem
         public static bool[] CanNotOperation { get => _canNotOperation; set => _canNotOperation = value; }
         public static bool[] MoveLoop { get => _moveLoop; set => _moveLoop = value; }
         public static bool[,] KeyDown { get => _keyDown; set => _keyDown = value; }
+        /// <summary>
+        /// KeyDownState[玩家,键]
+        /// </summary>
         public static bool[,] KeyDownState { get => _keyDownState; set => _keyDownState = value; }
         public static int[] KeyDownLoopOneBitNum { get => _keyDownLoopOneBitNum; set => _keyDownLoopOneBitNum = value; }
         public static bool[] MouseLeftDown { get => _mouseLeftDown; set => _mouseLeftDown = value; }
@@ -8351,371 +10564,1074 @@ namespace MetalMaxSystem
         public static Vector[] MouseVector { get => _mouseVector; set => _mouseVector = value; }
     }
 
-    #endregion
+    #region 键鼠钩子及监听服务
 
-    #region 内置按键监听功能
+    #region 监听服务
 
     /// <summary>
-    /// 键盘按键监听类，可获取键盘按键的状态，也可给指定键注册委托函数
+    /// 【MetalMaxSystem】监听服务
     /// </summary>
-    public static class KeyListen
+    public class RecordService
     {
-        //创建键盘钩子实例
-        public static KeyboardHook keyboardHook = new KeyboardHook();
+        private readonly MouseHook MyMouseHook;
+        private readonly KeyboardHook MyKeyboardHook;
 
-        //要运行的按键事件委托函数
-        public static void KeyDownEvent(object sender, KeyEventArgs e)
-        {
-            //这里写具体实现，默认采用系统按键ID
-            KeyDown(1, (int)e.KeyCode);
+        #region 钩子开关
 
-            //如果按下截图键做某某事，若想将系统按键KeyCode的ID一一对应上自定义按键数字实现映射，使用如下方法
-            //if (e.KeyCode.Equals(Keys.PrintScreen))
-            //{
-            //    //实现PrintScreen键（系统数字ID）做(int)e.KeyCode（自定义数字ID）的事，然后将委托函数注册在自定义数字ID的事件上
-            //    KeyDown(1, (int)e.KeyCode);
-            //}
-        }
-        public static void KeyPressEvent(object sender, KeyPressEventArgs e)
+        /// <summary>
+        /// 【MetalMaxSystem】监听服务
+        /// </summary>
+        public RecordService()
         {
-            //键盘输入事件（按下按键每插入一个字符会发生 keypress 事件）
-        }
-        public static void KeyUpEvent(object sender, KeyEventArgs e)
-        {
-            KeyUp(1, (int)e.KeyCode);
+            MyMouseHook = MouseHook.GetMouseHook();
+            MyKeyboardHook = KeyboardHook.GetKeyboardHook();
         }
 
         /// <summary>
-        /// 开始监听
+        /// 开启鼠标钩子
         /// </summary>
-        public static void Start()
+        /// <param name="handler"></param>
+        public void StartMouseHook()
         {
-            keyboardHook.KeyDownEvent += new KeyEventHandler(KeyDownEvent); ;//钩住键按下
-            keyboardHook.KeyPressEvent += new KeyPressEventHandler(KeyPressEvent); ;//钩住键按下
-            keyboardHook.KeyUpEvent += new KeyEventHandler(KeyUpEvent); ;//钩住键按下
-            keyboardHook.Start();//安装键盘钩子
+            MyMouseHook.AddMouseHandler(MyMouseEventHandler);
+            MyMouseHook.Start();
         }
 
         /// <summary>
-        /// 结束监听
+        /// 关闭鼠标钩子
         /// </summary>
-        public static void Stop()
+        public void StopMouseHook()
         {
-            if (keyboardHook != null)
-            {
-                keyboardHook.KeyDownEvent -= new KeyEventHandler(KeyDownEvent); ;//钩住键按下
-                keyboardHook.KeyPressEvent -= new KeyPressEventHandler(KeyPressEvent); ;//钩住键按下
-                keyboardHook.KeyUpEvent -= new KeyEventHandler(KeyUpEvent); ;//钩住键按下
-                keyboardHook.Stop();//关闭键盘钩子
-            }
+            MyMouseHook.Stop();
         }
 
-        #region 键鼠委托主要动作（加入按键监听并传参执行）
-
-        public static void KeyDown(int player, int key)
+        /// <summary>
+        /// 开启键盘钩子
+        /// </summary>
+        /// <param name="handler"></param>
+        public void StartKeyboardHook()
         {
-            if (MMCore.stopKeyMouseEvent[player] == false)
-            {
-                Player.KeyDown[player, key] = true;  //当前按键值（决定内部函数运行状态）
-                Player.KeyDownState[player, key] = true;  //当前按键状态值
-                //---------------------------------------------------------------------
-                Player.KeyDownLoopOneBitNum[player] += 1; //玩家当前注册的按键队列数量
-                MMCore.DataTableSave2(true, "KeyDownLoopOneBit", player, Player.KeyDownLoopOneBitNum[player], key);
-                //↑存储玩家注册序号对应按键队列键位
-                MMCore.DataTableSave2(true, "KeyDownLoopOneBitKey", player, key, "true"); //玩家按键队列键位状态
-                //---------------------------------------------------------------------蓄力管理
-                // if (XuLiGuanLi == true){
-                // libBC0D3AAD_gf_HD_RegKXL(key, "IntGroup_XuLi" + IntToString(player)); //HD_注册蓄力按键
-                // libBC0D3AAD_gf_HD_SetKeyFixedXL(player, key, 1.0);
-                // }
-                //---------------------------------------------------------------------双击管理
-                // if (ShuangJiGuanLi == true){
-                //     lv_a = libBC0D3AAD_gf_HD_ReturnKeyFixedSJ(player, key);
-                //     if ((0.0 < lv_a) && (lv_a <= ShuangJiShiXian)){
-                //         //符合双击标准，发送事件
-                //         libBC0D3AAD_gf_Send_KeyDoubleClicked(player, key, ShuangJiShiXian - lv_a);
-                //     } 
-                //     else {   
-                //         libBC0D3AAD_gf_HD_RegKSJ(key, "IntGroup_DoubleClicked" + IntToString(player)); //HD_注册按键
-                //         libBC0D3AAD_gf_HD_SetKeyFixedSJ(player, key, ShuangJiShiXian);
-                //     }
-                // }
-                //---------------------------------------------------------------------
-                KeyDownFunc(player, key);
-            }
+            MyKeyboardHook.AddKeyboardHandler(KeyboardHandler);
+            MyKeyboardHook.Start();
         }
 
-        public static bool KeyDownFunc(int player, int key)
+        /// <summary>
+        /// 关闭键盘钩子
+        /// </summary>
+        public void StopKeyboardHook()
         {
-            bool torf = true;
-
-            // Console.WriteLine((IntToString(key) + "键被按下"));
-            for (int i = 1; i <= 1; i += 1)
-            {
-                if (MMCore.stopKeyMouseEvent[player] == true)
-                {
-                    //由于按键时状态为真，阻止按键事件时，强制取消按键状态（延迟弹起成功也会自动置为false）
-                    Player.KeyDown[player, key] = false;
-                    torf = false;
-                    break;
-                }
-                else
-                {
-                    MMCore.KeyDownGlobalEvent(key, true, player);
-                    break;
-                }
-            }
-            return torf;
+            MyKeyboardHook.Stop();
         }
-
-        public static void KeyUp(int player, int key)
-        {
-            Player.KeyDownState[player, key] = false;  //当前按键状态
-            if ((MMCore.DataTableLoad2(true, "KeyDownLoopOneBitKey", player, key).ToString() == "true"))
-            {
-                //弹起时无按键队列（由延迟弹起清空造成），直接执行函数，清空按键状态
-                Player.KeyDown[player, key] = false;
-                KeyUpFunc(player, key);
-            }
-            else
-            {
-                //弹起时有按键队列，由延迟弹起管理运行（按键队列>0时，清空一次队列并执行它们的动作）
-                MMCore.DataTableSave2(true, "KeyDownLoopOneBitEnd", player, key, true);
-            }
-        }
-
-        public static bool KeyUpFunc(int player, int key)
-        {
-            bool torf = true;
-            // Console.WriteLine((IntToString(key) + "键弹起"));
-            for (int i = 1; i <= 1; i += 1)
-            {
-                if (MMCore.stopKeyMouseEvent[player] == true)
-                {
-                    torf = false;
-                    break;
-                }
-                else
-                {
-                    MMCore.KeyDownGlobalEvent(key, false, player);
-                    break;
-                }
-            }
-            return torf;
-        }
-
-        public static void MouseMove(int player, Vector3D lp_mouseVector3D, Vector3D cameraVector, int uiX, int uiY)
-        {
-            if (MMCore.stopKeyMouseEvent[player] == false)
-            {
-                Player.MouseVector[player] = new Vector(lp_mouseVector3D.X, lp_mouseVector3D.Y);
-
-                //↓注意取出来的是该点最高位Unit
-                double unitTerrainHeight = double.Parse(MMCore.HD_ReturnPCV(Player.MouseVector[player], "Unit.TerrainHeight"));
-                double unitHeight = double.Parse(MMCore.HD_ReturnPCV(Player.MouseVector[player], "Unit.Height"));
-
-                Player.MouseVectorX[player] = lp_mouseVector3D.X;
-                Player.MouseVectorY[player] = lp_mouseVector3D.Y;
-                Player.MouseVectorZ[player] = lp_mouseVector3D.Z;
-                Player.MouseVectorZFixed[player] = lp_mouseVector3D.Z - MMCore.MapHeight;
-
-                Player.MouseUIX[player] = uiX;
-                Player.MouseUIY[player] = uiY;
-
-                Player.MouseVector3DFixed[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, Player.MouseVectorZFixed[player]);
-                Player.MouseVector3D[player] = lp_mouseVector3D;
-                //下面2个动作应该要从二维点读取单位（可多个），将最高的单位的头顶坐标填入以修正鼠标Z点
-                Player.MouseVector3DUnitTerrain[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight);
-                Player.MouseVector3DTerrain[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight - unitHeight);
-                
-
-                //玩家英雄单位存在时，计算鼠标距离英雄的2D角度和3D距离
-                if (Player.Hero[player] != null)
-                {
-                    //计算鼠标与英雄的2D角度，用于调整角色在二维坐标系四象限内的的朝向
-                    Player.MouseToHeroAngle[player] = MMCore.AngleBetween(Player.Hero[player].Vector, Player.MouseVector[player]);
-                    //计算鼠标与英雄的2D距离（由于点击的位置是单位头顶位置，2个单位重叠则返回最高位的，所以玩家会点到最高位单位）
-                    Player.MouseToHeroRange[player] = MMCore.Distance(Player.Hero[player].Vector, Player.MouseVector[player]);
-                    //计算鼠标与英雄的3D距离（由于点击的位置是单位头顶位置，2个单位重叠则返回最高位的，所以玩家会点到最高位单位）
-                    Player.MouseToHeroRange3D[player] = MMCore.Distance(Player.Hero[player].Vector3D, lp_mouseVector3D);
-                }
-            }
-        }
-
 
         #endregion
 
+        #region 热键操作
+
+        #region 成员变量
+
+        private int _x;
+
+        /// <summary>
+        /// 鼠标当前位置的横坐标
+        /// </summary>
+        public int X
+        {
+            get { return _x; }
+            set { _x = value; }
+        }
+
+
+        private int _y;
+
+        /// <summary>
+        /// 鼠标当前位置的纵坐标
+        /// </summary>
+        public int Y
+        {
+            get { return _y; }
+            set { _y = value; }
+        }
+
+
+        private int _wParam;
+
+        /// <summary>
+        /// 被按下的是哪个鼠标
+        /// </summary>
+        public int WParam
+        {
+            get { return _wParam; }
+            set { _wParam = value; }
+        }
+
+
+        private int _KeyStatus;
+
+        /// <summary>
+        /// 键钮状态
+        /// </summary>
+        public int KeyStatus
+        {
+            get { return _KeyStatus; }
+            set { _KeyStatus = value; }
+        }
+
+        private int _KeyValue;
+
+        /// <summary>
+        /// 键码
+        /// </summary>
+        public int KeyValue
+        {
+            get { return _KeyValue; }
+            set { _KeyValue = value; }
+        }
+
+
+        private bool[] _CtrlAlt = new bool[2] { false, false };
+
+        /// <summary>
+        /// Ctrl 和 Alt
+        /// </summary>
+        public bool[] CtrlAlt
+        {
+            get { return _CtrlAlt; }
+            set { _CtrlAlt = value; }
+        }
+
+        private bool[] _OneToNine = new bool[10] { false, false, false, false, false, false, false, false, false, false };
+
+        /// <summary>
+        /// 1-9
+        /// </summary>
+        public bool[] OneToNine
+        {
+            get { return _OneToNine; }
+            set { _OneToNine = value; }
+        }
+        #endregion
+
+        #region 鼠标操作
+        private void MyMouseEventHandler(Int32 wParam, MouseHookStruct mouseMsg)
+        {
+            this.WParam = wParam;
+            switch (wParam)
+            {
+                case WM_MOUSEMOVE:
+                    // 鼠标移动
+                    X = mouseMsg.pt.x;
+                    Y = mouseMsg.pt.y;
+                    break;
+                case WM_LBUTTONDOWN:
+                    // 鼠标左键
+                    break;
+                case WM_LBUTTONUP:
+
+                    break;
+                case WM_LBUTTONDBLCLK:
+
+                    break;
+                case WM_RBUTTONDOWN:
+
+                    break;
+                case WM_RBUTTONUP:
+
+                    break;
+                case WM_RBUTTONDBLCLK:
+
+                    break;
+            }
+        }
+        #endregion
+
+        #region 键盘操作
+        // 虚拟键码
+        private const int CTRL = 162;
+        private const int ALT = 164;
+        private const int ZERO = 48;
+        /*
+         * ctrl 162
+         * alt 164
+         * 1-9 -》 49-57
+         * 0 -》48
+         */
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="wParam">按键状态</param>
+        /// <param name="keyboardHookStruct">存储着虚拟键码</param>
+        private void KeyboardHandler(Int32 wParam, KeyboardHookStruct keyboardHookStruct)
+        {
+            KeyStatus = wParam;
+            KeyValue = keyboardHookStruct.vkCode;
+            // 热键判断
+            if (KeyStatus == KeyboardHook.WM_KEYDOWN || KeyStatus == KeyboardHook.WM_SYSKEYDOWN)
+            {
+                // 按下某个按钮
+                switch (KeyValue)
+                {
+                    case CTRL:
+                        CtrlAlt[0] = true;
+                        break;
+                    case ALT:
+                        CtrlAlt[1] = true;
+                        break;
+                }
+                if (KeyValue >= ZERO && KeyValue <= (ZERO + 9))
+                {
+                    // 按下了0-9
+                    int temp = KeyValue - ZERO;
+                    OneToNine[temp] = true;
+                }
+            }
+            else if (KeyStatus == KeyboardHook.WM_KEYUP || KeyStatus == KeyboardHook.WM_SYSKEYUP)
+            {
+                // 松开某个按钮
+                switch (KeyValue)
+                {
+                    case CTRL:
+                        CtrlAlt[0] = false;
+                        break;
+                    case ALT:
+                        CtrlAlt[1] = false;
+                        break;
+                }
+                if (KeyValue >= ZERO && KeyValue <= (ZERO + 9))
+                {
+                    // 按下了0-9
+                    int temp = KeyValue - ZERO;
+                    OneToNine[temp] = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 是否按下了 Ctrl + alt + 0-9
+        /// </summary>
+        /// <returns>返回0-9代表按下了Ctrl+alt+0-9，返回-1代表没有按下</returns>
+        public int isPressTarget()
+        {
+            if ((!CtrlAlt[0]) || (!CtrlAlt[1]))
+            {
+                return -1;
+            }
+            for (int i = 0; i < 10; i++)
+            {
+                if (OneToNine[i])
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+        #endregion
+
+        #endregion
     }
+
+    #endregion
+
+    #region 键鼠钩子
+
+    //虚拟键码：https://learn.microsoft.com/zh-cn/windows/win32/inputdev/virtual-key-codes?redirectedfrom=MSDN
+    //CSDN原址：https://blog.csdn.net/qq_43851684/article/details/113096306
+
+    /// <summary>
+    /// 【MetalMaxSystem】键盘钩子
+    /// </summary>
+    public class KeyboardHook
+    {
+        #region 常数和结构
+        #region wParam对应的按钮事件
+        public const int WM_KEYDOWN = 0x100;    // 键盘被按下
+        public const int WM_KEYUP = 0x101;      // 键盘被松开
+        public const int WM_SYSKEYDOWN = 0x104; // 键盘被按下，这个是系统键被按下，例如Alt、Ctrl等键
+        public const int WM_SYSKEYUP = 0x105;   // 键盘被松开，这个是系统键被松开，例如Alt、Ctrl等键
+        #endregion
+        public const int WH_KEYBOARD_LL = 13;
+
+
+        [StructLayout(LayoutKind.Sequential)] //声明键盘钩子的封送结构类型 
+        public class KeyboardHookStruct
+
+        {
+            public int vkCode; //表示一个在1到254间的虚似键盘码 
+            public int scanCode; //表示硬件扫描码 
+            public int flags;
+            public int time;
+            public int dwExtraInfo;
+        }
+        #endregion
+
+        #region 成员变量、委托、事件
+        private static int hHook;
+        private static HookProc KeyboardHookDelegate;
+        /// <summary>
+        /// 键盘回调委托
+        /// </summary>
+        /// <param name="wParam">按键的状态</param>
+        /// <param name="keyboardHookStruct">存储着虚拟键码</param>
+        public delegate void KeyboardHandler(Int32 wParam, KeyboardHookStruct keyboardHookStruct);
+        // 键盘回调事件
+        private static event KeyboardHandler Handlers;
+        // 锁
+        private readonly object lockObject = new object();
+        // 当前状态,是否已经启动
+        private volatile bool isStart = false;
+        #endregion
+
+        #region Win32的Api
+        private delegate int HookProc(int nCode, Int32 wParam, IntPtr lParam);
+        //安装钩子的函数 
+        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        private static extern int SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hInstance, int threadId);
+
+        //卸下钩子的函数 
+        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        private static extern bool UnhookWindowsHookEx(int idHook);
+
+        //下一个钩挂的函数 
+        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        private static extern int CallNextHookEx(int idHook, int nCode, Int32 wParam, IntPtr lParam);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr GetModuleHandle(string lpModuleName);
+        #endregion
+
+        #region 单例模式
+        private static volatile KeyboardHook MyKeyboard;
+        private readonly static object createLock = new object();
+        private KeyboardHook() { }
+        public static KeyboardHook GetKeyboardHook()
+        {
+            if (MyKeyboard == null)
+            {
+                lock (createLock)
+                {
+                    if (MyKeyboard == null)
+                    {
+                        MyKeyboard = new KeyboardHook();
+                    }
+                }
+            }
+            return MyKeyboard;
+        }
+        #endregion
+
+        /// <summary>
+        /// 安装钩子
+        /// </summary>
+        public void Start()
+        {
+            if (isStart)
+            {
+                return;
+            }
+            lock (lockObject)
+            {
+                if (isStart)
+                {
+                    return;
+                }
+                if (Handlers == null)
+                {
+                    throw new Exception("Please set handler first!Then run Start");
+                }
+                KeyboardHookDelegate = new HookProc(KeyboardHookProc);
+                Process cProcess = Process.GetCurrentProcess();
+                ProcessModule cModule = cProcess.MainModule;
+                var mh = GetModuleHandle(cModule.ModuleName);
+                hHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardHookDelegate, mh, 0);
+                isStart = true;
+            }
+        }
+
+        /// <summary>
+        /// 卸载钩子
+        /// </summary>
+        public void Stop()
+        {
+            if (!isStart)
+            {
+                return;
+            }
+            lock (lockObject)
+            {
+                if (!isStart)
+                {
+                    return;
+                }
+                UnhookWindowsHookEx(hHook);
+                // 清除所有事件
+                Handlers = null;
+                isStart = false;
+            }
+        }
+
+        /// <summary>
+        /// 键盘的系统回调函数
+        /// </summary>
+        /// <param name="nCode"></param>
+        /// <param name="wParam"></param>
+        /// <param name="lParam"></param>
+        /// <returns></returns>
+        private static int KeyboardHookProc(int nCode, Int32 wParam, IntPtr lParam)
+        {
+            //如果该消息被丢弃（nCode<0）或者没有事件绑定处理程序则不会触发事件
+            if ((nCode >= 0) && Handlers != null)
+            {
+                KeyboardHookStruct KeyDataFromHook = (KeyboardHookStruct)Marshal.PtrToStructure(lParam, typeof(KeyboardHookStruct));
+                Handlers(wParam, KeyDataFromHook);
+            }
+            return CallNextHookEx(hHook, nCode, wParam, lParam);
+        }
+
+        /// <summary>
+        /// 添加按键的回调函数
+        /// </summary>
+        /// <param name="handler"></param>
+        public void AddKeyboardHandler(KeyboardHandler handler)
+        {
+            Handlers += handler;
+        }
+
+        /// <summary>
+        /// 删除指定按键的回调函数
+        /// </summary>
+        /// <param name="handler"></param>
+        public void RemoveKeyboardHandler(KeyboardHandler handler)
+        {
+            if (Handlers != null)
+            {
+                Handlers -= handler;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 【MetalMaxSystem】鼠标钩子
+    /// </summary>
+    public class MouseHook
+    {
+        #region 常量
+        public const int WM_MOUSEMOVE = 0x200; // 鼠标移动
+        public const int WM_LBUTTONDOWN = 0x201;// 鼠标左键按下
+        public const int WM_RBUTTONDOWN = 0x204;// 鼠标右键按下
+        public const int WM_MBUTTONDOWN = 0x207;// 鼠标中键按下
+        public const int WM_LBUTTONUP = 0x202;// 鼠标左键抬起
+        public const int WM_RBUTTONUP = 0x205;// 鼠标右键抬起
+        public const int WM_MBUTTONUP = 0x208;// 鼠标中键抬起
+        public const int WM_LBUTTONDBLCLK = 0x203;// 鼠标左键双击
+        public const int WM_RBUTTONDBLCLK = 0x206;// 鼠标右键双击
+        public const int WM_MBUTTONDBLCLK = 0x209;// 鼠标中键双击
+        public const int WH_MOUSE_LL = 14; //可以截获整个系统所有模块的鼠标事件。
+        #endregion
+
+        #region 成员变量、回调函数、事件
+        /// <summary>
+        /// 钩子回调函数
+        /// </summary>
+        /// <param name="nCode">如果代码小于零，则挂钩过程必须将消息传递给CallNextHookEx函数，而无需进一步处理，并且应返回CallNextHookEx返回的值。此参数可以是下列值之一。(见虚拟键码)</param>
+        /// <param name="wParam">记录了按下的按钮</param>
+        /// <param name="lParam"></param>
+        /// <returns></returns>
+        public delegate int HookProc(int nCode, Int32 wParam, IntPtr lParam);
+        /// <summary>
+        /// 全局的鼠标事件
+        /// </summary>
+        /// <param name="wParam"> 代表发生的鼠标的事件 </param>
+        /// <param name="mouseMsg">钩子的结构体，存储着鼠标的位置及其他信息</param>
+        public delegate void MyMouseEventHandler(Int32 wParam, MouseHookStruct mouseMsg);
+        private event MyMouseEventHandler OnMouseActivity;
+        // 声明鼠标钩子事件类型
+        private HookProc _mouseHookProcedure;
+        private static int _hMouseHook = 0; // 鼠标钩子句柄
+        // 锁
+        private readonly object lockObject = new object();
+        // 当前状态,是否已经启动
+        private bool isStart = false;
+        #endregion
+
+        #region Win32的API
+        /// <summary>
+        /// 钩子结构体
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public class MouseHookStruct
+        {
+            /// <summary>
+            /// 指定在屏幕坐标系下，包含有光标x、y坐标的POINT结构（鼠标位置）
+            /// </summary>
+            public POINT pt;
+            /// <summary>
+            /// 希望对鼠标事件做出响应、接收鼠标消息的窗体的句柄
+            /// </summary>
+            public int hWnd;
+            /// <summary>
+            /// 指定点击测试值，查看WM_NCHITTEST消息可以得到值的列表
+            /// </summary>
+            public int wHitTestCode;
+            /// <summary>
+            /// 指定和该消息相关联的附加信息
+            /// </summary>
+            public int dwExtraInfo;
+        }
+
+        //声明一个Point的封送类型  
+        [StructLayout(LayoutKind.Sequential)]
+        public class POINT
+        {
+            public int x;
+            public int y;
+        }
+
+        // 装置钩子的函数
+        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        public static extern int SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hInstance, int threadId);
+
+        // 卸下钩子的函数
+        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        public static extern bool UnhookWindowsHookEx(int idHook);
+
+        // 下一个钩挂的函数
+        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        public static extern int CallNextHookEx(int idHook, int nCode, Int32 wParam, IntPtr lParam);
+        #endregion
+
+
+        #region 构造(单例模式)与析构函数
+        private static volatile MouseHook MyMouseHook;
+        private readonly static object createLock = new object();
+        private MouseHook() { }
+
+        public static MouseHook GetMouseHook()
+        {
+            if (MyMouseHook == null)
+            {
+                lock (createLock)
+                {
+                    if (MyMouseHook == null)
+                    {
+                        MyMouseHook = new MouseHook();
+                    }
+                }
+            }
+            return MyMouseHook;
+        }
+
+        /// <summary>
+        /// 析构函数
+        /// </summary>
+        ~MouseHook()
+        {
+            Stop();
+        }
+        #endregion
+
+
+        /// <summary>
+        /// 启动全局钩子
+        /// </summary>
+        public void Start()
+        {
+            if (isStart)
+            {
+                return;
+            }
+            lock (lockObject)
+            {
+                if (isStart)
+                {
+                    return;
+                }
+                if (OnMouseActivity == null)
+                {
+                    throw new Exception("Please set handler first!Then run Start");
+                }
+                // 安装鼠标钩子
+                if (_hMouseHook == 0)
+                {
+                    // 生成一个HookProc的实例.
+                    _mouseHookProcedure = new HookProc(MouseHookProc);
+                    _hMouseHook = SetWindowsHookEx(WH_MOUSE_LL, _mouseHookProcedure, Marshal.GetHINSTANCE(System.Reflection.Assembly.GetExecutingAssembly().GetModules()[0]), 0);
+                    //假设装置失败停止钩子
+                    if (_hMouseHook == 0)
+                    {
+                        Stop();
+                        throw new Exception("SetWindowsHookEx failed.");
+                    }
+                }
+                isStart = true;
+            }
+        }
+
+        /// <summary>
+        /// 停止全局钩子
+        /// </summary>
+        public void Stop()
+        {
+            if (!isStart)
+            {
+                return;
+            }
+            lock (lockObject)
+            {
+                if (!isStart)
+                {
+                    return;
+                }
+                bool retMouse = true;
+                if (_hMouseHook != 0)
+                {
+                    retMouse = UnhookWindowsHookEx(_hMouseHook);
+                    _hMouseHook = 0;
+                }
+                // 假设卸下钩子失败
+                if (!(retMouse))
+                    throw new Exception("UnhookWindowsHookEx failed.");
+                // 删除所有事件
+                OnMouseActivity = null;
+                // 标志位改变
+                isStart = false;
+            }
+        }
+
+        /// <summary>
+        /// 鼠标钩子回调函数
+        /// </summary>
+        private int MouseHookProc(int nCode, Int32 wParam, IntPtr lParam)
+        {
+            // 假设正常执行而且用户要监听鼠标的消息
+            if ((nCode >= 0) && (OnMouseActivity != null))
+            {
+                MouseHookStruct MyMouseHookStruct = (MouseHookStruct)Marshal.PtrToStructure(lParam, typeof(MouseHookStruct));
+                OnMouseActivity(wParam, MyMouseHookStruct);
+            }
+            // 启动下一次钩子
+            return CallNextHookEx(_hMouseHook, nCode, wParam, lParam);
+        }
+
+        /// <summary>
+        /// 注册全局鼠标事件
+        /// </summary>
+        /// <param name="handler"></param>
+        public void AddMouseHandler(MyMouseEventHandler handler)
+        {
+            OnMouseActivity += handler;
+        }
+
+        /// <summary>
+        /// 注销全局鼠标事件
+        /// </summary>
+        /// <param name="handler"></param>
+        public void RemoveMouseHandler(MyMouseEventHandler handler)
+        {
+            if (OnMouseActivity != null)
+            {
+                OnMouseActivity -= handler;
+            }
+        }
+    }
+
+    #endregion
+
+    #endregion
+
+    #endregion
+
+    #region 废弃区
+
+    #region 键鼠钩子及监听功能（旧）
+
+    #region 按键监听功能
+
+    /// <summary>
+    /// 键盘按键监听类，创建后给指定键注册委托函数，当按下键时户一致性这些函数，事后可获取键盘按键的状态（结合数据表可组织更多功能玩法，比如按键控制单位走路或其他技能函数，中途能随时更换快捷键，通过数据表可给按键补充写入自定义值而无需在类中预设）
+    /// </summary>
+    //public class KeyListen
+    //{
+    //    //创建键盘钩子实例
+    //    public KeyboardHook Hook = new KeyboardHook();
+
+    //    //要运行的按键事件委托函数（共三个）
+    //    virtual public void KeyDownEvent(object sender, KeyEventArgs e)
+    //    {
+    //        //这里写具体实现，默认采用系统按键ID
+    //        KeyDown(1, (int)e.KeyCode);
+
+    //        //if ((int)e.KeyCode == 4) 
+    //        //{
+    //        //    //MButton = 4(三按钮鼠标的中键)
+    //        //}
+
+    //        //鼠标按键委托另详
+    //        //switch ((int)e.KeyCode)
+    //        //{
+    //        //    case 0://None
+    //        //        break;
+    //        //    case 1://鼠标左键
+    //        //        break;
+    //        //    case 2://鼠标右键按钮中
+    //        //        break;
+    //        //    case 3://鼠标中键 （三个按钮的鼠标）
+    //        //        break;
+    //        //    case 4://鼠标中键 （三个按钮的鼠标）
+    //        //        break;
+    //        //    case 5://第一个 x 鼠标按钮 （五个按钮的鼠标）
+    //        //        break;
+    //        //    case 6://第二个 x 鼠标按钮 （五个按钮的鼠标）
+    //        //        break;
+    //        //    default:
+    //        //        break;
+    //        //}
+
+    //        //如果想将系统按键KeyCode的ID一一对应上库内自定义按键常量去实现映射，使用如下方法（将全部ID都自己对应上）
+    //        //if (e.KeyCode.Equals(Keys.PrintScreen))
+    //        //{
+    //        //    //此例实现PrintScreen键（系统按键ID）换成自定义ID去传参，用户调用MM_函数库随便写个要委托函数，用RegistKeyEventFuncref(int key, KeyMouseEventFuncref funcref)注册在自定义ID的键位上即可
+    //        //    KeyDown(1, c_keyControl);
+    //        //}
+    //    }
+    //    virtual public void KeyPressEvent(object sender, KeyPressEventArgs e)
+    //    {
+    //        //键盘输入事件（按下按键每插入一个字符会发生 keypress 事件）
+    //    }
+    //    virtual public void KeyUpEvent(object sender, KeyEventArgs e)
+    //    {
+    //        KeyUp(1, (int)e.KeyCode);
+    //    }
+
+    //    /// <summary>
+    //    /// 开始监听
+    //    /// </summary>
+    //    public void Start()
+    //    {
+    //        Hook.KeyDownEvent += new KeyEventHandler(KeyDownEvent); ;//钩住键按下
+    //        Hook.KeyPressEvent += new KeyPressEventHandler(KeyPressEvent); ;//钩住键按下
+    //        Hook.KeyUpEvent += new KeyEventHandler(KeyUpEvent); ;//钩住键按下
+    //        Hook.Start();//安装键盘钩子
+    //    }
+
+    //    /// <summary>
+    //    /// 结束监听
+    //    /// </summary>
+    //    public void Stop()
+    //    {
+    //        if (Hook != null)
+    //        {
+    //            Hook.KeyDownEvent -= new KeyEventHandler(KeyDownEvent); ;//钩住键按下
+    //            Hook.KeyPressEvent -= new KeyPressEventHandler(KeyPressEvent); ;//钩住键按下
+    //            Hook.KeyUpEvent -= new KeyEventHandler(KeyUpEvent); ;//钩住键按下
+    //            Hook.Stop();//关闭键盘钩子
+    //        }
+    //    }
+
+    //    #region 键鼠委托主要动作（加入按键监听并传参执行）
+
+    //    public void KeyDown(int player, int key)
+    //    {
+    //        if (MMCore.stopKeyMouseEvent[player] == false)
+    //        {
+    //            Player.KeyDown[player, key] = true;  //当前按键值（决定内部函数运行状态）
+    //            Player.KeyDownState[player, key] = true;  //当前按键状态值
+    //            //---------------------------------------------------------------------
+    //            Player.KeyDownLoopOneBitNum[player] += 1; //玩家当前注册的按键队列数量
+    //            MMCore.DataTableSave2(true, "KeyDownLoopOneBit", player, Player.KeyDownLoopOneBitNum[player], key);
+    //            //↑存储玩家注册序号对应按键队列键位
+    //            MMCore.DataTableSave2(true, "KeyDownLoopOneBitKey", player, key, "true"); //玩家按键队列键位状态
+    //            //---------------------------------------------------------------------蓄力管理
+    //            // if (XuLiGuanLi == true){
+    //            // libBC0D3AAD_gf_HD_RegKXL(key, "IntGroup_XuLi" + IntToString(player)); //HD_注册蓄力按键
+    //            // libBC0D3AAD_gf_HD_SetKeyFixedXL(player, key, 1.0);
+    //            // }
+    //            //---------------------------------------------------------------------双击管理
+    //            // if (ShuangJiGuanLi == true){
+    //            //     lv_a = libBC0D3AAD_gf_HD_ReturnKeyFixedSJ(player, key);
+    //            //     if ((0.0 < lv_a) && (lv_a <= ShuangJiShiXian)){
+    //            //         //符合双击标准，发送事件
+    //            //         libBC0D3AAD_gf_Send_KeyDoubleClicked(player, key, ShuangJiShiXian - lv_a);
+    //            //     } 
+    //            //     else {   
+    //            //         libBC0D3AAD_gf_HD_RegKSJ(key, "IntGroup_DoubleClicked" + IntToString(player)); //HD_注册按键
+    //            //         libBC0D3AAD_gf_HD_SetKeyFixedSJ(player, key, ShuangJiShiXian);
+    //            //     }
+    //            // }
+    //            //---------------------------------------------------------------------
+    //            KeyDownFunc(player, key);
+    //        }
+    //    }
+
+    //    public bool KeyDownFunc(int player, int key)
+    //    {
+    //        bool torf = true;
+
+    //        // Console.WriteLine((IntToString(key) + "键被按下"));
+    //        for (int i = 1; i <= 1; i += 1)
+    //        {
+    //            if (MMCore.stopKeyMouseEvent[player] == true)
+    //            {
+    //                //由于按键时状态为真，阻止按键事件时，强制取消按键状态（延迟弹起成功也会自动置为false）
+    //                Player.KeyDown[player, key] = false;
+    //                torf = false;
+    //                break;
+    //            }
+    //            else
+    //            {
+    //                MMCore.KeyDownGlobalEvent(key, true, player);
+    //                break;
+    //            }
+    //        }
+    //        return torf;
+    //    }
+
+    //    public void KeyUp(int player, int key)
+    //    {
+    //        Player.KeyDownState[player, key] = false;  //当前按键状态
+    //        if ((MMCore.DataTableLoad2(true, "KeyDownLoopOneBitKey", player, key).ToString() == "true"))
+    //        {
+    //            //弹起时无按键队列（由延迟弹起清空造成），直接执行函数，清空按键状态
+    //            Player.KeyDown[player, key] = false;
+    //            KeyUpFunc(player, key);
+    //        }
+    //        else
+    //        {
+    //            //弹起时有按键队列，由延迟弹起管理运行（按键队列>0时，清空一次队列并执行它们的动作）
+    //            MMCore.DataTableSave2(true, "KeyDownLoopOneBitEnd", player, key, true);
+    //        }
+    //    }
+
+    //    public bool KeyUpFunc(int player, int key)
+    //    {
+    //        bool torf = true;
+    //        // Console.WriteLine((IntToString(key) + "键弹起"));
+    //        for (int i = 1; i <= 1; i += 1)
+    //        {
+    //            if (MMCore.stopKeyMouseEvent[player] == true)
+    //            {
+    //                torf = false;
+    //                break;
+    //            }
+    //            else
+    //            {
+    //                MMCore.KeyDownGlobalEvent(key, false, player);
+    //                break;
+    //            }
+    //        }
+    //        return torf;
+    //    }
+
+    //    public void MouseMove(int player, Vector3D lp_mouseVector3D, Vector3D cameraVector, int uiX, int uiY)
+    //    {
+    //        if (MMCore.stopKeyMouseEvent[player] == false)
+    //        {
+    //            Player.MouseVector[player] = new Vector(lp_mouseVector3D.X, lp_mouseVector3D.Y);
+
+    //            //↓注意取出来的是该点最高位Unit
+    //            double unitTerrainHeight = double.Parse(MMCore.HD_ReturnPCV(Player.MouseVector[player], "Unit.TerrainHeight"));
+    //            double unitHeight = double.Parse(MMCore.HD_ReturnPCV(Player.MouseVector[player], "Unit.Height"));
+
+    //            Player.MouseVectorX[player] = lp_mouseVector3D.X;
+    //            Player.MouseVectorY[player] = lp_mouseVector3D.Y;
+    //            Player.MouseVectorZ[player] = lp_mouseVector3D.Z;
+    //            Player.MouseVectorZFixed[player] = lp_mouseVector3D.Z - MMCore.MapHeight;
+
+    //            Player.MouseUIX[player] = uiX;
+    //            Player.MouseUIY[player] = uiY;
+
+    //            Player.MouseVector3DFixed[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, Player.MouseVectorZFixed[player]);
+    //            Player.MouseVector3D[player] = lp_mouseVector3D;
+    //            //下面2个动作应该要从二维点读取单位（可多个），将最高的单位的头顶坐标填入以修正鼠标Z点
+    //            Player.MouseVector3DUnitTerrain[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight);
+    //            Player.MouseVector3DTerrain[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight - unitHeight);
+
+
+    //            //玩家英雄单位存在时，计算鼠标距离英雄的2D角度和3D距离
+    //            if (Player.Hero[player] != null)
+    //            {
+    //                //计算鼠标与英雄的2D角度，用于调整角色在二维坐标系四象限内的的朝向
+    //                Player.MouseToHeroAngle[player] = MMCore.AngleBetween(Player.Hero[player].Vector, Player.MouseVector[player]);
+    //                //计算鼠标与英雄的2D距离（由于点击的位置是单位头顶位置，2个单位重叠则返回最高位的，所以玩家会点到最高位单位）
+    //                Player.MouseToHeroRange[player] = MMCore.Distance(Player.Hero[player].Vector, Player.MouseVector[player]);
+    //                //计算鼠标与英雄的3D距离（由于点击的位置是单位头顶位置，2个单位重叠则返回最高位的，所以玩家会点到最高位单位）
+    //                Player.MouseToHeroRange3D[player] = MMCore.Distance(Player.Hero[player].Vector3D, lp_mouseVector3D);
+    //            }
+    //        }
+    //    }
+
+
+    //    #endregion
+
+    //}
 
     #endregion
 
     #region 键盘钩子
 
     /// <summary>
-    /// 键盘钩子
+    /// 全局事件监听之键盘事件
     /// </summary>
-    public class KeyboardHook
-    {
-        //声明事件委托类型
-        public event KeyPressEventHandler KeyPressEvent;
-        public event KeyEventHandler KeyDownEvent;
-        public event KeyEventHandler KeyUpEvent;
+    //public class KeyboardHook
+    //{
+    //    //声明事件委托类型
+    //    public event KeyPressEventHandler KeyPressEvent;
+    //    public event KeyEventHandler KeyDownEvent;
+    //    public event KeyEventHandler KeyUpEvent;
 
-        //声明常规委托类型（类型名：钩子，拥有三个参数）
-        public delegate int HookProc(int nCode, Int32 wParam, IntPtr lParam);
+    //    //声明常规委托类型（类型名：钩子，拥有三个参数）
+    //    public delegate int HookProc(int nCode, Int32 wParam, IntPtr lParam);
 
-        //声明键盘钩子处理的初始值（值在Microsoft SDK的Winuser.h里查询）
-        public int hKeyboardHook = 0;
-        //线程键盘钩子监听鼠标消息设为2，全局键盘监听鼠标消息设为13
-        public const int WH_KEYBOARD_LL = 13;
-        //声明HookProc委托类型的变量KeyboardHookProcedure
-        public HookProc KeyboardHookProcedure;
-        //键盘结构
-        [StructLayout(LayoutKind.Sequential)]
-        public class KeyboardHookStruct
-        {
-            public int vkCode;//定义一个虚拟键码，键码值必须在1～254之间
-            public int scanCode;//定义该键的硬件扫描码，一般置0即可
-            public int flags;//定义函数操作的各个方面的一个标志位集，应用程序可使用如下一些预定义常数的组合设置标志位
-            public int time;//指定的时间戳记的这个讯息
-            public int dwExtraInfo;//指定额外信息相关的信息
-        }
-        //虚拟键代码查询见 https://learn.microsoft.com/zh-cn/windows/win32/inputdev/virtual-key-codes
+    //    //声明键盘钩子处理的初始值（值在Microsoft SDK的Winuser.h里查询）
+    //    public int hKeyboardHook = 0;
+    //    //线程键盘钩子监听鼠标消息设为2，全局键盘监听鼠标消息设为13
+    //    public const int WH_KEYBOARD_LL = 13;
+    //    //声明HookProc委托类型的变量KeyboardHookProcedure
+    //    public HookProc KeyboardHookProcedure;
+    //    //键盘结构
+    //    [StructLayout(LayoutKind.Sequential)]
+    //    public class KeyboardHookStruct
+    //    {
+    //        public int vkCode;//定义一个虚拟键码，键码值必须在1～254之间
+    //        public int scanCode;//定义该键的硬件扫描码，一般置0即可
+    //        public int flags;//定义函数操作的各个方面的一个标志位集，应用程序可使用如下一些预定义常数的组合设置标志位
+    //        public int time;//指定的时间戳记的这个讯息
+    //        public int dwExtraInfo;//指定额外信息相关的信息
+    //    }
+    //    //虚拟键代码查询见 https://learn.microsoft.com/zh-cn/windows/win32/inputdev/virtual-key-codes
 
-        //调用此函数安装钩子
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-        public static extern int SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hInstance, int threadId);
+    //    //调用此函数安装钩子
+    //    [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+    //    public static extern int SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hInstance, int threadId);
 
-        //调用此函数卸载钩子
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-        public static extern bool UnhookWindowsHookEx(int idHook);
-
-
-        //使用此功能，通过信息钩子继续下一个钩子
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-        public static extern int CallNextHookEx(int idHook, int nCode, Int32 wParam, IntPtr lParam);
-
-        //取得当前线程编号（线程钩子需要用到）
-        [DllImport("kernel32.dll")]
-        public static extern int GetCurrentThreadId();
-
-        //使用WINDOWS API函数代替获取当前实例的函数,防止钩子失效
-        [DllImport("kernel32.dll")]
-        public static extern IntPtr GetModuleHandle(string name);
-
-        public void Start()
-        {
-            //安装键盘钩子开始
-            if (hKeyboardHook == 0)
-            {
-                KeyboardHookProcedure = new HookProc(KeyboardHookProc);
-                hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardHookProcedure, GetModuleHandle(System.Diagnostics.Process.GetCurrentProcess().MainModule.ModuleName), 0);
-                //hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardHookProcedure, Marshal.GetHINSTANCE(Assembly.GetExecutingAssembly().GetModules()[0]), 0);
-                //************************************
-                //键盘线程钩子
-
-                //指定要监听的线程idGetCurrentThreadId(),
-                SetWindowsHookEx(13, KeyboardHookProcedure, IntPtr.Zero, GetCurrentThreadId());
-                //键盘全局钩子,需要引用空间(using System.Reflection;)
-                //SetWindowsHookEx( 13,MouseHookProcedure,Marshal.GetHINSTANCE(Assembly.GetExecutingAssembly().GetModules()[0]),0);
-                //
-                //关于SetWindowsHookEx (int idHook, HookProc lpfn, IntPtr hInstance, int threadId)函数将钩子加入到钩子链表中，说明一下四个参数：
-                //idHook 钩子类型，即确定钩子监听何种消息，上面的代码中设为2，即监听键盘消息并且是线程钩子，如果是全局钩子监听键盘消息应设为13，
-                //线程钩子监听鼠标消息设为7，全局钩子监听鼠标消息设为14。lpfn 钩子子程的地址指针。如果dwThreadId参数为0 或是一个由别的进程创建的
-                //线程的标识，lpfn必须指向DLL中的钩子子程。 除此以外，lpfn可以指向当前进程的一段钩子子程代码。钩子函数的入口地址，当钩子钩到任何
-                //消息后便调用这个函数。hInstance应用程序实例的句柄。标识包含lpfn所指的子程的DLL。如果threadId 标识当前进程创建的一个线程，而且子
-                //程代码位于当前进程，hInstance必须为NULL。可以很简单的设定其为本应用程序的实例句柄。threaded 与安装的钩子子程相关联的线程的标识符
-                //如果为0，钩子子程与所有的线程关联，即为全局钩子
-                //************************************
-                //如果SetWindowsHookEx失败
-                if (hKeyboardHook == 0)
-                {
-                    Stop();
-                    throw new Exception("安装键盘钩子失败");
-                }
-            }
-        }
-        public void Stop()
-        {
-            bool retKeyboard = true;
+    //    //调用此函数卸载钩子
+    //    [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+    //    public static extern bool UnhookWindowsHookEx(int idHook);
 
 
-            if (hKeyboardHook != 0)
-            {
-                retKeyboard = UnhookWindowsHookEx(hKeyboardHook);
-                hKeyboardHook = 0;
-            }
+    //    //使用此功能，通过信息钩子继续下一个钩子
+    //    [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+    //    public static extern int CallNextHookEx(int idHook, int nCode, Int32 wParam, IntPtr lParam);
 
-            if (!(retKeyboard)) throw new Exception("卸载钩子失败！");
-        }
-        //ToAscii职能的转换指定的虚拟键码和键盘状态的相应字符或字符
-        [DllImport("user32")]
-        public static extern int ToAscii(int uVirtKey, //[in] 指定虚拟关键代码进行翻译。
-                                         int uScanCode, // [in] 指定的硬件扫描码的关键须翻译成英文。高阶位的这个值设定的关键，如果是（不压）
-                                         byte[] lpbKeyState, // [in] 指针，以256字节数组，包含当前键盘的状态。每个元素（字节）的数组包含状态的一个关键。如果高阶位的字节是一套，关键是下跌（按下）。在低比特，如果设置表明，关键是对切换。在此功能，只有肘位的CAPS LOCK键是相关的。在切换状态的NUM个锁和滚动锁定键被忽略。
-                                         byte[] lpwTransKey, // [out] 指针的缓冲区收到翻译字符或字符。
-                                         int fuState); // [in] Specifies whether a menu is active. This parameter must be 1 if a menu is active, or 0 otherwise.
+    //    //取得当前线程编号（线程钩子需要用到）
+    //    [DllImport("kernel32.dll")]
+    //    public static extern int GetCurrentThreadId();
 
-        //获取按键的状态
-        [DllImport("user32")]
-        public static extern int GetKeyboardState(byte[] pbKeyState);
+    //    //使用WINDOWS API函数代替获取当前实例的函数,防止钩子失效
+    //    [DllImport("kernel32.dll")]
+    //    public static extern IntPtr GetModuleHandle(string name);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-        private static extern short GetKeyState(int vKey);
+    //    public void Start()
+    //    {
+    //        //安装键盘钩子开始
+    //        if (hKeyboardHook == 0)
+    //        {
+    //            KeyboardHookProcedure = new HookProc(KeyboardHookProc);
+    //            hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardHookProcedure, GetModuleHandle(System.Diagnostics.Process.GetCurrentProcess().MainModule.ModuleName), 0);
+    //            //hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardHookProcedure, Marshal.GetHINSTANCE(Assembly.GetExecutingAssembly().GetModules()[0]), 0);
+    //            //************************************
+    //            //键盘线程钩子
 
-        private const int WM_KEYDOWN = 0x100;//KEYDOWN
-        private const int WM_KEYUP = 0x101;//KEYUP
-        private const int WM_SYSKEYDOWN = 0x104;//SYSKEYDOWN
-        private const int WM_SYSKEYUP = 0x105;//SYSKEYUP
+    //            //指定要监听的线程idGetCurrentThreadId(),
+    //            SetWindowsHookEx(13, KeyboardHookProcedure, IntPtr.Zero, GetCurrentThreadId());
+    //            //键盘全局钩子,需要引用空间(using System.Reflection;)
+    //            //SetWindowsHookEx( 13,MouseHookProcedure,Marshal.GetHINSTANCE(Assembly.GetExecutingAssembly().GetModules()[0]),0);
+    //            //
+    //            //关于SetWindowsHookEx (int idHook, HookProc lpfn, IntPtr hInstance, int threadId)函数将钩子加入到钩子链表中，说明一下四个参数：
+    //            //idHook 钩子类型，即确定钩子监听何种消息，上面的代码中设为2，即监听键盘消息并且是线程钩子，如果是全局钩子监听键盘消息应设为13，
+    //            //线程钩子监听鼠标消息设为7，全局钩子监听鼠标消息设为14。lpfn 钩子子程的地址指针。如果dwThreadId参数为0 或是一个由别的进程创建的
+    //            //线程的标识，lpfn必须指向DLL中的钩子子程。 除此以外，lpfn可以指向当前进程的一段钩子子程代码。钩子函数的入口地址，当钩子钩到任何
+    //            //消息后便调用这个函数。hInstance应用程序实例的句柄。标识包含lpfn所指的子程的DLL。如果threadId 标识当前进程创建的一个线程，而且子
+    //            //程代码位于当前进程，hInstance必须为NULL。可以很简单的设定其为本应用程序的实例句柄。threaded 与安装的钩子子程相关联的线程的标识符
+    //            //如果为0，钩子子程与所有的线程关联，即为全局钩子
+    //            //************************************
+    //            //如果SetWindowsHookEx失败
+    //            if (hKeyboardHook == 0)
+    //            {
+    //                Stop();
+    //                throw new Exception("安装键盘钩子失败");
+    //            }
+    //        }
+    //    }
+    //    public void Stop()
+    //    {
+    //        bool retKeyboard = true;
 
-        private int KeyboardHookProc(int nCode, Int32 wParam, IntPtr lParam)
-        {
-            // 侦听键盘事件
-            if ((nCode >= 0) && (KeyDownEvent != null || KeyUpEvent != null || KeyPressEvent != null))
-            {
-                KeyboardHookStruct MyKeyboardHookStruct = (KeyboardHookStruct)Marshal.PtrToStructure(lParam, typeof(KeyboardHookStruct));
-                // KeyDownEvent
-                if (KeyDownEvent != null && (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN))
-                {
-                    Keys keyData = (Keys)MyKeyboardHookStruct.vkCode;
-                    KeyEventArgs e = new KeyEventArgs(keyData);
-                    KeyDownEvent(this, e);
-                }
 
-                //KeyPressEvent
-                if (KeyPressEvent != null && wParam == WM_KEYDOWN)
-                {
-                    byte[] keyState = new byte[256];
-                    GetKeyboardState(keyState);
+    //        if (hKeyboardHook != 0)
+    //        {
+    //            retKeyboard = UnhookWindowsHookEx(hKeyboardHook);
+    //            hKeyboardHook = 0;
+    //        }
 
-                    byte[] inBuffer = new byte[2];
-                    if (ToAscii(MyKeyboardHookStruct.vkCode, MyKeyboardHookStruct.scanCode, keyState, inBuffer, MyKeyboardHookStruct.flags) == 1)
-                    {
-                        KeyPressEventArgs e = new KeyPressEventArgs((char)inBuffer[0]);
-                        KeyPressEvent(this, e);
-                    }
-                }
+    //        if (!(retKeyboard)) throw new Exception("卸载钩子失败！");
+    //    }
+    //    //ToAscii职能的转换指定的虚拟键码和键盘状态的相应字符或字符
+    //    [DllImport("user32")]
+    //    public static extern int ToAscii(int uVirtKey, //[in] 指定虚拟关键代码进行翻译。
+    //                                     int uScanCode, // [in] 指定的硬件扫描码的关键须翻译成英文。高阶位的这个值设定的关键，如果是（不压）
+    //                                     byte[] lpbKeyState, // [in] 指针，以256字节数组，包含当前键盘的状态。每个元素（字节）的数组包含状态的一个关键。如果高阶位的字节是一套，关键是下跌（按下）。在低比特，如果设置表明，关键是对切换。在此功能，只有肘位的CAPS LOCK键是相关的。在切换状态的NUM个锁和滚动锁定键被忽略。
+    //                                     byte[] lpwTransKey, // [out] 指针的缓冲区收到翻译字符或字符。
+    //                                     int fuState); // [in] Specifies whether a menu is active. This parameter must be 1 if a menu is active, or 0 otherwise.
 
-                // KeyUpEvent
-                if (KeyUpEvent != null && (wParam == WM_KEYUP || wParam == WM_SYSKEYUP))
-                {
-                    Keys keyData = (Keys)MyKeyboardHookStruct.vkCode;
-                    KeyEventArgs e = new KeyEventArgs(keyData);
-                    KeyUpEvent(this, e);
-                }
+    //    //获取按键的状态
+    //    [DllImport("user32")]
+    //    public static extern int GetKeyboardState(byte[] pbKeyState);
 
-            }
-            //如果返回1，则结束消息，这个消息到此为止，不再传递。
-            //如果返回0或调用CallNextHookEx函数则消息出了这个钩子继续往下传递，也就是传给消息真正的接受者
-            return CallNextHookEx(hKeyboardHook, nCode, wParam, lParam);
-        }
+    //    [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+    //    private static extern short GetKeyState(int vKey);
 
-        //析构函数
-        ~KeyboardHook()
-        {
-            Stop();
-        }
-    }
+    //    private const int WM_KEYDOWN = 0x100;//KEYDOWN
+    //    private const int WM_KEYUP = 0x101;//KEYUP
+    //    private const int WM_SYSKEYDOWN = 0x104;//SYSKEYDOWN
+    //    private const int WM_SYSKEYUP = 0x105;//SYSKEYUP
+
+    //    private int KeyboardHookProc(int nCode, Int32 wParam, IntPtr lParam)
+    //    {
+    //        // 侦听键盘事件
+    //        if ((nCode >= 0) && (KeyDownEvent != null || KeyUpEvent != null || KeyPressEvent != null))
+    //        {
+    //            KeyboardHookStruct MyKeyboardHookStruct = (KeyboardHookStruct)Marshal.PtrToStructure(lParam, typeof(KeyboardHookStruct));
+    //            // KeyDownEvent
+    //            if (KeyDownEvent != null && (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN))
+    //            {
+    //                Keys keyData = (Keys)MyKeyboardHookStruct.vkCode;
+    //                KeyEventArgs e = new KeyEventArgs(keyData);
+    //                KeyDownEvent(this, e);
+    //            }
+
+    //            //KeyPressEvent
+    //            if (KeyPressEvent != null && wParam == WM_KEYDOWN)
+    //            {
+    //                byte[] keyState = new byte[256];
+    //                GetKeyboardState(keyState);
+
+    //                byte[] inBuffer = new byte[2];
+    //                if (ToAscii(MyKeyboardHookStruct.vkCode, MyKeyboardHookStruct.scanCode, keyState, inBuffer, MyKeyboardHookStruct.flags) == 1)
+    //                {
+    //                    KeyPressEventArgs e = new KeyPressEventArgs((char)inBuffer[0]);
+    //                    KeyPressEvent(this, e);
+    //                }
+    //            }
+
+    //            // KeyUpEvent
+    //            if (KeyUpEvent != null && (wParam == WM_KEYUP || wParam == WM_SYSKEYUP))
+    //            {
+    //                Keys keyData = (Keys)MyKeyboardHookStruct.vkCode;
+    //                KeyEventArgs e = new KeyEventArgs(keyData);
+    //                KeyUpEvent(this, e);
+    //            }
+
+    //        }
+    //        //如果返回1，则结束消息，这个消息到此为止，不再传递。
+    //        //如果返回0或调用CallNextHookEx函数则消息出了这个钩子继续往下传递，也就是传给消息真正的接受者
+    //        return CallNextHookEx(hKeyboardHook, nCode, wParam, lParam);
+    //    }
+
+    //    //析构函数
+    //    ~KeyboardHook()
+    //    {
+    //        Stop();
+    //    }
+    //}
 
     #region 键盘钩子类使用示范
 
@@ -8766,7 +11682,66 @@ namespace MetalMaxSystem
 
     #endregion
 
+    #region 鼠标钩子
+
+    /// <summary>
+    /// 全局事件监听之鼠标事件
+    /// </summary>
+    //public class MouseHook { }
+
+    #region 鼠标钩子 范例
+
+    //范例1：监听鼠标事件
+    //public class GlobalMouseHandler : IMessageFilter
+    //{
+
+    //    private const int WM_LBUTTONDOWN = 0x201;
+
+    //    public bool PreFilterMessage(ref Message m)
+    //    {
+    //        bool torf = false;
+    //        if (m.Msg == WM_LBUTTONDOWN)
+    //        {
+    //            // Do stuffs（本例为鼠标左键监听）
+    //            torf = true;
+    //        }
+    //        return torf;
+    //    }
+    //}
+
+    //public partial class GlobalMouseHandlerTest
+    //{
+    //    private void FormTest()
+    //    {
+    //        GlobalMouseHandler GlobalClick = new GlobalMouseHandler();
+    //        Application.AddMessageFilter(GlobalClick);
+    //    }
+    //}
+    //案例地址：https://blog.csdn.net/wangkaiming123456/article/details/8596762?ops_request_misc=&request_id=&biz_id=102&utm_term=C&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-2-8596762.142^v91^insert_down1,239^v3^control&spm=1018.2226.3001.4187#%20%E9%BC%A0%E6%A0%87%E7%A7%BB%E5%8A%A8%E7%9B%91%E5%90%AC&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-2-8596762.142^v91^insert_down1,239^v3^control
 
 
+    //范例2：此筛选器阻止与鼠标左键相关的所有消息，在使用消息筛选器之前，必须提供接口的 IMessageFilter 实现
+    //public class TestMessageFilter : IMessageFilter
+    //{
+    //    public bool PreFilterMessage(ref Message m)
+    //    {
+    //        // Blocks all the messages relating to the left mouse button.
+    //        if (m.Msg >= 513 && m.Msg <= 515)
+    //        {
+    //            Console.WriteLine("Processing the messages : " + m.Msg);
+    //            return true;
+    //        }
+    //        return false;
+    //    }
+    //}
+    //案例地址：https://learn.microsoft.com/zh-cn/dotnet/api/system.windows.forms.application.addmessagefilter?view=windowsdesktop-7.0
+
+    #endregion
+
+    #endregion
+
+    #endregion
+
+    #endregion
 }
 
