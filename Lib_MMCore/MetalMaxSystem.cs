@@ -155,7 +155,7 @@ namespace MetalMaxSystem
     {
         #region 常量
 
-        //【MM_函数库】键盘按键映射
+        //键盘按键映射
 
         public const int c_keyNone = -1;
         public const int c_keyShift = 0;
@@ -258,7 +258,7 @@ namespace MetalMaxSystem
         public const int c_keyF11 = 97;
         public const int c_keyF12 = 98;
 
-        //【MM_函数库】鼠标按键映射
+        //鼠标按键映射
 
         public const int c_mouseButtonNone = 0;
         public const int c_mouseButtonLeft = 1;
@@ -267,7 +267,11 @@ namespace MetalMaxSystem
         public const int c_mouseButtonXButton1 = 4;
         public const int c_mouseButtonXButton2 = 5;
 
-        //【MM_函数库】键鼠函数引用上限及单键注册上限
+        //其他常量
+
+        public const int c_vehicleTypeMax = 200;
+
+        //键鼠函数引用上限及单键注册上限
 
         /// <summary>
         /// 【MM_函数库】键盘按键句柄上限（句柄范围0~98，无按键-1）
@@ -286,7 +290,7 @@ namespace MetalMaxSystem
         /// </summary>
         public const int c_regMouseMax = 24;
 
-        //【MM_函数库】主副循环入口函数引用上限及单入口注册上限
+        //主副循环入口函数引用上限及单入口注册上限
 
         /// <summary>
         /// 【MM_函数库】主副循环入口句柄上限（句柄范围0~9）
@@ -297,7 +301,7 @@ namespace MetalMaxSystem
         /// </summary>
         private const int c_regEntryMax = 1;//内部使用，无需给用户使用
 
-        //【MM_函数库】玩家句柄及其上限
+        //玩家句柄及其上限
 
         /// <summary>
         /// 【MM_函数库】玩家句柄（0默认中立玩家，1用户本人，2-14玩家（电脑或其他用户），15默认敌对玩家，16由系统触发，活动玩家=用户+电脑（不含中立））
@@ -1513,6 +1517,54 @@ namespace MetalMaxSystem
             return !string.IsNullOrEmpty(the_Reg.GetValue("").ToString());
 
         }
+
+        #region 弹幕爬取
+
+        //功能出处：https://blog.csdn.net/qq_15505341/article/details/79212070/
+
+        /// <summary>
+        /// 获取弹幕信息（本函数待改中请勿使用）
+        /// </summary>
+        /// <param name="room"></param>
+        /// <returns></returns>
+        public static string Post(string room)
+        {
+            string postString = "roomid=" + room + "&token=&csrf_token=我是图中的马赛克";//要发送的数据
+            byte[] postData = Encoding.UTF8.GetBytes(postString);//编码，尤其是汉字，事先要看下抓取网页的编码方式  
+            string url = @"http://api.live.bilibili.com/ajax/msg";//地址  
+
+            WebClient webClient = new WebClient();
+            webClient.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36");
+            webClient.Headers.Add("Content-Type", "application/x-www-form-urlencoded");//采取POST方式必须加的header，如果改为GET方式的话就去掉这句话即可  
+            webClient.Headers.Add("Cookie",
+                "可耻的马赛克"
+                );
+            byte[] responseData = webClient.UploadData(url, "POST", postData);//得到返回字符流  
+            string srcString = Encoding.UTF8.GetString(responseData);//解码  
+            return srcString;
+        }
+
+        /// <summary>
+        /// 处理弹幕信息为中文（本函数待改中请勿使用）
+        /// </summary>
+        /// <param name="room"></param>
+        /// <returns></returns>
+        public static List<string> GetDanMu(string room)
+        {
+            string danmu = Post(room);
+            List<string> list = new List<string>();
+            //正则匹配
+            foreach (Match item in Regex.Matches(danmu, "text\":\".*?\""))
+            {
+                //截取字符串，将unicode码转换为中文
+                list.Add(Regex.Unescape(item.Value.Substring(7, item.Value.Length - 8)));
+            }
+            return list;
+        }
+
+
+        #endregion
+
         #endregion
 
         #region Functions 数据表功能
@@ -2103,8 +2155,8 @@ namespace MetalMaxSystem
         /// <param name="player"></param>
         public static void MouseDownGlobalEvent(int key, bool keydown, int player)
         {
-            int a = 0;
-            for (a = 1; a <= mouseEventFuncrefGroupNum[key]; a += 1)
+            int a = 1;
+            for (; a <= mouseEventFuncrefGroupNum[key]; a += 1)
             {
                 //这里不开新线程，是否另开线程运行宜由委托函数去写
                 mouseEventFuncrefGroup[key, a](keydown, player);//执行鼠标按键委托
@@ -2579,14 +2631,13 @@ namespace MetalMaxSystem
         {
             // Variable Declarations
             int lv_jBNum;
-            string lv_tag = "";
+            string lv_tag;
             int lv_j = 0;
             // Automatic Variable Declarations
             int auto_ae;
             int auto_var;
             // Variable Initialization
             lv_jBNum = (int)DataTableLoad0(true, "HD_ObjectJBNum");
-            lv_tag = "";
             // Implementation
             if ((lv_jBNum == 0))
             {
@@ -2668,7 +2719,7 @@ namespace MetalMaxSystem
             string lv_tagStr;
             int lv_tag;
             int lv_i;
-            int lv_j = 0;
+
             // Automatic Variable Declarations
             int auto_ae;
             int auto_var;
@@ -2698,7 +2749,7 @@ namespace MetalMaxSystem
                     for (; auto_var <= auto_ae; auto_var += 1)
                     {
                         lv_i = auto_var;
-                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        if (DataTableLoad1(true, lv_str + "Tag", lv_i).ToString() == lv_tagStr)
                         {
                             break;
                         }
@@ -2734,7 +2785,7 @@ namespace MetalMaxSystem
             string lv_tagStr;
             int lv_tag;
             int lv_i;
-            int lv_j = 0;
+
             // Automatic Variable Declarations
             int auto_ae;
             int auto_var;
@@ -2764,7 +2815,7 @@ namespace MetalMaxSystem
                     for (; auto_var <= auto_ae; auto_var += 1)
                     {
                         lv_i = auto_var;
-                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        if (DataTableLoad1(true, lv_str + "Tag", lv_i).ToString() == lv_tagStr)
                         {
                             break;
                         }
@@ -2798,7 +2849,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             string lv_str;
             int lv_num;
-            string lv_tag = "";
+            string lv_tag;
             int lv_a;
             int lv_b;
             string lv_c;
@@ -2848,7 +2899,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             string lv_str;
             int lv_num;
-            string lv_tag = "";
+            string lv_tag;
             int lv_a;
             int lv_b;
             string lv_c;
@@ -2864,7 +2915,7 @@ namespace MetalMaxSystem
                 DataTableSave0(true, "Key_ObjectGroup" + lv_str, 1);
                 for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
                 {
-                    if ((DataTableLoad1(true, (lp_key + "ObjectTag"), lv_a) == lv_tag))
+                    if ((DataTableLoad1(true, (lp_key + "ObjectTag"), lv_a).ToString() == lv_tag))
                     {
                         lv_num -= 1;
                         DataTableClear0(true, "HD_IfObjectTag" + lv_str + "_" + lv_tag);
@@ -2913,7 +2964,7 @@ namespace MetalMaxSystem
             string lv_str;
             int lv_num;
             int lv_i;
-            string lv_tag = "";
+            string lv_tag;
             int lv_torf;
             // Automatic Variable Declarations
             const int auto_n = 1;
@@ -2946,7 +2997,7 @@ namespace MetalMaxSystem
                         for (; auto_var <= auto_ae; auto_var += 1)
                         {
                             lv_i = auto_var;
-                            if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tag))
+                            if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i).ToString() == lv_tag))
                             {
                                 lv_torf = lv_i;
                                 break;
@@ -2986,7 +3037,7 @@ namespace MetalMaxSystem
         public static object HD_ReturnObjectFromTag(int lp_tag)
         {
             // Variable Declarations
-            string lv_tag = "";
+            string lv_tag;
             object lv_object;
             // Variable Initialization
             lv_tag = lp_tag.ToString();
@@ -3218,8 +3269,6 @@ namespace MetalMaxSystem
         /// <param name="lp_big">是否大值靠前</param>
         public static void HD_ObjectGSortCV(string lp_key, string lp_cVStr, bool lp_big)
         {
-            // Automatic Variable Declarations
-            // Implementation
             // Variable Declarations
             int lv_a;
             int lv_b;
@@ -3232,8 +3281,6 @@ namespace MetalMaxSystem
             int lv_intStackOutSize;
             string lv_tagValuestr;
             // Automatic Variable Declarations
-            int autoA_ae;
-            const int autoA_ai = 1;
             int autoB_ae;
             const int autoB_ai = 1;
             int autoC_ae;
@@ -3383,8 +3430,6 @@ namespace MetalMaxSystem
             int lv_num;
             int lv_intStackOutSize;
             // Automatic Variable Declarations
-            int autoA_ae;
-            const int autoA_ai = 1;
             int autoB_ae;
             const int autoB_ai = 1;
             int autoC_ae;
@@ -4099,7 +4144,6 @@ namespace MetalMaxSystem
             string lv_tagStr;
             int lv_tag;
             int lv_i;
-            int lv_j = 0;
             // Automatic Variable Declarations
             int auto_ae;
             int auto_var;
@@ -4129,7 +4173,7 @@ namespace MetalMaxSystem
                     for (; auto_var <= auto_ae; auto_var += 1)
                     {
                         lv_i = auto_var;
-                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i).ToString() == lv_tagStr))
                         {
                             break;
                         }
@@ -4165,7 +4209,6 @@ namespace MetalMaxSystem
             string lv_tagStr;
             int lv_tag;
             int lv_i;
-            int lv_j = 0;
             // Automatic Variable Declarations
             int auto_ae;
             int auto_var;
@@ -4195,7 +4238,7 @@ namespace MetalMaxSystem
                     for (; auto_var <= auto_ae; auto_var += 1)
                     {
                         lv_i = auto_var;
-                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i).ToString() == lv_tagStr))
                         {
                             break;
                         }
@@ -4295,7 +4338,7 @@ namespace MetalMaxSystem
                 DataTableSave0(true, "Key_VectorGroup" + lv_str, 1);
                 for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
                 {
-                    if ((DataTableLoad1(true, (lp_key + "VectorTag"), lv_a) == lv_tag))
+                    if ((DataTableLoad1(true, (lp_key + "VectorTag"), lv_a).ToString() == lv_tag))
                     {
                         lv_num -= 1;
                         DataTableClear0(true, "HD_IfVectorTag" + lv_str + "_" + lv_tag);
@@ -4377,7 +4420,7 @@ namespace MetalMaxSystem
                         for (; auto_var <= auto_ae; auto_var += 1)
                         {
                             lv_i = auto_var;
-                            if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tag))
+                            if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i).ToString() == lv_tag))
                             {
                                 lv_torf = lv_i;
                                 break;
@@ -4663,8 +4706,6 @@ namespace MetalMaxSystem
             int lv_intStackOutSize;
             string lv_tagValuestr;
             // Automatic Variable Declarations
-            int autoA_ae;
-            const int autoA_ai = 1;
             int autoB_ae;
             const int autoB_ai = 1;
             int autoC_ae;
@@ -4814,8 +4855,6 @@ namespace MetalMaxSystem
             int lv_num;
             int lv_intStackOutSize;
             // Automatic Variable Declarations
-            int autoA_ae;
-            const int autoA_ai = 1;
             int autoB_ae;
             const int autoB_ai = 1;
             int autoC_ae;
@@ -5530,7 +5569,6 @@ namespace MetalMaxSystem
             string lv_tagStr;
             int lv_tag;
             int lv_i;
-            int lv_j = 0;
             // Automatic Variable Declarations
             int auto_ae;
             int auto_var;
@@ -5560,7 +5598,7 @@ namespace MetalMaxSystem
                     for (; auto_var <= auto_ae; auto_var += 1)
                     {
                         lv_i = auto_var;
-                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i).ToString() == lv_tagStr))
                         {
                             break;
                         }
@@ -5596,7 +5634,6 @@ namespace MetalMaxSystem
             string lv_tagStr;
             int lv_tag;
             int lv_i;
-            int lv_j = 0;
             // Automatic Variable Declarations
             int auto_ae;
             int auto_var;
@@ -5626,7 +5663,7 @@ namespace MetalMaxSystem
                     for (; auto_var <= auto_ae; auto_var += 1)
                     {
                         lv_i = auto_var;
-                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i).ToString() == lv_tagStr))
                         {
                             break;
                         }
@@ -5726,7 +5763,7 @@ namespace MetalMaxSystem
                 DataTableSave0(true, "Key_TimerGroup" + lv_str, 1);
                 for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
                 {
-                    if ((DataTableLoad1(true, (lp_key + "TimerTag"), lv_a) == lv_tag))
+                    if ((DataTableLoad1(true, (lp_key + "TimerTag"), lv_a).ToString() == lv_tag))
                     {
                         lv_num -= 1;
                         DataTableClear0(true, "HD_IfTimerTag" + lv_str + "_" + lv_tag);
@@ -5808,7 +5845,7 @@ namespace MetalMaxSystem
                         for (; auto_var <= auto_ae; auto_var += 1)
                         {
                             lv_i = auto_var;
-                            if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tag))
+                            if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i).ToString() == lv_tag))
                             {
                                 lv_torf = lv_i;
                                 break;
@@ -6080,8 +6117,6 @@ namespace MetalMaxSystem
         /// <param name="lp_big">是否大值靠前</param>
         public static void HD_TimerGSortCV(string lp_key, string lp_cVStr, bool lp_big)
         {
-            // Automatic Variable Declarations
-            // Implementation
             // Variable Declarations
             int lv_a;
             int lv_b;
@@ -6094,8 +6129,6 @@ namespace MetalMaxSystem
             int lv_intStackOutSize;
             string lv_tagValuestr;
             // Automatic Variable Declarations
-            int autoA_ae;
-            const int autoA_ai = 1;
             int autoB_ae;
             const int autoB_ai = 1;
             int autoC_ae;
@@ -6245,8 +6278,6 @@ namespace MetalMaxSystem
             int lv_num;
             int lv_intStackOutSize;
             // Automatic Variable Declarations
-            int autoA_ae;
-            const int autoA_ai = 1;
             int autoB_ae;
             const int autoB_ai = 1;
             int autoC_ae;
@@ -6962,7 +6993,6 @@ namespace MetalMaxSystem
             string lv_tagStr;
             int lv_tag;
             int lv_i;
-            int lv_j = 0;
             // Automatic Variable Declarations
             int auto_ae;
             int auto_var;
@@ -6992,7 +7022,7 @@ namespace MetalMaxSystem
                     for (; auto_var <= auto_ae; auto_var += 1)
                     {
                         lv_i = auto_var;
-                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i).ToString() == lv_tagStr))
                         {
                             break;
                         }
@@ -7028,7 +7058,6 @@ namespace MetalMaxSystem
             string lv_tagStr;
             int lv_tag;
             int lv_i;
-            int lv_j = 0;
             // Automatic Variable Declarations
             int auto_ae;
             int auto_var;
@@ -7058,7 +7087,7 @@ namespace MetalMaxSystem
                     for (; auto_var <= auto_ae; auto_var += 1)
                     {
                         lv_i = auto_var;
-                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i).ToString() == lv_tagStr))
                         {
                             break;
                         }
@@ -7158,7 +7187,7 @@ namespace MetalMaxSystem
                 DataTableSave0(true, "Key_IntegerGroup" + lv_str, 1);
                 for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
                 {
-                    if ((DataTableLoad1(true, (lp_key + "IntegerTag"), lv_a) == lv_tag))
+                    if ((DataTableLoad1(true, (lp_key + "IntegerTag"), lv_a).ToString() == lv_tag))
                     {
                         lv_num -= 1;
                         DataTableClear0(true, "HD_IfIntegerTag" + lv_str + "_" + lv_tag);
@@ -7240,7 +7269,7 @@ namespace MetalMaxSystem
                         for (; auto_var <= auto_ae; auto_var += 1)
                         {
                             lv_i = auto_var;
-                            if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tag))
+                            if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i).ToString() == lv_tag))
                             {
                                 lv_torf = lv_i;
                                 break;
@@ -7526,8 +7555,6 @@ namespace MetalMaxSystem
             int lv_intStackOutSize;
             string lv_tagValuestr;
             // Automatic Variable Declarations
-            int autoA_ae;
-            const int autoA_ai = 1;
             int autoB_ae;
             const int autoB_ai = 1;
             int autoC_ae;
@@ -7677,8 +7704,6 @@ namespace MetalMaxSystem
             int lv_num;
             int lv_intStackOutSize;
             // Automatic Variable Declarations
-            int autoA_ae;
-            const int autoA_ai = 1;
             int autoB_ae;
             const int autoB_ai = 1;
             int autoC_ae;
@@ -8394,7 +8419,6 @@ namespace MetalMaxSystem
             string lv_tagStr;
             int lv_tag;
             int lv_i;
-            int lv_j = 0;
             // Automatic Variable Declarations
             int auto_ae;
             int auto_var;
@@ -8424,7 +8448,7 @@ namespace MetalMaxSystem
                     for (; auto_var <= auto_ae; auto_var += 1)
                     {
                         lv_i = auto_var;
-                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i).ToString() == lv_tagStr))
                         {
                             break;
                         }
@@ -8460,7 +8484,6 @@ namespace MetalMaxSystem
             string lv_tagStr;
             int lv_tag;
             int lv_i;
-            int lv_j = 0;
             // Automatic Variable Declarations
             int auto_ae;
             int auto_var;
@@ -8490,7 +8513,7 @@ namespace MetalMaxSystem
                     for (; auto_var <= auto_ae; auto_var += 1)
                     {
                         lv_i = auto_var;
-                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tagStr))
+                        if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i).ToString() == lv_tagStr))
                         {
                             break;
                         }
@@ -8590,7 +8613,7 @@ namespace MetalMaxSystem
                 DataTableSave0(true, "Key_StringGroup" + lv_str, 1);
                 for (lv_a = 1; lv_a <= lv_num; lv_a += 1)
                 {
-                    if ((DataTableLoad1(true, (lp_key + "StringTag"), lv_a) == lv_tag))
+                    if ((DataTableLoad1(true, (lp_key + "StringTag"), lv_a).ToString() == lv_tag))
                     {
                         lv_num -= 1;
                         DataTableClear0(true, "HD_IfStringTag" + lv_str + "_" + lv_tag);
@@ -8672,7 +8695,7 @@ namespace MetalMaxSystem
                         for (; auto_var <= auto_ae; auto_var += 1)
                         {
                             lv_i = auto_var;
-                            if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i) == lv_tag))
+                            if ((DataTableLoad1(true, (lv_str + "Tag"), lv_i).ToString() == lv_tag))
                             {
                                 lv_torf = lv_i;
                                 break;
@@ -8958,8 +8981,6 @@ namespace MetalMaxSystem
             int lv_intStackOutSize;
             string lv_tagValuestr;
             // Automatic Variable Declarations
-            int autoA_ae;
-            const int autoA_ai = 1;
             int autoB_ae;
             const int autoB_ai = 1;
             int autoC_ae;
@@ -9109,8 +9130,6 @@ namespace MetalMaxSystem
             int lv_num;
             int lv_intStackOutSize;
             // Automatic Variable Declarations
-            int autoA_ae;
-            const int autoA_ai = 1;
             int autoB_ae;
             const int autoB_ai = 1;
             int autoC_ae;
@@ -9644,6 +9663,403 @@ namespace MetalMaxSystem
         #endregion
 
         #endregion
+
+        #region 键鼠事件动作主体（加入按键监听并传参执行）
+
+        /// <summary>
+        /// 键盘按下事件主要动作（加入按键监听并传参执行）
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="key"></param>
+        public static bool KeyDown(int player, int key)
+        {
+            bool torf = !MMCore.stopKeyMouseEvent[player];
+            Player.KeyDownState[player, key] = torf;  //当前按键状态值
+            Player.KeyDown[player, key] = true;  //当前按键值
+
+            if (MMCore.stopKeyMouseEvent[player] == false)
+            {
+                Player.KeyDownLoopOneBitNum[player] += 1; //玩家当前注册的按键队列数量
+                MMCore.DataTableSave2(true, "KeyDownLoopOneBit", player, Player.KeyDownLoopOneBitNum[player], key);
+                //↑存储玩家注册序号对应按键队列键位
+                MMCore.DataTableSave2(true, "KeyDownLoopOneBitKey", player, key, true); //玩家按键队列键位状态
+                //---------------------------------------------------------------------蓄力管理
+                // if (XuLiGuanLi == true){
+                // libBC0D3AAD_gf_HD_RegKXL(key, "IntGroup_XuLi" + IntToString(player)); //HD_注册蓄力按键
+                // libBC0D3AAD_gf_HD_SetKeyFixedXL(player, key, 1.0);
+                // }
+                //---------------------------------------------------------------------双击管理
+                // if (ShuangJiGuanLi == true){
+                //     lv_a = libBC0D3AAD_gf_HD_ReturnKeyFixedSJ(player, key);
+                //     if ((0.0 < lv_a) && (lv_a <= ShuangJiShiXian)){
+                //         //符合双击标准，发送事件
+                //         libBC0D3AAD_gf_Send_KeyDoubleClicked(player, key, ShuangJiShiXian - lv_a);
+                //     } 
+                //     else {   
+                //         libBC0D3AAD_gf_HD_RegKSJ(key, "IntGroup_DoubleClicked" + IntToString(player)); //HD_注册按键
+                //         libBC0D3AAD_gf_HD_SetKeyFixedSJ(player, key, ShuangJiShiXian);
+                //     }
+                // }
+                //---------------------------------------------------------------------
+                MMCore.KeyDownGlobalEvent(key, true, player);
+            }
+            return torf;
+        }
+
+        /// <summary>
+        /// 键盘弹起事件主要动作（加入按键监听并传参执行）
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static bool KeyUp(int player, int key)
+        {
+            bool torf = !MMCore.stopKeyMouseEvent[player];
+            Player.KeyDownState[player, key] = false;  //当前按键状态值，本事件始终为false
+            Player.KeyDown[player, key] = false;  //当前按键值
+
+            if (MMCore.stopKeyMouseEvent[player] == false)
+            {
+                //直接执行动作或通知延迟弹起函数去执行动作
+                if ((bool)MMCore.DataTableLoad2(true, "KeyDownLoopOneBitKey", player, key) == false)
+                {
+                    //弹起时无该键动作队列（由延迟弹起执行完），则直接执行本次事件动作
+                    MMCore.KeyUpFunc(player, key);
+                }
+                else
+                {
+                    //弹起时有该键动作队列，通知延迟弹起函数运行（按键队列>0时，清空一次队列并执行它们的动作）
+                    MMCore.DataTableSave2(true, "KeyDownLoopOneBitEnd", player, key, true);
+                }
+            }
+            return torf;
+        }
+
+        /// <summary>
+        /// 键盘弹起事件处理函数
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static bool KeyUpFunc(int player, int key)
+        {
+            bool torf = true;
+            if (MMCore.stopKeyMouseEvent[player] == true)
+            {
+                torf = false;
+            }
+            else
+            {
+                MMCore.KeyDownGlobalEvent(key, false, player);
+            }
+            return torf;
+        }
+
+        /// <summary>
+        /// 鼠标移动事件主要动作（加入按键监听并传参执行）
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="lp_mouseVector3D"></param>
+        /// <param name="uiX"></param>
+        /// <param name="uiY"></param>
+        public static void MouseMove(int player, Vector3D lp_mouseVector3D, int uiX, int uiY)
+        {
+            if (MMCore.stopKeyMouseEvent[player] == false)
+            {
+                Player.MouseVector[player] = new Vector(lp_mouseVector3D.X, lp_mouseVector3D.Y);
+
+                //↓注意取出来的是该点最高位Unit
+                double unitTerrainHeight = double.Parse(MMCore.HD_ReturnVectorCV(Player.MouseVector[player], "Unit.TerrainHeight"));
+                double unitHeight = double.Parse(MMCore.HD_ReturnVectorCV(Player.MouseVector[player], "Unit.Height"));
+
+                Player.MouseVectorX[player] = lp_mouseVector3D.X;
+                Player.MouseVectorY[player] = lp_mouseVector3D.Y;
+                Player.MouseVectorZ[player] = lp_mouseVector3D.Z;
+                Player.MouseVectorZFixed[player] = lp_mouseVector3D.Z - MMCore.MapHeight;
+
+                Player.MouseUIX[player] = uiX;
+                Player.MouseUIY[player] = uiY;
+
+                Player.MouseVector3DFixed[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, Player.MouseVectorZFixed[player]);
+                Player.MouseVector3D[player] = lp_mouseVector3D;
+                //下面2个动作应该要从二维点读取单位（可多个），将最高的单位的头顶坐标填入以修正鼠标Z点
+                Player.MouseVector3DUnitTerrain[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight);
+                Player.MouseVector3DTerrain[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight - unitHeight);
+
+                //玩家控制单位存在时，计算鼠标距离控制单位的2D角度和3D距离
+                if (Player.UnitControl[player] != null)
+                {
+                    //计算鼠标与控制单位的2D角度，用于调整角色在二维坐标系四象限内的的朝向
+                    Player.MouseToUnitControlAngle[player] = MMCore.AngleBetween(Player.UnitControl[player].Vector, Player.MouseVector[player]);
+                    //计算鼠标与控制单位的2D距离（由于点击的位置是单位头顶位置，2个单位重叠则返回最高位的，所以玩家会点到最高位单位）
+                    Player.MouseToUnitControlRange[player] = MMCore.Distance(Player.UnitControl[player].Vector, Player.MouseVector[player]);
+                    //计算鼠标与控制单位的3D距离（由于点击的位置是单位头顶位置，2个单位重叠则返回最高位的，所以玩家会点到最高位单位）
+                    Player.MouseToUnitControlRange3D[player] = MMCore.Distance(Player.UnitControl[player].Vector3D, lp_mouseVector3D);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 鼠标按下事件主要动作（加入按键监听并传参执行）
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_mouseVector3D"></param>
+        /// <param name="uiX"></param>
+        /// <param name="uiY"></param>
+        /// <returns></returns>
+        public static bool MouseDown(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
+        {
+            bool torf = !MMCore.stopKeyMouseEvent[player];
+            Player.MouseDownState[player, key] = torf;  //当前按键状态值
+            Player.MouseDown[player, key] = true;  //当前按键值
+            if (key == c_mouseButtonLeft)
+            {
+                Player.MouseDownLeft[player] = true;
+            }
+            if (key == c_mouseButtonRight)
+            {
+                Player.MouseDownRight[player] = true;
+            }
+            if (key == c_mouseButtonMiddle)
+            {
+                Player.MouseDownMiddle[player] = true;
+            }
+
+            if (MMCore.stopKeyMouseEvent[player] == false)
+            {
+                Player.MouseVector[player] = new Vector(lp_mouseVector3D.X, lp_mouseVector3D.Y);
+
+                //↓注意取出来的是该点最高位Unit
+                double unitTerrainHeight = double.Parse(MMCore.HD_ReturnVectorCV(Player.MouseVector[player], "Unit.TerrainHeight"));
+                double unitHeight = double.Parse(MMCore.HD_ReturnVectorCV(Player.MouseVector[player], "Unit.Height"));
+
+                Player.MouseVectorX[player] = lp_mouseVector3D.X;
+                Player.MouseVectorY[player] = lp_mouseVector3D.Y;
+                Player.MouseVectorZ[player] = lp_mouseVector3D.Z;
+                Player.MouseVectorZFixed[player] = lp_mouseVector3D.Z - MMCore.MapHeight;
+
+                Player.MouseUIX[player] = uiX;
+                Player.MouseUIY[player] = uiY;
+
+                Player.MouseVector3DFixed[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, Player.MouseVectorZFixed[player]);
+                Player.MouseVector3D[player] = lp_mouseVector3D;
+                //下面2个动作应该要从二维点读取单位（可多个），将最高的单位的头顶坐标填入以修正鼠标Z点
+                Player.MouseVector3DUnitTerrain[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight);
+                Player.MouseVector3DTerrain[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight - unitHeight);
+
+                //玩家控制单位存在时，计算鼠标距离控制单位的2D角度和3D距离
+                if (Player.UnitControl[player] != null)
+                {
+                    //计算鼠标与控制单位的2D角度，用于调整角色在二维坐标系四象限内的的朝向
+                    Player.MouseToUnitControlAngle[player] = MMCore.AngleBetween(Player.UnitControl[player].Vector, Player.MouseVector[player]);
+                    //计算鼠标与控制单位的2D距离（由于点击的位置是单位头顶位置，2个单位重叠则返回最高位的，所以玩家会点到最高位单位）
+                    Player.MouseToUnitControlRange[player] = MMCore.Distance(Player.UnitControl[player].Vector, Player.MouseVector[player]);
+                    //计算鼠标与控制单位的3D距离（由于点击的位置是单位头顶位置，2个单位重叠则返回最高位的，所以玩家会点到最高位单位）
+                    Player.MouseToUnitControlRange3D[player] = MMCore.Distance(Player.UnitControl[player].Vector3D, lp_mouseVector3D);
+                }
+
+                //---------------------------------------------------------------------
+                Player.MouseDownLoopOneBitNum[player] += 1;
+                MMCore.DataTableSave2(true, "MouseDownLoopOneBit", player, Player.MouseDownLoopOneBitNum[player], key);
+                MMCore.DataTableSave2(true, "MouseDownLoopOneBitKey", player, key, true);
+                //---------------------------------------------------------------------
+                //if (libBC0D3AAD_gv_XuLiGuanLi == true)
+                //{
+                //    libBC0D3AAD_gf_HD_RegKXL(lv_mouseButton, "libBC0D3AAD_gv_IntGroup_XuLi" + IntToString(lv_player)); //HD_注册按键
+                //    libBC0D3AAD_gf_HD_SetKeyFixedXL(lv_player, lv_mouseButton, 1.0);
+                //}
+                ////---------------------------------------------------------------------
+                //if (libBC0D3AAD_gv_ShuangJiGuanLi == true)
+                //{
+                //    libBC0D3AAD_gf_HD_RegPTwo(lv_point1, "DoubleClicked_PTwo_" + IntToString(lv_player));
+                //    lv_a = libBC0D3AAD_gf_HD_ReturnKeyFixedSJ(lv_player, lv_mouseButton);
+                //    if ((0.0 < lv_a) && (lv_a <= libBC0D3AAD_gv_ShuangJiShiXian) && libBC0D3AAD_gf_HD_PTwoRangeTrue("DoubleClicked_PTwo_" + IntToString(lv_player)))
+                //    {
+                //        //符合双击标准（鼠标双击多个2点验证），发送事件
+                //        libBC0D3AAD_gf_Send_MouseDoubleClicked(lv_player, lv_mouseButton, libBC0D3AAD_gv_ShuangJiShiXian - lv_a, lv_point0, lv_uiX, lv_uiY);
+                //    }
+                //    else
+                //    {
+                //        libBC0D3AAD_gf_HD_RegKSJ(lv_mouseButton, "libBC0D3AAD_gv_IntGroup_DoubleClicked" + IntToString(lv_player)); //HD_注册按键
+                //        libBC0D3AAD_gf_HD_SetKeyFixedSJ(lv_player, lv_mouseButton, libBC0D3AAD_gv_ShuangJiShiXian);
+                //    }
+                //}
+                ////---------------------------------------------------------------------
+                MMCore.MouseDownFunc(player, key, lp_mouseVector3D, uiX, uiY);
+            }
+            return torf;
+        }
+
+        /// <summary>
+        /// 鼠标按下事件处理函数
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_mouseVector3D"></param>
+        /// <param name="uiX"></param>
+        /// <param name="uiY"></param>
+        /// <returns></returns>
+        public static bool MouseDownFunc(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
+        {
+            // Variable Declarations
+            bool torf = true;
+
+            // Implementation
+            if (MMCore.stopKeyMouseEvent[player] == true)
+            {
+                //阻止按键事件时强制取消按键状态
+                Player.MouseDownState[player, key] = false;
+                if (key == c_mouseButtonLeft)
+                {
+                    Player.MouseDownLeft[player] = false;
+                }
+                if (key == c_mouseButtonRight)
+                {
+                    Player.MouseDownRight[player] = false;
+                }
+                if (key == c_mouseButtonMiddle)
+                {
+                    Player.MouseDownMiddle[player] = false;
+                }
+                torf = false;
+            }
+            else
+            {
+                MMCore.MouseDownGlobalEvent(key, true, player);
+            }
+            return torf;
+        }
+
+        /// <summary>
+        /// 鼠标弹起事件主要动作（加入按键监听并传参执行）
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_mouseVector3D"></param>
+        /// <param name="uiX"></param>
+        /// <param name="uiY"></param>
+        public static bool MouseUp(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
+        {
+            bool torf = !MMCore.stopKeyMouseEvent[player];
+            Player.MouseDownState[player, key] = false;  //当前按键状态值，本事件始终为false
+            Player.MouseDown[player, key] = false;  //当前按键值
+            if (key == c_mouseButtonLeft)
+            {
+                Player.MouseDownLeft[player] = false;
+            }
+            if (key == c_mouseButtonRight)
+            {
+                Player.MouseDownRight[player] = false;
+            }
+            if (key == c_mouseButtonMiddle)
+            {
+                Player.MouseDownMiddle[player] = false;
+            }
+
+            if (MMCore.stopKeyMouseEvent[player] == false)
+            {
+                //直接执行动作或通知延迟弹起函数去执行动作
+                if ((bool)MMCore.DataTableLoad2(true, "MouseDownLoopOneBitKey", player, key) == false)
+                {
+                    //弹起时无该键动作队列（由延迟弹起执行完），则直接执行本次事件动作
+                    MMCore.MouseUpFunc(player, key);
+                }
+                else
+                {
+                    //弹起时有该键动作队列，通知延迟弹起函数运行（按键队列>0时，清空一次队列并执行它们的动作）
+                    MMCore.DataTableSave2(true, "MouseDownLoopOneBitEnd", player, key, true);
+                }
+            }
+            return torf;
+        }
+
+        /// <summary>
+        /// 鼠标弹起事件处理函数
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="key"></param>
+        public static bool MouseUpFunc(int player, int key)
+        {
+            bool torf = true;
+            if (MMCore.stopKeyMouseEvent[player] == true)
+            {
+                torf = false;
+            }
+            else
+            {
+                MMCore.MouseDownGlobalEvent(key, false, player);
+            }
+            return torf;
+        }
+
+        /// <summary>
+        /// 键鼠弹起事件延迟执行函数，会按序执行键鼠事件动作队列，需加入到每帧执行
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_mouseVector3D"></param>
+        /// <param name="uiX"></param>
+        /// <param name="uiY"></param>
+        public static void MouseKeyUpWait(int player, int key)
+        {
+            int ae, be, a, ai = 1, bi = 1;
+            //玩家有鼠标按键事件动作队列时
+            if (Player.MouseDownLoopOneBitNum[player] > 0)
+            {
+                ae = Player.MouseDownLoopOneBitNum[player];//获取动作队列数量
+                a = 1;
+                for (; ((ai >= 0 && a <= ae) || (ai < 0 && a >= ae)); a += ai)
+                {
+                    key = (int)DataTableLoad2(true, "MouseDownLoopOneBit", player, a);//读取玩家指定动作队列按键
+                    if ((bool)DataTableLoad2(true, "MouseDownLoopOneBitEnd", player, key) == true)//判断玩家指定按键的动作队列是否结束
+                    {
+                        //如果该键的动作队列结束，重置按键状态
+                        if (key == c_mouseButtonLeft)
+                        {
+                            Player.MouseDown[player, MMCore.c_mouseButtonLeft] = false;
+                        }
+                        if (key == c_mouseButtonRight)
+                        {
+                            Player.MouseDown[player, MMCore.c_mouseButtonRight] = false;
+                        }
+                        if (key == c_mouseButtonMiddle)
+                        {
+                            Player.MouseDown[player, MMCore.c_mouseButtonMiddle] = false;
+                        }
+                        //
+                        MMCore.MouseDownFunc(player, key, Player.MouseVector3D[player], Player.MouseUIX[player], Player.MouseUIY[player]);
+                    }
+                    DataTableClear2(true, "MouseDownLoopOneBit", player, a);
+                    DataTableClear2(true, "MouseDownLoopOneBitKey", player, key);
+                    DataTableClear2(true, "MouseDownLoopOneBitEnd", player, key);
+                }
+                Player.MouseDownLoopOneBitNum[player] = 0; //动作全部执行，全队列清空
+            }
+            //玩家有键盘按键事件动作队列时
+            if (Player.KeyDownLoopOneBitNum[player] > 0)//获取动作队列数量
+            {
+                be = Player.KeyDownLoopOneBitNum[player];
+                a = 1;
+                for (; ((bi >= 0 && a <= be) || (bi < 0 && a >= be)); a += bi)
+                {
+                    key = (int)DataTableLoad2(true, "KeyDownLoopOneBit", player, a);//读取玩家指定动作队列按键
+                    if ((bool)DataTableLoad2(true, "KeyDownLoopOneBitEnd", player, key) == true)//判断玩家指定按键的动作队列是否结束
+                    {
+                        //如果该键的动作队列结束，重置按键状态
+                        Player.KeyDown[player, key] = false;
+                        MMCore.KeyUpFunc(player, key);
+                    }
+                    DataTableClear2(true, "KeyDownLoopOneBit", player, a);
+                    DataTableClear2(true, "KeyDownLoopOneBitKey", player, key);
+                    DataTableClear2(true, "KeyDownLoopOneBitEnd", player, key);
+                }
+                Player.KeyDownLoopOneBitNum[player] = 0; //全键盘队列清空
+            }
+        }
+
+        #endregion
+
     }
 
     /// <summary>
@@ -9659,7 +10075,7 @@ namespace MetalMaxSystem
         /// </summary>
         public static int InvokeCount { get => _invokeCount; set => _invokeCount = value; }
         /// <summary>
-        /// 主循环状态字段，手动设置为false则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
+        /// 主循环状态，手动设置为false则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
         /// </summary>
         public static bool TimerState { get => _timerState; set => _timerState = value; }
 
@@ -9673,7 +10089,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 主循环的计时器实例创建时以参数填入、被反复执行的函数，Update事件被执行时创建计时器的父线程将暂停，直到本函数确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
+        /// 主循环的计时器实例创建时以参数填入、被反复执行的函数，Update事件被执行时创建计时器的父线程将暂停，直到本函数确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）。一般不需要用户操作，TimerState为true时手动调用会额外增加Update次数
         /// </summary>
         /// <param name="state"></param>
         public static void CheckStatus(object state)
@@ -9702,11 +10118,11 @@ namespace MetalMaxSystem
         private static bool _timerState;
 
         /// <summary>
-        /// 副循环Update事件运行次数
+        /// 【MM_函数库】副循环Update事件运行次数
         /// </summary>
         public static int InvokeCount { get => _invokeCount; set => _invokeCount = value; }
         /// <summary>
-        /// 副循环状态字段，手动设置为false则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
+        /// 【MM_函数库】副循环状态，手动设置为false则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
         /// </summary>
         public static bool TimerState { get => _timerState; set => _timerState = value; }
 
@@ -9718,7 +10134,7 @@ namespace MetalMaxSystem
         //平时没在类中写构造函数也没继承那么框架会生成一个无参构造函数，当类中定义静态成员没定义静态构造函数时，框架亦会生成一个静态构造函数来让框架自身来调用
 
         /// <summary>
-        /// 副循环状态监控类（用来读写InvokeCount、TimerState属性），计时器实例创建时本类方法CheckStatus以参数填入被反复执行，副循环Update事件被执行时创建计时器的父线程（subUpdateThread）将暂停，直到该方法确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
+        /// 【MM_函数库】副循环状态监控类（用来读写InvokeCount、TimerState属性），计时器实例创建时本类方法CheckStatus以参数填入被反复执行，副循环Update事件被执行时创建计时器的父线程（subUpdateThread）将暂停，直到该方法确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）。一般不需要用户操作，TimerState为true时手动调用会额外增加Update次数
         /// </summary>
         static SubUpdateChecker()
         {
@@ -9729,7 +10145,7 @@ namespace MetalMaxSystem
         //静态方法只能访问类中的静态成员（即便在实例类，同理因无法判断非静态变量等这些实例成员的活动内存地址，所以不允许使用实例成员）
 
         /// <summary>
-        /// 副循环的计时器实例创建时以参数填入、被反复执行的函数，Update事件被执行时创建计时器的父线程将暂停，直到本函数确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
+        /// 【MM_函数库】副循环的计时器实例创建时以参数填入、被反复执行的函数，Update事件被执行时创建计时器的父线程将暂停，直到本函数确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
         /// </summary>
         /// <param name="state"></param>
         public static void CheckStatus(object state)
@@ -9755,104 +10171,122 @@ namespace MetalMaxSystem
         #region 变量、字段及其属性方法
 
         /// <summary>
-        /// 自动复位事件（用来控制触发线程信号）
+        /// 【MM_函数库】自动复位事件（用来控制触发线程信号）
         /// </summary>
         private AutoResetEvent _autoResetEvent_TimerUpdate;
         /// <summary>
-        /// 自动复位事件，提供该属性方便随时读取，属性动作AutoResetEvent_TimerUpdate.Set()可让触发器线程终止（效果等同TimerUpdate.TimerState = true）
+        /// 【MM_函数库】自动复位事件，提供该属性方便随时读取，属性动作AutoResetEvent_TimerUpdate.Set()可让触发器线程终止（效果等同TimerUpdate.TimerState = true）
         /// </summary>
         public AutoResetEvent AutoResetEvent_TimerUpdate { get => _autoResetEvent_TimerUpdate; }
 
         /// <summary>
-        /// 周期触发器主体事件发布动作所在线程的实例
+        /// 【MM_函数库】周期触发器主体事件发布动作所在线程的实例
         /// </summary>
         private Thread _thread;
 
         /// <summary>
-        /// 周期触发器执行Update事件的计时器实例
+        /// 【MM_函数库】周期触发器执行Update事件的计时器实例
         /// </summary>
         private Timer _timer;
 
         /// <summary>
-        /// 周期触发器Update事件运行次数
+        /// 【MM_函数库】周期触发器Update事件运行次数
         /// </summary>
         private int _invokeCount;
         /// <summary>
-        /// 周期触发器Update事件运行次数，该属性可随时读取或清零
+        /// 【MM_函数库】周期触发器Update事件运行次数，该属性可随时读取或清零
         /// </summary>
         public int InvokeCount { get => _invokeCount; set => _invokeCount = value; }
 
         /// <summary>
-        /// 周期触发器Update事件运行次数上限，该属性让计时器到期退出循环，计时器所在父线程将运行End和Destory事件
+        /// 【MM_函数库】周期触发器Update事件运行次数上限，该属性让计时器到期退出循环，计时器所在父线程将运行End和Destory事件
         /// </summary>
         private int _invokeCountMax;
         /// <summary>
-        /// 周期触发器Update事件运行次数上限，该属性让计时器到期退出循环，计时器所在父线程将运行End和Destory事件
+        /// 【MM_函数库】周期触发器Update事件运行次数上限，该属性让计时器到期退出循环，计时器所在父线程将运行End和Destory事件
         /// </summary>
         public int InvokeCountMax { get => _invokeCountMax; set => _invokeCountMax = value; }
 
         /// <summary>
-        /// 周期触发器Update事件前摇，未设置直接启动TriggerStart则默认为0
+        /// 【MM_函数库】周期触发器Update事件前摇，未设置直接启动TriggerStart则默认为0
         /// </summary>
         private int _duetime;
         /// <summary>
-        /// 周期触发器Update事件前摇，未设置直接启动TriggerStart则默认为0
+        /// 【MM_函数库】周期触发器Update事件前摇，未设置直接启动TriggerStart则默认为0
         /// </summary>
         public int Duetime { get => _duetime; set => _duetime = value; }
 
         /// <summary>
-        /// 周期触发器的运行间隔字段，未设置直接启动TriggerStart则默认为1s
+        /// 【MM_函数库】周期触发器的运行间隔字段，未设置直接启动TriggerStart则默认为1s
         /// </summary>
         private int _period;
         /// <summary>
-        /// 周期触发器的运行间隔属性，未设置直接启动TriggerStart则默认为1s
+        /// 【MM_函数库】周期触发器的运行间隔属性，未设置直接启动TriggerStart则默认为1s
         /// </summary>
         public int Period { get => _period; set => _period = value; }
 
         /// <summary>
-        /// 周期触发器的状态字段，手动设置为false则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
+        /// 【MM_函数库】周期触发器的状态字段，手动设置为false则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
         /// </summary>
         private bool _timerState;
         /// <summary>
-        /// 周期触发器的状态属性，手动设置为false则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
+        /// 【MM_函数库】周期触发器的状态属性，手动设置为false则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
         /// </summary>
         public bool TimerState { get => _timerState; set => _timerState = value; }
 
         /// <summary>
-        /// 事件委托列表，用来存储多个事件委托，用对象类型的键来取出，内部属性，用户不需要操作
+        /// 【MM_函数库】事件委托列表，用来存储多个事件委托，用对象类型的键来取出，内部属性，用户不需要操作
         /// </summary>
         protected EventHandlerList _listEventDelegates = new EventHandlerList();
 
         /// <summary>
-        /// 周期触发器主体事件发布动作所在线程的实例，提供该属性方便随时读取，但不允许不安全赋值
+        /// 【MM_函数库】周期触发器主体事件发布动作所在线程的实例，提供该属性方便随时读取，但不允许不安全赋值
         /// </summary>
         public Thread Thread { get => _thread; }
 
         /// <summary>
-        /// 周期触发器执行Update事件的计时器实例，提供该属性方便随时读取，但不允许不安全赋值
+        /// 【MM_函数库】周期触发器执行Update事件的计时器实例，提供该属性方便随时读取，但不允许不安全赋值
         /// </summary>
         public Timer Timer { get => _timer; }
 
         #endregion
 
-        #region 定义区分对象类型的键
+        #region 定义区分委托对象的键
 
-        //下方每个new object()都是一个单独的实例个体，所以定义的五个变量在内存ID是不同的
+        //每个new object()都是一个单独的实例个体，所以定义的五个变量相当于内存ID不同的object类型的键
+        //由于EventHandlerList类型的_listEventDelegates委托队列是实例成员，相同键返回的委托对象不会相同
+        //所以即便创建了多个实例，以下键只需内存独此一份且私有只读
 
+        /// <summary>
+        /// 【MM_函数库】周期触发器用于返回事件委托队列中Awake事件委托对象的键
+        /// </summary>
         private static readonly object awakeEventKey = new object();
+        /// <summary>
+        /// 【MM_函数库】周期触发器用于返回事件委托队列中Start事件委托对象的键
+        /// </summary>
         private static readonly object startEventKey = new object();
+        /// <summary>
+        /// 【MM_函数库】周期触发器用于返回事件委托队列中Update事件委托对象的键
+        /// </summary>
         private static readonly object updateEventKey = new object();
+        /// <summary>
+        /// 【MM_函数库】周期触发器用于返回事件委托队列中End事件委托对象的键
+        /// </summary>
         private static readonly object endEventKey = new object();
+        /// <summary>
+        /// 【MM_函数库】周期触发器用于返回事件委托队列中Destroy事件委托对象的键
+        /// </summary>
         private static readonly object destroyEventKey = new object();
 
         #endregion
 
-        #region 声明事件委托（用于用户注册事件给函数）
+        #region 声明事件委托
 
+        //事件委托必须安全方式注册事件给函数，不能直接运行，而常规委托则相反。从事件委托列表通过键取出的事件委托可赋值给常规委托去执行，常规委托可以赋值给事件委托但不能交换顺序
         //声明事件委托变量（首字母大写），相比常规委托，事件委托因安全考虑无法直接被执行，通过OnAwake内部函数确保安全执行（其实是声明临时常规委托在赋值后执行）
 
         /// <summary>
-        /// 将周期触发器的唤醒事件注册到函数，语法：TimerUpdate.Awake +=/-= 实例或静态函数（特征格式：void 函数名(object sender, EventArgs e)）
+        /// 【MM_函数库】将周期触发器的唤醒事件注册到函数，语法：TimerUpdate.Awake +=/-= 实例或静态函数（特征格式：void 函数名(object sender, EventArgs e)）
         /// </summary>
         public event TimerEventHandler Awake
         {
@@ -9869,7 +10303,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 将周期触发器的开始事件注册到函数，语法：TimerUpdate.Start +=/-= 实例或静态函数（特征格式：void 函数名(object sender, EventArgs e)）
+        /// 【MM_函数库】将周期触发器的开始事件注册到函数，语法：TimerUpdate.Start +=/-= 实例或静态函数（特征格式：void 函数名(object sender, EventArgs e)）
         /// </summary>
         public event TimerEventHandler Start
         {
@@ -9884,7 +10318,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 将周期触发器的开始事件注册到函数，语法：TimerUpdate.Update +=/-= 实例或静态函数（特征格式：void 函数名(object sender, EventArgs e)）
+        /// 【MM_函数库】将周期触发器的开始事件注册到函数，语法：TimerUpdate.Update +=/-= 实例或静态函数（特征格式：void 函数名(object sender, EventArgs e)）
         /// </summary>
         public event TimerEventHandler Update
         {
@@ -9899,7 +10333,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 将周期触发器的开始事件注册到函数，语法：TimerUpdate.End +=/-= 实例或静态函数（特征格式：void 函数名(object sender, EventArgs e)）
+        /// 【MM_函数库】将周期触发器的开始事件注册到函数，语法：TimerUpdate.End +=/-= 实例或静态函数（特征格式：void 函数名(object sender, EventArgs e)）
         /// </summary>
         public event TimerEventHandler End
         {
@@ -9914,7 +10348,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 将周期触发器的开始事件注册到函数，语法：TimerUpdate.Destroy +=/-= 实例或静态函数（特征格式：void 函数名(object sender, EventArgs e)）
+        /// 【MM_函数库】将周期触发器的开始事件注册到函数，语法：TimerUpdate.Destroy +=/-= 实例或静态函数（特征格式：void 函数名(object sender, EventArgs e)）
         /// </summary>
         public event TimerEventHandler Destroy
         {
@@ -9933,9 +10367,9 @@ namespace MetalMaxSystem
         #region 构造函数（本类创建时的2个重载方法）
 
         /// <summary>
-        /// 创建一个不会到期的周期触发器
+        /// 【MM_函数库】创建一个不会到期的周期触发器
         /// </summary>
-        public TimerUpdate()
+        public TimerUpdate()//构造函数
         {
             InvokeCount = 0;
             InvokeCountMax = 0;
@@ -9943,10 +10377,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 创建一个有执行次数的周期触发器
+        /// 【MM_函数库】创建一个有执行次数的周期触发器
         /// </summary>
         /// <param name="invokeCountMax">决定计时器Update阶段循环次数</param>
-        public TimerUpdate(int invokeCountMax)
+        public TimerUpdate(int invokeCountMax)//构造函数
         {
             InvokeCount = 0;
             InvokeCountMax = invokeCountMax;
@@ -9958,7 +10392,7 @@ namespace MetalMaxSystem
         //非静态（实例）方法可以访问类中的任何成员
 
         /// <summary>
-        /// 计时器实例创建时以参数填入、被反复执行的函数，Update事件被执行时创建计时器的父线程将暂停，直到本函数确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
+        /// 【MM_函数库】计时器实例创建时以参数填入、被反复执行的函数，Update事件被执行时创建计时器的父线程将暂停，直到本函数确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
         /// </summary>
         /// <param name="state"></param>
         private void CheckStatus(object state)
@@ -9981,7 +10415,7 @@ namespace MetalMaxSystem
         //注：Action函数在特殊需要时再设置为公开（不让用户直接使用），用户使用TimerUpdate.TriggerStart自带线程启动
 
         /// <summary>
-        /// 周期触发器主体事件发布动作（重复执行则什么也不做），在当前线程创建周期触发器并执行事件委托（提前定义事件委托变量TimerUpdate.Awake/Start/Update/End/Destroy += 要委托执行的函数，即完成事件注册到函数），可预先自定义计时器Updata阶段的执行间隔（否则默认以Duetime=0、Period=1000运行计时器）。注：若直接调用本函数则在计时器Updata阶段会暂停当前线程，不想暂停请额外开线程手动加载Action运行或使用TimerUpdate.TriggerStart自带线程启动（推荐）
+        /// 【MM_函数库】周期触发器主体事件发布动作（重复执行则什么也不做），在当前线程创建周期触发器并执行事件委托（提前定义事件委托变量TimerUpdate.Awake/Start/Update/End/Destroy += 要委托执行的函数，即完成事件注册到函数），可预先自定义计时器Updata阶段的执行间隔（否则默认以Duetime=0、Period=1000运行计时器）。注：若直接调用本函数则在计时器Updata阶段会暂停当前线程，不想暂停请额外开线程手动加载Action运行或使用TimerUpdate.TriggerStart自带线程启动（推荐）
         /// </summary>
         private void Action()
         {
@@ -10009,7 +10443,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 周期触发器主体事件发布动作（重复执行则什么也不做），在当前线程创建周期触发器并执行事件委托（提前定义事件委托变量TimerUpdate.Awake/Start/Update/End/Destroy += 要委托执行的函数，即完成事件注册到函数），可预先自定义计时器Updata阶段的执行间隔（否则默认以Duetime=0、Period=1000运行计时器）。注：若直接调用本函数则在计时器Updata阶段会暂停当前线程，不想暂停请额外开线程手动加载Action运行或使用TimerUpdate.TriggerStart自带线程启动（推荐）
+        /// 【MM_函数库】周期触发器主体事件发布动作（重复执行则什么也不做），在当前线程创建周期触发器并执行事件委托（提前定义事件委托变量TimerUpdate.Awake/Start/Update/End/Destroy += 要委托执行的函数，即完成事件注册到函数），可预先自定义计时器Updata阶段的执行间隔（否则默认以Duetime=0、Period=1000运行计时器）。注：若直接调用本函数则在计时器Updata阶段会暂停当前线程，不想暂停请额外开线程手动加载Action运行或使用TimerUpdate.TriggerStart自带线程启动（推荐）
         /// </summary>
         /// <param name="duetime">Updata阶段执行开始前等待（毫秒），仅生效一次</param>
         /// <param name="period">Updata阶段执行间隔（毫秒）</param>
@@ -10034,7 +10468,7 @@ namespace MetalMaxSystem
         #region 声明常规委托，安全执行事件委托并传递事件参数
 
         /// <summary>
-        /// 计时器唤醒阶段时运行一次
+        /// 【MM_函数库】计时器唤醒阶段时运行一次
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -10045,7 +10479,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 周期触发器开始阶段运行一次
+        /// 【MM_函数库】周期触发器开始阶段运行一次
         /// </summary>
         private void OnStart(object sender, EventArgs e)
         {
@@ -10054,7 +10488,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 周期触发器Update阶段按预设间隔反复运行
+        /// 【MM_函数库】周期触发器Update阶段按预设间隔反复运行
         /// </summary>
         private void OnUpdate(object sender, EventArgs e)
         {
@@ -10063,7 +10497,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 周期触发器结束阶段运行一次
+        /// 【MM_函数库】周期触发器结束阶段运行一次
         /// </summary>
         private void OnEnd(object sender, EventArgs e)
         {
@@ -10072,7 +10506,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 周期触发器摧毁阶段运行一次
+        /// 【MM_函数库】周期触发器摧毁阶段运行一次
         /// </summary>
         private void OnDestroy(object sender, EventArgs e)
         {
@@ -10085,7 +10519,7 @@ namespace MetalMaxSystem
         #region 自动创建线程执行周期触发器（模拟触发器运行）
 
         /// <summary>
-        /// 自动创建线程启动周期触发器（模拟触发器运行），重复启动时什么也不做，未设置Update属性则默认以Duetime=0、Period=1000运行计时器循环
+        /// 【MM_函数库】自动创建线程启动周期触发器（模拟触发器运行），重复启动时什么也不做，未设置Update属性则默认以Duetime=0、Period=1000运行计时器循环
         /// </summary>
         /// <param name="isBackground">true将启动线程调整为后台线程</param>
         public void TriggerStart(bool isBackground)
@@ -10199,7 +10633,10 @@ namespace MetalMaxSystem
         /// <summary>
         /// 创建单位实例
         /// </summary>
-        public Unit() { }
+        public Unit()
+        {
+            //创建新类时的初始化动作
+        }
 
         #endregion
 
@@ -10451,117 +10888,205 @@ namespace MetalMaxSystem
     /// </summary>
     public static class Player
     {
-        #region 变量、字段及其属性方法
+        #region 字段
 
-        public static Unit[] _hero = new Unit[MMCore.c_maxPlayers + 1];
-        public static bool[] _canNotOperation = new bool[MMCore.c_maxPlayers + 1];
-        public static bool[] _moveLoop = new bool[MMCore.c_maxPlayers + 1];
+        private static Unit[] _hero = new Unit[MMCore.c_maxPlayers + 1];
+        private static Unit[,] vehicle = new Unit[MMCore.c_maxPlayers + 1, MMCore.c_vehicleTypeMax];
+        private static Unit[] currentVehicle = new Unit[MMCore.c_maxPlayers + 1];
+        private static Unit[] unitMain = new Unit[MMCore.c_maxPlayers + 1];
+        private static Unit[] unitControl = new Unit[MMCore.c_maxPlayers + 1];
+        private static bool[] _canNotOperation = new bool[MMCore.c_maxPlayers + 1];
 
-        public static bool[,] _keyDown = new bool[MMCore.c_maxPlayers + 1, MMCore.c_keyMax + 1];
-        public static bool[,] _keyDownState = new bool[MMCore.c_maxPlayers + 1, MMCore.c_keyMax + 1];
-        public static int[] _keyDownLoopOneBitNum = new int[MMCore.c_maxPlayers + 1];
+        private static bool[,] _keyDown = new bool[MMCore.c_maxPlayers + 1, MMCore.c_keyMax + 1];
+        private static bool[,] _keyDownState = new bool[MMCore.c_maxPlayers + 1, MMCore.c_keyMax + 1];
+        private static bool[] _keyDownLoop = new bool[MMCore.c_maxPlayers + 1];
+        private static int[] _keyDownLoopOneBitNum = new int[MMCore.c_maxPlayers + 1];
 
-        public static bool[] _mouseLeftDown = new bool[MMCore.c_maxPlayers + 1];
-        public static bool[] _mouseRightDown = new bool[MMCore.c_maxPlayers + 1];
-        public static bool[] _mouseRightDownLoop = new bool[MMCore.c_maxPlayers + 1];
-        public static bool[] _mouseMiddleDown = new bool[MMCore.c_maxPlayers + 1];
-        public static bool[,] _mouseDownState = new bool[MMCore.c_maxPlayers + 1, MMCore.c_mouseMax + 1];
-        public static int[] _mouseDownLoopOneBitNum = new int[MMCore.c_maxPlayers + 1];
+        private static bool[] _mouseDownLeft = new bool[MMCore.c_maxPlayers + 1];
+        private static bool[] _mouseDownMiddle = new bool[MMCore.c_maxPlayers + 1];
+        private static bool[] _mouseDownRight = new bool[MMCore.c_maxPlayers + 1];
+        private static bool[,] _mouseDown = new bool[MMCore.c_maxPlayers + 1, MMCore.c_mouseMax + 1];
+        private static bool[,] _mouseDownState = new bool[MMCore.c_maxPlayers + 1, MMCore.c_mouseMax + 1];
+        private static bool[] _mouseDownLoop = new bool[MMCore.c_maxPlayers + 1];
+        private static int[] _mouseDownLoopOneBitNum = new int[MMCore.c_maxPlayers + 1];
 
-        public static int[] _mouseUIX = new int[MMCore.c_maxPlayers + 1];
-        public static int[] _mouseUIY = new int[MMCore.c_maxPlayers + 1];
+        private static bool[,] _keyDownTwice = new bool[MMCore.c_maxPlayers + 1, MMCore.c_mouseMax + 1];
+        private static bool[,] _mouseDownTwice = new bool[MMCore.c_maxPlayers + 1, MMCore.c_mouseMax + 1];
 
-        public static double[] _mouseVectorX = new double[MMCore.c_maxPlayers + 1];
-        public static double[] _mouseVectorY = new double[MMCore.c_maxPlayers + 1];
+        private static int[] _mouseUIX = new int[MMCore.c_maxPlayers + 1];
+        private static int[] _mouseUIY = new int[MMCore.c_maxPlayers + 1];
 
+        private static double[] _mouseVectorX = new double[MMCore.c_maxPlayers + 1];
+        private static double[] _mouseVectorY = new double[MMCore.c_maxPlayers + 1];
+        private static double[] _mouseVectorZ = new double[MMCore.c_maxPlayers + 1];
+        private static double[] _mouseVectorZFixed = new double[MMCore.c_maxPlayers + 1];
+        private static double[] _mouseToUnitControlAngle = new double[MMCore.c_maxPlayers + 1];
+        private static double[] _mouseToUnitControlRange = new double[MMCore.c_maxPlayers + 1];
+        private static double[] _mouseToUnitControlRange3D = new double[MMCore.c_maxPlayers + 1];
+        private static Vector3D[] _cameraVector3D = new Vector3D[MMCore.c_maxPlayers + 1];
+        private static Vector3D[] _mouseVector3DFixed = new Vector3D[MMCore.c_maxPlayers + 1];
+        private static Vector3D[] _mouseVector3D = new Vector3D[MMCore.c_maxPlayers + 1];
+        private static Vector3D[] _mouseVector3DUnitTerrain = new Vector3D[MMCore.c_maxPlayers + 1];
+        private static Vector3D[] _mouseVector3DTerrain = new Vector3D[MMCore.c_maxPlayers + 1];
+        private static Vector[] _mouseVector = new Vector[MMCore.c_maxPlayers + 1];
+
+        private static string[] _type = new string[MMCore.c_maxPlayers + 1];
+
+        #endregion
+
+        #region 属性方法
+
+        /// <summary>
+        /// 英雄单位
+        /// </summary>
+        public static Unit[] Hero { get => _hero; set => _hero = value; }
+        /// <summary>
+        /// 私人载具
+        /// </summary>
+        public static Unit[,] Vehicle { get => vehicle; set => vehicle = value; }
+        /// <summary>
+        /// 当前载具
+        /// </summary>
+        public static Unit[] CurrentVehicle { get => currentVehicle; set => currentVehicle = value; }
+        /// <summary>
+        /// 主单位
+        /// </summary>
+        public static Unit[] UnitMain { get => unitMain; set => unitMain = value; }
+        /// <summary>
+        /// 控制单位
+        /// </summary>
+        public static Unit[] UnitControl { get => unitControl; set => unitControl = value; }
+        /// <summary>
+        /// 禁止操作
+        /// </summary>
+        public static bool[] CanNotOperation { get => _canNotOperation; set => _canNotOperation = value; }
+
+        /// <summary>
+        /// 键盘按键按下[键,玩家]
+        /// </summary>
+        public static bool[,] KeyDown { get => _keyDown; set => _keyDown = value; }
+        /// <summary>
+        /// 键盘按键按下的有效状态（因为即便按下也能逻辑否决，所以真实有效按键必须键按下+有效状态同时符合）
+        /// </summary>
+        public static bool[,] KeyDownState { get => _keyDownState; set => _keyDownState = value; }
+        /// <summary>
+        /// 键盘按键队列
+        /// </summary>
+        public static bool[] KeyDownLoop { get => _keyDownLoop; set => _keyDownLoop = value; }
+        /// <summary>
+        /// 键盘按键队列数
+        /// </summary>
+        public static int[] KeyDownLoopOneBitNum { get => _keyDownLoopOneBitNum; set => _keyDownLoopOneBitNum = value; }
+
+        /// <summary>
+        /// 鼠标左键按下
+        /// </summary>
+        public static bool[] MouseDownLeft { get => _mouseDownLeft; set => _mouseDownLeft = value; }
+        /// <summary>
+        /// 鼠标中键按下
+        /// </summary>
+        public static bool[] MouseDownMiddle { get => _mouseDownMiddle; set => _mouseDownMiddle = value; }
+        /// <summary>
+        /// 鼠标右键按下
+        /// </summary>
+        public static bool[] MouseDownRight { get => _mouseDownRight; set => _mouseDownRight = value; }
+        /// <summary>
+        /// 鼠标按键按下
+        /// </summary>
+        public static bool[,] MouseDown { get => _mouseDown; set => _mouseDown = value; }
+        /// <summary>
+        /// 鼠标按键按下的有效状态（因为即便按下也能逻辑否决，所以真实有效按键必须键按下+有效状态同时符合）
+        /// </summary>
+        public static bool[,] MouseDownState { get => _mouseDownState; set => _mouseDownState = value; }
+        /// <summary>
+        /// 鼠标按键队列
+        /// </summary>
+        public static bool[] MouseDownLoop { get => _mouseDownLoop; set => _mouseDownLoop = value; }
+        /// <summary>
+        /// 鼠标按键队列数
+        /// </summary>
+        public static int[] MouseDownLoopOneBitNum { get => _mouseDownLoopOneBitNum; set => _mouseDownLoopOneBitNum = value; }
+
+        /// <summary>
+        /// 按键双击
+        /// </summary>
+        public static bool[,] KeyDownTwice { get => _keyDownTwice; set => _keyDownTwice = value; }
+        /// <summary>
+        /// 鼠标双击
+        /// </summary>
+        public static bool[,] MouseDownTwice { get => _mouseDownTwice; set => _mouseDownTwice = value; }
+
+        /// <summary>
+        /// 鼠标在UI的X坐标
+        /// </summary>
+        public static int[] MouseUIX { get => _mouseUIX; set => _mouseUIX = value; }
+        /// <summary>
+        /// 鼠标在UI的Y坐标
+        /// </summary>
+        public static int[] MouseUIY { get => _mouseUIY; set => _mouseUIY = value; }
+        /// <summary>
+        /// 鼠标在世界的X坐标
+        /// </summary>
+        public static double[] MouseVectorX { get => _mouseVectorX; set => _mouseVectorX = value; }
+        /// <summary>
+        /// 鼠标在世界的Y坐标
+        /// </summary>
+        public static double[] MouseVectorY { get => _mouseVectorY; set => _mouseVectorY = value; }
         /// <summary>
         /// 鼠标点高度，mouseVectorZ=MapHeight+TerrainHeight+Unit.TerrainHeight+Unit.Height
         /// 悬崖、地形物件及单位在移动、诞生摧毁时应将高度信息刷新，以便实时获取
         /// </summary>
-        public static double[] _mouseVectorZ = new double[MMCore.c_maxPlayers + 1];
-
+        public static double[] MouseVectorZ { get => _mouseVectorZ; set => _mouseVectorZ = value; }
         /// <summary>
         /// 修正后的鼠标点高度（扣减了地面高度，所以这是相对地面的高度），mouseVectorZFixed=mouseVectorZ-MapHeight=TerrainHeight+Unit.TerrainHeight+Unit.Height
         /// </summary>
-        public static double[] _mouseVectorZFixed = new double[MMCore.c_maxPlayers + 1];
-
+        public static double[] MouseVectorZFixed { get => _mouseVectorZFixed; set => _mouseVectorZFixed = value; }
         /// <summary>
-        /// 世界中鼠标与玩家控制英雄形成的2D角度，象限分布：右=0度，上=90°，左=180°，下=270°
+        /// 鼠标与玩家控制单位在世界中的2D角度，象限分布：右=0度，上=90°，左=180°，下=270°，可用于调整行走方向
         /// </summary>
-        public static double[] _mouseToHeroAngle = new double[MMCore.c_maxPlayers + 1];
-
+        public static double[] MouseToUnitControlAngle { get => _mouseToUnitControlAngle; set => _mouseToUnitControlAngle = value; }
         /// <summary>
-        /// 世界中鼠标与玩家控制英雄形成的2D距离
+        /// 鼠标与玩家控制单位在世界中的2D距离
         /// </summary>
-        public static double[] _mouseToHeroRange = new double[MMCore.c_maxPlayers + 1];
-
+        public static double[] MouseToUnitControlRange { get => _mouseToUnitControlRange; set => _mouseToUnitControlRange = value; }
         /// <summary>
-        /// 世界中鼠标与玩家控制英雄形成的3D距离
+        /// 鼠标与玩家控制单位在世界中的3D角度，常用于调整鼠标自动镜头
         /// </summary>
-        public static double[] _mouseToHeroRange3D = new double[MMCore.c_maxPlayers + 1];
-
+        public static double[] MouseToUnitControlRange3D { get => _mouseToUnitControlRange3D; set => _mouseToUnitControlRange3D = value; }
         /// <summary>
-        /// 玩家镜头位置点
+        /// 相机位置
         /// </summary>
-        public static Vector3D[] _cameraVector3D = new Vector3D[MMCore.c_maxPlayers + 1];
-
+        public static Vector3D[] CameraVector3D { get => _cameraVector3D; set => _cameraVector3D = value; }
         /// <summary>
         /// 鼠标3D点向量坐标，修正了鼠标点高度（扣减了地图高度，所以这是相对地面的高度），mouseVectorZFixed=mouseVectorZ-MapHeight=TerrainHeight+Unit.TerrainHeight+Unit.Height
         /// </summary>
-        public static Vector3D[] _mouseVector3DFixed = new Vector3D[MMCore.c_maxPlayers + 1];
-
+        public static Vector3D[] MouseVector3DFixed { get => _mouseVector3DFixed; set => _mouseVector3DFixed = value; }
         /// <summary>
         /// 鼠标3D点向量坐标，鼠标Z点在单位高度顶部，Z=MapHeight+TerrainHeight+Unit.TerrainHeight+Unit.Height
         /// </summary>
-        public static Vector3D[] _mouseVector3D = new Vector3D[MMCore.c_maxPlayers + 1];
-
+        public static Vector3D[] MouseVector3D { get => _mouseVector3D; set => _mouseVector3D = value; }
         /// <summary>
         /// 鼠标3D点向量坐标，鼠标Z点在单位层地形物件高度顶部（单位脚底），Z=MapHeight+TerrainHeight+Unit.TerrainHeight
         /// </summary>
-        public static Vector3D[] _mouseVector3DUnitTerrain = new Vector3D[MMCore.c_maxPlayers + 1];
-
+        public static Vector3D[] MouseVector3DUnitTerrain { get => _mouseVector3DUnitTerrain; set => _mouseVector3DUnitTerrain = value; }
         /// <summary>
         /// 鼠标3D点向量坐标，鼠标Z点在悬崖、地形物件顶部，Z=MapHeight+TerrainHeight
         /// </summary>
-        public static Vector3D[] _mouseVector3DTerrain = new Vector3D[MMCore.c_maxPlayers + 1];
-
+        public static Vector3D[] MouseVector3DTerrain { get => _mouseVector3DTerrain; set => _mouseVector3DTerrain = value; }
         /// <summary>
         /// 鼠标2D点向量坐标
         /// </summary>
-        public static Vector[] _mouseVector = new Vector[MMCore.c_maxPlayers + 1];
+        public static Vector[] MouseVector { get => _mouseVector; set => _mouseVector = value; }
+
+        /// <summary>
+        /// 玩家类型（中立Neutral、电脑Ai、用户User、玩家Palyer、敌人Enemy）
+        /// </summary>
+        public static string[] Type { get => _type; set => _type = value; }
+
+
 
         #endregion
 
-        public static Unit[] Hero { get => _hero; set => _hero = value; }
-        public static bool[] CanNotOperation { get => _canNotOperation; set => _canNotOperation = value; }
-        public static bool[] MoveLoop { get => _moveLoop; set => _moveLoop = value; }
-        public static bool[,] KeyDown { get => _keyDown; set => _keyDown = value; }
-        /// <summary>
-        /// KeyDownState[玩家,键]
-        /// </summary>
-        public static bool[,] KeyDownState { get => _keyDownState; set => _keyDownState = value; }
-        public static int[] KeyDownLoopOneBitNum { get => _keyDownLoopOneBitNum; set => _keyDownLoopOneBitNum = value; }
-        public static bool[] MouseLeftDown { get => _mouseLeftDown; set => _mouseLeftDown = value; }
-        public static bool[] MouseRightDown { get => _mouseRightDown; set => _mouseRightDown = value; }
-        public static bool[] MouseRightDownLoop { get => _mouseRightDownLoop; set => _mouseRightDownLoop = value; }
-        public static bool[] MouseMiddleDown { get => _mouseMiddleDown; set => _mouseMiddleDown = value; }
-        public static bool[,] MouseDownState { get => _mouseDownState; set => _mouseDownState = value; }
-        public static int[] MouseDownLoopOneBitNum { get => _mouseDownLoopOneBitNum; set => _mouseDownLoopOneBitNum = value; }
-        public static int[] MouseUIX { get => _mouseUIX; set => _mouseUIX = value; }
-        public static int[] MouseUIY { get => _mouseUIY; set => _mouseUIY = value; }
-        public static double[] MouseVectorX { get => _mouseVectorX; set => _mouseVectorX = value; }
-        public static double[] MouseVectorY { get => _mouseVectorY; set => _mouseVectorY = value; }
-        public static double[] MouseVectorZ { get => _mouseVectorZ; set => _mouseVectorZ = value; }
-        public static double[] MouseVectorZFixed { get => _mouseVectorZFixed; set => _mouseVectorZFixed = value; }
-        public static double[] MouseToHeroAngle { get => _mouseToHeroAngle; set => _mouseToHeroAngle = value; }
-        public static double[] MouseToHeroRange { get => _mouseToHeroRange; set => _mouseToHeroRange = value; }
-        public static double[] MouseToHeroRange3D { get => _mouseToHeroRange3D; set => _mouseToHeroRange3D = value; }
-        public static Vector3D[] CameraVector3D { get => _cameraVector3D; set => _cameraVector3D = value; }
-        public static Vector3D[] MouseVector3DFixed { get => _mouseVector3DFixed; set => _mouseVector3DFixed = value; }
-        public static Vector3D[] MouseVector3D { get => _mouseVector3D; set => _mouseVector3D = value; }
-        public static Vector3D[] MouseVector3DUnitTerrain { get => _mouseVector3DUnitTerrain; set => _mouseVector3DUnitTerrain = value; }
-        public static Vector3D[] MouseVector3DTerrain { get => _mouseVector3DTerrain; set => _mouseVector3DTerrain = value; }
-        public static Vector[] MouseVector { get => _mouseVector; set => _mouseVector = value; }
     }
 
     #region 键鼠钩子及监听服务
@@ -10573,16 +11098,50 @@ namespace MetalMaxSystem
     /// </summary>
     public class RecordService
     {
+        private int _period = 50;//默认逻辑帧是50ms
+        /// <summary>
+        /// 监听服务逻辑每帧（可设定范围0~1000），用于鼠标移动、键按下时计算最大持续值（实际每帧持续值+1时，最大持续值=蓄力值100 * 1000毫秒/逻辑帧毫秒），实际设置监听每帧超过1000ms基本不太可能，如果真的那样做，每次蓄力会很慢，默认为50ms（建议与默认运行时钟保持一致，如果监听循环不是50ms可自行匹配一致）
+        /// </summary>
+        public int Period
+        {
+            get => _period;
+            //如果用户输入错误，则什么也不变
+            set
+            {
+                if (value >= 0 && value <= 2)
+                {
+                    _period = value;
+                }
+            }
+        }
+
+        private int _loop = 10;
+        /// <summary>
+        /// 设定多少逻辑帧算一次鼠标移动、键按下等操作的成功持续，默认10帧激活持续状态（若监听实际每帧50ms，那么就是按住0.5现实时间秒算一次持续）
+        /// </summary>
+        public int Loop { get => _loop; set => _loop = value; }
+
         private readonly MouseHook MyMouseHook;
         private readonly KeyboardHook MyKeyboardHook;
 
         #region 钩子开关
 
         /// <summary>
-        /// 【MetalMaxSystem】监听服务
+        /// 创建监听服务（默认玩家编号=1）
         /// </summary>
-        public RecordService()
+        public RecordService()//构造函数
         {
+            _playerID = 1;
+            MyMouseHook = MouseHook.GetMouseHook();
+            MyKeyboardHook = KeyboardHook.GetKeyboardHook();
+        }
+
+        /// <summary>
+        /// 创建监听服务
+        /// </summary>
+        public RecordService(int player)//构造函数
+        {
+            _playerID = player;
             MyMouseHook = MouseHook.GetMouseHook();
             MyKeyboardHook = KeyboardHook.GetKeyboardHook();
         }
@@ -10632,7 +11191,7 @@ namespace MetalMaxSystem
         private int _x;
 
         /// <summary>
-        /// 鼠标当前位置的横坐标
+        /// 鼠标当前位置的X坐标
         /// </summary>
         public int X
         {
@@ -10640,11 +11199,10 @@ namespace MetalMaxSystem
             set { _x = value; }
         }
 
-
         private int _y;
 
         /// <summary>
-        /// 鼠标当前位置的纵坐标
+        /// 鼠标当前位置的Y坐标
         /// </summary>
         public int Y
         {
@@ -10652,11 +11210,21 @@ namespace MetalMaxSystem
             set { _y = value; }
         }
 
+        private double _z;
+
+        /// <summary>
+        /// 鼠标当前位置的Z坐标
+        /// </summary>
+        public double Z
+        {
+            get { return _z; }
+            set { _z = value; }
+        }
 
         private int _wParam;
 
         /// <summary>
-        /// 被按下的是哪个鼠标
+        /// 被按下的鼠标按键
         /// </summary>
         public int WParam
         {
@@ -10687,7 +11255,6 @@ namespace MetalMaxSystem
             set { _KeyValue = value; }
         }
 
-
         private bool[] _CtrlAlt = new bool[2] { false, false };
 
         /// <summary>
@@ -10709,42 +11276,95 @@ namespace MetalMaxSystem
             get { return _OneToNine; }
             set { _OneToNine = value; }
         }
+
+        private int _playerID;
+
+        /// <summary>
+        /// 玩家编号
+        /// </summary>
+        public int PlayerID { get => _playerID; set => _playerID = value; }
+
         #endregion
 
-        #region 鼠标操作
+        //以下处理动作不宜放时间复杂度高的函数，建议只记录变量变化，由其他线程读取这些变量后决定触发动作
+
+        #region 鼠标事件处理
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="wParam">鼠标事件状态</param>
+        /// <param name="mouseMsg">存储着鼠标信息</param>
         private void MyMouseEventHandler(Int32 wParam, MouseHookStruct mouseMsg)
         {
             this.WParam = wParam;
             switch (wParam)
             {
                 case WM_MOUSEMOVE:
-                    // 鼠标移动
-                    X = mouseMsg.pt.x;
-                    Y = mouseMsg.pt.y;
+                    // 记录鼠标移动
+                    X = mouseMsg.pt.x;//UI坐标，是整数
+                    Y = mouseMsg.pt.y;//UI坐标，是整数
+                    //Z从上述（X,Y）的信息中获得
+                    Z = MMCore.MapHeight + MMCore.TerrainHeight[X, Y] + (double)MMCore.DataTableLoad0(true, "Unit.TerrainHeight");
+                    Player.MouseVector3D[_playerID] = new Vector3D(X, Y, Z);
+                    MMCore.MouseMove(_playerID, Player.MouseVector3D[_playerID], X, Y);
                     break;
                 case WM_LBUTTONDOWN:
-                    // 鼠标左键
+                    // 记录鼠标左键按下
+                    MMCore.MouseDown(_playerID, MMCore.c_mouseButtonLeft, Player.MouseVector3D[_playerID], X, Y);
+
+                    //记录按键持续值，蓄力统计↓
+
+                    //每帧持续值+1，最大持续值=蓄力值100 * (1000毫秒 /逻辑帧毫秒)
+                    //if (MetalMaxSystem.Player.MouseDownLoopOneBitNum[Player, MMCore.c_mouseButtonLeft] < 100 * (1000 / _period))
+                    //{
+                    //    MetalMaxSystem.Player.MouseDownLoopOneBitNum[Player, MMCore.c_mouseButtonLeft] += 1;
+                    //}
+                    ////持续值如果>1，则算鼠标在持续操作
+                    //if (MetalMaxSystem.Player.MouseDownLoopOneBitNum[Player, MMCore.c_mouseButtonLeft] > 1)
+                    //{
+                    //    MetalMaxSystem.Player.MouseDownLoop[Player, MMCore.c_mouseButtonLeft] = true;
+                    //}
+                    //else
+                    //{
+                    //    MetalMaxSystem.Player.MouseDownLoop[Player, MMCore.c_mouseButtonLeft] = false;
+                    //}
                     break;
                 case WM_LBUTTONUP:
-
+                    // 记录鼠标左键弹起
+                    MMCore.MouseUp(_playerID, MMCore.c_mouseButtonLeft, Player.MouseVector3D[_playerID], X, Y);
                     break;
                 case WM_LBUTTONDBLCLK:
-
+                    // 记录鼠标左键双击
+                    Player.MouseDownTwice[_playerID, MMCore.c_mouseButtonLeft] = true;
                     break;
                 case WM_RBUTTONDOWN:
-
+                    // 记录鼠标右键按下
+                    MMCore.MouseDown(_playerID, MMCore.c_mouseButtonRight, Player.MouseVector3D[_playerID], X, Y);
                     break;
                 case WM_RBUTTONUP:
-
+                    // 记录鼠标右键弹起
+                    MMCore.MouseUp(_playerID, MMCore.c_mouseButtonRight, Player.MouseVector3D[_playerID], X, Y);
                     break;
                 case WM_RBUTTONDBLCLK:
-
+                    // 记录鼠标右键双击
+                    Player.MouseDownTwice[_playerID, MMCore.c_mouseButtonRight] = true;
                     break;
             }
+
+            //以下动作可以搬到别的线程↓
+
+            //检查全鼠标按键，如果松开，则该键有持续值的话每帧-1
+            //for (; i <= 5; i++) { }
+            //if (MetalMaxSystem.Player.MouseDown[Player, i] = true && MetalMaxSystem.Player.MouseDownLoopOneBitNum[Player, i] > 0)
+            //{
+            //    MetalMaxSystem.Player.MouseDownLoopOneBitNum[Player, i] -= 1;
+            //}
         }
+
         #endregion
 
-        #region 键盘操作
+        #region 键盘事件处理
         // 虚拟键码
         private const int CTRL = 162;
         private const int ALT = 164;
@@ -10758,7 +11378,7 @@ namespace MetalMaxSystem
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="wParam">按键状态</param>
+        /// <param name="wParam">键盘事件状态</param>
         /// <param name="keyboardHookStruct">存储着虚拟键码</param>
         private void KeyboardHandler(Int32 wParam, KeyboardHookStruct keyboardHookStruct)
         {
@@ -10809,7 +11429,7 @@ namespace MetalMaxSystem
         /// 是否按下了 Ctrl + alt + 0-9
         /// </summary>
         /// <returns>返回0-9代表按下了Ctrl+alt+0-9，返回-1代表没有按下</returns>
-        public int isPressTarget()
+        public int IsPressTarget()
         {
             if ((!CtrlAlt[0]) || (!CtrlAlt[1]))
             {
@@ -10842,14 +11462,16 @@ namespace MetalMaxSystem
     public class KeyboardHook
     {
         #region 常数和结构
+
         #region wParam对应的按钮事件
+
         public const int WM_KEYDOWN = 0x100;    // 键盘被按下
         public const int WM_KEYUP = 0x101;      // 键盘被松开
         public const int WM_SYSKEYDOWN = 0x104; // 键盘被按下，这个是系统键被按下，例如Alt、Ctrl等键
         public const int WM_SYSKEYUP = 0x105;   // 键盘被松开，这个是系统键被松开，例如Alt、Ctrl等键
-        #endregion
         public const int WH_KEYBOARD_LL = 13;
 
+        #endregion
 
         [StructLayout(LayoutKind.Sequential)] //声明键盘钩子的封送结构类型 
         public class KeyboardHookStruct
@@ -11325,142 +11947,6 @@ namespace MetalMaxSystem
     //            Hook.Stop();//关闭键盘钩子
     //        }
     //    }
-
-    //    #region 键鼠委托主要动作（加入按键监听并传参执行）
-
-    //    public void KeyDown(int player, int key)
-    //    {
-    //        if (MMCore.stopKeyMouseEvent[player] == false)
-    //        {
-    //            Player.KeyDown[player, key] = true;  //当前按键值（决定内部函数运行状态）
-    //            Player.KeyDownState[player, key] = true;  //当前按键状态值
-    //            //---------------------------------------------------------------------
-    //            Player.KeyDownLoopOneBitNum[player] += 1; //玩家当前注册的按键队列数量
-    //            MMCore.DataTableSave2(true, "KeyDownLoopOneBit", player, Player.KeyDownLoopOneBitNum[player], key);
-    //            //↑存储玩家注册序号对应按键队列键位
-    //            MMCore.DataTableSave2(true, "KeyDownLoopOneBitKey", player, key, "true"); //玩家按键队列键位状态
-    //            //---------------------------------------------------------------------蓄力管理
-    //            // if (XuLiGuanLi == true){
-    //            // libBC0D3AAD_gf_HD_RegKXL(key, "IntGroup_XuLi" + IntToString(player)); //HD_注册蓄力按键
-    //            // libBC0D3AAD_gf_HD_SetKeyFixedXL(player, key, 1.0);
-    //            // }
-    //            //---------------------------------------------------------------------双击管理
-    //            // if (ShuangJiGuanLi == true){
-    //            //     lv_a = libBC0D3AAD_gf_HD_ReturnKeyFixedSJ(player, key);
-    //            //     if ((0.0 < lv_a) && (lv_a <= ShuangJiShiXian)){
-    //            //         //符合双击标准，发送事件
-    //            //         libBC0D3AAD_gf_Send_KeyDoubleClicked(player, key, ShuangJiShiXian - lv_a);
-    //            //     } 
-    //            //     else {   
-    //            //         libBC0D3AAD_gf_HD_RegKSJ(key, "IntGroup_DoubleClicked" + IntToString(player)); //HD_注册按键
-    //            //         libBC0D3AAD_gf_HD_SetKeyFixedSJ(player, key, ShuangJiShiXian);
-    //            //     }
-    //            // }
-    //            //---------------------------------------------------------------------
-    //            KeyDownFunc(player, key);
-    //        }
-    //    }
-
-    //    public bool KeyDownFunc(int player, int key)
-    //    {
-    //        bool torf = true;
-
-    //        // Console.WriteLine((IntToString(key) + "键被按下"));
-    //        for (int i = 1; i <= 1; i += 1)
-    //        {
-    //            if (MMCore.stopKeyMouseEvent[player] == true)
-    //            {
-    //                //由于按键时状态为真，阻止按键事件时，强制取消按键状态（延迟弹起成功也会自动置为false）
-    //                Player.KeyDown[player, key] = false;
-    //                torf = false;
-    //                break;
-    //            }
-    //            else
-    //            {
-    //                MMCore.KeyDownGlobalEvent(key, true, player);
-    //                break;
-    //            }
-    //        }
-    //        return torf;
-    //    }
-
-    //    public void KeyUp(int player, int key)
-    //    {
-    //        Player.KeyDownState[player, key] = false;  //当前按键状态
-    //        if ((MMCore.DataTableLoad2(true, "KeyDownLoopOneBitKey", player, key).ToString() == "true"))
-    //        {
-    //            //弹起时无按键队列（由延迟弹起清空造成），直接执行函数，清空按键状态
-    //            Player.KeyDown[player, key] = false;
-    //            KeyUpFunc(player, key);
-    //        }
-    //        else
-    //        {
-    //            //弹起时有按键队列，由延迟弹起管理运行（按键队列>0时，清空一次队列并执行它们的动作）
-    //            MMCore.DataTableSave2(true, "KeyDownLoopOneBitEnd", player, key, true);
-    //        }
-    //    }
-
-    //    public bool KeyUpFunc(int player, int key)
-    //    {
-    //        bool torf = true;
-    //        // Console.WriteLine((IntToString(key) + "键弹起"));
-    //        for (int i = 1; i <= 1; i += 1)
-    //        {
-    //            if (MMCore.stopKeyMouseEvent[player] == true)
-    //            {
-    //                torf = false;
-    //                break;
-    //            }
-    //            else
-    //            {
-    //                MMCore.KeyDownGlobalEvent(key, false, player);
-    //                break;
-    //            }
-    //        }
-    //        return torf;
-    //    }
-
-    //    public void MouseMove(int player, Vector3D lp_mouseVector3D, Vector3D cameraVector, int uiX, int uiY)
-    //    {
-    //        if (MMCore.stopKeyMouseEvent[player] == false)
-    //        {
-    //            Player.MouseVector[player] = new Vector(lp_mouseVector3D.X, lp_mouseVector3D.Y);
-
-    //            //↓注意取出来的是该点最高位Unit
-    //            double unitTerrainHeight = double.Parse(MMCore.HD_ReturnPCV(Player.MouseVector[player], "Unit.TerrainHeight"));
-    //            double unitHeight = double.Parse(MMCore.HD_ReturnPCV(Player.MouseVector[player], "Unit.Height"));
-
-    //            Player.MouseVectorX[player] = lp_mouseVector3D.X;
-    //            Player.MouseVectorY[player] = lp_mouseVector3D.Y;
-    //            Player.MouseVectorZ[player] = lp_mouseVector3D.Z;
-    //            Player.MouseVectorZFixed[player] = lp_mouseVector3D.Z - MMCore.MapHeight;
-
-    //            Player.MouseUIX[player] = uiX;
-    //            Player.MouseUIY[player] = uiY;
-
-    //            Player.MouseVector3DFixed[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, Player.MouseVectorZFixed[player]);
-    //            Player.MouseVector3D[player] = lp_mouseVector3D;
-    //            //下面2个动作应该要从二维点读取单位（可多个），将最高的单位的头顶坐标填入以修正鼠标Z点
-    //            Player.MouseVector3DUnitTerrain[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight);
-    //            Player.MouseVector3DTerrain[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight - unitHeight);
-
-
-    //            //玩家英雄单位存在时，计算鼠标距离英雄的2D角度和3D距离
-    //            if (Player.Hero[player] != null)
-    //            {
-    //                //计算鼠标与英雄的2D角度，用于调整角色在二维坐标系四象限内的的朝向
-    //                Player.MouseToHeroAngle[player] = MMCore.AngleBetween(Player.Hero[player].Vector, Player.MouseVector[player]);
-    //                //计算鼠标与英雄的2D距离（由于点击的位置是单位头顶位置，2个单位重叠则返回最高位的，所以玩家会点到最高位单位）
-    //                Player.MouseToHeroRange[player] = MMCore.Distance(Player.Hero[player].Vector, Player.MouseVector[player]);
-    //                //计算鼠标与英雄的3D距离（由于点击的位置是单位头顶位置，2个单位重叠则返回最高位的，所以玩家会点到最高位单位）
-    //                Player.MouseToHeroRange3D[player] = MMCore.Distance(Player.Hero[player].Vector3D, lp_mouseVector3D);
-    //            }
-    //        }
-    //    }
-
-
-    //    #endregion
-
     //}
 
     #endregion

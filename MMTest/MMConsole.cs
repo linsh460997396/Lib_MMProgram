@@ -17,7 +17,7 @@ namespace MMConsole
             //MMCore.SubUpdateStart(false);
 
             //TimerUpdate t = new TimerUpdate();//创建一个周期触发器（自带线程，有5个阶段，其中循环阶段会暂停触发线程执行Timer线程，当接受到t.TimerState = false，退出循环且恢复触发线程去执行End、Destory）
-            //t.Awake += TimerTrigger;//
+            //t.Awake += TimerTrigger;//给事件添加符合特征的函数（给函数注册事件）
             //t.Start += TimerTrigger;
             //t.Update += TimerTrigger;
             //t.End += TimerTrigger; //t.TimerState = false 触发器线程终止时运行一次
@@ -31,6 +31,10 @@ namespace MMConsole
             //SubActionEventFuncref Actions += SubActionTest2;
             //MMCore.HD_ForEachObjectNumFromGroup("A11", 1, 1, Actions);
             //MMCore.HD_ForEachObjectNumFromGroup("A11", 1, 1, SubActionTest);
+
+            //TimerUpdate t = new TimerUpdate();
+            //TimerEventHandler Awake1 = TimerTrigger;
+            //t.Awake += Awake1;//常规委托赋值给事件委托范例
 
         }
 
