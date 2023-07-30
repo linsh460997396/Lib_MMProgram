@@ -9667,11 +9667,11 @@ namespace MetalMaxSystem
         #region 键鼠事件动作主体（加入按键监听并传参执行）
 
         /// <summary>
-        /// 键盘按下事件主要动作（加入按键监听并传参执行）
+        /// 【MM_函数库】键盘按下事件主要动作（加入按键监听并传参执行）
         /// </summary>
         /// <param name="player"></param>
         /// <param name="key"></param>
-        public static bool KeyDown(int player, int key)
+        internal static bool KeyDown(int player, int key)
         {
             bool torf = !MMCore.stopKeyMouseEvent[player];
             Player.KeyDownState[player, key] = torf;  //当前按键状态值
@@ -9707,12 +9707,12 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 键盘弹起事件主要动作（加入按键监听并传参执行）
+        /// 【MM_函数库】键盘弹起事件主要动作（加入按键监听并传参执行）
         /// </summary>
         /// <param name="player"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static bool KeyUp(int player, int key)
+        internal static bool KeyUp(int player, int key)
         {
             bool torf = !MMCore.stopKeyMouseEvent[player];
             Player.KeyDownState[player, key] = false;  //当前按键状态值，本事件始终为false
@@ -9736,12 +9736,12 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 键盘弹起事件处理函数
+        /// 【MM_函数库】键盘弹起事件处理函数
         /// </summary>
         /// <param name="player"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static bool KeyUpFunc(int player, int key)
+        internal static bool KeyUpFunc(int player, int key)
         {
             bool torf = true;
             if (MMCore.stopKeyMouseEvent[player] == true)
@@ -9756,13 +9756,13 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 鼠标移动事件主要动作（加入按键监听并传参执行）
+        /// 【MM_函数库】鼠标移动事件主要动作（加入按键监听并传参执行）
         /// </summary>
         /// <param name="player"></param>
         /// <param name="lp_mouseVector3D"></param>
         /// <param name="uiX"></param>
         /// <param name="uiY"></param>
-        public static void MouseMove(int player, Vector3D lp_mouseVector3D, int uiX, int uiY)
+        internal static void MouseMove(int player, Vector3D lp_mouseVector3D, int uiX, int uiY)
         {
             if (MMCore.stopKeyMouseEvent[player] == false)
             {
@@ -9800,7 +9800,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 鼠标按下事件主要动作（加入按键监听并传参执行）
+        /// 【MM_函数库】鼠标按下事件主要动作（加入按键监听并传参执行）
         /// </summary>
         /// <param name="player"></param>
         /// <param name="key"></param>
@@ -9808,7 +9808,7 @@ namespace MetalMaxSystem
         /// <param name="uiX"></param>
         /// <param name="uiY"></param>
         /// <returns></returns>
-        public static bool MouseDown(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
+        internal static bool MouseDown(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
         {
             bool torf = !MMCore.stopKeyMouseEvent[player];
             Player.MouseDownState[player, key] = torf;  //当前按键状态值
@@ -9892,7 +9892,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 鼠标按下事件处理函数
+        /// 【MM_函数库】鼠标按下事件处理函数
         /// </summary>
         /// <param name="player"></param>
         /// <param name="key"></param>
@@ -9900,7 +9900,7 @@ namespace MetalMaxSystem
         /// <param name="uiX"></param>
         /// <param name="uiY"></param>
         /// <returns></returns>
-        public static bool MouseDownFunc(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
+        internal static bool MouseDownFunc(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
         {
             // Variable Declarations
             bool torf = true;
@@ -9932,14 +9932,14 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 鼠标弹起事件主要动作（加入按键监听并传参执行）
+        /// 【MM_函数库】鼠标弹起事件主要动作（加入按键监听并传参执行）
         /// </summary>
         /// <param name="player"></param>
         /// <param name="key"></param>
         /// <param name="lp_mouseVector3D"></param>
         /// <param name="uiX"></param>
         /// <param name="uiY"></param>
-        public static bool MouseUp(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
+        internal static bool MouseUp(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
         {
             bool torf = !MMCore.stopKeyMouseEvent[player];
             Player.MouseDownState[player, key] = false;  //当前按键状态值，本事件始终为false
@@ -9975,11 +9975,11 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 鼠标弹起事件处理函数
+        /// 【MM_函数库】鼠标弹起事件处理函数
         /// </summary>
         /// <param name="player"></param>
         /// <param name="key"></param>
-        public static bool MouseUpFunc(int player, int key)
+        internal static bool MouseUpFunc(int player, int key)
         {
             bool torf = true;
             if (MMCore.stopKeyMouseEvent[player] == true)
@@ -9994,14 +9994,14 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 键鼠弹起事件延迟执行函数，会按序执行键鼠事件动作队列，需加入到每帧执行
+        /// 【MM_函数库】键鼠弹起事件延迟执行函数，会按序执行键鼠事件动作队列，需加入到每帧执行
         /// </summary>
         /// <param name="player"></param>
         /// <param name="key"></param>
         /// <param name="lp_mouseVector3D"></param>
         /// <param name="uiX"></param>
         /// <param name="uiY"></param>
-        public static void MouseKeyUpWait(int player, int key)
+        internal static void MouseKeyUpWait(int player, int key)
         {
             int ae, be, a, ai = 1, bi = 1;
             //玩家有鼠标按键事件动作队列时
@@ -10966,7 +10966,7 @@ namespace MetalMaxSystem
         /// </summary>
         public static bool[,] KeyDown { get => _keyDown; set => _keyDown = value; }
         /// <summary>
-        /// 键盘按键按下的有效状态（因为即便按下也能逻辑否决，所以真实有效按键必须键按下+有效状态同时符合）
+        /// 键盘按键按下的有效状态（因为即便按下也能逻辑否决，所以真实有效按键必须键按下+有效状态同时符合）。禁用玩家操作时总是false，某些情况可设计针对某键禁止操作
         /// </summary>
         public static bool[,] KeyDownState { get => _keyDownState; set => _keyDownState = value; }
         /// <summary>
@@ -11152,7 +11152,7 @@ namespace MetalMaxSystem
         /// <param name="handler"></param>
         public void StartMouseHook()
         {
-            MyMouseHook.AddMouseHandler(MyMouseEventHandler);
+            MyMouseHook.AddMouseHandler(MouseEventHandler);
             MyMouseHook.Start();
         }
 
@@ -11295,7 +11295,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="wParam">鼠标事件状态</param>
         /// <param name="mouseMsg">存储着鼠标信息</param>
-        private void MyMouseEventHandler(Int32 wParam, MouseHookStruct mouseMsg)
+        private void MouseEventHandler(Int32 wParam, MouseHookStruct mouseMsg)
         {
             this.WParam = wParam;
             switch (wParam)
@@ -11304,14 +11304,17 @@ namespace MetalMaxSystem
                     // 记录鼠标移动
                     X = mouseMsg.pt.x;//UI坐标，是整数
                     Y = mouseMsg.pt.y;//UI坐标，是整数
+
+                    //注：到此记录了WParam和X,Y即可，不宜写时间复杂度较高的逻辑，剩下的"按键总控"功能（给按键注册注销更换委托函数，用于蓄力、移动、释放技能、按弹菜单等游戏世界逻辑）通过读取本类信息另外开线程去制作即可
+
+                    //思考：X,Y如何转化为世界坐标？
                     //Z从上述（X,Y）的信息中获得
-                    Z = MMCore.MapHeight + MMCore.TerrainHeight[X, Y] + (double)MMCore.DataTableLoad0(true, "Unit.TerrainHeight");
-                    Player.MouseVector3D[_playerID] = new Vector3D(X, Y, Z);
-                    MMCore.MouseMove(_playerID, Player.MouseVector3D[_playerID], X, Y);
+                    //Z = MMCore.MapHeight + MMCore.TerrainHeight[X, Y] + (double)MMCore.DataTableLoad0(true, "Unit.TerrainHeight");
+                    //MMCore.MouseMove(_playerID, new Vector3D(X, Y, Z), X, Y);
                     break;
                 case WM_LBUTTONDOWN:
                     // 记录鼠标左键按下
-                    MMCore.MouseDown(_playerID, MMCore.c_mouseButtonLeft, Player.MouseVector3D[_playerID], X, Y);
+                    //MMCore.MouseDown(_playerID, MMCore.c_mouseButtonLeft, Player.MouseVector3D[_playerID], X, Y);
 
                     //记录按键持续值，蓄力统计↓
 
@@ -11332,23 +11335,23 @@ namespace MetalMaxSystem
                     break;
                 case WM_LBUTTONUP:
                     // 记录鼠标左键弹起
-                    MMCore.MouseUp(_playerID, MMCore.c_mouseButtonLeft, Player.MouseVector3D[_playerID], X, Y);
+                    //MMCore.MouseUp(_playerID, MMCore.c_mouseButtonLeft, Player.MouseVector3D[_playerID], X, Y);
                     break;
                 case WM_LBUTTONDBLCLK:
                     // 记录鼠标左键双击
-                    Player.MouseDownTwice[_playerID, MMCore.c_mouseButtonLeft] = true;
+                    //Player.MouseDownTwice[_playerID, MMCore.c_mouseButtonLeft] = true;
                     break;
                 case WM_RBUTTONDOWN:
                     // 记录鼠标右键按下
-                    MMCore.MouseDown(_playerID, MMCore.c_mouseButtonRight, Player.MouseVector3D[_playerID], X, Y);
+                    //MMCore.MouseDown(_playerID, MMCore.c_mouseButtonRight, Player.MouseVector3D[_playerID], X, Y);
                     break;
                 case WM_RBUTTONUP:
                     // 记录鼠标右键弹起
-                    MMCore.MouseUp(_playerID, MMCore.c_mouseButtonRight, Player.MouseVector3D[_playerID], X, Y);
+                    //MMCore.MouseUp(_playerID, MMCore.c_mouseButtonRight, Player.MouseVector3D[_playerID], X, Y);
                     break;
                 case WM_RBUTTONDBLCLK:
                     // 记录鼠标右键双击
-                    Player.MouseDownTwice[_playerID, MMCore.c_mouseButtonRight] = true;
+                    //Player.MouseDownTwice[_playerID, MMCore.c_mouseButtonRight] = true;
                     break;
             }
 
@@ -11463,12 +11466,12 @@ namespace MetalMaxSystem
     {
         #region 常数和结构
 
-        #region wParam对应的按钮事件
+        #region wParam键盘输入通知
 
         public const int WM_KEYDOWN = 0x100;    // 键盘被按下
         public const int WM_KEYUP = 0x101;      // 键盘被松开
-        public const int WM_SYSKEYDOWN = 0x104; // 键盘被按下，这个是系统键被按下，例如Alt、Ctrl等键
-        public const int WM_SYSKEYUP = 0x105;   // 键盘被松开，这个是系统键被松开，例如Alt、Ctrl等键
+        public const int WM_SYSKEYDOWN = 0x104; // 系统键被按下，例如Alt、Ctrl等键
+        public const int WM_SYSKEYUP = 0x105;   // 系统键被松开，例如Alt、Ctrl等键
         public const int WH_KEYBOARD_LL = 13;
 
         #endregion
@@ -11593,9 +11596,9 @@ namespace MetalMaxSystem
         /// <summary>
         /// 键盘的系统回调函数
         /// </summary>
-        /// <param name="nCode"></param>
-        /// <param name="wParam"></param>
-        /// <param name="lParam"></param>
+        /// <param name="nCode">如果代码小于零，则挂钩过程必须将消息传递给CallNextHookEx函数，而无需进一步处理，并且应返回CallNextHookEx返回的值。此参数可以是下列值之一(见虚拟键码)</param>
+        /// <param name="wParam">鼠标输入通知，代表发生的鼠标的事件，各种虚拟键事件发生后传入此参（WM_）</param>
+        /// <param name="lParam">平台特定整数类型（是一个结构体），用于本机资源（存储着互动窗口句柄等相关事件信息）多线程安全使用</param>
         /// <returns></returns>
         private static int KeyboardHookProc(int nCode, Int32 wParam, IntPtr lParam)
         {
@@ -11635,7 +11638,7 @@ namespace MetalMaxSystem
     /// </summary>
     public class MouseHook
     {
-        #region 常量
+        #region 常量（用于匹配鼠标输入通知）
         public const int WM_MOUSEMOVE = 0x200; // 鼠标移动
         public const int WM_LBUTTONDOWN = 0x201;// 鼠标左键按下
         public const int WM_RBUTTONDOWN = 0x204;// 鼠标右键按下
@@ -11651,18 +11654,18 @@ namespace MetalMaxSystem
 
         #region 成员变量、回调函数、事件
         /// <summary>
-        /// 钩子回调函数
+        /// 钩子回调常规函数引用（委托类型），特征：int HookProc(int nCode, Int32 wParam, IntPtr lParam)
         /// </summary>
-        /// <param name="nCode">如果代码小于零，则挂钩过程必须将消息传递给CallNextHookEx函数，而无需进一步处理，并且应返回CallNextHookEx返回的值。此参数可以是下列值之一。(见虚拟键码)</param>
-        /// <param name="wParam">记录了按下的按钮</param>
-        /// <param name="lParam"></param>
+        /// <param name="nCode">如果代码小于零，则挂钩过程必须将消息传递给CallNextHookEx函数，而无需进一步处理，并且应返回CallNextHookEx返回的值。此参数可以是下列值之一(见虚拟键码)</param>
+        /// <param name="wParam">鼠标输入通知，代表发生的鼠标的事件，各种虚拟键事件发生后传入此参（WM_）</param>
+        /// <param name="lParam">平台特定整数类型（是一个结构体），用于本机资源（存储着互动窗口句柄等相关事件信息）多线程安全使用</param>
         /// <returns></returns>
         public delegate int HookProc(int nCode, Int32 wParam, IntPtr lParam);
         /// <summary>
-        /// 全局的鼠标事件
+        /// 全局鼠标常规函数引用（委托类型）
         /// </summary>
-        /// <param name="wParam"> 代表发生的鼠标的事件 </param>
-        /// <param name="mouseMsg">钩子的结构体，存储着鼠标的位置及其他信息</param>
+        /// <param name="wParam"> 鼠标输入通知，代表发生的鼠标的事件，各种虚拟键事件发生后传入此参（WM_）</param>
+        /// <param name="mouseMsg">鼠标钩子结构体，存储着鼠标位置、互动窗口句柄等相关事件信息</param>
         public delegate void MyMouseEventHandler(Int32 wParam, MouseHookStruct mouseMsg);
         private event MyMouseEventHandler OnMouseActivity;
         // 声明鼠标钩子事件类型
@@ -11861,373 +11864,5 @@ namespace MetalMaxSystem
 
     #endregion
 
-    #region 废弃区
-
-    #region 键鼠钩子及监听功能（旧）
-
-    #region 按键监听功能
-
-    /// <summary>
-    /// 键盘按键监听类，创建后给指定键注册委托函数，当按下键时户一致性这些函数，事后可获取键盘按键的状态（结合数据表可组织更多功能玩法，比如按键控制单位走路或其他技能函数，中途能随时更换快捷键，通过数据表可给按键补充写入自定义值而无需在类中预设）
-    /// </summary>
-    //public class KeyListen
-    //{
-    //    //创建键盘钩子实例
-    //    public KeyboardHook Hook = new KeyboardHook();
-
-    //    //要运行的按键事件委托函数（共三个）
-    //    virtual public void KeyDownEvent(object sender, KeyEventArgs e)
-    //    {
-    //        //这里写具体实现，默认采用系统按键ID
-    //        KeyDown(1, (int)e.KeyCode);
-
-    //        //if ((int)e.KeyCode == 4) 
-    //        //{
-    //        //    //MButton = 4(三按钮鼠标的中键)
-    //        //}
-
-    //        //鼠标按键委托另详
-    //        //switch ((int)e.KeyCode)
-    //        //{
-    //        //    case 0://None
-    //        //        break;
-    //        //    case 1://鼠标左键
-    //        //        break;
-    //        //    case 2://鼠标右键按钮中
-    //        //        break;
-    //        //    case 3://鼠标中键 （三个按钮的鼠标）
-    //        //        break;
-    //        //    case 4://鼠标中键 （三个按钮的鼠标）
-    //        //        break;
-    //        //    case 5://第一个 x 鼠标按钮 （五个按钮的鼠标）
-    //        //        break;
-    //        //    case 6://第二个 x 鼠标按钮 （五个按钮的鼠标）
-    //        //        break;
-    //        //    default:
-    //        //        break;
-    //        //}
-
-    //        //如果想将系统按键KeyCode的ID一一对应上库内自定义按键常量去实现映射，使用如下方法（将全部ID都自己对应上）
-    //        //if (e.KeyCode.Equals(Keys.PrintScreen))
-    //        //{
-    //        //    //此例实现PrintScreen键（系统按键ID）换成自定义ID去传参，用户调用MM_函数库随便写个要委托函数，用RegistKeyEventFuncref(int key, KeyMouseEventFuncref funcref)注册在自定义ID的键位上即可
-    //        //    KeyDown(1, c_keyControl);
-    //        //}
-    //    }
-    //    virtual public void KeyPressEvent(object sender, KeyPressEventArgs e)
-    //    {
-    //        //键盘输入事件（按下按键每插入一个字符会发生 keypress 事件）
-    //    }
-    //    virtual public void KeyUpEvent(object sender, KeyEventArgs e)
-    //    {
-    //        KeyUp(1, (int)e.KeyCode);
-    //    }
-
-    //    /// <summary>
-    //    /// 开始监听
-    //    /// </summary>
-    //    public void Start()
-    //    {
-    //        Hook.KeyDownEvent += new KeyEventHandler(KeyDownEvent); ;//钩住键按下
-    //        Hook.KeyPressEvent += new KeyPressEventHandler(KeyPressEvent); ;//钩住键按下
-    //        Hook.KeyUpEvent += new KeyEventHandler(KeyUpEvent); ;//钩住键按下
-    //        Hook.Start();//安装键盘钩子
-    //    }
-
-    //    /// <summary>
-    //    /// 结束监听
-    //    /// </summary>
-    //    public void Stop()
-    //    {
-    //        if (Hook != null)
-    //        {
-    //            Hook.KeyDownEvent -= new KeyEventHandler(KeyDownEvent); ;//钩住键按下
-    //            Hook.KeyPressEvent -= new KeyPressEventHandler(KeyPressEvent); ;//钩住键按下
-    //            Hook.KeyUpEvent -= new KeyEventHandler(KeyUpEvent); ;//钩住键按下
-    //            Hook.Stop();//关闭键盘钩子
-    //        }
-    //    }
-    //}
-
-    #endregion
-
-    #region 键盘钩子
-
-    /// <summary>
-    /// 全局事件监听之键盘事件
-    /// </summary>
-    //public class KeyboardHook
-    //{
-    //    //声明事件委托类型
-    //    public event KeyPressEventHandler KeyPressEvent;
-    //    public event KeyEventHandler KeyDownEvent;
-    //    public event KeyEventHandler KeyUpEvent;
-
-    //    //声明常规委托类型（类型名：钩子，拥有三个参数）
-    //    public delegate int HookProc(int nCode, Int32 wParam, IntPtr lParam);
-
-    //    //声明键盘钩子处理的初始值（值在Microsoft SDK的Winuser.h里查询）
-    //    public int hKeyboardHook = 0;
-    //    //线程键盘钩子监听鼠标消息设为2，全局键盘监听鼠标消息设为13
-    //    public const int WH_KEYBOARD_LL = 13;
-    //    //声明HookProc委托类型的变量KeyboardHookProcedure
-    //    public HookProc KeyboardHookProcedure;
-    //    //键盘结构
-    //    [StructLayout(LayoutKind.Sequential)]
-    //    public class KeyboardHookStruct
-    //    {
-    //        public int vkCode;//定义一个虚拟键码，键码值必须在1～254之间
-    //        public int scanCode;//定义该键的硬件扫描码，一般置0即可
-    //        public int flags;//定义函数操作的各个方面的一个标志位集，应用程序可使用如下一些预定义常数的组合设置标志位
-    //        public int time;//指定的时间戳记的这个讯息
-    //        public int dwExtraInfo;//指定额外信息相关的信息
-    //    }
-    //    //虚拟键代码查询见 https://learn.microsoft.com/zh-cn/windows/win32/inputdev/virtual-key-codes
-
-    //    //调用此函数安装钩子
-    //    [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-    //    public static extern int SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hInstance, int threadId);
-
-    //    //调用此函数卸载钩子
-    //    [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-    //    public static extern bool UnhookWindowsHookEx(int idHook);
-
-
-    //    //使用此功能，通过信息钩子继续下一个钩子
-    //    [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-    //    public static extern int CallNextHookEx(int idHook, int nCode, Int32 wParam, IntPtr lParam);
-
-    //    //取得当前线程编号（线程钩子需要用到）
-    //    [DllImport("kernel32.dll")]
-    //    public static extern int GetCurrentThreadId();
-
-    //    //使用WINDOWS API函数代替获取当前实例的函数,防止钩子失效
-    //    [DllImport("kernel32.dll")]
-    //    public static extern IntPtr GetModuleHandle(string name);
-
-    //    public void Start()
-    //    {
-    //        //安装键盘钩子开始
-    //        if (hKeyboardHook == 0)
-    //        {
-    //            KeyboardHookProcedure = new HookProc(KeyboardHookProc);
-    //            hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardHookProcedure, GetModuleHandle(System.Diagnostics.Process.GetCurrentProcess().MainModule.ModuleName), 0);
-    //            //hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardHookProcedure, Marshal.GetHINSTANCE(Assembly.GetExecutingAssembly().GetModules()[0]), 0);
-    //            //************************************
-    //            //键盘线程钩子
-
-    //            //指定要监听的线程idGetCurrentThreadId(),
-    //            SetWindowsHookEx(13, KeyboardHookProcedure, IntPtr.Zero, GetCurrentThreadId());
-    //            //键盘全局钩子,需要引用空间(using System.Reflection;)
-    //            //SetWindowsHookEx( 13,MouseHookProcedure,Marshal.GetHINSTANCE(Assembly.GetExecutingAssembly().GetModules()[0]),0);
-    //            //
-    //            //关于SetWindowsHookEx (int idHook, HookProc lpfn, IntPtr hInstance, int threadId)函数将钩子加入到钩子链表中，说明一下四个参数：
-    //            //idHook 钩子类型，即确定钩子监听何种消息，上面的代码中设为2，即监听键盘消息并且是线程钩子，如果是全局钩子监听键盘消息应设为13，
-    //            //线程钩子监听鼠标消息设为7，全局钩子监听鼠标消息设为14。lpfn 钩子子程的地址指针。如果dwThreadId参数为0 或是一个由别的进程创建的
-    //            //线程的标识，lpfn必须指向DLL中的钩子子程。 除此以外，lpfn可以指向当前进程的一段钩子子程代码。钩子函数的入口地址，当钩子钩到任何
-    //            //消息后便调用这个函数。hInstance应用程序实例的句柄。标识包含lpfn所指的子程的DLL。如果threadId 标识当前进程创建的一个线程，而且子
-    //            //程代码位于当前进程，hInstance必须为NULL。可以很简单的设定其为本应用程序的实例句柄。threaded 与安装的钩子子程相关联的线程的标识符
-    //            //如果为0，钩子子程与所有的线程关联，即为全局钩子
-    //            //************************************
-    //            //如果SetWindowsHookEx失败
-    //            if (hKeyboardHook == 0)
-    //            {
-    //                Stop();
-    //                throw new Exception("安装键盘钩子失败");
-    //            }
-    //        }
-    //    }
-    //    public void Stop()
-    //    {
-    //        bool retKeyboard = true;
-
-
-    //        if (hKeyboardHook != 0)
-    //        {
-    //            retKeyboard = UnhookWindowsHookEx(hKeyboardHook);
-    //            hKeyboardHook = 0;
-    //        }
-
-    //        if (!(retKeyboard)) throw new Exception("卸载钩子失败！");
-    //    }
-    //    //ToAscii职能的转换指定的虚拟键码和键盘状态的相应字符或字符
-    //    [DllImport("user32")]
-    //    public static extern int ToAscii(int uVirtKey, //[in] 指定虚拟关键代码进行翻译。
-    //                                     int uScanCode, // [in] 指定的硬件扫描码的关键须翻译成英文。高阶位的这个值设定的关键，如果是（不压）
-    //                                     byte[] lpbKeyState, // [in] 指针，以256字节数组，包含当前键盘的状态。每个元素（字节）的数组包含状态的一个关键。如果高阶位的字节是一套，关键是下跌（按下）。在低比特，如果设置表明，关键是对切换。在此功能，只有肘位的CAPS LOCK键是相关的。在切换状态的NUM个锁和滚动锁定键被忽略。
-    //                                     byte[] lpwTransKey, // [out] 指针的缓冲区收到翻译字符或字符。
-    //                                     int fuState); // [in] Specifies whether a menu is active. This parameter must be 1 if a menu is active, or 0 otherwise.
-
-    //    //获取按键的状态
-    //    [DllImport("user32")]
-    //    public static extern int GetKeyboardState(byte[] pbKeyState);
-
-    //    [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-    //    private static extern short GetKeyState(int vKey);
-
-    //    private const int WM_KEYDOWN = 0x100;//KEYDOWN
-    //    private const int WM_KEYUP = 0x101;//KEYUP
-    //    private const int WM_SYSKEYDOWN = 0x104;//SYSKEYDOWN
-    //    private const int WM_SYSKEYUP = 0x105;//SYSKEYUP
-
-    //    private int KeyboardHookProc(int nCode, Int32 wParam, IntPtr lParam)
-    //    {
-    //        // 侦听键盘事件
-    //        if ((nCode >= 0) && (KeyDownEvent != null || KeyUpEvent != null || KeyPressEvent != null))
-    //        {
-    //            KeyboardHookStruct MyKeyboardHookStruct = (KeyboardHookStruct)Marshal.PtrToStructure(lParam, typeof(KeyboardHookStruct));
-    //            // KeyDownEvent
-    //            if (KeyDownEvent != null && (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN))
-    //            {
-    //                Keys keyData = (Keys)MyKeyboardHookStruct.vkCode;
-    //                KeyEventArgs e = new KeyEventArgs(keyData);
-    //                KeyDownEvent(this, e);
-    //            }
-
-    //            //KeyPressEvent
-    //            if (KeyPressEvent != null && wParam == WM_KEYDOWN)
-    //            {
-    //                byte[] keyState = new byte[256];
-    //                GetKeyboardState(keyState);
-
-    //                byte[] inBuffer = new byte[2];
-    //                if (ToAscii(MyKeyboardHookStruct.vkCode, MyKeyboardHookStruct.scanCode, keyState, inBuffer, MyKeyboardHookStruct.flags) == 1)
-    //                {
-    //                    KeyPressEventArgs e = new KeyPressEventArgs((char)inBuffer[0]);
-    //                    KeyPressEvent(this, e);
-    //                }
-    //            }
-
-    //            // KeyUpEvent
-    //            if (KeyUpEvent != null && (wParam == WM_KEYUP || wParam == WM_SYSKEYUP))
-    //            {
-    //                Keys keyData = (Keys)MyKeyboardHookStruct.vkCode;
-    //                KeyEventArgs e = new KeyEventArgs(keyData);
-    //                KeyUpEvent(this, e);
-    //            }
-
-    //        }
-    //        //如果返回1，则结束消息，这个消息到此为止，不再传递。
-    //        //如果返回0或调用CallNextHookEx函数则消息出了这个钩子继续往下传递，也就是传给消息真正的接受者
-    //        return CallNextHookEx(hKeyboardHook, nCode, wParam, lParam);
-    //    }
-
-    //    //析构函数
-    //    ~KeyboardHook()
-    //    {
-    //        Stop();
-    //    }
-    //}
-
-    #region 键盘钩子类使用示范
-
-    /// <summary>
-    /// 按键监听使用示范
-    /// </summary>
-    //public static class KeyUpDown
-    //{
-    //    //创建实例
-    //    public static KeyboardHook keyboardHook = new KeyboardHook();
-    //    public static KeyEventHandler myKeyEventHandeler;
-
-    //    //要运行的按键事件委托函数
-    //    public static void KeyDown(object sender, KeyEventArgs e)
-    //    {
-    //        //如果按下截图键做某某事
-    //        if (e.KeyCode.Equals(Keys.PrintScreen))
-    //        {
-    //            //这里写具体实现
-    //        }
-    //    }
-
-    //    /// <summary>
-    //    /// 开始监听
-    //    /// </summary>
-    //    public static void StartListen()
-    //    {
-    //        myKeyEventHandeler = new KeyEventHandler(KeyDown);
-    //        keyboardHook.KeyDownEvent += myKeyEventHandeler;//钩住键按下
-    //        keyboardHook.Start();//安装键盘钩子
-    //    }
-
-    //    /// <summary>
-    //    /// 结束监听
-    //    /// </summary>
-    //    public static void StopListen()
-    //    {
-    //        if (myKeyEventHandeler != null)
-    //        {
-    //            keyboardHook.KeyDownEvent -= myKeyEventHandeler;//取消按键事件
-    //            myKeyEventHandeler = null;
-    //            keyboardHook.Stop();//关闭键盘钩子
-    //        }
-    //    }
-    //}
-
-    #endregion
-
-    #endregion
-
-    #region 鼠标钩子
-
-    /// <summary>
-    /// 全局事件监听之鼠标事件
-    /// </summary>
-    //public class MouseHook { }
-
-    #region 鼠标钩子 范例
-
-    //范例1：监听鼠标事件
-    //public class GlobalMouseHandler : IMessageFilter
-    //{
-
-    //    private const int WM_LBUTTONDOWN = 0x201;
-
-    //    public bool PreFilterMessage(ref Message m)
-    //    {
-    //        bool torf = false;
-    //        if (m.Msg == WM_LBUTTONDOWN)
-    //        {
-    //            // Do stuffs（本例为鼠标左键监听）
-    //            torf = true;
-    //        }
-    //        return torf;
-    //    }
-    //}
-
-    //public partial class GlobalMouseHandlerTest
-    //{
-    //    private void FormTest()
-    //    {
-    //        GlobalMouseHandler GlobalClick = new GlobalMouseHandler();
-    //        Application.AddMessageFilter(GlobalClick);
-    //    }
-    //}
-    //案例地址：https://blog.csdn.net/wangkaiming123456/article/details/8596762?ops_request_misc=&request_id=&biz_id=102&utm_term=C&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-2-8596762.142^v91^insert_down1,239^v3^control&spm=1018.2226.3001.4187#%20%E9%BC%A0%E6%A0%87%E7%A7%BB%E5%8A%A8%E7%9B%91%E5%90%AC&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-2-8596762.142^v91^insert_down1,239^v3^control
-
-
-    //范例2：此筛选器阻止与鼠标左键相关的所有消息，在使用消息筛选器之前，必须提供接口的 IMessageFilter 实现
-    //public class TestMessageFilter : IMessageFilter
-    //{
-    //    public bool PreFilterMessage(ref Message m)
-    //    {
-    //        // Blocks all the messages relating to the left mouse button.
-    //        if (m.Msg >= 513 && m.Msg <= 515)
-    //        {
-    //            Console.WriteLine("Processing the messages : " + m.Msg);
-    //            return true;
-    //        }
-    //        return false;
-    //    }
-    //}
-    //案例地址：https://learn.microsoft.com/zh-cn/dotnet/api/system.windows.forms.application.addmessagefilter?view=windowsdesktop-7.0
-
-    #endregion
-
-    #endregion
-
-    #endregion
-
-    #endregion
 }
 
