@@ -382,9 +382,9 @@ namespace MetalMaxSystem
 
         #endregion
 
-        #region 字段及其属性方法（避免不安全读写）
+        #region 字段及其属性方法
 
-        //字段及其属性方法（private保护和隐藏字段，设计成只允许通过public修饰的属性方法间接去安全读写）
+        //字段及其属性方法（避免不安全读写，private保护和隐藏字段，设计成只允许通过public修饰的属性方法间接去安全读写）
 
         private static int _directoryEmptyUserDefIndex = 0;
         /// <summary>
@@ -1083,7 +1083,7 @@ namespace MetalMaxSystem
         public static bool IsDFPath(string path)
         {
             Regex regex = new Regex(
-                @"^([a-zA-Z]:\\)([-\u4e00-\u9fa5\w\s.()~!@#$%^&()\[\]{}+=]+\\?)*$"
+                @"^([a-zA-Z]:\\)([-\u4e00-\u9fa5\w\s.（）：~!@#$%^&()\[\]{}+=]+\\?)*$"
             );
             Match result = regex.Match(path);
             return result.Success;
@@ -1231,7 +1231,7 @@ namespace MetalMaxSystem
             {
                 sw.Write(value);
             }
-
+            
         }
 
         /// <summary>
