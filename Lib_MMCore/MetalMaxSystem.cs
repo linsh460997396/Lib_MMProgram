@@ -693,6 +693,56 @@ namespace MetalMaxSystem
 
         #region Functions 通用功能
 
+        #region 判断文件是否被占用
+
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr _lopen(string lpPathName, int iReadWrite);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool CloseHandle(IntPtr hObject);
+
+        public const int OF_READWRITE = 2;
+        public const int OF_SHARE_DENY_NONE = 0x40;
+        public static readonly IntPtr HFILE_ERROR = new IntPtr(-1);
+
+        /// <summary>
+        /// 文件是否被占用（WIN32 API调用）
+        /// </summary>
+        /// <param name="fileFullNmae"></param>
+        /// <returns></returns>
+        public static bool IsOccupied(string fileFullNmae)
+        {
+            if (!File.Exists(fileFullNmae)) return false;
+            IntPtr vHandle = _lopen(fileFullNmae, OF_READWRITE | OF_SHARE_DENY_NONE);
+            var flag = vHandle == HFILE_ERROR;
+            CloseHandle(vHandle);
+            return flag;
+        }
+
+        /// <summary>
+        /// 文件是否被占用（文件流判断法）
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns>true表示正在使用,false没有使用 </returns>
+        public static bool IsFileInUse(string fileName)
+        {
+            bool inUse = true;
+            FileStream fs = null;
+            try
+            {
+                fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None);
+                inUse = false;
+            }
+            catch { }
+            finally
+            {
+                if (fs != null) fs.Dispose();
+            }
+            return inUse;
+        }
+
+        #endregion
+
         /// <summary>
         /// 【MM_函数库】递归方式强制删除文件夹（进最里层删除文件使文件夹为空后删除这个空文件夹，层层递出时重复动作），删除前会去掉文件（夹）的Archive、ReadOnly、Hidden属性以确保删除
         /// </summary>
@@ -1083,7 +1133,7 @@ namespace MetalMaxSystem
         public static bool IsDFPath(string path)
         {
             Regex regex = new Regex(
-                @"^([a-zA-Z]:\\)([-\u4e00-\u9fa5\w\s.（）：~!@#$%^&()\[\]{}+=]+\\?)*$"
+                @"^([a-zA-Z]:\\)([-\u4e00-\u9fa5\w\s.（）【】：~!@#$%^&()\[\]{}+=]+\\?)*$"
             );
             Match result = regex.Match(path);
             return result.Success;
