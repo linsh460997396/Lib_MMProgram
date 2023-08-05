@@ -3,7 +3,6 @@ D:\VSWork\2019\Lib_MMProgram\MMWFM\bin\Debug\MMWFM.exe
 D:\VSWork\2019\Lib_MMProgram\MMWFM\bin\Debug\MMWFM.pdb
 D:\VSWork\2019\Lib_MMProgram\MMWFM\bin\Debug\Lib_MMCore.dll
 D:\VSWork\2019\Lib_MMProgram\MMWFM\bin\Debug\Lib_MMCore.pdb
-D:\VSWork\2019\Lib_MMProgram\MMWFM\obj\Debug\MMWFM.csproj.AssemblyReference.cache
 D:\VSWork\2019\Lib_MMProgram\MMWFM\obj\Debug\MMWFM.Form1.resources
 D:\VSWork\2019\Lib_MMProgram\MMWFM\obj\Debug\MMWFM.Properties.Resources.resources
 D:\VSWork\2019\Lib_MMProgram\MMWFM\obj\Debug\MMWFM.csproj.GenerateResource.cache
