@@ -1,12 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
+    <ApplicationIcon />
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lib_MMCore\Lib_MMCore.csproj" />
+    <Reference Include="Lib_MMCore">
+      <HintPath>..\Lib_MMCore\bin\Debug\Lib_MMCore.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

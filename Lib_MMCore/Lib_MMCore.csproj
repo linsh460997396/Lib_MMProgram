@@ -7,7 +7,7 @@
     <ProjectGuid>{4238C5DF-3860-4DEB-B81A-C6AC20690E60}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Lib_MMCore</RootNamespace>
+    <RootNamespace>MetalMaxSystem</RootNamespace>
     <AssemblyName>Lib_MMCore</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

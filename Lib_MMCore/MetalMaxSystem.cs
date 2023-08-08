@@ -7,12 +7,12 @@
 //--------------------------------------------------------------------------------------------------
 //功能及使用说明：
 //
-//函数参数中int player范围是0~16，其中1=用户本人，16=触发器（程序自身调用），其余均为玩家
+//函数参数中int player范围是0~16，单机默认分配1为用户本人，16=触发器（程序自身调用），其余均为玩家
 //
 //关于静态（Static）
 //声明为静态的，内存数据副本只从模板创建1份，放在静态内存区（区别于实例数据动态增删的活动内存区，它是为了效率从逻辑上分类的而非物理分类），且创建后只在程序结束才会清理
 //静态数据包括静态局部变量（C#不支持，C++支持），创建唯一副本时只赋初值一次，后每次调用函数不再重新赋初值只保留上次调用结束时的值
-//静态数据内存地址不变化（并非声明静态就一定给全局通用要考虑作用域声明，全局用命名空间类成员时需加前缀globol::）
+//静态数据内存地址不变化（并非声明静态就一定给全局通用要考虑作用域，全局使用其他命名空间类成员需加前缀globol::）
 //
 //其余另详README.md
 //--------------------------------------------------------------------------------------------------
@@ -34,75 +34,75 @@ using Microsoft.Win32;
 using System.Collections;
 using System.Threading;
 using System.ComponentModel;
-using MessageBox = System.Windows.MessageBox;
-using Timer = System.Threading.Timer;
 using System.Windows;
 using System.Windows.Media.Media3D;
 using Point = System.Windows.Point;
+using MessageBox = System.Windows.MessageBox;
+using Timer = System.Threading.Timer;
 using static MetalMaxSystem.MouseHook;
 using static MetalMaxSystem.KeyboardHook;
 
 #endregion
 
 /// <summary>
-/// MetalMax系统引用空间
+/// MetalMax系统 引用空间
 /// </summary>
 namespace MetalMaxSystem
 {
-    #region 枚举存放区
+    #region 公用枚举
 
     //枚举是值类型
 
     /// <summary>
-    /// 【MetalMaxSystem】主副循环的入口索引
+    /// 【MM_函数库】主副循环的入口索引
     /// </summary>
     public enum Entry
     {
         /// <summary>
-        /// 主循环唤醒阶段
+        /// 【MM_函数库】主循环唤醒阶段
         /// </summary>
         MainAwake,
         /// <summary>
-        /// 主循环开始阶段
+        /// 【MM_函数库】主循环开始阶段
         /// </summary>
         MainStart,
         /// <summary>
-        /// 主循环Update阶段
+        /// 【MM_函数库】主循环周期循环阶段
         /// </summary>
         MainUpdate,
         /// <summary>
-        /// 主循环结束阶段
+        /// 【MM_函数库】主循环结束阶段
         /// </summary>
         MainEnd,
         /// <summary>
-        /// 主循环摧毁阶段
+        /// 【MM_函数库】主循环摧毁阶段
         /// </summary>
         MainDestroy,
         /// <summary>
-        /// 副循环唤醒阶段
+        /// 【MM_函数库】副循环唤醒阶段
         /// </summary>
         SubAwake,
         /// <summary>
-        /// 副循环开始阶段
+        /// 【MM_函数库】副循环开始阶段
         /// </summary>
         SubStart,
         /// <summary>
-        /// 副循环Update阶段
+        /// 【MM_函数库】副循环周期循环阶段
         /// </summary>
         SubUpdate,
         /// <summary>
-        /// 副循环结束阶段
+        /// 【MM_函数库】副循环结束阶段
         /// </summary>
         SubEnd,
         /// <summary>
-        /// 副循环摧毁阶段
+        /// 【MM_函数库】副循环摧毁阶段
         /// </summary>
         SubDestroy,
     }
 
     #endregion
 
-    #region 结构存放区
+    #region 公用结构
 
     //结构是值类型
 
@@ -110,47 +110,110 @@ namespace MetalMaxSystem
 
     #endregion
 
-    #region 委托类型
+    #region 公用委托类型
 
     //委托是引用类型
 
     //个人书写习惯↓
     //声明的委托类型首字母大写、委托类型变量（执行函数）首字母大写；
-    //结尾Funcref 表示无事件event记号的委托类型（不安全使用）
-    //结尾Handler 表示有事件event记号的委托类型（安全使用）
+    //结尾Funcref 表示无事件event记号的常规委托类型（不安全使用）
+    //结尾Handler 表示有事件event记号的事件委托类型（可安全使用）
 
     /// <summary>
-    /// 键鼠常规函数引用（委托类型），特征：void KeyMouseEventFuncref(bool ifKeyDown, int player)
+    /// 【MM_函数库】键鼠常规函数引用（委托类型），特征：void KeyMouseEventFuncref(bool ifKeyDown, int player)
     /// </summary>
     /// <param name="ifKeyDown"></param>
     /// <param name="player"></param>
     public delegate void KeyMouseEventFuncref(bool ifKeyDown, int player);
 
     /// <summary>
-    /// 主副循环入口常规函数引用（委托类型），特征：void EntryEventFuncref()
+    /// 【MM_函数库】主副循环入口常规函数引用（委托类型），特征：void EntryEventFuncref()
     /// </summary>
     public delegate void EntryEventFuncref();
 
     /// <summary>
-    /// 计时器事件函数引用（委托类型），特征：void TimerEventHandler(object sender, EventArgs e)
+    /// 【MM_函数库】计时器事件函数引用（委托类型），特征：void TimerEventHandler(object sender, EventArgs e)
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     public delegate void TimerEventHandler(object sender, EventArgs e);
 
     /// <summary>
-    /// 动作集合常规函数引用（委托类型），特征：void SubActionEventFuncref(int lp_var)
+    /// 【MM_函数库】子函数动作集合常规函数引用（委托类型），特征：void SubActionEventFuncref(int lp_var)
     /// </summary>
     public delegate void SubActionEventFuncref(object sender);
 
+    #region 监听服务预制委托
+
+    /// <summary>
+    /// 【MM_函数库】监听服务键盘按键常规函数引用（委托类型），特征：bool KeyDownEventFuncref(int player, int key)
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
     public delegate bool KeyDownEventFuncref(int player, int key);
-    public delegate bool KeyDownTwiceEventFuncref(int player, int key);
+    /// <summary>
+    /// 【MM_函数库】监听服务键盘双击常规函数引用（委托类型），特征：bool KeyDoubleClickEventFuncref(int player, int key)
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public delegate bool KeyDoubleClickEventFuncref(int player, int key);
+    /// <summary>
+    /// 【MM_函数库】监听服务键盘弹起常规函数引用（委托类型），特征：bool KeyUpEventFuncref(int player, int key)
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
     public delegate bool KeyUpEventFuncref(int player, int key);
+    /// <summary>
+    /// 【MM_函数库】监听服务鼠标移动常规函数引用（委托类型），特征：void MouseMoveEventFuncref(int player, Vector3D lp_mouseVector3D, int uiX, int uiY)
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="lp_mouseVector3D"></param>
+    /// <param name="uiX"></param>
+    /// <param name="uiY"></param>
     public delegate void MouseMoveEventFuncref(int player, Vector3D lp_mouseVector3D, int uiX, int uiY);
+    /// <summary>
+    /// 【MM_函数库】监听服务鼠标按下常规函数引用（委托类型），特征：bool MouseDownEventFuncref(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="key"></param>
+    /// <param name="lp_mouseVector3D"></param>
+    /// <param name="uiX"></param>
+    /// <param name="uiY"></param>
+    /// <returns></returns>
     public delegate bool MouseDownEventFuncref(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY);
-    public delegate bool MouseLDownTwiceEventFuncref(int player, Vector3D lp_mouseVector3D, int uiX, int uiY);
-    public delegate bool MouseRDownTwiceEventFuncref(int player, Vector3D lp_mouseVector3D, int uiX, int uiY);
+    /// <summary>
+    /// 【MM_函数库】监听服务鼠标左键双击常规函数引用（委托类型），特征：bool MouseLDoubleClickEventFuncref(int player, Vector3D lp_mouseVector3D, int uiX, int uiY)
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="lp_mouseVector3D"></param>
+    /// <param name="uiX"></param>
+    /// <param name="uiY"></param>
+    /// <returns></returns>
+    public delegate bool MouseLDoubleClickEventFuncref(int player, Vector3D lp_mouseVector3D, int uiX, int uiY);
+    /// <summary>
+    /// 【MM_函数库】监听服务鼠标右键双击常规函数引用（委托类型），特征：bool MouseRDoubleClickEventFuncref(int player, Vector3D lp_mouseVector3D, int uiX, int uiY)
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="lp_mouseVector3D"></param>
+    /// <param name="uiX"></param>
+    /// <param name="uiY"></param>
+    /// <returns></returns>
+    public delegate bool MouseRDoubleClickEventFuncref(int player, Vector3D lp_mouseVector3D, int uiX, int uiY);
+    /// <summary>
+    /// 【MM_函数库】监听服务鼠标弹起常规函数引用（委托类型），特征：bool MouseUpEventFuncref(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="key"></param>
+    /// <param name="lp_mouseVector3D"></param>
+    /// <param name="uiX"></param>
+    /// <param name="uiY"></param>
+    /// <returns></returns>
     public delegate bool MouseUpEventFuncref(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY);
+
+    #endregion
 
     #endregion
 
@@ -158,15 +221,17 @@ namespace MetalMaxSystem
 
     //自定义类是引用类型
 
-    //静态类数据在内存中唯一（从模板也只产生一个可修改副本），公开的静态类可供其他程序集调用。
-    //类的访问修饰符只有public和internal，其中internal修饰后只能在自身程序集（dll或exe）使用，类中创建类默认为internal（内部类）。
+    //静态类数据在内存中唯一（从模板也只产生一个可修改副本），公开的静态类可供其他程序集调用
+    //类的访问修饰符只有public和internal，其中internal修饰后只能在自身程序集（dll或exe）使用，类中创建类默认为internal（内部类）
     //前缀加partial（分部类型）用来定义要拆分到多个文件中的类，亦称"部分类"
     //提供给程序集外或用户无限制使用的类及成员（字段、方法）标public，不让外部操作或需隐藏则不标
-    //若需额外让派生类（子类）使用则标protected，会限制在基类派生类（父子类）中，要注意其结合privite（修饰成员）、internal（修饰类）时反而是扩大使用范围
+    //若需额外让派生类（子类）使用则标protected，会限制在基类&派生类（父子类）中，要注意其结合privite（修饰成员）、internal（修饰类）时反而是扩大使用范围
     //静态数据的副本创建后只有在程序结束才会清理
 
+
+
     /// <summary>
-    /// 【MetalMaxSystem】核心类
+    /// 【MM_函数库】核心类
     /// </summary>
     public static class MMCore
     {
@@ -286,7 +351,7 @@ namespace MetalMaxSystem
 
         //其他常量
 
-        public const int c_vehicleTypeMax = 200;
+        //暂无
 
         //键鼠函数引用上限及单键注册上限
 
@@ -318,18 +383,9 @@ namespace MetalMaxSystem
         /// </summary>
         private const int c_regEntryMax = 1;//内部使用，无需给用户使用
 
-        /// <summary>
-        /// 【MM_函数库】任意玩家编号（玩家编号从0-15共16个，16是上帝由系统执行，某些函数中也作"任意玩家"参数）
-        /// </summary>
-        public const int c_playerAny = 16;
-        /// <summary>
-        /// 【MM_函数库】玩家编号上限（限制最大玩家数）
-        /// </summary>
-        public const int c_maxPlayers = 16;
-
         #endregion
 
-        #region "全局和局部变量"（无属性字段）
+        #region "全局和局部变量"（不同作用域下的无属性字段）
 
         //类只有字段没变量说法，但理论上公有静态字段是该程序在内存中唯一的全局变量，无论类实例化多次或多线程从模板调用，它只生成一次副本直到程序结束才清理
         //而非静态（实例）类每次实例化都复制一份模板去形成多个副本，私有实例字段相当于类的局部变量
@@ -342,35 +398,28 @@ namespace MetalMaxSystem
         /// 【MM_函数库】键盘按键已注册数量（每个数组元素算1个，即使它们+=多个委托函数）
         /// </summary>
         private static int[] keyEventFuncrefGroupNum = new int[c_keyMax + 1];//内部使用
+
         /// <summary>
         /// 【MM_函数库】鼠标按键的已注册数量（每个数组元素算1个，即使它们+=多个委托函数）
         /// </summary>
         private static int[] mouseEventFuncrefGroupNum = new int[c_mouseMax + 1];//内部使用
 
-        private static bool[] _stopKeyMouseEvent = new bool[c_maxPlayers + 1];
+        private static bool[] _stopKeyMouseEvent = new bool[Game.c_maxPlayers + 1];
         /// <summary>
         /// 【MM_函数库】用户按键事件禁用状态（用于过场、剧情对话、特殊技能如禁锢时强制停用用户的按键事件）
         /// </summary>
-        public static bool[] StopKeyMouseEvent{ get => _stopKeyMouseEvent; set => _stopKeyMouseEvent = value; }
+        public static bool[] StopKeyMouseEvent { get => _stopKeyMouseEvent; set => _stopKeyMouseEvent = value; }
+
         /// <summary>
         /// 【MM_函数库】主副循环每个入口的已注册数量（每个数组元素算1个，即使它们+=多个委托函数）
         /// </summary>
         private static int[] entryEventFuncrefGroupNum = new int[c_entryMax + 1];//内部使用
 
-        private static bool[] _stopEntryEvent = new bool[c_maxPlayers + 1];
+        private static bool[] _stopEntryEvent = new bool[Game.c_maxPlayers + 1];
         /// <summary>
         /// 【MM_函数库】主副循环事件禁用状态（用于特殊情况如个人处理队列过多、玩家间未同步时间过长情况下停用用户主副循环事件）
         /// </summary>
         public static bool[] StopEntryEvent { get => _stopEntryEvent; set => _stopEntryEvent = value; }
-
-        /// <summary>
-        /// 【MM_函数库】主循环线程
-        /// </summary>
-        private static Thread mainUpdateThread;
-        /// <summary>
-        /// 【MM_函数库】副循环线程
-        /// </summary>
-        private static Thread subUpdateThread;
 
         #region 字典
 
@@ -515,9 +564,9 @@ namespace MetalMaxSystem
         #region 构造函数
 
         /// <summary>
-        /// 【MetalMaxSystem】核心类
+        /// 【MM_函数库】核心类
         /// </summary>
-        static MMCore() 
+        static MMCore()
         {
             //这里可给字段进行第二次赋值或安排其他动作（字段的首次赋值是在声明时，同一次初始化执行顺序受动作所在上下文影响）
         }
@@ -528,7 +577,7 @@ namespace MetalMaxSystem
 
         //字段及其属性方法（避免不安全读写，private保护和隐藏字段，设计成只允许通过public修饰的属性方法间接去安全读写）
 
-        private static string _dataTableType;
+        public static string _dataTableType;
         /// <summary>
         /// 【MM_函数库】数据表类型
         /// </summary>
@@ -537,26 +586,23 @@ namespace MetalMaxSystem
             get => _dataTableType;
             set
             {
-                switch (value) 
+                switch (value)
                 {
-                    case "Dictionary":
-                        _dataTableType = value;
-                        break;
                     case "HashTable":
                         _dataTableType = value;
                         break;
                     default:
-                        _dataTableType = "HashTable";
+                        _dataTableType = "Dictionary";
                         break;
                 }
             }
         }
 
-        private static int _playerLocalID;
+        private static int _localID;
         /// <summary>
-        /// 【MM_函数库】玩家编号
+        /// 【MM_函数库】本地主机编号
         /// </summary>
-        public static int PlayerLocalID { get => _playerLocalID; set => _playerLocalID = value; }
+        public static int LocalID { get => _localID; set => _localID = value; }
 
         private static int _directoryEmptyUserDefIndex = 0;
         /// <summary>
@@ -578,67 +624,6 @@ namespace MetalMaxSystem
                 }
             }
         }
-
-        private static AutoResetEvent _autoResetEvent_MainUpdate;
-        /// <summary>
-        /// 【MM_函数库】主循环自动复位事件对象（用来向主循环线程发送信号），属性动作AutoResetEvent_MainUpdate.Set()可让触发器线程终止（效果等同MMCore.MainUpdateChecker.TimerState = true）
-        /// </summary>
-        public static AutoResetEvent AutoResetEvent_MainUpdate { get => _autoResetEvent_MainUpdate; }//不提供外部赋值
-
-        private static AutoResetEvent _autoResetEvent_SubUpdate;
-        /// <summary>
-        /// 【MM_函数库】副循环自动复位事件对象（用来向主循环线程发送信号），属性动作AutoResetEvent_SubUpdate.Set()可让触发器线程终止（效果等同MMCore.SubUpdateChecker.TimerState = true）
-        /// </summary>
-        public static AutoResetEvent AutoResetEvent_SubUpdate { get => _autoResetEvent_SubUpdate; }//不提供外部赋值
-
-        private static Timer _mainUpdateTimer, _subUpdateTimer;
-        /// <summary>
-        /// 【MM_函数库】主循环Update阶段，用来实现周期循环的计时器
-        /// </summary>
-        public static Timer MainUpdateTimer { get => _mainUpdateTimer; }//不提供外部赋值
-        /// <summary>
-        /// 【MM_函数库】主循环Update阶段，用来实现周期循环的计时器
-        /// </summary>
-        public static Timer SubUpdateTimer { get => _subUpdateTimer; }//不提供外部赋值
-
-        private static int _mainUpdateDuetime, _mainUpdatePeriod, _subUpdateDuetime, _subUpdatePeriod;
-        /// <summary>
-        /// 【MM_函数库】主循环Update阶段前摇时间，设置后每次循环前都会等待
-        /// </summary>
-        public static int MainUpdateDuetime { get => _mainUpdateDuetime; set => _mainUpdateDuetime = value; }
-        /// <summary>
-        /// 【MM_函数库】主循环Update阶段间隔运行时间
-        /// </summary>
-        public static int MainUpdatePeriod { get => _mainUpdatePeriod; set => _mainUpdatePeriod = value; }
-        /// <summary>
-        /// 【MM_函数库】副循环Update阶段前摇时间，设置后每次循环前都会等待
-        /// </summary>
-        public static int SubUpdateDuetime { get => _subUpdateDuetime; set => _subUpdateDuetime = value; }
-        /// <summary>
-        /// 【MM_函数库】副循环Update阶段间隔运行时间
-        /// </summary>
-        public static int SubUpdatePeriod { get => _subUpdatePeriod; set => _subUpdatePeriod = value; }
-
-        //地图相关字段↓
-
-        private static double _mapHeight;
-        private static double[,] _terrainHeight = new double[2560 + 1, 2560 + 1];
-        private static double[,,] _terrainType;
-
-        /// <summary>
-        /// 【MM_函数库】地图首个纹理图层顶面高度，默认值=8（m），亦称地面高度或地图高度
-        /// </summary>
-        public static double MapHeight { get => _mapHeight; set => _mapHeight = value; }
-
-        /// <summary>
-        /// 【MM_函数库】地面上附加的悬崖、地形物件的高度，二维坐标数组元素[2560+1,2560+1]（设计精度0.1m，按256m计）
-        /// </summary>
-        public static double[,] TerrainHeight { get => _terrainHeight; set => _terrainHeight = value; }
-
-        /// <summary>
-        /// 【MM_函数库】土、矿、水、气等空间内每个点的属性类型和数量（密度），数组元素[2560+1,2560+1,2560+1]，设计精度0.1m，小数点左侧表示土的类型，右侧为数值（密度）
-        /// </summary>
-        public static double[,,] TerrainType { get => _terrainType; set => _terrainType = value; }
 
         #endregion
 
@@ -705,6 +690,7 @@ namespace MetalMaxSystem
         {
             //double X1 = point1.X, Y1 = point1.Y, X2 = point2.Y, Y2 = point2.Y;
             //double angleOfLine = Math.Atan2((Y2 - Y1), (X2 - X2)) * 180 / Math.PI;
+
             return Vector.AngleBetween(new Vector(point1.X, point1.Y), new Vector(point2.X, point2.Y));
         }
 
@@ -878,7 +864,7 @@ namespace MetalMaxSystem
         public static readonly IntPtr HFILE_ERROR = new IntPtr(-1);
 
         /// <summary>
-        /// 文件是否被占用（WIN32 API调用）
+        /// 【MM_函数库】文件是否被占用（WIN32 API调用）
         /// </summary>
         /// <param name="fileFullNmae"></param>
         /// <returns></returns>
@@ -892,7 +878,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 文件是否被占用（文件流判断法）
+        /// 【MM_函数库】文件是否被占用（文件流判断法）
         /// </summary>
         /// <param name="fileName"></param>
         /// <returns>true表示正在使用,false没有使用 </returns>
@@ -1304,6 +1290,7 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool IsDFPath(string path)
         {
+            //发现带中文符号会识别不出，为中文符号继续追加（）【】：
             Regex regex = new Regex(
                 @"^([a-zA-Z]:\\)([-\u4e00-\u9fa5\w\s.（）【】：~!@#$%^&()\[\]{}+=]+\\?)*$"
             );
@@ -1745,7 +1732,7 @@ namespace MetalMaxSystem
         //功能出处：https://blog.csdn.net/qq_15505341/article/details/79212070/
 
         /// <summary>
-        /// 获取弹幕信息（本函数待改中请勿使用）
+        /// 【MM_函数库】获取弹幕信息（本函数待改中请勿使用）
         /// </summary>
         /// <param name="room"></param>
         /// <returns></returns>
@@ -1767,7 +1754,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 处理弹幕信息为中文（本函数待改中请勿使用）
+        /// 【MM_函数库】处理弹幕信息为中文（本函数待改中请勿使用）
         /// </summary>
         /// <param name="room"></param>
         /// <returns></returns>
@@ -1793,7 +1780,7 @@ namespace MetalMaxSystem
 
         #region 数据表封装使用
 
-        //目前数据表策略是仅使用泛型字典
+        //建议使用泛型字典，值与引用类型不混用
 
         #region 引用类型
 
@@ -1809,12 +1796,10 @@ namespace MetalMaxSystem
         {
             switch (DataTableType)
             {
-                case "Dictionary":
-                    return DictionaryObjectKeyExists(place, key);
                 case "HashTable":
                     return HashTableKeyExists(place, key);
                 default:
-                    return HashTableKeyExists(place, key);
+                    return DictionaryObjectKeyExists(place, key);
             }
         }
 
@@ -1826,7 +1811,14 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableObjectValueExists(bool place, object value)
         {
-            return DictionaryObjectValueExists(place, value);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableValueExists(place, value);
+                default:
+                    return DictionaryObjectValueExists(place, value);
+            }
+
         }
 
         /// <summary>
@@ -1837,7 +1829,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static object DataTableObjectGetValue(bool place, string key)
         {
-            return DictionaryObjectGetValue(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableGetValue(place, key);
+                default:
+                    return DictionaryObjectGetValue(place, key);
+            }
         }
 
         /// <summary>
@@ -1847,7 +1845,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         public static void DataTableObjectClear0(bool place, string key)
         {
-            DictionaryObjectClear0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    DictionaryObjectClear0(place, key);
+                    break;
+                default:
+                    HashTableClear0(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -1858,7 +1864,15 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         public static void DataTableObjectClear1(bool place, string key, int lp_1)
         {
-            DictionaryObjectClear1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear1(place, key, lp_1);
+                    break;
+                default:
+                    DictionaryObjectClear1(place, key, lp_1);
+                    break;
+            }
         }
 
         /// <summary>
@@ -1870,7 +1884,15 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         public static void DataTableObjectClear2(bool place, string key, int lp_1, int lp_2)
         {
-            DictionaryObjectClear2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear2(place, key, lp_1, lp_2);
+                    break;
+                default:
+                    DictionaryObjectClear2(place, key, lp_1, lp_2);
+                    break;
+            }
         }
 
         /// <summary>
@@ -1883,7 +1905,15 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         public static void DataTableObjectClear3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            DictionaryObjectClear3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+                default:
+                    DictionaryObjectClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+            }
         }
 
         /// <summary>
@@ -1897,7 +1927,15 @@ namespace MetalMaxSystem
         /// <param name="lp_4"></param>
         public static void DataTableObjectClear4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            DictionaryObjectClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+                default:
+                    DictionaryObjectClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+            }
         }
 
         /// <summary>
@@ -1907,7 +1945,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         private static void DataTableObjectRemove(bool place, string key)//内部函数
         {
-            DictionaryObjectRemove(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableRemove(place, key);
+                    break;
+                default:
+                    DictionaryObjectRemove(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -1918,7 +1964,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableObjectSave0(bool place, string key, object val)
         {
-            DictionaryObjectSave0(place, key, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave0(place, key, val);
+                    break;
+                default:
+                    DictionaryObjectSave0(place, key, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -1930,7 +1984,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableObjectSave1(bool place, string key, int lp_1, object val)
         {
-            DictionaryObjectSave1(place, key, lp_1, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave1(place, key, lp_1, val);
+                    break;
+                default:
+                    DictionaryObjectSave1(place, key, lp_1, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -1943,7 +2005,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableObjectSave2(bool place, string key, int lp_1, int lp_2, object val)
         {
-            DictionaryObjectSave2(place, key, lp_1, lp_2, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave2(place, key, lp_1, lp_2, val);
+                    break;
+                default:
+                    DictionaryObjectSave2(place, key, lp_1, lp_2, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -1957,7 +2027,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableObjectSave3(bool place, string key, int lp_1, int lp_2, int lp_3, object val)
         {
-            DictionaryObjectSave3(place, key, lp_1, lp_2, lp_3, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+                default:
+                    DictionaryObjectSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -1972,7 +2050,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableObjectSave4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4, object val)
         {
-            DictionaryObjectSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+                default:
+                    DictionaryObjectSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -1983,7 +2069,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static object DataTableObjectLoad0(bool place, string key)
         {
-            return DictionaryObjectLoad0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableLoad0(place, key);
+                default:
+                    return DictionaryObjectLoad0(place, key);
+            }
         }
 
         /// <summary>
@@ -1995,7 +2087,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static object DataTableObjectLoad1(bool place, string key, int lp_1)
         {
-            return DictionaryObjectLoad1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableLoad1(place, key, lp_1);
+                default:
+                    return DictionaryObjectLoad1(place, key, lp_1);
+            }
         }
 
         /// <summary>
@@ -2008,7 +2106,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static object DataTableObjectLoad2(bool place, string key, int lp_1, int lp_2)
         {
-            return DictionaryObjectLoad2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableLoad2(place, key, lp_1, lp_2);
+                default:
+                    return DictionaryObjectLoad2(place, key, lp_1, lp_2);
+            }
         }
 
         /// <summary>
@@ -2022,7 +2126,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static object DataTableObjectLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            return DictionaryObjectLoad3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableLoad3(place, key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryObjectLoad3(place, key, lp_1, lp_2, lp_3);
+            }
         }
 
         /// <summary>
@@ -2037,7 +2147,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static object DataTableObjectLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            return DictionaryObjectLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryObjectLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            }
         }
 
         #endregion
@@ -2052,7 +2168,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableVectorKeyExists(bool place, string key)
         {
-            return DictionaryVectorKeyExists(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableKeyExists(place, key);
+                default:
+                    return DictionaryVectorKeyExists(place, key);
+            }
         }
 
         /// <summary>
@@ -2063,7 +2185,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableVectorValueExists(bool place, Vector value)
         {
-            return DictionaryVectorValueExists(place, value);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableValueExists(place, value);
+                default:
+                    return DictionaryVectorValueExists(place, value);
+            }
         }
 
         /// <summary>
@@ -2074,7 +2202,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static Vector DataTableVectorGetValue(bool place, string key)
         {
-            return DictionaryVectorGetValue(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Vector)HashTableGetValue(place, key);
+                default:
+                    return DictionaryVectorGetValue(place, key);
+            }
         }
 
         /// <summary>
@@ -2084,7 +2218,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         public static void DataTableVectorClear0(bool place, string key)
         {
-            DictionaryVectorClear0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear0(place, key);
+                    break;
+                default:
+                    DictionaryVectorClear0(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2095,7 +2237,15 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         public static void DataTableVectorClear1(bool place, string key, int lp_1)
         {
-            DictionaryVectorClear1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear1(place, key, lp_1);
+                    break;
+                default:
+                    DictionaryVectorClear1(place, key, lp_1);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2107,7 +2257,15 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         public static void DataTableVectorClear2(bool place, string key, int lp_1, int lp_2)
         {
-            DictionaryVectorClear2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear2(place, key, lp_1, lp_2);
+                    break;
+                default:
+                    DictionaryVectorClear2(place, key, lp_1, lp_2);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2120,7 +2278,15 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         public static void DataTableVectorClear3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            DictionaryVectorClear3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+                default:
+                    DictionaryVectorClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2134,7 +2300,15 @@ namespace MetalMaxSystem
         /// <param name="lp_4"></param>
         public static void DataTableVectorClear4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            DictionaryVectorClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+                default:
+                    DictionaryVectorClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2144,7 +2318,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         private static void DataTableVectorRemove(bool place, string key)//内部函数
         {
-            DictionaryVectorRemove(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableRemove(place, key);
+                    break;
+                default:
+                    DictionaryVectorRemove(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2155,7 +2337,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableVectorSave0(bool place, string key, Vector val)
         {
-            DictionaryVectorSave0(place, key, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave0(place, key, val);
+                    break;
+                default:
+                    DictionaryVectorSave0(place, key, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2167,7 +2357,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableVectorSave1(bool place, string key, int lp_1, Vector val)
         {
-            DictionaryVectorSave1(place, key, lp_1, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave1(place, key, lp_1, val);
+                    break;
+                default:
+                    DictionaryVectorSave1(place, key, lp_1, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2180,7 +2378,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableVectorSave2(bool place, string key, int lp_1, int lp_2, Vector val)
         {
-            DictionaryVectorSave2(place, key, lp_1, lp_2, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave2(place, key, lp_1, lp_2, val);
+                    break;
+                default:
+                    DictionaryVectorSave2(place, key, lp_1, lp_2, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2194,7 +2400,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableVectorSave3(bool place, string key, int lp_1, int lp_2, int lp_3, Vector val)
         {
-            DictionaryVectorSave3(place, key, lp_1, lp_2, lp_3, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+                default:
+                    DictionaryVectorSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2209,7 +2423,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableVectorSave4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4, Vector val)
         {
-            DictionaryVectorSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+                default:
+                    DictionaryVectorSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2220,7 +2442,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static Vector? DataTableVectorLoad0(bool place, string key)
         {
-            return DictionaryVectorLoad0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Vector?)HashTableLoad0(place, key);
+                default:
+                    return DictionaryVectorLoad0(place, key);
+            }
         }
 
         /// <summary>
@@ -2232,7 +2460,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static Vector? DataTableVectorLoad1(bool place, string key, int lp_1)
         {
-            return DictionaryVectorLoad1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Vector?)HashTableLoad1(place, key, lp_1);
+                default:
+                    return DictionaryVectorLoad1(place, key, lp_1);
+            }
         }
 
         /// <summary>
@@ -2245,7 +2479,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static Vector? DataTableVectorLoad2(bool place, string key, int lp_1, int lp_2)
         {
-            return DictionaryVectorLoad2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Vector?)HashTableLoad2(place, key, lp_1, lp_2);
+                default:
+                    return DictionaryVectorLoad2(place, key, lp_1, lp_2);
+            }
         }
 
         /// <summary>
@@ -2259,7 +2499,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static Vector? DataTableVectorLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            return DictionaryVectorLoad3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Vector?)HashTableLoad3(place, key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryVectorLoad3(place, key, lp_1, lp_2, lp_3);
+            }
         }
 
         /// <summary>
@@ -2274,7 +2520,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static Vector? DataTableVectorLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            return DictionaryVectorLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Vector?)HashTableLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryVectorLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            }
         }
 
         #endregion
@@ -2289,7 +2541,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableTimerKeyExists(bool place, string key)
         {
-            return DictionaryTimerKeyExists(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableKeyExists(place, key);
+                default:
+                    return DictionaryTimerKeyExists(place, key);
+            }
         }
 
         /// <summary>
@@ -2300,7 +2558,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableTimerValueExists(bool place, Timer value)
         {
-            return DictionaryTimerValueExists(place, value);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableValueExists(place, value);
+                default:
+                    return DictionaryTimerValueExists(place, value);
+            }
         }
 
         /// <summary>
@@ -2311,7 +2575,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static Timer DataTableTimerGetValue(bool place, string key)
         {
-            return DictionaryTimerGetValue(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Timer)HashTableGetValue(place, key);
+                default:
+                    return DictionaryTimerGetValue(place, key);
+            }
         }
 
         /// <summary>
@@ -2321,7 +2591,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         public static void DataTableTimerClear0(bool place, string key)
         {
-            DictionaryTimerClear0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear0(place, key);
+                    break;
+                default:
+                    DictionaryTimerClear0(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2332,7 +2610,15 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         public static void DataTableTimerClear1(bool place, string key, int lp_1)
         {
-            DictionaryTimerClear1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear1(place, key, lp_1);
+                    break;
+                default:
+                    DictionaryTimerClear1(place, key, lp_1);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2344,7 +2630,15 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         public static void DataTableTimerClear2(bool place, string key, int lp_1, int lp_2)
         {
-            DictionaryTimerClear2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear2(place, key, lp_1, lp_2);
+                    break;
+                default:
+                    DictionaryTimerClear2(place, key, lp_1, lp_2);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2357,7 +2651,15 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         public static void DataTableTimerClear3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            DictionaryTimerClear3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+                default:
+                    DictionaryTimerClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2371,7 +2673,15 @@ namespace MetalMaxSystem
         /// <param name="lp_4"></param>
         public static void DataTableTimerClear4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            DictionaryTimerClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+                default:
+                    DictionaryTimerClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2381,7 +2691,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         private static void DataTableTimerRemove(bool place, string key)//内部函数
         {
-            DictionaryTimerRemove(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableRemove(place, key);
+                    break;
+                default:
+                    DictionaryTimerRemove(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2392,7 +2710,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableTimerSave0(bool place, string key, Timer val)
         {
-            DictionaryTimerSave0(place, key, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave0(place, key, val);
+                    break;
+                default:
+                    DictionaryTimerSave0(place, key, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2404,7 +2730,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableTimerSave1(bool place, string key, int lp_1, Timer val)
         {
-            DictionaryTimerSave1(place, key, lp_1, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave1(place, key, lp_1, val);
+                    break;
+                default:
+                    DictionaryTimerSave1(place, key, lp_1, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2417,7 +2751,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableTimerSave2(bool place, string key, int lp_1, int lp_2, Timer val)
         {
-            DictionaryTimerSave2(place, key, lp_1, lp_2, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave2(place, key, lp_1, lp_2, val);
+                    break;
+                default:
+                    DictionaryTimerSave2(place, key, lp_1, lp_2, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2431,7 +2773,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableTimerSave3(bool place, string key, int lp_1, int lp_2, int lp_3, Timer val)
         {
-            DictionaryTimerSave3(place, key, lp_1, lp_2, lp_3, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+                default:
+                    DictionaryTimerSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2446,7 +2796,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableTimerSave4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4, Timer val)
         {
-            DictionaryTimerSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+                default:
+                    DictionaryTimerSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2457,7 +2815,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static Timer DataTableTimerLoad0(bool place, string key)
         {
-            return DictionaryTimerLoad0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Timer)HashTableLoad0(place, key);
+                default:
+                    return DictionaryTimerLoad0(place, key);
+            }
         }
 
         /// <summary>
@@ -2469,7 +2833,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static Timer DataTableTimerLoad1(bool place, string key, int lp_1)
         {
-            return DictionaryTimerLoad1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Timer)HashTableLoad1(place, key, lp_1);
+                default:
+                    return DictionaryTimerLoad1(place, key, lp_1);
+            }
         }
 
         /// <summary>
@@ -2482,7 +2852,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static Timer DataTableTimerLoad2(bool place, string key, int lp_1, int lp_2)
         {
-            return DictionaryTimerLoad2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Timer)HashTableLoad2(place, key, lp_1, lp_2);
+                default:
+                    return DictionaryTimerLoad2(place, key, lp_1, lp_2);
+            }
         }
 
         /// <summary>
@@ -2496,7 +2872,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static Timer DataTableTimerLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            return DictionaryTimerLoad3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Timer)HashTableLoad3(place, key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryTimerLoad3(place, key, lp_1, lp_2, lp_3);
+            }
         }
 
         /// <summary>
@@ -2511,7 +2893,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static Timer DataTableTimerLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            return DictionaryTimerLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Timer)HashTableLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryTimerLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            }
         }
 
         #endregion
@@ -2526,7 +2914,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableStringKeyExists(bool place, string key)
         {
-            return DictionaryStringKeyExists(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableKeyExists(place, key);
+                default:
+                    return DictionaryStringKeyExists(place, key);
+            }
         }
 
         /// <summary>
@@ -2537,7 +2931,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableStringValueExists(bool place, string value)
         {
-            return DictionaryStringValueExists(place, value);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableValueExists(place, value);
+                default:
+                    return DictionaryStringValueExists(place, value);
+            }
         }
 
         /// <summary>
@@ -2548,7 +2948,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static string DataTableStringGetValue(bool place, string key)
         {
-            return DictionaryStringGetValue(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (string)HashTableGetValue(place, key);
+                default:
+                    return DictionaryStringGetValue(place, key);
+            }
         }
 
         /// <summary>
@@ -2558,7 +2964,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         public static void DataTableStringClear0(bool place, string key)
         {
-            DictionaryStringClear0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear0(place, key);
+                    break;
+                default:
+                    DictionaryStringClear0(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2569,7 +2983,15 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         public static void DataTableStringClear1(bool place, string key, int lp_1)
         {
-            DictionaryStringClear1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear1(place, key, lp_1);
+                    break;
+                default:
+                    DictionaryStringClear1(place, key, lp_1);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2581,7 +3003,15 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         public static void DataTableStringClear2(bool place, string key, int lp_1, int lp_2)
         {
-            DictionaryStringClear2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear2(place, key, lp_1, lp_2);
+                    break;
+                default:
+                    DictionaryStringClear2(place, key, lp_1, lp_2);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2594,7 +3024,15 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         public static void DataTableStringClear3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            DictionaryStringClear3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+                default:
+                    DictionaryStringClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2608,7 +3046,15 @@ namespace MetalMaxSystem
         /// <param name="lp_4"></param>
         public static void DataTableStringClear4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            DictionaryStringClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+                default:
+                    DictionaryStringClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2618,7 +3064,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         private static void DataTableStringRemove(bool place, string key)//内部函数
         {
-            DictionaryStringRemove(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableRemove(place, key);
+                    break;
+                default:
+                    DictionaryStringRemove(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2629,7 +3083,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableStringSave0(bool place, string key, string val)
         {
-            DictionaryStringSave0(place, key, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave0(place, key, val);
+                    break;
+                default:
+                    DictionaryStringSave0(place, key, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2641,7 +3103,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableStringSave1(bool place, string key, int lp_1, string val)
         {
-            DictionaryStringSave1(place, key, lp_1, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave1(place, key, lp_1, val);
+                    break;
+                default:
+                    DictionaryStringSave1(place, key, lp_1, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2654,7 +3124,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableStringSave2(bool place, string key, int lp_1, int lp_2, string val)
         {
-            DictionaryStringSave2(place, key, lp_1, lp_2, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave2(place, key, lp_1, lp_2, val);
+                    break;
+                default:
+                    DictionaryStringSave2(place, key, lp_1, lp_2, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2668,7 +3146,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableStringSave3(bool place, string key, int lp_1, int lp_2, int lp_3, string val)
         {
-            DictionaryStringSave3(place, key, lp_1, lp_2, lp_3, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+                default:
+                    DictionaryStringSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2683,7 +3169,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableStringSave4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4, string val)
         {
-            DictionaryStringSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+                default:
+                    DictionaryStringSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2694,7 +3188,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static string DataTableStringLoad0(bool place, string key)
         {
-            return DictionaryStringLoad0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (string)HashTableLoad0(place, key);
+                default:
+                    return DictionaryStringLoad0(place, key);
+            }
         }
 
         /// <summary>
@@ -2706,7 +3206,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static string DataTableStringLoad1(bool place, string key, int lp_1)
         {
-            return DictionaryStringLoad1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (string)HashTableLoad1(place, key, lp_1);
+                default:
+                    return DictionaryStringLoad1(place, key, lp_1);
+            }
         }
 
         /// <summary>
@@ -2719,7 +3225,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static string DataTableStringLoad2(bool place, string key, int lp_1, int lp_2)
         {
-            return DictionaryStringLoad2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (string)HashTableLoad2(place, key, lp_1, lp_2);
+                default:
+                    return DictionaryStringLoad2(place, key, lp_1, lp_2);
+            }
         }
 
         /// <summary>
@@ -2733,7 +3245,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static string DataTableStringLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            return DictionaryStringLoad3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (string)HashTableLoad3(place, key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryStringLoad3(place, key, lp_1, lp_2, lp_3);
+            }
         }
 
         /// <summary>
@@ -2748,7 +3266,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static string DataTableStringLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            return DictionaryStringLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (string)HashTableLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryStringLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            }
         }
 
         #endregion
@@ -2767,7 +3291,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableIntKeyExists(bool place, string key)
         {
-            return DictionaryIntKeyExists(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableKeyExists(place, key);
+                default:
+                    return DictionaryIntKeyExists(place, key);
+            }
         }
 
         /// <summary>
@@ -2778,7 +3308,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableIntValueExists(bool place, int value)
         {
-            return DictionaryIntValueExists(place, value);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableValueExists(place, value);
+                default:
+                    return DictionaryIntValueExists(place, value);
+            }
         }
 
         /// <summary>
@@ -2789,7 +3325,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static int DataTableIntGetValue(bool place, string key)
         {
-            return DictionaryIntGetValue(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (int)HashTableGetValue(place, key);
+                default:
+                    return DictionaryIntGetValue(place, key);
+            }
         }
 
         /// <summary>
@@ -2799,7 +3341,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         public static void DataTableIntClear0(bool place, string key)
         {
-            DictionaryIntClear0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear0(place, key);
+                    break;
+                default:
+                    DictionaryIntClear0(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2810,7 +3360,15 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         public static void DataTableIntClear1(bool place, string key, int lp_1)
         {
-            DictionaryIntClear1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear1(place, key, lp_1);
+                    break;
+                default:
+                    DictionaryIntClear1(place, key, lp_1);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2822,7 +3380,15 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         public static void DataTableIntClear2(bool place, string key, int lp_1, int lp_2)
         {
-            DictionaryIntClear2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear2(place, key, lp_1, lp_2);
+                    break;
+                default:
+                    DictionaryIntClear2(place, key, lp_1, lp_2);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2835,7 +3401,15 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         public static void DataTableIntClear3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            DictionaryIntClear3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+                default:
+                    DictionaryIntClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2849,7 +3423,15 @@ namespace MetalMaxSystem
         /// <param name="lp_4"></param>
         public static void DataTableIntClear4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            DictionaryIntClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+                default:
+                    DictionaryIntClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2859,7 +3441,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         private static void DataTableIntRemove(bool place, string key)//内部函数
         {
-            DictionaryIntRemove(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableRemove(place, key);
+                    break;
+                default:
+                    DictionaryIntRemove(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2870,7 +3460,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableIntSave0(bool place, string key, int val)
         {
-            DictionaryIntSave0(place, key, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave0(place, key, val);
+                    break;
+                default:
+                    DictionaryIntSave0(place, key, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2882,7 +3480,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableIntSave1(bool place, string key, int lp_1, int val)
         {
-            DictionaryIntSave1(place, key, lp_1, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave1(place, key, lp_1, val);
+                    break;
+                default:
+                    DictionaryIntSave1(place, key, lp_1, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2895,7 +3501,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableIntSave2(bool place, string key, int lp_1, int lp_2, int val)
         {
-            DictionaryIntSave2(place, key, lp_1, lp_2, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave2(place, key, lp_1, lp_2, val);
+                    break;
+                default:
+                    DictionaryIntSave2(place, key, lp_1, lp_2, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2909,7 +3523,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableIntSave3(bool place, string key, int lp_1, int lp_2, int lp_3, int val)
         {
-            DictionaryIntSave3(place, key, lp_1, lp_2, lp_3, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+                default:
+                    DictionaryIntSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2924,7 +3546,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableIntSave4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4, int val)
         {
-            DictionaryIntSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+                default:
+                    DictionaryIntSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -2935,7 +3565,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static int? DataTableIntLoad0(bool place, string key)
         {
-            return DictionaryIntLoad0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (int?)HashTableLoad0(place, key);
+                default:
+                    return DictionaryIntLoad0(place, key);
+            }
         }
 
         /// <summary>
@@ -2947,7 +3583,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static int? DataTableIntLoad1(bool place, string key, int lp_1)
         {
-            return DictionaryIntLoad1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (int?)HashTableLoad1(place, key, lp_1);
+                default:
+                    return DictionaryIntLoad1(place, key, lp_1);
+            }
         }
 
         /// <summary>
@@ -2960,7 +3602,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static int? DataTableIntLoad2(bool place, string key, int lp_1, int lp_2)
         {
-            return DictionaryIntLoad2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (int?)HashTableLoad2(place, key, lp_1, lp_2);
+                default:
+                    return DictionaryIntLoad2(place, key, lp_1, lp_2);
+            }
         }
 
         /// <summary>
@@ -2974,7 +3622,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static int? DataTableIntLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            return DictionaryIntLoad3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (int?)HashTableLoad3(place, key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryIntLoad3(place, key, lp_1, lp_2, lp_3);
+            }
         }
 
         /// <summary>
@@ -2989,7 +3643,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static int? DataTableIntLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            return DictionaryIntLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (int?)HashTableLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryIntLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            }
         }
 
         #endregion
@@ -3004,7 +3664,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableLongKeyExists(bool place, string key)
         {
-            return DictionaryLongKeyExists(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableKeyExists(place, key);
+                default:
+                    return DictionaryLongKeyExists(place, key);
+            }
         }
 
         /// <summary>
@@ -3015,7 +3681,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableLongValueExists(bool place, long value)
         {
-            return DictionaryLongValueExists(place, value);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableValueExists(place, value);
+                default:
+                    return DictionaryLongValueExists(place, value);
+            }
         }
 
         /// <summary>
@@ -3026,7 +3698,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static long DataTableLongGetValue(bool place, string key)
         {
-            return DictionaryLongGetValue(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (long)HashTableGetValue(place, key);
+                default:
+                    return DictionaryLongGetValue(place, key);
+            }
         }
 
         /// <summary>
@@ -3036,7 +3714,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         public static void DataTableLongClear0(bool place, string key)
         {
-            DictionaryLongClear0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear0(place, key);
+                    break;
+                default:
+                    DictionaryLongClear0(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3047,7 +3733,15 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         public static void DataTableLongClear1(bool place, string key, int lp_1)
         {
-            DictionaryLongClear1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear1(place, key, lp_1);
+                    break;
+                default:
+                    DictionaryLongClear1(place, key, lp_1);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3059,7 +3753,15 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         public static void DataTableLongClear2(bool place, string key, int lp_1, int lp_2)
         {
-            DictionaryLongClear2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear2(place, key, lp_1, lp_2);
+                    break;
+                default:
+                    DictionaryLongClear2(place, key, lp_1, lp_2);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3072,7 +3774,15 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         public static void DataTableLongClear3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            DictionaryLongClear3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+                default:
+                    DictionaryLongClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3086,7 +3796,15 @@ namespace MetalMaxSystem
         /// <param name="lp_4"></param>
         public static void DataTableLongClear4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            DictionaryLongClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+                default:
+                    DictionaryLongClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3096,7 +3814,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         private static void DataTableLongRemove(bool place, string key)//内部函数
         {
-            DictionaryLongRemove(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableRemove(place, key);
+                    break;
+                default:
+                    DictionaryLongRemove(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3107,7 +3833,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableLongSave0(bool place, string key, long val)
         {
-            DictionaryLongSave0(place, key, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave0(place, key, val);
+                    break;
+                default:
+                    DictionaryLongSave0(place, key, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3119,7 +3853,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableLongSave1(bool place, string key, int lp_1, long val)
         {
-            DictionaryLongSave1(place, key, lp_1, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave1(place, key, lp_1, val);
+                    break;
+                default:
+                    DictionaryLongSave1(place, key, lp_1, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3132,7 +3874,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableLongSave2(bool place, string key, int lp_1, int lp_2, long val)
         {
-            DictionaryLongSave2(place, key, lp_1, lp_2, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave2(place, key, lp_1, lp_2, val);
+                    break;
+                default:
+                    DictionaryLongSave2(place, key, lp_1, lp_2, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3146,7 +3896,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableLongSave3(bool place, string key, int lp_1, int lp_2, int lp_3, long val)
         {
-            DictionaryLongSave3(place, key, lp_1, lp_2, lp_3, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+                default:
+                    DictionaryLongSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3161,7 +3919,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableLongSave4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4, long val)
         {
-            DictionaryLongSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+                default:
+                    DictionaryLongSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3172,7 +3938,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static long? DataTableLongLoad0(bool place, string key)
         {
-            return DictionaryLongLoad0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (long?)HashTableLoad0(place, key);
+                default:
+                    return DictionaryLongLoad0(place, key);
+            }
         }
 
         /// <summary>
@@ -3184,7 +3956,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static long? DataTableLongLoad1(bool place, string key, int lp_1)
         {
-            return DictionaryLongLoad1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (long?)HashTableLoad1(place, key, lp_1);
+                default:
+                    return DictionaryLongLoad1(place, key, lp_1);
+            }
         }
 
         /// <summary>
@@ -3197,7 +3975,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static long? DataTableLongLoad2(bool place, string key, int lp_1, int lp_2)
         {
-            return DictionaryLongLoad2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (long?)HashTableLoad2(place, key, lp_1, lp_2);
+                default:
+                    return DictionaryLongLoad2(place, key, lp_1, lp_2);
+            }
         }
 
         /// <summary>
@@ -3211,7 +3995,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static long? DataTableLongLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            return DictionaryLongLoad3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (long?)HashTableLoad3(place, key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryLongLoad3(place, key, lp_1, lp_2, lp_3);
+            }
         }
 
         /// <summary>
@@ -3226,7 +4016,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static long? DataTableLongLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            return DictionaryLongLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (long?)HashTableLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryLongLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            }
         }
 
         #endregion
@@ -3241,7 +4037,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableCharKeyExists(bool place, string key)
         {
-            return DictionaryCharKeyExists(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableKeyExists(place, key);
+                default:
+                    return DictionaryCharKeyExists(place, key);
+            }
         }
 
         /// <summary>
@@ -3252,7 +4054,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableCharValueExists(bool place, char value)
         {
-            return DictionaryCharValueExists(place, value);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableValueExists(place, value);
+                default:
+                    return DictionaryCharValueExists(place, value);
+            }
         }
 
         /// <summary>
@@ -3263,7 +4071,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static char DataTableCharGetValue(bool place, string key)
         {
-            return DictionaryCharGetValue(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (char)HashTableGetValue(place, key);
+                default:
+                    return DictionaryCharGetValue(place, key);
+            }
         }
 
         /// <summary>
@@ -3273,7 +4087,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         public static void DataTableCharClear0(bool place, string key)
         {
-            DictionaryCharClear0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear0(place, key);
+                    break;
+                default:
+                    DictionaryCharClear0(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3284,7 +4106,15 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         public static void DataTableCharClear1(bool place, string key, int lp_1)
         {
-            DictionaryCharClear1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear1(place, key, lp_1);
+                    break;
+                default:
+                    DictionaryCharClear1(place, key, lp_1);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3296,7 +4126,15 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         public static void DataTableCharClear2(bool place, string key, int lp_1, int lp_2)
         {
-            DictionaryCharClear2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear2(place, key, lp_1, lp_2);
+                    break;
+                default:
+                    DictionaryCharClear2(place, key, lp_1, lp_2);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3309,7 +4147,15 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         public static void DataTableCharClear3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            DictionaryCharClear3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+                default:
+                    DictionaryCharClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3323,7 +4169,15 @@ namespace MetalMaxSystem
         /// <param name="lp_4"></param>
         public static void DataTableCharClear4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            DictionaryCharClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+                default:
+                    DictionaryCharClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3333,7 +4187,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         private static void DataTableCharRemove(bool place, string key)//内部函数
         {
-            DictionaryCharRemove(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableRemove(place, key);
+                    break;
+                default:
+                    DictionaryCharRemove(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3344,7 +4206,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableCharSave0(bool place, string key, char val)
         {
-            DictionaryCharSave0(place, key, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave0(place, key, val);
+                    break;
+                default:
+                    DictionaryCharSave0(place, key, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3356,7 +4226,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableCharSave1(bool place, string key, int lp_1, char val)
         {
-            DictionaryCharSave1(place, key, lp_1, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave1(place, key, lp_1, val);
+                    break;
+                default:
+                    DictionaryCharSave1(place, key, lp_1, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3369,7 +4247,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableCharSave2(bool place, string key, int lp_1, int lp_2, char val)
         {
-            DictionaryCharSave2(place, key, lp_1, lp_2, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave2(place, key, lp_1, lp_2, val);
+                    break;
+                default:
+                    DictionaryCharSave2(place, key, lp_1, lp_2, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3383,7 +4269,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableCharSave3(bool place, string key, int lp_1, int lp_2, int lp_3, char val)
         {
-            DictionaryCharSave3(place, key, lp_1, lp_2, lp_3, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+                default:
+                    DictionaryCharSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3398,7 +4292,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableCharSave4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4, char val)
         {
-            DictionaryCharSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+                default:
+                    DictionaryCharSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3409,7 +4311,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static char? DataTableCharLoad0(bool place, string key)
         {
-            return DictionaryCharLoad0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (char?)HashTableLoad0(place, key);
+                default:
+                    return DictionaryCharLoad0(place, key);
+            }
         }
 
         /// <summary>
@@ -3421,7 +4329,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static char? DataTableCharLoad1(bool place, string key, int lp_1)
         {
-            return DictionaryCharLoad1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (char?)HashTableLoad1(place, key, lp_1);
+                default:
+                    return DictionaryCharLoad1(place, key, lp_1);
+            }
         }
 
         /// <summary>
@@ -3434,7 +4348,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static char? DataTableCharLoad2(bool place, string key, int lp_1, int lp_2)
         {
-            return DictionaryCharLoad2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (char?)HashTableLoad2(place, key, lp_1, lp_2);
+                default:
+                    return DictionaryCharLoad2(place, key, lp_1, lp_2);
+            }
         }
 
         /// <summary>
@@ -3448,7 +4368,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static char? DataTableCharLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            return DictionaryCharLoad3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (char?)HashTableLoad3(place, key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryCharLoad3(place, key, lp_1, lp_2, lp_3);
+            }
         }
 
         /// <summary>
@@ -3463,10 +4389,17 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static char? DataTableCharLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            return DictionaryCharLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (char?)HashTableLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryCharLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            }
         }
 
         #endregion
+
 
         #region Float
 
@@ -3478,7 +4411,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableFloatKeyExists(bool place, string key)
         {
-            return DictionaryFloatKeyExists(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableKeyExists(place, key);
+                default:
+                    return DictionaryFloatKeyExists(place, key);
+            }
         }
 
         /// <summary>
@@ -3489,7 +4428,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableFloatValueExists(bool place, float value)
         {
-            return DictionaryFloatValueExists(place, value);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableValueExists(place, value);
+                default:
+                    return DictionaryFloatValueExists(place, value);
+            }
         }
 
         /// <summary>
@@ -3500,7 +4445,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static float DataTableFloatGetValue(bool place, string key)
         {
-            return DictionaryFloatGetValue(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (float)HashTableGetValue(place, key);
+                default:
+                    return DictionaryFloatGetValue(place, key);
+            }
         }
 
         /// <summary>
@@ -3510,7 +4461,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         public static void DataTableFloatClear0(bool place, string key)
         {
-            DictionaryFloatClear0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear0(place, key);
+                    break;
+                default:
+                    DictionaryFloatClear0(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3521,7 +4480,15 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         public static void DataTableFloatClear1(bool place, string key, int lp_1)
         {
-            DictionaryFloatClear1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear1(place, key, lp_1);
+                    break;
+                default:
+                    DictionaryFloatClear1(place, key, lp_1);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3533,7 +4500,15 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         public static void DataTableFloatClear2(bool place, string key, int lp_1, int lp_2)
         {
-            DictionaryFloatClear2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear2(place, key, lp_1, lp_2);
+                    break;
+                default:
+                    DictionaryFloatClear2(place, key, lp_1, lp_2);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3546,7 +4521,15 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         public static void DataTableFloatClear3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            DictionaryFloatClear3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+                default:
+                    DictionaryFloatClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3560,7 +4543,15 @@ namespace MetalMaxSystem
         /// <param name="lp_4"></param>
         public static void DataTableFloatClear4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            DictionaryFloatClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+                default:
+                    DictionaryFloatClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3570,7 +4561,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         private static void DataTableFloatRemove(bool place, string key)//内部函数
         {
-            DictionaryFloatRemove(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableRemove(place, key);
+                    break;
+                default:
+                    DictionaryFloatRemove(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3581,7 +4580,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableFloatSave0(bool place, string key, float val)
         {
-            DictionaryFloatSave0(place, key, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave0(place, key, val);
+                    break;
+                default:
+                    DictionaryFloatSave0(place, key, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3593,7 +4600,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableFloatSave1(bool place, string key, int lp_1, float val)
         {
-            DictionaryFloatSave1(place, key, lp_1, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave1(place, key, lp_1, val);
+                    break;
+                default:
+                    DictionaryFloatSave1(place, key, lp_1, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3606,7 +4621,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableFloatSave2(bool place, string key, int lp_1, int lp_2, float val)
         {
-            DictionaryFloatSave2(place, key, lp_1, lp_2, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave2(place, key, lp_1, lp_2, val);
+                    break;
+                default:
+                    DictionaryFloatSave2(place, key, lp_1, lp_2, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3620,7 +4643,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableFloatSave3(bool place, string key, int lp_1, int lp_2, int lp_3, float val)
         {
-            DictionaryFloatSave3(place, key, lp_1, lp_2, lp_3, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+                default:
+                    DictionaryFloatSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3635,7 +4666,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableFloatSave4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4, float val)
         {
-            DictionaryFloatSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+                default:
+                    DictionaryFloatSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3646,7 +4685,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static float? DataTableFloatLoad0(bool place, string key)
         {
-            return DictionaryFloatLoad0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (float?)HashTableLoad0(place, key);
+                default:
+                    return DictionaryFloatLoad0(place, key);
+            }
         }
 
         /// <summary>
@@ -3658,7 +4703,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static float? DataTableFloatLoad1(bool place, string key, int lp_1)
         {
-            return DictionaryFloatLoad1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (float?)HashTableLoad1(place, key, lp_1);
+                default:
+                    return DictionaryFloatLoad1(place, key, lp_1);
+            }
         }
 
         /// <summary>
@@ -3671,7 +4722,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static float? DataTableFloatLoad2(bool place, string key, int lp_1, int lp_2)
         {
-            return DictionaryFloatLoad2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (float?)HashTableLoad2(place, key, lp_1, lp_2);
+                default:
+                    return DictionaryFloatLoad2(place, key, lp_1, lp_2);
+            }
         }
 
         /// <summary>
@@ -3685,7 +4742,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static float? DataTableFloatLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            return DictionaryFloatLoad3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (float?)HashTableLoad3(place, key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryFloatLoad3(place, key, lp_1, lp_2, lp_3);
+            }
         }
 
         /// <summary>
@@ -3700,7 +4763,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static float? DataTableFloatLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            return DictionaryFloatLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (float?)HashTableLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryFloatLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            }
         }
 
         #endregion
@@ -3715,7 +4784,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableDoubleKeyExists(bool place, string key)
         {
-            return DictionaryDoubleKeyExists(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableKeyExists(place, key);
+                default:
+                    return DictionaryDoubleKeyExists(place, key);
+            }
         }
 
         /// <summary>
@@ -3726,7 +4801,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableDoubleValueExists(bool place, double value)
         {
-            return DictionaryDoubleValueExists(place, value);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableValueExists(place, value);
+                default:
+                    return DictionaryDoubleValueExists(place, value);
+            }
         }
 
         /// <summary>
@@ -3737,7 +4818,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static double DataTableDoubleGetValue(bool place, string key)
         {
-            return DictionaryDoubleGetValue(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (double)HashTableGetValue(place, key);
+                default:
+                    return DictionaryDoubleGetValue(place, key);
+            }
         }
 
         /// <summary>
@@ -3747,7 +4834,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         public static void DataTableDoubleClear0(bool place, string key)
         {
-            DictionaryDoubleClear0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear0(place, key);
+                    break;
+                default:
+                    DictionaryDoubleClear0(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3758,7 +4853,15 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         public static void DataTableDoubleClear1(bool place, string key, int lp_1)
         {
-            DictionaryDoubleClear1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear1(place, key, lp_1);
+                    break;
+                default:
+                    DictionaryDoubleClear1(place, key, lp_1);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3770,7 +4873,15 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         public static void DataTableDoubleClear2(bool place, string key, int lp_1, int lp_2)
         {
-            DictionaryDoubleClear2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear2(place, key, lp_1, lp_2);
+                    break;
+                default:
+                    DictionaryDoubleClear2(place, key, lp_1, lp_2);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3783,7 +4894,15 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         public static void DataTableDoubleClear3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            DictionaryDoubleClear3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+                default:
+                    DictionaryDoubleClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3797,7 +4916,15 @@ namespace MetalMaxSystem
         /// <param name="lp_4"></param>
         public static void DataTableDoubleClear4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            DictionaryDoubleClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+                default:
+                    DictionaryDoubleClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3807,7 +4934,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         private static void DataTableDoubleRemove(bool place, string key)//内部函数
         {
-            DictionaryDoubleRemove(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableRemove(place, key);
+                    break;
+                default:
+                    DictionaryDoubleRemove(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3818,7 +4953,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableDoubleSave0(bool place, string key, double val)
         {
-            DictionaryDoubleSave0(place, key, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave0(place, key, val);
+                    break;
+                default:
+                    DictionaryDoubleSave0(place, key, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3830,7 +4973,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableDoubleSave1(bool place, string key, int lp_1, double val)
         {
-            DictionaryDoubleSave1(place, key, lp_1, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave1(place, key, lp_1, val);
+                    break;
+                default:
+                    DictionaryDoubleSave1(place, key, lp_1, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3843,7 +4994,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableDoubleSave2(bool place, string key, int lp_1, int lp_2, double val)
         {
-            DictionaryDoubleSave2(place, key, lp_1, lp_2, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave2(place, key, lp_1, lp_2, val);
+                    break;
+                default:
+                    DictionaryDoubleSave2(place, key, lp_1, lp_2, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3857,7 +5016,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableDoubleSave3(bool place, string key, int lp_1, int lp_2, int lp_3, double val)
         {
-            DictionaryDoubleSave3(place, key, lp_1, lp_2, lp_3, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+                default:
+                    DictionaryDoubleSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3872,7 +5039,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableDoubleSave4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4, double val)
         {
-            DictionaryDoubleSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+                default:
+                    DictionaryDoubleSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -3883,7 +5058,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static double? DataTableDoubleLoad0(bool place, string key)
         {
-            return DictionaryDoubleLoad0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (double?)HashTableLoad0(place, key);
+                default:
+                    return DictionaryDoubleLoad0(place, key);
+            }
         }
 
         /// <summary>
@@ -3895,7 +5076,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static double? DataTableDoubleLoad1(bool place, string key, int lp_1)
         {
-            return DictionaryDoubleLoad1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (double?)HashTableLoad1(place, key, lp_1);
+                default:
+                    return DictionaryDoubleLoad1(place, key, lp_1);
+            }
         }
 
         /// <summary>
@@ -3908,7 +5095,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static double? DataTableDoubleLoad2(bool place, string key, int lp_1, int lp_2)
         {
-            return DictionaryDoubleLoad2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (double?)HashTableLoad2(place, key, lp_1, lp_2);
+                default:
+                    return DictionaryDoubleLoad2(place, key, lp_1, lp_2);
+            }
         }
 
         /// <summary>
@@ -3922,7 +5115,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static double? DataTableDoubleLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            return DictionaryDoubleLoad3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (double?)HashTableLoad3(place, key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryDoubleLoad3(place, key, lp_1, lp_2, lp_3);
+            }
         }
 
         /// <summary>
@@ -3937,7 +5136,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static double? DataTableDoubleLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            return DictionaryDoubleLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (double?)HashTableLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryDoubleLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            }
         }
 
         #endregion
@@ -3954,12 +5159,10 @@ namespace MetalMaxSystem
         {
             switch (DataTableType)
             {
-                case "Dictionary":
-                    return DictionaryBoolKeyExists(place, key);
                 case "HashTable":
                     return HashTableKeyExists(place, key);
                 default:
-                    return HashTableKeyExists(place, key);
+                    return DictionaryBoolKeyExists(place, key);
             }
         }
 
@@ -3971,7 +5174,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableBoolValueExists(bool place, bool value)
         {
-            return DictionaryBoolValueExists(place, value);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableValueExists(place, value);
+                default:
+                    return DictionaryBoolValueExists(place, value);
+            }
         }
 
         /// <summary>
@@ -3982,7 +5191,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableBoolGetValue(bool place, string key)
         {
-            return DictionaryBoolGetValue(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (bool)HashTableGetValue(place, key);
+                default:
+                    return DictionaryBoolGetValue(place, key);
+            }
         }
 
         /// <summary>
@@ -3992,7 +5207,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         public static void DataTableBoolClear0(bool place, string key)
         {
-            DictionaryBoolClear0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear0(place, key);
+                    break;
+                default:
+                    DictionaryBoolClear0(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4003,7 +5226,15 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         public static void DataTableBoolClear1(bool place, string key, int lp_1)
         {
-            DictionaryBoolClear1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear1(place, key, lp_1);
+                    break;
+                default:
+                    DictionaryBoolClear1(place, key, lp_1);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4015,7 +5246,15 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         public static void DataTableBoolClear2(bool place, string key, int lp_1, int lp_2)
         {
-            DictionaryBoolClear2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear2(place, key, lp_1, lp_2);
+                    break;
+                default:
+                    DictionaryBoolClear2(place, key, lp_1, lp_2);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4028,7 +5267,15 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         public static void DataTableBoolClear3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            DictionaryBoolClear3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+                default:
+                    DictionaryBoolClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4042,7 +5289,15 @@ namespace MetalMaxSystem
         /// <param name="lp_4"></param>
         public static void DataTableBoolClear4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            DictionaryBoolClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+                default:
+                    DictionaryBoolClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4052,7 +5307,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         private static void DataTableBoolRemove(bool place, string key)//内部函数
         {
-            DictionaryBoolRemove(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableRemove(place, key);
+                    break;
+                default:
+                    DictionaryBoolRemove(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4063,7 +5326,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableBoolSave0(bool place, string key, bool val)
         {
-            DictionaryBoolSave0(place, key, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave0(place, key, val);
+                    break;
+                default:
+                    DictionaryBoolSave0(place, key, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4075,7 +5346,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableBoolSave1(bool place, string key, int lp_1, bool val)
         {
-            DictionaryBoolSave1(place, key, lp_1, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave1(place, key, lp_1, val);
+                    break;
+                default:
+                    DictionaryBoolSave1(place, key, lp_1, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4088,7 +5367,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableBoolSave2(bool place, string key, int lp_1, int lp_2, bool val)
         {
-            DictionaryBoolSave2(place, key, lp_1, lp_2, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave2(place, key, lp_1, lp_2, val);
+                    break;
+                default:
+                    DictionaryBoolSave2(place, key, lp_1, lp_2, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4102,7 +5389,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableBoolSave3(bool place, string key, int lp_1, int lp_2, int lp_3, bool val)
         {
-            DictionaryBoolSave3(place, key, lp_1, lp_2, lp_3, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+                default:
+                    DictionaryBoolSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4117,7 +5412,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableBoolSave4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4, bool val)
         {
-            DictionaryBoolSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+                default:
+                    DictionaryBoolSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4130,12 +5433,10 @@ namespace MetalMaxSystem
         {
             switch (DataTableType)
             {
-                case "Dictionary":
-                    return DictionaryBoolLoad0(place, key);
                 case "HashTable":
                     return (bool?)HashTableLoad0(place, key);
                 default:
-                    return (bool?)HashTableLoad0(place, key);
+                    return DictionaryBoolLoad0(place, key);
             }
         }
 
@@ -4148,7 +5449,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool? DataTableBoolLoad1(bool place, string key, int lp_1)
         {
-            return DictionaryBoolLoad1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (bool?)HashTableLoad1(place, key, lp_1);
+                default:
+                    return DictionaryBoolLoad1(place, key, lp_1);
+            }
         }
 
         /// <summary>
@@ -4161,7 +5468,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool? DataTableBoolLoad2(bool place, string key, int lp_1, int lp_2)
         {
-            return DictionaryBoolLoad2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (bool?)HashTableLoad2(place, key, lp_1, lp_2);
+                default:
+                    return DictionaryBoolLoad2(place, key, lp_1, lp_2);
+            }
         }
 
         /// <summary>
@@ -4175,7 +5488,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool? DataTableBoolLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            return DictionaryBoolLoad3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (bool?)HashTableLoad3(place, key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryBoolLoad3(place, key, lp_1, lp_2, lp_3);
+            }
         }
 
         /// <summary>
@@ -4190,7 +5509,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool? DataTableBoolLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            return DictionaryBoolLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (bool?)HashTableLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryBoolLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            }
         }
 
         #endregion
@@ -4205,7 +5530,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableByteKeyExists(bool place, string key)
         {
-            return DictionaryByteKeyExists(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableKeyExists(place, key);
+                default:
+                    return DictionaryByteKeyExists(place, key);
+            }
         }
 
         /// <summary>
@@ -4216,7 +5547,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableByteValueExists(bool place, byte value)
         {
-            return DictionaryByteValueExists(place, value);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return HashTableValueExists(place, value);
+                default:
+                    return DictionaryByteValueExists(place, value);
+            }
         }
 
         /// <summary>
@@ -4227,7 +5564,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static byte DataTableByteGetValue(bool place, string key)
         {
-            return DictionaryByteGetValue(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (byte)HashTableGetValue(place, key);
+                default:
+                    return DictionaryByteGetValue(place, key);
+            }
         }
 
         /// <summary>
@@ -4237,7 +5580,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         public static void DataTableByteClear0(bool place, string key)
         {
-            DictionaryByteClear0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear0(place, key);
+                    break;
+                default:
+                    DictionaryByteClear0(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4248,7 +5599,15 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         public static void DataTableByteClear1(bool place, string key, int lp_1)
         {
-            DictionaryByteClear1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear1(place, key, lp_1);
+                    break;
+                default:
+                    DictionaryByteClear1(place, key, lp_1);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4260,7 +5619,15 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         public static void DataTableByteClear2(bool place, string key, int lp_1, int lp_2)
         {
-            DictionaryByteClear2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear2(place, key, lp_1, lp_2);
+                    break;
+                default:
+                    DictionaryByteClear2(place, key, lp_1, lp_2);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4273,7 +5640,15 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         public static void DataTableByteClear3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            DictionaryByteClear3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+                default:
+                    DictionaryByteClear3(place, key, lp_1, lp_2, lp_3);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4287,7 +5662,15 @@ namespace MetalMaxSystem
         /// <param name="lp_4"></param>
         public static void DataTableByteClear4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            DictionaryByteClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+                default:
+                    DictionaryByteClear4(place, key, lp_1, lp_2, lp_3, lp_4);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4297,7 +5680,15 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         private static void DataTableByteRemove(bool place, string key)//内部函数
         {
-            DictionaryByteRemove(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableRemove(place, key);
+                    break;
+                default:
+                    DictionaryByteRemove(place, key);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4308,7 +5699,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableByteSave0(bool place, string key, byte val)
         {
-            DictionaryByteSave0(place, key, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave0(place, key, val);
+                    break;
+                default:
+                    DictionaryByteSave0(place, key, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4320,7 +5719,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableByteSave1(bool place, string key, int lp_1, byte val)
         {
-            DictionaryByteSave1(place, key, lp_1, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave1(place, key, lp_1, val);
+                    break;
+                default:
+                    DictionaryByteSave1(place, key, lp_1, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4333,7 +5740,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableByteSave2(bool place, string key, int lp_1, int lp_2, byte val)
         {
-            DictionaryByteSave2(place, key, lp_1, lp_2, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave2(place, key, lp_1, lp_2, val);
+                    break;
+                default:
+                    DictionaryByteSave2(place, key, lp_1, lp_2, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4347,7 +5762,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableByteSave3(bool place, string key, int lp_1, int lp_2, int lp_3, byte val)
         {
-            DictionaryByteSave3(place, key, lp_1, lp_2, lp_3, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+                default:
+                    DictionaryByteSave3(place, key, lp_1, lp_2, lp_3, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4362,7 +5785,15 @@ namespace MetalMaxSystem
         /// <param name="val"></param>
         public static void DataTableByteSave4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4, byte val)
         {
-            DictionaryByteSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    HashTableSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+                default:
+                    DictionaryByteSave4(place, key, lp_1, lp_2, lp_3, lp_4, val);
+                    break;
+            }
         }
 
         /// <summary>
@@ -4373,7 +5804,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static byte? DataTableByteLoad0(bool place, string key)
         {
-            return DictionaryByteLoad0(place, key);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (byte?)HashTableLoad0(place, key);
+                default:
+                    return DictionaryByteLoad0(place, key);
+            }
         }
 
         /// <summary>
@@ -4385,7 +5822,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static byte? DataTableByteLoad1(bool place, string key, int lp_1)
         {
-            return DictionaryByteLoad1(place, key, lp_1);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (byte?)HashTableLoad1(place, key, lp_1);
+                default:
+                    return DictionaryByteLoad1(place, key, lp_1);
+            }
         }
 
         /// <summary>
@@ -4398,7 +5841,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static byte? DataTableByteLoad2(bool place, string key, int lp_1, int lp_2)
         {
-            return DictionaryByteLoad2(place, key, lp_1, lp_2);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (byte?)HashTableLoad2(place, key, lp_1, lp_2);
+                default:
+                    return DictionaryByteLoad2(place, key, lp_1, lp_2);
+            }
         }
 
         /// <summary>
@@ -4412,7 +5861,13 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static byte? DataTableByteLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
-            return DictionaryByteLoad3(place, key, lp_1, lp_2, lp_3);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (byte?)HashTableLoad3(place, key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryByteLoad3(place, key, lp_1, lp_2, lp_3);
+            }
         }
 
         /// <summary>
@@ -4427,10 +5882,17 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static byte? DataTableByteLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
-            return DictionaryByteLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (byte?)HashTableLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryByteLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
+            }
         }
 
         #endregion
+
 
         #endregion
 
@@ -6232,7 +7694,7 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DictionaryBoolKeyExists(bool place, string key)
         {
-            if (place) 
+            if (place)
             {
                 return systemDictionaryBool.ContainsKey(key);
             }
@@ -7953,7 +9415,9 @@ namespace MetalMaxSystem
 
         #endregion
 
-        #region Functions 键盘、鼠标按键事件函数引用（委托函数），注册注销查询更换归并执行等管理功能
+        #region Functions 键鼠事件函数引用管理
+
+        //可进行注册注销查询更换归并执行委托
 
         //------------------------------------↓KeyDownEventStart↓-----------------------------------------
 
@@ -8241,7 +9705,9 @@ namespace MetalMaxSystem
 
         #endregion
 
-        #region Functions 主副循环入口事件函数引用（委托函数），注册注销查询更换归并执行等管理功能
+        #region Functions 主副循环入口事件函数管理
+
+        //可进行注册注销查询更换归并执行委托
 
         //------------------------------------↓EntryFuncStart↓-----------------------------------------
 
@@ -8385,231 +9851,9 @@ namespace MetalMaxSystem
 
         #endregion
 
-        #region Functions 循环功能（周期触发器、运行时钟）
+        #region Functions 互动管理
 
-        /// <summary>
-        /// 【MM_函数库】开启主循环（默认0.05现实时间秒，如需修改请在开启前用属性方法MainUpdatePeriod、MainUpdateDuetime来调整计时器Update阶段的间隔、前摇，若已经开启想要修改，可使用MMCore.MainUpdateTimer.Change）
-        /// </summary>
-        /// <param name="isBackground"></param>
-        public static void MainUpdateStart(bool isBackground)
-        {
-            if (mainUpdateThread == null)
-            {
-                mainUpdateThread = new Thread(MainUpdateFunc) { IsBackground = isBackground };
-                mainUpdateThread.Start();
-            }
-        }
-
-        /// <summary>
-        /// 【MM_函数库】开启副循环（默认1.0现实时间秒，如需修改请在开启前用属性方法SubUpdatePeriod、SubUpdateDuetime来调整计时器Update阶段的间隔、前摇，若已经开启想要修改，可使用MMCore.SubUpdateTimer.Change）
-        /// </summary>
-        /// <param name="isBackground"></param>
-        public static void SubUpdateStart(bool isBackground)
-        {
-            if (mainUpdateThread == null)
-            {
-                subUpdateThread = new Thread(SubUpdateFunc) { IsBackground = isBackground };
-                subUpdateThread.Start();
-            }
-        }
-
-        /// <summary>
-        /// 【MM_函数库】主循环方法，若Update阶段属性未定义则默认每轮前摇0ms、间隔50ms
-        /// </summary>
-        private static void MainUpdateFunc()//内部使用
-        {
-            if (MainUpdateDuetime < 0) { MainUpdateDuetime = 0; }
-            if (MainUpdatePeriod <= 0) { MainUpdatePeriod = 50; }
-            MainUpdateAction(MainUpdateDuetime, MainUpdatePeriod);
-        }
-
-        /// <summary>
-        /// 【MM_函数库】副循环方法，若Update阶段属性未定义则默认每轮前摇0ms、间隔50ms
-        /// </summary>
-        private static void SubUpdateFunc()//内部使用
-        {
-            if (SubUpdateDuetime < 0) { SubUpdateDuetime = 0; }
-            if (SubUpdatePeriod <= 0) { SubUpdatePeriod = 1000; }
-            SubUpdateAction(SubUpdateDuetime, SubUpdatePeriod);
-        }
-
-        /// <summary>
-        /// 【MM_函数库】主循环唤醒阶段运行一次，允许主动调用
-        /// </summary>
-        public static void MainAwake()
-        {
-            EntryGlobalEvent(Entry.MainAwake);
-        }
-
-        /// <summary>
-        /// 【MM_函数库】主循环开始阶段运行一次，允许主动调用
-        /// </summary>
-        public static void MainStart()
-        {
-            EntryGlobalEvent(Entry.MainStart);
-        }
-
-        /// <summary>
-        /// 【MM_函数库】主循环每轮更新运行，主动调用时跟Unity引擎一样只运行一次
-        /// </summary>
-        public static void MainUpdate()
-        {
-            EntryGlobalEvent(Entry.MainUpdate);
-        }
-
-        /// <summary>
-        /// 【MM_函数库】主循环结束阶段运行一次，允许主动调用
-        /// </summary>
-        public static void MainEnd()
-        {
-            EntryGlobalEvent(Entry.MainEnd);
-        }
-
-        /// <summary>
-        /// 【MM_函数库】主循环摧毁阶段运行一次，允许主动调用
-        /// </summary>
-        public static void MainDestroy()
-        {
-            EntryGlobalEvent(Entry.MainDestroy);
-        }
-
-        /// <summary>
-        /// 【MM_函数库】副循环唤醒阶段运行一次，允许主动调用
-        /// </summary>
-        public static void SubAwake()
-        {
-            EntryGlobalEvent(Entry.SubAwake);
-        }
-
-        /// <summary>
-        /// 【MM_函数库】副循环开始阶段运行一次，允许主动调用
-        /// </summary>
-        public static void SubStart()
-        {
-            EntryGlobalEvent(Entry.SubStart);
-        }
-
-        /// <summary>
-        /// 【MM_函数库】副循环每轮更新运行，主动调用时跟Unity引擎一样只运行一次
-        /// </summary>
-        public static void SubUpdate()
-        {
-            EntryGlobalEvent(Entry.SubUpdate);
-        }
-
-        /// <summary>
-        /// 【MM_函数库】副循环结束阶段运行一次，允许主动调用
-        /// </summary>
-        public static void SubEnd()
-        {
-            EntryGlobalEvent(Entry.SubEnd);
-        }
-
-        /// <summary>
-        /// 【MM_函数库】副循环摧毁阶段运行一次，允许主动调用
-        /// </summary>
-        public static void SubDestroy()
-        {
-            EntryGlobalEvent(Entry.SubDestroy);
-        }
-
-        /// <summary>
-        /// 【MM_函数库】主循环主体事件发布动作（重复执行则什么也不做），若Update阶段属性未定义则默认每轮前摇0ms、间隔50ms
-        /// </summary>
-        private static void MainUpdateAction()//内部使用
-        {
-            if (AutoResetEvent_MainUpdate == null)
-            {
-                _autoResetEvent_MainUpdate = new AutoResetEvent(false);
-                MainAwake();
-                MainStart();
-                if (MainUpdateDuetime < 0) { MainUpdateDuetime = 0; }
-                if (MainUpdatePeriod <= 0) { MainUpdatePeriod = 50; }
-                //Timer自带线程，第一参数填入要间隔执行的方法（参数须符合委托类型），第二参数填状态对象，如自动复位事件对象来控制其他线程启停
-                _mainUpdateTimer = new Timer(MainUpdateChecker.CheckStatus, AutoResetEvent_MainUpdate, MainUpdateDuetime, MainUpdatePeriod);
-                AutoResetEvent_MainUpdate.WaitOne();
-                MainEnd();
-                AutoResetEvent_MainUpdate.WaitOne();
-                MainUpdateTimer.Dispose();
-                MainDestroy();
-            }
-
-        }
-
-        /// <summary>
-        /// 【MM_函数库】主循环主体事件发布动作（重复执行则什么也不做），可自定义Update阶段属性Duetime（前摇）、Period（间隔）
-        /// </summary>
-        /// <param name="duetime">Updata阶段执行开始前等待（毫秒），仅生效一次</param>
-        /// <param name="period">Updata阶段执行间隔（毫秒）</param>
-        private static void MainUpdateAction(int duetime, int period)//内部使用
-        {
-            if (AutoResetEvent_MainUpdate == null)
-            {
-                _autoResetEvent_MainUpdate = new AutoResetEvent(false);
-                MainAwake();
-                MainStart();
-                if (duetime < 0) { MainUpdateDuetime = 0; }
-                if (period <= 0) { MainUpdatePeriod = 50; }
-                //Timer自带线程，第一参数填入要间隔执行的方法（参数须符合委托类型），第二参数填状态对象，如自动复位事件对象来控制其他线程启停
-                _mainUpdateTimer = new Timer(MainUpdateChecker.CheckStatus, AutoResetEvent_MainUpdate, MainUpdateDuetime, MainUpdatePeriod);
-                AutoResetEvent_MainUpdate.WaitOne();
-                MainEnd();
-                AutoResetEvent_MainUpdate.WaitOne();
-                MainUpdateTimer.Dispose();
-                MainDestroy();
-            }
-
-        }
-
-        /// <summary>
-        /// 【MM_函数库】副循环主体事件发布动作（重复执行则什么也不做），若Update阶段属性未定义则默认每轮前摇0ms、间隔1000ms
-        /// </summary>
-        private static void SubUpdateAction()//内部使用
-        {
-            if (AutoResetEvent_SubUpdate == null)
-            {
-                _autoResetEvent_SubUpdate = new AutoResetEvent(false);
-                SubAwake();
-                SubStart();
-                if (SubUpdateDuetime < 0) { SubUpdateDuetime = 0; }
-                if (SubUpdatePeriod <= 0) { SubUpdatePeriod = 1000; }
-                _subUpdateTimer = new Timer(SubUpdateChecker.CheckStatus, AutoResetEvent_SubUpdate, SubUpdateDuetime, SubUpdatePeriod);//已经运行的话，后续使用SubUpdateTimer.Change改变间隔
-                AutoResetEvent_SubUpdate.WaitOne();
-                SubEnd();
-                AutoResetEvent_SubUpdate.WaitOne();
-                SubUpdateTimer.Dispose();
-                SubDestroy();
-            }
-
-        }
-
-        /// <summary>
-        /// 【MM_函数库】副循环主体事件发布动作（重复执行则什么也不做），可自定义Update阶段属性Duetime（前摇）、Period（间隔）
-        /// </summary>
-        /// <param name="duetime">Updata阶段执行开始前等待（毫秒），仅生效一次</param>
-        /// <param name="period">Updata阶段执行间隔（毫秒）</param>
-        private static void SubUpdateAction(int duetime, int period)//内部使用
-        {
-            if (AutoResetEvent_SubUpdate == null)
-            {
-                _autoResetEvent_SubUpdate = new AutoResetEvent(false);
-                SubAwake();
-                SubStart();
-                if (duetime < 0) { SubUpdateDuetime = 0; }
-                if (period <= 0) { SubUpdatePeriod = 1000; }
-                _subUpdateTimer = new Timer(SubUpdateChecker.CheckStatus, AutoResetEvent_SubUpdate, SubUpdateDuetime, SubUpdatePeriod);//已经运行的话，后续使用SubUpdateTimer.Change改变间隔
-                AutoResetEvent_SubUpdate.WaitOne();
-                SubEnd();
-                AutoResetEvent_SubUpdate.WaitOne();
-                SubUpdateTimer.Dispose();
-                SubDestroy();
-            }
-
-        }
-
-        #endregion
-
-        #region Functions 互动管理功能（利用数据表实现不同类型的数据互动及信息管理）
+        //用数据表实现不同类型数据互动、信息管理
 
         #region 存储区状态队列管理
 
@@ -8619,12 +9863,9 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         public static void ThreadWait(string key)
         {
-            while (DataTableBoolLoad0(true, "MMCore_ThreadWait_" + key) != null)
+            while (DataTableBoolLoad0(true, "MMCore_ThreadWait_" + key) == true)
             {
-                if (DataTableBoolLoad0(true, "MMCore_ThreadWait_" + key) == true)
-                {
-                    Thread.Sleep(50); //将调用该函数的当前线程挂起
-                }
+                Thread.Sleep(50); //将调用该函数的当前线程挂起
             }
         }
 
@@ -8635,12 +9876,9 @@ namespace MetalMaxSystem
         /// <param name="period"></param>
         public static void ThreadWait(string key, int period)
         {
-            while (DataTableBoolLoad0(true, "MMCore_ThreadWait_" + key) != null)
+            while (DataTableBoolLoad0(true, "MMCore_ThreadWait_" + key) == true)
             {
-                if (DataTableBoolLoad0(true, "MMCore_ThreadWait_" + key) == true)
-                {
-                    Thread.Sleep(period); //将调用该函数的当前线程挂起
-                }
+                Thread.Sleep(period); //将调用该函数的当前线程挂起
             }
         }
 
@@ -8660,12 +9898,9 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         public static void ThreadWait(bool place, string key)
         {
-            while (DataTableBoolLoad0(place, "MMCore_ThreadWait_" + key) != null)
+            while (DataTableBoolLoad0(place, "MMCore_ThreadWait_" + key) == true)
             {
-                if (DataTableBoolLoad0(place, "MMCore_ThreadWait_" + key) == true)
-                {
-                    Thread.Sleep(50); //将调用该函数的当前线程挂起
-                }
+                Thread.Sleep(50); //将调用该函数的当前线程挂起
             }
         }
 
@@ -8676,12 +9911,9 @@ namespace MetalMaxSystem
         /// <param name="period"></param>
         public static void ThreadWait(bool place, string key, int period)
         {
-            while (DataTableBoolLoad0(place, "MMCore_ThreadWait_" + key) != null)
+            while (DataTableBoolLoad0(place, "MMCore_ThreadWait_" + key) == true)
             {
-                if (DataTableBoolLoad0(place, "MMCore_ThreadWait_" + key) == true)
-                {
-                    Thread.Sleep(period); //将调用该函数的当前线程挂起
-                }
+                Thread.Sleep(period); //将调用该函数的当前线程挂起
             }
         }
 
@@ -8697,7 +9929,7 @@ namespace MetalMaxSystem
 
         #endregion
 
-        #region 字典互动管理
+        #region 字典互动
 
         #region 任意类型
 
@@ -15768,7 +17000,7 @@ namespace MetalMaxSystem
 
         #endregion
 
-        #region 哈希表互动管理
+        #region 哈希表互动
 
         //注：值与引用类型转换时没字典（Dictionary）效率，因为会发生拆装箱
 
@@ -22900,14 +24132,16 @@ namespace MetalMaxSystem
 
         #endregion
 
-        #region Functions 键鼠事件动作主体功能（加入按键监听并传参执行）
+        #region Functions 键鼠事件动作主体
+
+        //加入按键监听并传参执行
 
 
         /// <summary>
-        /// 【MM_函数库】创建库内预制的键鼠总控函数动作集合，键鼠专用监听服务将相关事件注册到库内预制函数（KeyDown、KeyUp、MouseMove、MouseDown、MouseUp）从而可以使用库内“按键函数注册注销更换”及其他内制功能
+        /// 【MM_函数库】注册库内预制的键鼠事件，键鼠专用监听服务将相关事件注册到库内预制函数（KeyDown、KeyUp、MouseMove、MouseDown、MouseUp）从而可以使用库内“按键函数注册注销更换”及其他内制功能
         /// </summary>
         /// <param name="cover">true：事件委托=委托函数（执行事件覆盖），false：事件委托+=委托函数（执行事件追加）</param>
-        public static void CreateKeyMouseRecordServiceEvent(bool cover)
+        public static void AddKeyMouseEvent(bool cover)
         {
             if (cover)
             {
@@ -22918,7 +24152,7 @@ namespace MetalMaxSystem
                 KeyMouseRecordService.MouseDownEvent = MouseDown;
                 KeyMouseRecordService.MouseUpEvent = MouseUp;
             }
-            else
+            else if (!KeyMouseRecordService.DefaultEvent)
             {
                 //执行事件追加
                 KeyMouseRecordService.KeyDownEvent += KeyDown;
@@ -22927,18 +24161,34 @@ namespace MetalMaxSystem
                 KeyMouseRecordService.MouseDownEvent += MouseDown;
                 KeyMouseRecordService.MouseUpEvent += MouseUp;
             }
+            KeyMouseRecordService.DefaultEvent = true;
         }
 
         /// <summary>
-        /// 摧毁库内预制的键鼠总控函数动作集合
+        /// 【MM_函数库】注销库内预制的键鼠事件
         /// </summary>
-        public static void DestroyKeyMouseRecordServiceEvent()
+        /// <param name="lp_null">true注销全部，否则仅注销预制事件</param>
+        public static void DelKeyMouseEvent(bool lp_null)
         {
-            KeyMouseRecordService.KeyDownEvent = null;
-            KeyMouseRecordService.KeyUpEvent = null;
-            KeyMouseRecordService.MouseMoveEvent = null;
-            KeyMouseRecordService.MouseDownEvent = null;
-            KeyMouseRecordService.MouseUpEvent = null;
+            if (lp_null)
+            {
+                //全事件清除
+                KeyMouseRecordService.KeyDownEvent = null;
+                KeyMouseRecordService.KeyUpEvent = null;
+                KeyMouseRecordService.MouseMoveEvent = null;
+                KeyMouseRecordService.MouseDownEvent = null;
+                KeyMouseRecordService.MouseUpEvent = null;
+            }
+            else
+            {
+                //仅移除预制事件
+                KeyMouseRecordService.KeyDownEvent -= KeyDown;
+                KeyMouseRecordService.KeyUpEvent -= KeyUp;
+                KeyMouseRecordService.MouseMoveEvent -= MouseMove;
+                KeyMouseRecordService.MouseDownEvent -= MouseDown;
+                KeyMouseRecordService.MouseUpEvent -= MouseUp;
+            }
+            KeyMouseRecordService.DefaultEvent = false;
         }
 
         /// <summary>
@@ -23050,7 +24300,7 @@ namespace MetalMaxSystem
                 Player.MouseVectorX[player] = lp_mouseVector3D.X;
                 Player.MouseVectorY[player] = lp_mouseVector3D.Y;
                 Player.MouseVectorZ[player] = lp_mouseVector3D.Z;
-                Player.MouseVectorZFixed[player] = lp_mouseVector3D.Z - MMCore.MapHeight;
+                Player.MouseVectorZFixed[player] = lp_mouseVector3D.Z - Game.MapHeight;
 
                 Player.MouseUIX[player] = uiX;
                 Player.MouseUIY[player] = uiY;
@@ -23112,7 +24362,7 @@ namespace MetalMaxSystem
                 Player.MouseVectorX[player] = lp_mouseVector3D.X;
                 Player.MouseVectorY[player] = lp_mouseVector3D.Y;
                 Player.MouseVectorZ[player] = lp_mouseVector3D.Z;
-                Player.MouseVectorZFixed[player] = lp_mouseVector3D.Z - MMCore.MapHeight;
+                Player.MouseVectorZFixed[player] = lp_mouseVector3D.Z - Game.MapHeight;
 
                 Player.MouseUIX[player] = uiX;
                 Player.MouseUIY[player] = uiY;
@@ -23338,108 +24588,449 @@ namespace MetalMaxSystem
     }
 
     /// <summary>
-    /// 【MetalMaxSystem】主循环状态监控类（用来读写InvokeCount、TimerState属性），计时器实例创建时本类方法CheckStatus以参数填入被反复执行，主循环Update事件被执行时创建计时器的父线程（mainUpdateThread）将暂停，直到该方法确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
+    /// 【MM_函数库】存储Game相关信息及方法的类
     /// </summary>
-    public static class MainUpdateChecker
+    public static class Game
     {
-        private static int _invokeCount;
-        private static bool _timerState;
+        #region 地图相关字段及其属性
+
+        private static double _mapHeight;
+        private static double[,] _terrainHeight = new double[2560 + 1, 2560 + 1];
+        private static double[,,] _terrainType;
 
         /// <summary>
-        /// 主循环Update事件运行次数
+        /// 【MM_函数库】地图首个纹理图层顶面高度，默认值=8（m），亦称地面高度或地图高度
+        /// </summary>
+        public static double MapHeight { get => _mapHeight; set => _mapHeight = value; }
+
+        /// <summary>
+        /// 【MM_函数库】地面上附加的悬崖、地形物件的高度，二维坐标数组元素[2560+1,2560+1]（设计精度0.1m，按256m计）
+        /// </summary>
+        public static double[,] TerrainHeight { get => _terrainHeight; set => _terrainHeight = value; }
+
+        /// <summary>
+        /// 【MM_函数库】土、矿、水、气等空间内每个点的属性类型和数量（密度），数组元素[2560+1,2560+1,2560+1]，设计精度0.1m，小数点左侧表示土的类型，右侧为数值（密度）
+        /// </summary>
+        public static double[,,] TerrainType { get => _terrainType; set => _terrainType = value; }
+
+        #endregion
+
+        /// <summary>
+        /// 【MM_函数库】载具类型上限
+        /// </summary>
+        public const int c_vehicleTypeMax = 200;
+
+        /// <summary>
+        /// 【MM_函数库】任意玩家编号（玩家编号从0-15共16个，16是上帝由系统执行，某些函数中也作"任意玩家"参数）
+        /// </summary>
+        public const int c_playerAny = 16;
+
+        /// <summary>
+        /// 【MM_函数库】玩家编号上限（限制最大玩家数）
+        /// </summary>
+        public const int c_maxPlayers = 16;
+
+        private static int _uID;
+        /// <summary>
+        /// 【MM_函数库】本地用户玩家的编号
+        /// </summary>
+        public static int UID { get => _uID; set => _uID = value; }
+    }
+
+    /// <summary>
+    /// 【MM_函数库】主循环状态监控类（用来读写InvokeCount、TimerStop属性），计时器实例创建时本类方法CheckStatus以参数填入被反复执行，主循环Update事件被执行时创建计时器的父线程（MainUpdate.Thread）将暂停，直到该方法确认到TimerStop为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
+    /// </summary>
+    public static class MainUpdate
+    {
+        #region 字段及其属性
+
+        private static Thread _thread;
+        /// <summary>
+        /// 【MM_函数库】主循环线程
+        /// </summary>
+        public static Thread Thread { get => _thread; }//不提供外部赋值
+
+        private static Timer _timer;
+        /// <summary>
+        /// 【MM_函数库】主循环Update阶段，用来实现周期循环的计时器
+        /// </summary>
+        public static Timer Timer { get => _timer; }//不提供外部赋值
+
+        private static AutoResetEvent _autoResetEvent;
+        /// <summary>
+        /// 【MM_函数库】主循环自动复位事件对象（用来向主循环线程发送信号），属性动作AutoResetEvent.Set()可让触发器线程终止（效果等同MainUpdate.TimerStop = true）
+        /// </summary>
+        public static AutoResetEvent AutoResetEvent { get => _autoResetEvent; }//不提供外部赋值
+
+        private static int _invokeCount;
+        /// <summary>
+        /// 【MM_函数库】主循环Update事件运行次数
         /// </summary>
         public static int InvokeCount { get => _invokeCount; set => _invokeCount = value; }
+
+        private static bool _timerState;
         /// <summary>
-        /// 主循环状态，手动设置为false则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
+        /// 【MM_函数库】主循环状态，手动设置为false则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
         /// </summary>
-        public static bool TimerState { get => _timerState; set => _timerState = value; }
+        public static bool TimerStop { get => _timerState; set => _timerState = value; }
+
+        private static int _Duetime, _Period;
+        /// <summary>
+        /// 【MM_函数库】主循环Update阶段前摇时间，设置后每次循环前都会等待
+        /// </summary>
+        public static int Duetime { get => _Duetime; set => _Duetime = value; }
+        /// <summary>
+        /// 【MM_函数库】主循环Update阶段间隔运行时间
+        /// </summary>
+        public static int Period { get => _Period; set => _Period = value; }
+
+        #endregion
+
+        #region 静态构造函数
 
         /// <summary>
-        /// 主循环状态监控类（用来读写InvokeCount、TimerState属性），计时器实例创建时本类方法CheckStatus以参数填入被反复执行，主循环Update事件被执行时创建计时器的父线程（mainUpdateThread）将暂停，直到该方法确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
+        /// 【MM_函数库】主循环状态监控类（用来读写InvokeCount、TimerStop属性），计时器实例创建时本类方法CheckStatus以参数填入被反复执行，主循环Update事件被执行时创建计时器的父线程（MainUpdate.Thread）将暂停，直到该方法确认到TimerStop为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
         /// </summary>
-        static MainUpdateChecker()
+        static MainUpdate()
         {
             InvokeCount = 0;
-            TimerState = false;
+            TimerStop = false;
         }
 
+        #endregion
+
+        #region 函数
+
         /// <summary>
-        /// 主循环的计时器实例创建时以参数填入、被反复执行的函数，Update事件被执行时创建计时器的父线程将暂停，直到本函数确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）。一般不需要用户操作，TimerState为true时手动调用会额外增加Update次数
+        /// 【MM_函数库】主循环的计时器实例创建时以参数填入、被反复执行的函数，Update事件被执行时创建计时器的父线程将暂停，直到本函数确认到TimerStop为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）。一般不需要用户操作，TimerStop为true时手动调用会额外增加Update次数
         /// </summary>
         /// <param name="state"></param>
         public static void CheckStatus(object state)
         {
-            if (TimerState)
+            if (TimerStop)
             {
                 ((AutoResetEvent)state).Set();
             }
             else
             {
                 InvokeCount++;
-                MMCore.MainUpdate();
+                Update();
             }
         }
+
+        /// <summary>
+        /// 【MM_函数库】开启主循环（默认0.05现实时间秒，如需修改请在开启前用属性方法MainUpdate.Period、MainUpdate.Duetime来调整计时器Update阶段的间隔、前摇，若已经开启想要修改，可使用MainUpdate.Timer.Change）
+        /// </summary>
+        /// <param name="isBackground"></param>
+        public static void Start(bool isBackground)
+        {
+            if (_thread == null)
+            {
+                _thread = new Thread(Func) { IsBackground = isBackground };
+                _thread.Start();
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】主循环方法，若Update阶段属性未定义则默认每轮前摇0ms、间隔50ms
+        /// </summary>
+        private static void Func()//内部使用
+        {
+            if (Duetime < 0) { Duetime = 0; }
+            if (Period <= 0) { Period = 50; }
+            Action(Duetime, Period);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】主循环唤醒阶段运行一次，允许主动调用
+        /// </summary>
+        public static void Awake()
+        {
+            MMCore.EntryGlobalEvent(Entry.MainAwake);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】主循环开始阶段运行一次，允许主动调用
+        /// </summary>
+        public static void Start()
+        {
+            MMCore.EntryGlobalEvent(Entry.MainStart);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】主循环每轮更新运行，主动调用时跟Unity引擎一样只运行一次
+        /// </summary>
+        public static void Update()
+        {
+            MMCore.EntryGlobalEvent(Entry.MainUpdate);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】主循环结束阶段运行一次，允许主动调用
+        /// </summary>
+        public static void End()
+        {
+            MMCore.EntryGlobalEvent(Entry.MainEnd);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】主循环摧毁阶段运行一次，允许主动调用
+        /// </summary>
+        public static void Destroy()
+        {
+            MMCore.EntryGlobalEvent(Entry.MainDestroy);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】主循环主体事件发布动作（重复执行则什么也不做），若Update阶段属性未定义则默认每轮前摇0ms、间隔50ms
+        /// </summary>
+        private static void Action()//内部使用
+        {
+            if (AutoResetEvent == null)
+            {
+                _autoResetEvent = new AutoResetEvent(false);
+                Awake();
+                Start();
+                if (Duetime < 0) { Duetime = 0; }
+                if (Period <= 0) { Period = 50; }
+                //Timer自带线程，第一参数填入要间隔执行的方法（参数须符合委托类型），第二参数填状态对象，如自动复位事件对象来控制其他线程启停
+                _timer = new Timer(CheckStatus, AutoResetEvent, Duetime, Period);
+                AutoResetEvent.WaitOne();
+                End();
+                AutoResetEvent.WaitOne();
+                Timer.Dispose();
+                Destroy();
+            }
+
+        }
+
+        /// <summary>
+        /// 【MM_函数库】主循环主体事件发布动作（重复执行则什么也不做），可自定义Update阶段属性Duetime（前摇）、Period（间隔）
+        /// </summary>
+        /// <param name="duetime">Updata阶段执行开始前等待（毫秒），仅生效一次</param>
+        /// <param name="period">Updata阶段执行间隔（毫秒）</param>
+        private static void Action(int duetime, int period)//内部使用
+        {
+            if (AutoResetEvent == null)
+            {
+                _autoResetEvent = new AutoResetEvent(false);
+                Awake();
+                Start();
+                if (duetime < 0) { Duetime = 0; }
+                if (period <= 0) { Period = 50; }
+                //Timer自带线程，第一参数填入要间隔执行的方法（参数须符合委托类型），第二参数填状态对象，如自动复位事件对象来控制其他线程启停
+                _timer = new Timer(CheckStatus, AutoResetEvent, Duetime, Period);
+                AutoResetEvent.WaitOne();
+                End();
+                AutoResetEvent.WaitOne();
+                Timer.Dispose();
+                Destroy();
+            }
+
+        }
+
+        #endregion
 
     }
 
     /// <summary>
-    /// 【MetalMaxSystem】副循环状态监控类（用来读写InvokeCount、TimerState属性），计时器实例创建时本类方法CheckStatus以参数填入被反复执行，副循环Update事件被执行时创建计时器的父线程（subUpdateThread）将暂停，直到该方法确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
+    /// 【MM_函数库】副循环状态监控类（用来读写InvokeCount、TimerStop属性），计时器实例创建时本类方法CheckStatus以参数填入被反复执行，副循环Update事件被执行时创建计时器的父线程（SubUpdate.Thread）将暂停，直到该方法确认到TimerStop为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
     /// </summary>
-    public static class SubUpdateChecker
+    public static class SubUpdate
     {
-        //静态类不允许声明实例成员，因为无法判断每个实例的内存地址
+        #region 字段及其属性
+
+        private static Thread _thread;
+        /// <summary>
+        /// 【MM_函数库】副循环线程
+        /// </summary>
+        public static Thread Thread { get => _thread; }//不提供外部赋值
+
+        private static Timer _timer;
+        /// <summary>
+        /// 【MM_函数库】副循环Update阶段，用来实现周期循环的计时器
+        /// </summary>
+        public static Timer Timer { get => _timer; }//不提供外部赋值
+
+        private static AutoResetEvent _autoResetEvent;
+        /// <summary>
+        /// 【MM_函数库】副循环自动复位事件对象（用来向副循环线程发送信号），属性动作AutoResetEvent.Set()可让触发器线程终止（效果等同SubUpdate.TimerStop = true）
+        /// </summary>
+        public static AutoResetEvent AutoResetEvent { get => _autoResetEvent; }//不提供外部赋值
 
         private static int _invokeCount;
-        private static bool _timerState;
-
         /// <summary>
         /// 【MM_函数库】副循环Update事件运行次数
         /// </summary>
         public static int InvokeCount { get => _invokeCount; set => _invokeCount = value; }
+
+        private static bool _timerState;
         /// <summary>
         /// 【MM_函数库】副循环状态，手动设置为false则计时器工作时将收到信号退出循环（不执行Update事件），计时器所在父线程将运行End和Destory事件
         /// </summary>
-        public static bool TimerState { get => _timerState; set => _timerState = value; }
+        public static bool TimerStop { get => _timerState; set => _timerState = value; }
 
-        //一个类只能有一个静态构造函数，不能有访问修饰符（因为不是给用户调用的，且是由.net 框架在合适的时机调用）
-        //静态构造函数也不能带任何参数（主要因为框架不可能知道我们需要在函数中添加什么参数，所以干脆规定不能使用参数）
-        //静态构造函数是特殊的静态方法，同样不允许使用实例成员
-        //无参静态构造函数和无参实例构造函数可并存不冲突，内存地址不同
-        //所有静态数据只会从模板复制一份副本，所以静态构造函数只被执行一次
-        //平时没在类中写构造函数也没继承那么框架会生成一个无参构造函数，当类中定义静态成员没定义静态构造函数时，框架亦会生成一个静态构造函数来让框架自身来调用
+        private static int _Duetime, _Period;
+        /// <summary>
+        /// 【MM_函数库】副循环Update阶段前摇时间，设置后每次循环前都会等待
+        /// </summary>
+        public static int Duetime { get => _Duetime; set => _Duetime = value; }
+        /// <summary>
+        /// 【MM_函数库】副循环Update阶段间隔运行时间
+        /// </summary>
+        public static int Period { get => _Period; set => _Period = value; }
+
+        #endregion
+
+        #region 静态构造函数
 
         /// <summary>
-        /// 【MM_函数库】副循环状态监控类（用来读写InvokeCount、TimerState属性），计时器实例创建时本类方法CheckStatus以参数填入被反复执行，副循环Update事件被执行时创建计时器的父线程（subUpdateThread）将暂停，直到该方法确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）。一般不需要用户操作，TimerState为true时手动调用会额外增加Update次数
+        /// 【MM_函数库】副循环状态监控类（用来读写InvokeCount、TimerStop属性），计时器实例创建时本类方法CheckStatus以参数填入被反复执行，副循环Update事件被执行时创建计时器的父线程（SubUpdate.Thread）将暂停，直到该方法确认到TimerStop为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
         /// </summary>
-        static SubUpdateChecker()
+        static SubUpdate()
         {
             InvokeCount = 0;
-            TimerState = false;
+            TimerStop = false;
         }
 
-        //静态方法只能访问类中的静态成员（即便在实例类，同理因无法判断非静态变量等这些实例成员的活动内存地址，所以不允许使用实例成员）
+        #endregion
+
+        #region 函数
 
         /// <summary>
-        /// 【MM_函数库】副循环的计时器实例创建时以参数填入、被反复执行的函数，Update事件被执行时创建计时器的父线程将暂停，直到本函数确认到TimerState为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）
+        /// 【MM_函数库】副循环的计时器实例创建时以参数填入、被反复执行的函数，Update事件被执行时创建计时器的父线程将暂停，直到本函数确认到TimerStop为真，退出计时器循环，并通知计时器所在父线程恢复运行（将执行End和Destory事件）。一般不需要用户操作，TimerStop为true时手动调用会额外增加Update次数
         /// </summary>
         /// <param name="state"></param>
         public static void CheckStatus(object state)
         {
-            if (TimerState)
+            if (TimerStop)
             {
                 ((AutoResetEvent)state).Set();
             }
             else
             {
                 InvokeCount++;
-                MMCore.SubUpdate();
+                Update();
             }
         }
+
+        /// <summary>
+        /// 【MM_函数库】开启副循环（默认0.05现实时间秒，如需修改请在开启前用属性方法SubUpdate.Period、SubUpdate.Duetime来调整计时器Update阶段的间隔、前摇，若已经开启想要修改，可使用SubUpdate.Timer.Change）
+        /// </summary>
+        /// <param name="isBackground"></param>
+        public static void Start(bool isBackground)
+        {
+            if (_thread == null)
+            {
+                _thread = new Thread(Func) { IsBackground = isBackground };
+                _thread.Start();
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】副循环方法，若Update阶段属性未定义则默认每轮前摇0ms、间隔50ms
+        /// </summary>
+        private static void Func()//内部使用
+        {
+            if (Duetime < 0) { Duetime = 0; }
+            if (Period <= 0) { Period = 50; }
+            Action(Duetime, Period);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】副循环唤醒阶段运行一次，允许主动调用
+        /// </summary>
+        public static void Awake()
+        {
+            MMCore.EntryGlobalEvent(Entry.SubAwake);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】副循环开始阶段运行一次，允许主动调用
+        /// </summary>
+        public static void Start()
+        {
+            MMCore.EntryGlobalEvent(Entry.SubStart);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】副循环每轮更新运行，主动调用时跟Unity引擎一样只运行一次
+        /// </summary>
+        public static void Update()
+        {
+            MMCore.EntryGlobalEvent(Entry.SubUpdate);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】副循环结束阶段运行一次，允许主动调用
+        /// </summary>
+        public static void End()
+        {
+            MMCore.EntryGlobalEvent(Entry.SubEnd);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】副循环摧毁阶段运行一次，允许主动调用
+        /// </summary>
+        public static void Destroy()
+        {
+            MMCore.EntryGlobalEvent(Entry.SubDestroy);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】副循环主体事件发布动作（重复执行则什么也不做），若Update阶段属性未定义则默认每轮前摇0ms、间隔50ms
+        /// </summary>
+        private static void Action()//内部使用
+        {
+            if (AutoResetEvent == null)
+            {
+                _autoResetEvent = new AutoResetEvent(false);
+                Awake();
+                Start();
+                if (Duetime < 0) { Duetime = 0; }
+                if (Period <= 0) { Period = 50; }
+                //Timer自带线程，第一参数填入要间隔执行的方法（参数须符合委托类型），第二参数填状态对象，如自动复位事件对象来控制其他线程启停
+                _timer = new Timer(CheckStatus, AutoResetEvent, Duetime, Period);
+                AutoResetEvent.WaitOne();
+                End();
+                AutoResetEvent.WaitOne();
+                Timer.Dispose();
+                Destroy();
+            }
+
+        }
+
+        /// <summary>
+        /// 【MM_函数库】副循环主体事件发布动作（重复执行则什么也不做），可自定义Update阶段属性Duetime（前摇）、Period（间隔）
+        /// </summary>
+        /// <param name="duetime">Updata阶段执行开始前等待（毫秒），仅生效一次</param>
+        /// <param name="period">Updata阶段执行间隔（毫秒）</param>
+        private static void Action(int duetime, int period)//内部使用
+        {
+            if (AutoResetEvent == null)
+            {
+                _autoResetEvent = new AutoResetEvent(false);
+                Awake();
+                Start();
+                if (duetime < 0) { Duetime = 0; }
+                if (period <= 0) { Period = 50; }
+                //Timer自带线程，第一参数填入要间隔执行的方法（参数须符合委托类型），第二参数填状态对象，如自动复位事件对象来控制其他线程启停
+                _timer = new Timer(CheckStatus, AutoResetEvent, Duetime, Period);
+                AutoResetEvent.WaitOne();
+                End();
+                AutoResetEvent.WaitOne();
+                Timer.Dispose();
+                Destroy();
+            }
+
+        }
+
+        #endregion
 
     }
 
     /// <summary>
-    /// 【MetalMaxSystem】周期触发器，创建实例后请给函数注册事件（语法：TimerUpdate.Awake/Start/Update/End/Destroy +=/-= 任意符合事件参数格式的函数的名称如MyFunc，其声明为void MyFun(object sender, EventArgs e)，sender传递本类实例（其他类型也可），e传递额外事件参数类的信息），TriggerStart方法将自动创建独立触发器线程并启动周期触发器（主体事件发布动作），启动前可用Duetime、Period属性方法设定Update阶段每次循环的前摇和间隔，启动后按序执行Awake/Start/Update/End/Destroy被这5种事件注册过的委托函数，其中事件Update阶段是一个计时器循环，直到用户手动调用TimerState属性方法，该属性为true时会让计时器到期退出Update循环，而计时器所在父线程（即触发器线程）将运行End和Destory事件
+    /// 【MM_函数库】周期触发器，创建实例后请给函数注册事件（语法：TimerUpdate.Awake/Start/Update/End/Destroy +=/-= 任意符合事件参数格式的函数的名称如MyFunc，其声明为void MyFun(object sender, EventArgs e)，sender传递本类实例（其他类型也可），e传递额外事件参数类的信息），TriggerStart方法将自动创建独立触发器线程并启动周期触发器（主体事件发布动作），启动前可用Duetime、Period属性方法设定Update阶段每次循环的前摇和间隔，启动后按序执行Awake/Start/Update/End/Destroy被这5种事件注册过的委托函数，其中事件Update阶段是一个计时器循环，直到用户手动调用TimerState属性方法，该属性为true时会让计时器到期退出Update循环，而计时器所在父线程（即触发器线程）将运行End和Destory事件
     /// </summary>
     public class TimerUpdate
     {
@@ -23811,7 +25402,7 @@ namespace MetalMaxSystem
     }
 
     /// <summary>
-    /// 【MetalMaxSystem】单位类
+    /// 【MM_函数库】单位类
     /// </summary>
     public class Unit
     {
@@ -23906,7 +25497,7 @@ namespace MetalMaxSystem
         #region 构造函数
 
         /// <summary>
-        /// 创建单位实例
+        /// 【MM_函数库】单位类
         /// </summary>
         public Unit()
         {
@@ -24159,57 +25750,57 @@ namespace MetalMaxSystem
     }
 
     /// <summary>
-    /// 【MetalMaxSystem】玩家类，为每个玩家创建它并初始化所需信息，内置字段以外的临时属性可用数据表添加修改
+    /// 【MM_函数库】玩家类，为每个玩家创建它并初始化所需信息，内置字段以外的临时属性可用数据表添加修改
     /// </summary>
     public static class Player
     {
         #region 字段
 
-        private static Unit[] _hero = new Unit[MMCore.c_maxPlayers + 1];
-        private static Unit[,] vehicle = new Unit[MMCore.c_maxPlayers + 1, MMCore.c_vehicleTypeMax];
-        private static Unit[] currentVehicle = new Unit[MMCore.c_maxPlayers + 1];
-        private static Unit[] unitMain = new Unit[MMCore.c_maxPlayers + 1];
-        private static Unit[] unitControl = new Unit[MMCore.c_maxPlayers + 1];
-        private static bool[] _canNotOperation = new bool[MMCore.c_maxPlayers + 1];
+        private static Unit[] _hero = new Unit[Game.c_maxPlayers + 1];
+        private static Unit[,] vehicle = new Unit[Game.c_maxPlayers + 1, Game.c_vehicleTypeMax];
+        private static Unit[] currentVehicle = new Unit[Game.c_maxPlayers + 1];
+        private static Unit[] unitMain = new Unit[Game.c_maxPlayers + 1];
+        private static Unit[] unitControl = new Unit[Game.c_maxPlayers + 1];
+        private static bool[] _canNotOperation = new bool[Game.c_maxPlayers + 1];
 
-        private static bool[,] _keyDown = new bool[MMCore.c_maxPlayers + 1, MMCore.c_keyMax + 1];
-        private static bool[,] _keyDownState = new bool[MMCore.c_maxPlayers + 1, MMCore.c_keyMax + 1];
-        private static bool[] _keyDownLoop = new bool[MMCore.c_maxPlayers + 1];
-        private static int[] _keyDownLoopOneBitNum = new int[MMCore.c_maxPlayers + 1];
+        private static bool[,] _keyDown = new bool[Game.c_maxPlayers + 1, MMCore.c_keyMax + 1];
+        private static bool[,] _keyDownState = new bool[Game.c_maxPlayers + 1, MMCore.c_keyMax + 1];
+        private static bool[] _keyDownLoop = new bool[Game.c_maxPlayers + 1];
+        private static int[] _keyDownLoopOneBitNum = new int[Game.c_maxPlayers + 1];
 
-        private static bool[] _mouseDownLeft = new bool[MMCore.c_maxPlayers + 1];
-        private static bool[] _mouseDownMiddle = new bool[MMCore.c_maxPlayers + 1];
-        private static bool[] _mouseDownRight = new bool[MMCore.c_maxPlayers + 1];
-        private static bool[,] _mouseDown = new bool[MMCore.c_maxPlayers + 1, MMCore.c_mouseMax + 1];
-        private static bool[,] _mouseDownState = new bool[MMCore.c_maxPlayers + 1, MMCore.c_mouseMax + 1];
-        private static bool[] _mouseDownLoop = new bool[MMCore.c_maxPlayers + 1];
-        private static int[] _mouseDownLoopOneBitNum = new int[MMCore.c_maxPlayers + 1];
+        private static bool[] _mouseDownLeft = new bool[Game.c_maxPlayers + 1];
+        private static bool[] _mouseDownMiddle = new bool[Game.c_maxPlayers + 1];
+        private static bool[] _mouseDownRight = new bool[Game.c_maxPlayers + 1];
+        private static bool[,] _mouseDown = new bool[Game.c_maxPlayers + 1, MMCore.c_mouseMax + 1];
+        private static bool[,] _mouseDownState = new bool[Game.c_maxPlayers + 1, MMCore.c_mouseMax + 1];
+        private static bool[] _mouseDownLoop = new bool[Game.c_maxPlayers + 1];
+        private static int[] _mouseDownLoopOneBitNum = new int[Game.c_maxPlayers + 1];
 
-        private static bool[,] _keyDownTwice = new bool[MMCore.c_maxPlayers + 1, MMCore.c_mouseMax + 1];
-        private static bool[,] _mouseDownTwice = new bool[MMCore.c_maxPlayers + 1, MMCore.c_mouseMax + 1];
+        private static bool[,] _keyDoubleClick = new bool[Game.c_maxPlayers + 1, MMCore.c_mouseMax + 1];
+        private static bool[,] _mouseDoubleClick = new bool[Game.c_maxPlayers + 1, MMCore.c_mouseMax + 1];
 
-        private static int[] _mouseUIX = new int[MMCore.c_maxPlayers + 1];
-        private static int[] _mouseUIY = new int[MMCore.c_maxPlayers + 1];
+        private static int[] _mouseUIX = new int[Game.c_maxPlayers + 1];
+        private static int[] _mouseUIY = new int[Game.c_maxPlayers + 1];
 
-        private static double[] _mouseVectorX = new double[MMCore.c_maxPlayers + 1];
-        private static double[] _mouseVectorY = new double[MMCore.c_maxPlayers + 1];
-        private static double[] _mouseVectorZ = new double[MMCore.c_maxPlayers + 1];
-        private static double[] _mouseVectorZFixed = new double[MMCore.c_maxPlayers + 1];
-        private static double[] _mouseToUnitControlAngle = new double[MMCore.c_maxPlayers + 1];
-        private static double[] _mouseToUnitControlRange = new double[MMCore.c_maxPlayers + 1];
-        private static double[] _mouseToUnitControlRange3D = new double[MMCore.c_maxPlayers + 1];
-        private static Vector3D[] _cameraVector3D = new Vector3D[MMCore.c_maxPlayers + 1];
-        private static Vector3D[] _mouseVector3DFixed = new Vector3D[MMCore.c_maxPlayers + 1];
-        private static Vector3D[] _mouseVector3D = new Vector3D[MMCore.c_maxPlayers + 1];
-        private static Vector3D[] _mouseVector3DUnitTerrain = new Vector3D[MMCore.c_maxPlayers + 1];
-        private static Vector3D[] _mouseVector3DTerrain = new Vector3D[MMCore.c_maxPlayers + 1];
-        private static Vector[] _mouseVector = new Vector[MMCore.c_maxPlayers + 1];
+        private static double[] _mouseVectorX = new double[Game.c_maxPlayers + 1];
+        private static double[] _mouseVectorY = new double[Game.c_maxPlayers + 1];
+        private static double[] _mouseVectorZ = new double[Game.c_maxPlayers + 1];
+        private static double[] _mouseVectorZFixed = new double[Game.c_maxPlayers + 1];
+        private static double[] _mouseToUnitControlAngle = new double[Game.c_maxPlayers + 1];
+        private static double[] _mouseToUnitControlRange = new double[Game.c_maxPlayers + 1];
+        private static double[] _mouseToUnitControlRange3D = new double[Game.c_maxPlayers + 1];
+        private static Vector3D[] _cameraVector3D = new Vector3D[Game.c_maxPlayers + 1];
+        private static Vector3D[] _mouseVector3DFixed = new Vector3D[Game.c_maxPlayers + 1];
+        private static Vector3D[] _mouseVector3D = new Vector3D[Game.c_maxPlayers + 1];
+        private static Vector3D[] _mouseVector3DUnitTerrain = new Vector3D[Game.c_maxPlayers + 1];
+        private static Vector3D[] _mouseVector3DTerrain = new Vector3D[Game.c_maxPlayers + 1];
+        private static Vector[] _mouseVector = new Vector[Game.c_maxPlayers + 1];
 
-        private static string[] _type = new string[MMCore.c_maxPlayers + 1];
-        private static string[] _handle = new string[MMCore.c_maxPlayers + 1];//句柄格式："A1-A1-A1-A0000001"
+        private static string[] _type = new string[Game.c_maxPlayers + 1];
+        private static string[] _handle = new string[Game.c_maxPlayers + 1];//句柄格式："A1-A1-A1-A0000001"
 
-        private static bool[] _localUser = new bool[MMCore.c_maxPlayers + 1];
-        private static string[] _status = new string[MMCore.c_maxPlayers + 1];
+        private static bool[] _localUser = new bool[Game.c_maxPlayers + 1];
+        private static string[] _status = new string[Game.c_maxPlayers + 1];
 
         #endregion
 
@@ -24289,11 +25880,11 @@ namespace MetalMaxSystem
         /// <summary>
         /// 按键双击
         /// </summary>
-        public static bool[,] KeyDownTwice { get => _keyDownTwice; set => _keyDownTwice = value; }
+        public static bool[,] KeyDoubleClick { get => _keyDoubleClick; set => _keyDoubleClick = value; }
         /// <summary>
         /// 鼠标双击
         /// </summary>
-        public static bool[,] MouseDownTwice { get => _mouseDownTwice; set => _mouseDownTwice = value; }
+        public static bool[,] MouseDoubleClick { get => _mouseDoubleClick; set => _mouseDoubleClick = value; }
 
         /// <summary>
         /// 鼠标在UI的X坐标
@@ -24383,7 +25974,7 @@ namespace MetalMaxSystem
     #region 监听服务
 
     /// <summary>
-    /// 【MetalMaxSystem】监听服务
+    /// 【MM_函数库】监听服务
     /// </summary>
     public class RecordService
     {
@@ -24424,12 +26015,12 @@ namespace MetalMaxSystem
         //用户可自定义委托函数，在监听到事件发生时去执行
 
         public KeyDownEventFuncref KeyDownEvent;
-        public KeyDownTwiceEventFuncref KeyDownTwiceEvent;
+        public KeyDoubleClickEventFuncref KeyDoubleClickEvent;
         public KeyUpEventFuncref KeyUpEvent;
         public MouseMoveEventFuncref MouseMoveEvent;
         public MouseDownEventFuncref MouseDownEvent;
-        public MouseLDownTwiceEventFuncref MouseLDownTwiceEvent;
-        public MouseRDownTwiceEventFuncref MouseRDownTwiceEvent;
+        public MouseLDoubleClickEventFuncref MouseLDoubleClickEvent;
+        public MouseRDoubleClickEventFuncref MouseRDoubleClickEvent;
         public MouseUpEventFuncref MouseUpEvent;
 
         #endregion
@@ -24437,11 +26028,11 @@ namespace MetalMaxSystem
         #region 钩子开关
 
         /// <summary>
-        /// 创建监听服务（默认用户玩家编号=MMCore.PlayerLocalID，该值必须设立）
+        /// 创建监听服务（默认用户玩家编号=MMCore.LocalID，该值必须设立）
         /// </summary>
         public RecordService()//构造函数
         {
-            PlayerID = MMCore.PlayerLocalID;
+            PlayerID = MMCore.LocalID;
             MyMouseHook = MouseHook.GetMouseHook();
             MyKeyboardHook = KeyboardHook.GetKeyboardHook();
         }
@@ -24620,7 +26211,7 @@ namespace MetalMaxSystem
                     //思考：X,Y如何转化为世界坐标？
 
                     //Z从上述（X,Y）的信息中获得
-                    Z = MMCore.MapHeight + MMCore.TerrainHeight[X, Y] + (double)MMCore.HashTableLoad0(true, "Unit.TerrainHeight");
+                    Z = Game.MapHeight + Game.TerrainHeight[X, Y] + (double)MMCore.HashTableLoad0(true, "Unit.TerrainHeight");
 
                     MouseMoveEvent?.Invoke(PlayerID, new Vector3D(X, Y, Z), X, Y);//当没给函数注册事件时不运行
 
@@ -24653,7 +26244,7 @@ namespace MetalMaxSystem
                     break;
                 case WM_LBUTTONDBLCLK:
                     // 记录鼠标左键双击
-                    MouseLDownTwiceEvent?.Invoke(PlayerID, Player.MouseVector3D[PlayerID], X, Y);
+                    MouseLDoubleClickEvent?.Invoke(PlayerID, Player.MouseVector3D[PlayerID], X, Y);
 
                     break;
                 case WM_RBUTTONDOWN:
@@ -24668,7 +26259,7 @@ namespace MetalMaxSystem
                     break;
                 case WM_RBUTTONDBLCLK:
                     // 记录鼠标右键双击
-                    MouseRDownTwiceEvent?.Invoke(PlayerID, Player.MouseVector3D[PlayerID], X, Y);
+                    MouseRDoubleClickEvent?.Invoke(PlayerID, Player.MouseVector3D[PlayerID], X, Y);
 
                     break;
             }
@@ -24773,11 +26364,16 @@ namespace MetalMaxSystem
     }
 
     /// <summary>
-    /// 【MetalMaxSystem】系统监听服务（内部使用）
+    /// 【MM_函数库】系统监听服务
     /// </summary>
     public static class KeyMouseRecordService
     {
         #region 字段声明
+
+        /// <summary>
+        /// 判断预制键鼠事件是否注册的状态值
+        /// </summary>
+        public static bool DefaultEvent { get; set; } = false;
 
         private static int _period = 50;//默认逻辑帧是50ms
         /// <summary>
@@ -24812,12 +26408,12 @@ namespace MetalMaxSystem
         private static readonly KeyboardHook MyKeyboardHook;
 
         public static KeyDownEventFuncref KeyDownEvent;
-        public static KeyDownTwiceEventFuncref KeyDownTwiceEvent;
+        public static KeyDoubleClickEventFuncref KeyDoubleClickEvent;
         public static KeyUpEventFuncref KeyUpEvent;
         public static MouseMoveEventFuncref MouseMoveEvent;
         public static MouseDownEventFuncref MouseDownEvent;
-        public static MouseLDownTwiceEventFuncref MouseLDownTwiceEvent;
-        public static MouseRDownTwiceEventFuncref MouseRDownTwiceEvent;
+        public static MouseLDoubleClickEventFuncref MouseLDoubleClickEvent;
+        public static MouseRDoubleClickEventFuncref MouseRDoubleClickEvent;
         public static MouseUpEventFuncref MouseUpEvent;
 
         #endregion
@@ -24825,11 +26421,11 @@ namespace MetalMaxSystem
         #region 钩子开关
 
         /// <summary>
-        /// 创建监听服务（默认用户玩家编号=MMCore.PlayerLocalID，该值必须设立）
+        /// 创建监听服务（默认用户玩家编号=MMCore.LocalID，该值必须设立）
         /// </summary>
         static KeyMouseRecordService()//构造函数
         {
-            PlayerID = MMCore.PlayerLocalID;
+            PlayerID = MMCore.LocalID;
             MyMouseHook = MouseHook.GetMouseHook();
             MyKeyboardHook = KeyboardHook.GetKeyboardHook();
         }
@@ -24998,7 +26594,7 @@ namespace MetalMaxSystem
                     //思考：X,Y如何转化为世界坐标？
 
                     //Z从上述（X,Y）的信息中获得
-                    Z = MMCore.MapHeight + MMCore.TerrainHeight[X, Y] + (double)MMCore.HashTableLoad0(true, "Unit.TerrainHeight");
+                    Z = Game.MapHeight + Game.TerrainHeight[X, Y] + (double)MMCore.HashTableLoad0(true, "Unit.TerrainHeight");
 
                     MouseMoveEvent?.Invoke(PlayerID, new Vector3D(X, Y, Z), X, Y);//当没给函数注册事件时不运行
 
@@ -25031,7 +26627,7 @@ namespace MetalMaxSystem
                     break;
                 case WM_LBUTTONDBLCLK:
                     // 记录鼠标左键双击
-                    MouseLDownTwiceEvent?.Invoke(PlayerID, Player.MouseVector3D[PlayerID], X, Y);
+                    MouseLDoubleClickEvent?.Invoke(PlayerID, Player.MouseVector3D[PlayerID], X, Y);
 
                     break;
                 case WM_RBUTTONDOWN:
@@ -25046,7 +26642,7 @@ namespace MetalMaxSystem
                     break;
                 case WM_RBUTTONDBLCLK:
                     // 记录鼠标右键双击
-                    MouseRDownTwiceEvent?.Invoke(PlayerID, Player.MouseVector3D[PlayerID], X, Y);
+                    MouseRDoubleClickEvent?.Invoke(PlayerID, Player.MouseVector3D[PlayerID], X, Y);
 
                     break;
             }
@@ -25158,7 +26754,7 @@ namespace MetalMaxSystem
     //CSDN原址：https://blog.csdn.net/qq_43851684/article/details/113096306
 
     /// <summary>
-    /// 【MetalMaxSystem】键盘钩子
+    /// 【MM_函数库】键盘钩子
     /// </summary>
     public class KeyboardHook
     {
@@ -25332,7 +26928,7 @@ namespace MetalMaxSystem
     }
 
     /// <summary>
-    /// 【MetalMaxSystem】鼠标钩子
+    /// 【MM_函数库】鼠标钩子
     /// </summary>
     public class MouseHook
     {

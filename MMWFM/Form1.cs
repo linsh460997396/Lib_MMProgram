@@ -23,7 +23,7 @@ namespace MMWFM
         private void Form1_Load(object sender, EventArgs e)
         {
             //MMCore.DataTableType = "HashTable";
-            //Unit MyA001 = new Unit();
+            //Unit myUnit = new Unit();
         }
 
     }

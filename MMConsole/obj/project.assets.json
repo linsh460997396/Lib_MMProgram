@@ -1,29 +1,11 @@
 {
   "version": 3,
   "targets": {
-    "net5.0": {
-      "Lib_MMCore/1.0.0": {
-        "type": "project",
-        "compile": {
-          "bin/placeholder/Lib_MMCore.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Lib_MMCore.dll": {}
-        }
-      }
-    }
+    "net5.0": {}
   },
-  "libraries": {
-    "Lib_MMCore/1.0.0": {
-      "type": "project",
-      "path": "../Lib_MMCore/Lib_MMCore.csproj",
-      "msbuildProject": "../Lib_MMCore/Lib_MMCore.csproj"
-    }
-  },
+  "libraries": {},
   "projectFileDependencyGroups": {
-    "net5.0": [
-      "Lib_MMCore >= 1.0.0"
-    ]
+    "net5.0": []
   },
   "packageFolders": {
     "C:\\Users\\linsh\\.nuget\\packages\\": {}
@@ -51,11 +33,7 @@
       "frameworks": {
         "net5.0": {
           "targetAlias": "net5.0",
-          "projectReferences": {
-            "D:\\VSWork\\2019\\Lib_MMProgram\\Lib_MMCore\\Lib_MMCore.csproj": {
-              "projectPath": "D:\\VSWork\\2019\\Lib_MMProgram\\Lib_MMCore\\Lib_MMCore.csproj"
-            }
-          }
+          "projectReferences": {}
         }
       },
       "warningProperties": {
