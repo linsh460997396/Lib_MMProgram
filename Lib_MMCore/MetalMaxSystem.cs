@@ -51,6 +51,8 @@ namespace MetalMaxSystem
 {
     #region 枚举存放区
 
+    //枚举是值类型
+
     /// <summary>
     /// 【MetalMaxSystem】主副循环的入口索引
     /// </summary>
@@ -102,11 +104,15 @@ namespace MetalMaxSystem
 
     #region 结构存放区
 
+    //结构是值类型
+
     //暂无
 
     #endregion
 
     #region 委托类型
+
+    //委托是引用类型
 
     //个人书写习惯↓
     //声明的委托类型首字母大写、委托类型变量（执行函数）首字母大写；
@@ -137,9 +143,20 @@ namespace MetalMaxSystem
     /// </summary>
     public delegate void SubActionEventFuncref(object sender);
 
+    public delegate bool KeyDownEventFuncref(int player, int key);
+    public delegate bool KeyDownTwiceEventFuncref(int player, int key);
+    public delegate bool KeyUpEventFuncref(int player, int key);
+    public delegate void MouseMoveEventFuncref(int player, Vector3D lp_mouseVector3D, int uiX, int uiY);
+    public delegate bool MouseDownEventFuncref(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY);
+    public delegate bool MouseLDownTwiceEventFuncref(int player, Vector3D lp_mouseVector3D, int uiX, int uiY);
+    public delegate bool MouseRDownTwiceEventFuncref(int player, Vector3D lp_mouseVector3D, int uiX, int uiY);
+    public delegate bool MouseUpEventFuncref(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY);
+
     #endregion
 
     #region 类
+
+    //自定义类是引用类型
 
     //静态类数据在内存中唯一（从模板也只产生一个可修改副本），公开的静态类可供其他程序集调用。
     //类的访问修饰符只有public和internal，其中internal修饰后只能在自身程序集（dll或exe）使用，类中创建类默认为internal（内部类）。
@@ -301,22 +318,20 @@ namespace MetalMaxSystem
         /// </summary>
         private const int c_regEntryMax = 1;//内部使用，无需给用户使用
 
-        //玩家句柄及其上限
-
         /// <summary>
-        /// 【MM_函数库】玩家句柄（0默认中立玩家，1用户本人，2-14玩家（电脑或其他用户），15默认敌对玩家，16由系统触发，活动玩家=用户+电脑（不含中立））
+        /// 【MM_函数库】任意玩家编号（玩家编号从0-15共16个，16是上帝由系统执行，某些函数中也作"任意玩家"参数）
         /// </summary>
         public const int c_playerAny = 16;
         /// <summary>
-        /// 【MM_函数库】玩家句柄上限（限制最大玩家数，玩家句柄从0-15共16个，16是上帝（由系统执行））
+        /// 【MM_函数库】玩家编号上限（限制最大玩家数）
         /// </summary>
         public const int c_maxPlayers = 16;
 
         #endregion
 
-        #region 全局和局部"变量"（无属性字段）
+        #region "全局和局部变量"（无属性字段）
 
-        //类只有字段没变量，但理论上公有静态字段是该程序在内存中唯一的全局变量，无论类实例化多次或多线程从模板调用，它只生成一次副本直到程序结束才清理
+        //类只有字段没变量说法，但理论上公有静态字段是该程序在内存中唯一的全局变量，无论类实例化多次或多线程从模板调用，它只生成一次副本直到程序结束才清理
         //而非静态（实例）类每次实例化都复制一份模板去形成多个副本，私有实例字段相当于类的局部变量
         //不标Static则类及其成员在结束时垃圾回收，标Static则副本唯一且程序结束才从内存消失
         //静态局部变量在函数结束时不参与垃圾回收，以便相同函数重复访问
@@ -331,18 +346,22 @@ namespace MetalMaxSystem
         /// 【MM_函数库】鼠标按键的已注册数量（每个数组元素算1个，即使它们+=多个委托函数）
         /// </summary>
         private static int[] mouseEventFuncrefGroupNum = new int[c_mouseMax + 1];//内部使用
+
+        private static bool[] _stopKeyMouseEvent = new bool[c_maxPlayers + 1];
         /// <summary>
         /// 【MM_函数库】用户按键事件禁用状态（用于过场、剧情对话、特殊技能如禁锢时强制停用用户的按键事件）
         /// </summary>
-        public static bool[] stopKeyMouseEvent = new bool[c_maxPlayers + 1];
+        public static bool[] StopKeyMouseEvent{ get => _stopKeyMouseEvent; set => _stopKeyMouseEvent = value; }
         /// <summary>
         /// 【MM_函数库】主副循环每个入口的已注册数量（每个数组元素算1个，即使它们+=多个委托函数）
         /// </summary>
         private static int[] entryEventFuncrefGroupNum = new int[c_entryMax + 1];//内部使用
+
+        private static bool[] _stopEntryEvent = new bool[c_maxPlayers + 1];
         /// <summary>
         /// 【MM_函数库】主副循环事件禁用状态（用于特殊情况如个人处理队列过多、玩家间未同步时间过长情况下停用用户主副循环事件）
         /// </summary>
-        public static bool[] stopEntryEvent = new bool[c_maxPlayers + 1];
+        public static bool[] StopEntryEvent { get => _stopEntryEvent; set => _stopEntryEvent = value; }
 
         /// <summary>
         /// 【MM_函数库】主循环线程
@@ -493,9 +512,51 @@ namespace MetalMaxSystem
 
         #endregion
 
+        #region 构造函数
+
+        /// <summary>
+        /// 【MetalMaxSystem】核心类
+        /// </summary>
+        static MMCore() 
+        {
+            //这里可给字段进行第二次赋值或安排其他动作（字段的首次赋值是在声明时，同一次初始化执行顺序受动作所在上下文影响）
+        }
+
+        #endregion
+
         #region 字段及其属性方法
 
         //字段及其属性方法（避免不安全读写，private保护和隐藏字段，设计成只允许通过public修饰的属性方法间接去安全读写）
+
+        private static string _dataTableType;
+        /// <summary>
+        /// 【MM_函数库】数据表类型
+        /// </summary>
+        public static string DataTableType
+        {
+            get => _dataTableType;
+            set
+            {
+                switch (value) 
+                {
+                    case "Dictionary":
+                        _dataTableType = value;
+                        break;
+                    case "HashTable":
+                        _dataTableType = value;
+                        break;
+                    default:
+                        _dataTableType = "HashTable";
+                        break;
+                }
+            }
+        }
+
+        private static int _playerLocalID;
+        /// <summary>
+        /// 【MM_函数库】玩家编号
+        /// </summary>
+        public static int PlayerLocalID { get => _playerLocalID; set => _playerLocalID = value; }
 
         private static int _directoryEmptyUserDefIndex = 0;
         /// <summary>
@@ -1746,7 +1807,15 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableObjectKeyExists(bool place, string key)
         {
-            return DictionaryObjectKeyExists(place, key);
+            switch (DataTableType)
+            {
+                case "Dictionary":
+                    return DictionaryObjectKeyExists(place, key);
+                case "HashTable":
+                    return HashTableKeyExists(place, key);
+                default:
+                    return HashTableKeyExists(place, key);
+            }
         }
 
         /// <summary>
@@ -3883,7 +3952,15 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DataTableBoolKeyExists(bool place, string key)
         {
-            return DictionaryBoolKeyExists(place, key);
+            switch (DataTableType)
+            {
+                case "Dictionary":
+                    return DictionaryBoolKeyExists(place, key);
+                case "HashTable":
+                    return HashTableKeyExists(place, key);
+                default:
+                    return HashTableKeyExists(place, key);
+            }
         }
 
         /// <summary>
@@ -4051,7 +4128,15 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool? DataTableBoolLoad0(bool place, string key)
         {
-            return DictionaryBoolLoad0(place, key);
+            switch (DataTableType)
+            {
+                case "Dictionary":
+                    return DictionaryBoolLoad0(place, key);
+                case "HashTable":
+                    return (bool?)HashTableLoad0(place, key);
+                default:
+                    return (bool?)HashTableLoad0(place, key);
+            }
         }
 
         /// <summary>
@@ -4353,7 +4438,7 @@ namespace MetalMaxSystem
 
         #region 基础成员
 
-        #region 哈希表（旧版，不推荐使用）
+        #region 哈希表
 
         //使用哈希表设计存取任意类型
 
@@ -4646,7 +4731,7 @@ namespace MetalMaxSystem
 
         #endregion
 
-        #region 字典（新版，推荐使用）
+        #region 字典
 
         //使用字典设计存取指定类型
 
@@ -6147,7 +6232,10 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool DictionaryBoolKeyExists(bool place, string key)
         {
-            if (place) { return systemDictionaryBool.ContainsKey(key); }
+            if (place) 
+            {
+                return systemDictionaryBool.ContainsKey(key);
+            }
             else { return tempDictionaryBool.ContainsKey(key); }
         }
 
@@ -8609,7 +8697,7 @@ namespace MetalMaxSystem
 
         #endregion
 
-        #region 字典互动管理（新版，推荐使用）
+        #region 字典互动管理
 
         #region 任意类型
 
@@ -15680,7 +15768,7 @@ namespace MetalMaxSystem
 
         #endregion
 
-        #region 哈希表互动管理（旧版，不推荐使用）
+        #region 哈希表互动管理
 
         //注：值与引用类型转换时没字典（Dictionary）效率，因为会发生拆装箱
 
@@ -22814,6 +22902,45 @@ namespace MetalMaxSystem
 
         #region Functions 键鼠事件动作主体功能（加入按键监听并传参执行）
 
+
+        /// <summary>
+        /// 【MM_函数库】创建库内预制的键鼠总控函数动作集合，键鼠专用监听服务将相关事件注册到库内预制函数（KeyDown、KeyUp、MouseMove、MouseDown、MouseUp）从而可以使用库内“按键函数注册注销更换”及其他内制功能
+        /// </summary>
+        /// <param name="cover">true：事件委托=委托函数（执行事件覆盖），false：事件委托+=委托函数（执行事件追加）</param>
+        public static void CreateKeyMouseRecordServiceEvent(bool cover)
+        {
+            if (cover)
+            {
+                //执行事件覆盖
+                KeyMouseRecordService.KeyDownEvent = KeyDown;
+                KeyMouseRecordService.KeyUpEvent = KeyUp;
+                KeyMouseRecordService.MouseMoveEvent = MouseMove;
+                KeyMouseRecordService.MouseDownEvent = MouseDown;
+                KeyMouseRecordService.MouseUpEvent = MouseUp;
+            }
+            else
+            {
+                //执行事件追加
+                KeyMouseRecordService.KeyDownEvent += KeyDown;
+                KeyMouseRecordService.KeyUpEvent += KeyUp;
+                KeyMouseRecordService.MouseMoveEvent += MouseMove;
+                KeyMouseRecordService.MouseDownEvent += MouseDown;
+                KeyMouseRecordService.MouseUpEvent += MouseUp;
+            }
+        }
+
+        /// <summary>
+        /// 摧毁库内预制的键鼠总控函数动作集合
+        /// </summary>
+        public static void DestroyKeyMouseRecordServiceEvent()
+        {
+            KeyMouseRecordService.KeyDownEvent = null;
+            KeyMouseRecordService.KeyUpEvent = null;
+            KeyMouseRecordService.MouseMoveEvent = null;
+            KeyMouseRecordService.MouseDownEvent = null;
+            KeyMouseRecordService.MouseUpEvent = null;
+        }
+
         /// <summary>
         /// 【MM_函数库】键盘按下事件主要动作（加入按键监听并传参执行）
         /// </summary>
@@ -22821,11 +22948,11 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         internal static bool KeyDown(int player, int key)
         {
-            bool torf = !MMCore.stopKeyMouseEvent[player];
+            bool torf = !MMCore.StopKeyMouseEvent[player];
             Player.KeyDownState[player, key] = torf;  //当前按键状态值
             Player.KeyDown[player, key] = true;  //当前按键值
 
-            if (MMCore.stopKeyMouseEvent[player] == false)
+            if (MMCore.StopKeyMouseEvent[player] == false)
             {
                 Player.KeyDownLoopOneBitNum[player] += 1; //玩家当前注册的按键队列数量
                 MMCore.HashTableSave2(true, "KeyDownLoopOneBit", player, Player.KeyDownLoopOneBitNum[player], key);
@@ -22862,11 +22989,11 @@ namespace MetalMaxSystem
         /// <returns></returns>
         internal static bool KeyUp(int player, int key)
         {
-            bool torf = !MMCore.stopKeyMouseEvent[player];
+            bool torf = !MMCore.StopKeyMouseEvent[player];
             Player.KeyDownState[player, key] = false;  //当前按键状态值，本事件始终为false
             Player.KeyDown[player, key] = false;  //当前按键值
 
-            if (MMCore.stopKeyMouseEvent[player] == false)
+            if (MMCore.StopKeyMouseEvent[player] == false)
             {
                 //直接执行动作或通知延迟弹起函数去执行动作
                 if ((bool)MMCore.HashTableLoad2(true, "KeyDownLoopOneBitKey", player, key) == false)
@@ -22892,7 +23019,7 @@ namespace MetalMaxSystem
         internal static bool KeyUpFunc(int player, int key)
         {
             bool torf = true;
-            if (MMCore.stopKeyMouseEvent[player] == true)
+            if (MMCore.StopKeyMouseEvent[player] == true)
             {
                 torf = false;
             }
@@ -22912,7 +23039,7 @@ namespace MetalMaxSystem
         /// <param name="uiY"></param>
         internal static void MouseMove(int player, Vector3D lp_mouseVector3D, int uiX, int uiY)
         {
-            if (MMCore.stopKeyMouseEvent[player] == false)
+            if (MMCore.StopKeyMouseEvent[player] == false)
             {
                 Player.MouseVector[player] = new Vector(lp_mouseVector3D.X, lp_mouseVector3D.Y);
 
@@ -22958,7 +23085,7 @@ namespace MetalMaxSystem
         /// <returns></returns>
         internal static bool MouseDown(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
         {
-            bool torf = !MMCore.stopKeyMouseEvent[player];
+            bool torf = !MMCore.StopKeyMouseEvent[player];
             Player.MouseDownState[player, key] = torf;  //当前按键状态值
             Player.MouseDown[player, key] = true;  //当前按键值
             if (key == c_mouseButtonLeft)
@@ -22974,7 +23101,7 @@ namespace MetalMaxSystem
                 Player.MouseDownMiddle[player] = true;
             }
 
-            if (MMCore.stopKeyMouseEvent[player] == false)
+            if (MMCore.StopKeyMouseEvent[player] == false)
             {
                 Player.MouseVector[player] = new Vector(lp_mouseVector3D.X, lp_mouseVector3D.Y);
 
@@ -23054,7 +23181,7 @@ namespace MetalMaxSystem
             bool torf = true;
 
             // Implementation
-            if (MMCore.stopKeyMouseEvent[player] == true)
+            if (MMCore.StopKeyMouseEvent[player] == true)
             {
                 //阻止按键事件时强制取消按键状态
                 Player.MouseDownState[player, key] = false;
@@ -23089,7 +23216,7 @@ namespace MetalMaxSystem
         /// <param name="uiY"></param>
         internal static bool MouseUp(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
         {
-            bool torf = !MMCore.stopKeyMouseEvent[player];
+            bool torf = !MMCore.StopKeyMouseEvent[player];
             Player.MouseDownState[player, key] = false;  //当前按键状态值，本事件始终为false
             Player.MouseDown[player, key] = false;  //当前按键值
             if (key == c_mouseButtonLeft)
@@ -23105,7 +23232,7 @@ namespace MetalMaxSystem
                 Player.MouseDownMiddle[player] = false;
             }
 
-            if (MMCore.stopKeyMouseEvent[player] == false)
+            if (MMCore.StopKeyMouseEvent[player] == false)
             {
                 //直接执行动作或通知延迟弹起函数去执行动作
                 if ((bool)MMCore.HashTableLoad2(true, "MouseDownLoopOneBitKey", player, key) == false)
@@ -23130,7 +23257,7 @@ namespace MetalMaxSystem
         internal static bool MouseUpFunc(int player, int key)
         {
             bool torf = true;
-            if (MMCore.stopKeyMouseEvent[player] == true)
+            if (MMCore.StopKeyMouseEvent[player] == true)
             {
                 torf = false;
             }
@@ -23242,7 +23369,7 @@ namespace MetalMaxSystem
         /// <param name="state"></param>
         public static void CheckStatus(object state)
         {
-            if (!TimerState)
+            if (TimerState)
             {
                 ((AutoResetEvent)state).Set();
             }
@@ -23298,7 +23425,7 @@ namespace MetalMaxSystem
         /// <param name="state"></param>
         public static void CheckStatus(object state)
         {
-            if (!TimerState)
+            if (TimerState)
             {
                 ((AutoResetEvent)state).Set();
             }
@@ -23545,7 +23672,7 @@ namespace MetalMaxSystem
         /// <param name="state"></param>
         private void CheckStatus(object state)
         {
-            if (!TimerState)
+            if (TimerState)
             {
                 ((AutoResetEvent)state).Set();
             }
@@ -24032,7 +24159,7 @@ namespace MetalMaxSystem
     }
 
     /// <summary>
-    /// 【MetalMaxSystem】玩家类
+    /// 【MetalMaxSystem】玩家类，为每个玩家创建它并初始化所需信息，内置字段以外的临时属性可用数据表添加修改
     /// </summary>
     public static class Player
     {
@@ -24079,6 +24206,10 @@ namespace MetalMaxSystem
         private static Vector[] _mouseVector = new Vector[MMCore.c_maxPlayers + 1];
 
         private static string[] _type = new string[MMCore.c_maxPlayers + 1];
+        private static string[] _handle = new string[MMCore.c_maxPlayers + 1];//句柄格式："A1-A1-A1-A0000001"
+
+        private static bool[] _localUser = new bool[MMCore.c_maxPlayers + 1];
+        private static string[] _status = new string[MMCore.c_maxPlayers + 1];
 
         #endregion
 
@@ -24227,11 +24358,21 @@ namespace MetalMaxSystem
         public static Vector[] MouseVector { get => _mouseVector; set => _mouseVector = value; }
 
         /// <summary>
-        /// 玩家类型（中立Neutral、电脑Ai、用户User、玩家Palyer、敌人Enemy）
+        /// 玩家类型（中立Neutral、电脑Ai、用户User、玩家Player、敌人Enemy）
         /// </summary>
         public static string[] Type { get => _type; set => _type = value; }
-
-
+        /// <summary>
+        /// 玩家句柄
+        /// </summary>
+        public static string[] Handle { get => _handle; set => _handle = value; }
+        /// <summary>
+        /// 判断Player是否为本机用户
+        /// </summary>
+        public static bool[] LocalUser { get => _localUser; set => _localUser = value; }
+        /// <summary>
+        /// 用户状态（"Online"、"Offline"、其他状态字符）
+        /// </summary>
+        public static string[] Status { get => _status; set => _status = value; }
 
         #endregion
 
@@ -24246,6 +24387,8 @@ namespace MetalMaxSystem
     /// </summary>
     public class RecordService
     {
+        #region 字段声明
+
         private int _period = 50;//默认逻辑帧是50ms
         /// <summary>
         /// 监听服务逻辑每帧（可设定范围0~1000），用于鼠标移动、键按下时计算最大持续值（实际每帧持续值+1时，最大持续值=蓄力值100 * 1000毫秒/逻辑帧毫秒），实际设置监听每帧超过1000ms基本不太可能，如果真的那样做，每次蓄力会很慢，默认为50ms（建议与默认运行时钟保持一致，如果监听循环不是50ms可自行匹配一致）
@@ -24256,40 +24399,59 @@ namespace MetalMaxSystem
             //如果用户输入错误，则什么也不变
             set
             {
-                if (value >= 0 && value <= 2)
+                if (value >= 0 && value <= 1000)
                 {
                     _period = value;
                 }
             }
         }
 
-        private int _loop = 10;
+        private int _mouseLoop = 2;
         /// <summary>
-        /// 设定多少逻辑帧算一次鼠标移动、键按下等操作的成功持续，默认10帧激活持续状态（若监听实际每帧50ms，那么就是按住0.5现实时间秒算一次持续）
+        /// 设定多少逻辑帧算一次鼠标移动的成功持续，默认2帧激活持续状态（若监听实际每帧50ms，那么就是移动0.1现实时间秒算一次持续）
         /// </summary>
-        public int Loop { get => _loop; set => _loop = value; }
+        public int MouseLoop { get => _mouseLoop; set => _mouseLoop = value; }
+
+        private int _keyLoop = 10;
+        /// <summary>
+        /// 设定多少逻辑帧算一次键按住的成功持续，默认10帧激活持续状态（若监听实际每帧50ms，那么就是按住0.5现实时间秒算一次持续）
+        /// </summary>
+        public int KeyLoop { get => _keyLoop; set => _keyLoop = value; }
 
         private readonly MouseHook MyMouseHook;
         private readonly KeyboardHook MyKeyboardHook;
 
+        //用户可自定义委托函数，在监听到事件发生时去执行
+
+        public KeyDownEventFuncref KeyDownEvent;
+        public KeyDownTwiceEventFuncref KeyDownTwiceEvent;
+        public KeyUpEventFuncref KeyUpEvent;
+        public MouseMoveEventFuncref MouseMoveEvent;
+        public MouseDownEventFuncref MouseDownEvent;
+        public MouseLDownTwiceEventFuncref MouseLDownTwiceEvent;
+        public MouseRDownTwiceEventFuncref MouseRDownTwiceEvent;
+        public MouseUpEventFuncref MouseUpEvent;
+
+        #endregion
+
         #region 钩子开关
 
         /// <summary>
-        /// 创建监听服务（默认玩家编号=1）
+        /// 创建监听服务（默认用户玩家编号=MMCore.PlayerLocalID，该值必须设立）
         /// </summary>
         public RecordService()//构造函数
         {
-            _playerID = 1;
+            PlayerID = MMCore.PlayerLocalID;
             MyMouseHook = MouseHook.GetMouseHook();
             MyKeyboardHook = KeyboardHook.GetKeyboardHook();
         }
 
         /// <summary>
-        /// 创建监听服务
+        /// 创建监听服务（可自定用户玩家编号1-15）
         /// </summary>
         public RecordService(int player)//构造函数
         {
-            _playerID = player;
+            PlayerID = player;
             MyMouseHook = MouseHook.GetMouseHook();
             MyKeyboardHook = KeyboardHook.GetKeyboardHook();
         }
@@ -24434,12 +24596,12 @@ namespace MetalMaxSystem
 
         #endregion
 
-        //以下处理动作不宜放时间复杂度高的函数，建议只记录变量变化，由其他线程读取这些变量后决定触发动作
+        //以下处理动作不宜放时间复杂度高的函数动作，建议只记录变量变化，由其他线程读取这些变量后决定触发动作
 
         #region 鼠标事件处理
 
         /// <summary>
-        /// 
+        /// 鼠标事件处理函数，对接系统底层非托管事件，并按用户设定线程的周期间隔将指定状态记录到托管数据，本函数不做其他消耗时间的处理，请另外读取这些状态数据来组织动作
         /// </summary>
         /// <param name="wParam">鼠标事件状态</param>
         /// <param name="mouseMsg">存储着鼠标信息</param>
@@ -24449,22 +24611,25 @@ namespace MetalMaxSystem
             switch (wParam)
             {
                 case WM_MOUSEMOVE:
-                    // 记录鼠标移动
+                    // 记录鼠标移动位置
                     X = mouseMsg.pt.x;//UI坐标，是整数
                     Y = mouseMsg.pt.y;//UI坐标，是整数
 
                     //注：到此记录了WParam和X,Y即可，不宜写时间复杂度较高的逻辑，剩下的"按键总控"功能（给按键注册注销更换委托函数，用于蓄力、移动、释放技能、按弹菜单等游戏世界逻辑）通过读取本类信息另外开线程去制作即可
 
                     //思考：X,Y如何转化为世界坐标？
+
                     //Z从上述（X,Y）的信息中获得
-                    //Z = MMCore.MapHeight + MMCore.TerrainHeight[X, Y] + (double)MMCore.HashTableLoad0(true, "Unit.TerrainHeight");
-                    //MMCore.MouseMove(_playerID, new Vector3D(X, Y, Z), X, Y);
+                    Z = MMCore.MapHeight + MMCore.TerrainHeight[X, Y] + (double)MMCore.HashTableLoad0(true, "Unit.TerrainHeight");
+
+                    MouseMoveEvent?.Invoke(PlayerID, new Vector3D(X, Y, Z), X, Y);//当没给函数注册事件时不运行
+
                     break;
                 case WM_LBUTTONDOWN:
                     // 记录鼠标左键按下
-                    //MMCore.MouseDown(_playerID, MMCore.c_mouseButtonLeft, Player.MouseVector3D[_playerID], X, Y);
+                    MouseDownEvent?.Invoke(PlayerID, MMCore.c_mouseButtonLeft, Player.MouseVector3D[PlayerID], X, Y);
 
-                    //记录按键持续值，蓄力统计↓
+                    //记录按键持续值，蓄力统计↓（待重新设计）
 
                     //每帧持续值+1，最大持续值=蓄力值100 * (1000毫秒 /逻辑帧毫秒)
                     //if (MetalMaxSystem.Player.MouseDownLoopOneBitNum[Player, MMCore.c_mouseButtonLeft] < 100 * (1000 / _period))
@@ -24483,27 +24648,32 @@ namespace MetalMaxSystem
                     break;
                 case WM_LBUTTONUP:
                     // 记录鼠标左键弹起
-                    //MMCore.MouseUp(_playerID, MMCore.c_mouseButtonLeft, Player.MouseVector3D[_playerID], X, Y);
+                    MouseUpEvent?.Invoke(PlayerID, MMCore.c_mouseButtonLeft, Player.MouseVector3D[PlayerID], X, Y);
+
                     break;
                 case WM_LBUTTONDBLCLK:
                     // 记录鼠标左键双击
-                    //Player.MouseDownTwice[_playerID, MMCore.c_mouseButtonLeft] = true;
+                    MouseLDownTwiceEvent?.Invoke(PlayerID, Player.MouseVector3D[PlayerID], X, Y);
+
                     break;
                 case WM_RBUTTONDOWN:
                     // 记录鼠标右键按下
-                    //MMCore.MouseDown(_playerID, MMCore.c_mouseButtonRight, Player.MouseVector3D[_playerID], X, Y);
+                    MouseDownEvent?.Invoke(PlayerID, MMCore.c_mouseButtonRight, Player.MouseVector3D[PlayerID], X, Y);
+
                     break;
                 case WM_RBUTTONUP:
                     // 记录鼠标右键弹起
-                    //MMCore.MouseUp(_playerID, MMCore.c_mouseButtonRight, Player.MouseVector3D[_playerID], X, Y);
+                    MouseUpEvent?.Invoke(PlayerID, MMCore.c_mouseButtonRight, Player.MouseVector3D[PlayerID], X, Y);
+
                     break;
                 case WM_RBUTTONDBLCLK:
                     // 记录鼠标右键双击
-                    //Player.MouseDownTwice[_playerID, MMCore.c_mouseButtonRight] = true;
+                    MouseRDownTwiceEvent?.Invoke(PlayerID, Player.MouseVector3D[PlayerID], X, Y);
+
                     break;
             }
 
-            //以下动作可以搬到别的线程↓
+            //以下动作搬到别的线程↓
 
             //检查全鼠标按键，如果松开，则该键有持续值的话每帧-1
             //for (; i <= 5; i++) { }
@@ -24520,14 +24690,16 @@ namespace MetalMaxSystem
         private const int CTRL = 162;
         private const int ALT = 164;
         private const int ZERO = 48;
+
         /*
          * ctrl 162
          * alt 164
          * 1-9 -》 49-57
          * 0 -》48
          */
+
         /// <summary>
-        /// 
+        /// 键盘事件处理函数，对接系统底层非托管事件，并按用户设定线程的周期间隔将指定状态记录到托管数据，本函数不做其他消耗时间的处理，请另外读取这些状态数据来组织动作
         /// </summary>
         /// <param name="wParam">键盘事件状态</param>
         /// <param name="keyboardHookStruct">存储着虚拟键码</param>
@@ -24581,6 +24753,384 @@ namespace MetalMaxSystem
         /// </summary>
         /// <returns>返回0-9代表按下了Ctrl+alt+0-9，返回-1代表没有按下</returns>
         public int IsPressTarget()
+        {
+            if ((!CtrlAlt[0]) || (!CtrlAlt[1]))
+            {
+                return -1;
+            }
+            for (int i = 0; i < 10; i++)
+            {
+                if (OneToNine[i])
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+        #endregion
+
+        #endregion
+    }
+
+    /// <summary>
+    /// 【MetalMaxSystem】系统监听服务（内部使用）
+    /// </summary>
+    public static class KeyMouseRecordService
+    {
+        #region 字段声明
+
+        private static int _period = 50;//默认逻辑帧是50ms
+        /// <summary>
+        /// 监听服务逻辑每帧（可设定范围0~1000），用于鼠标移动、键按下时计算最大持续值（实际每帧持续值+1时，最大持续值=蓄力值100 * 1000毫秒/逻辑帧毫秒），实际设置监听每帧超过1000ms基本不太可能，如果真的那样做，每次蓄力会很慢，默认为50ms（建议与默认运行时钟保持一致，如果监听循环不是50ms可自行匹配一致）
+        /// </summary>
+        public static int Period
+        {
+            get => _period;
+            //如果用户输入错误，则什么也不变
+            set
+            {
+                if (value >= 0 && value <= 1000)
+                {
+                    _period = value;
+                }
+            }
+        }
+
+        private static int _mouseLoop = 2;
+        /// <summary>
+        /// 设定多少逻辑帧算一次鼠标移动的成功持续，默认2帧激活持续状态（若监听实际每帧50ms，那么就是移动0.1现实时间秒算一次持续）
+        /// </summary>
+        public static int MouseLoop { get => _mouseLoop; set => _mouseLoop = value; }
+
+        private static int _keyLoop = 10;
+        /// <summary>
+        /// 设定多少逻辑帧算一次键按住的成功持续，默认10帧激活持续状态（若监听实际每帧50ms，那么就是按住0.5现实时间秒算一次持续）
+        /// </summary>
+        public static int KeyLoop { get => _keyLoop; set => _keyLoop = value; }
+
+        private static readonly MouseHook MyMouseHook;
+        private static readonly KeyboardHook MyKeyboardHook;
+
+        public static KeyDownEventFuncref KeyDownEvent;
+        public static KeyDownTwiceEventFuncref KeyDownTwiceEvent;
+        public static KeyUpEventFuncref KeyUpEvent;
+        public static MouseMoveEventFuncref MouseMoveEvent;
+        public static MouseDownEventFuncref MouseDownEvent;
+        public static MouseLDownTwiceEventFuncref MouseLDownTwiceEvent;
+        public static MouseRDownTwiceEventFuncref MouseRDownTwiceEvent;
+        public static MouseUpEventFuncref MouseUpEvent;
+
+        #endregion
+
+        #region 钩子开关
+
+        /// <summary>
+        /// 创建监听服务（默认用户玩家编号=MMCore.PlayerLocalID，该值必须设立）
+        /// </summary>
+        static KeyMouseRecordService()//构造函数
+        {
+            PlayerID = MMCore.PlayerLocalID;
+            MyMouseHook = MouseHook.GetMouseHook();
+            MyKeyboardHook = KeyboardHook.GetKeyboardHook();
+        }
+
+        /// <summary>
+        /// 开启鼠标钩子
+        /// </summary>
+        /// <param name="handler"></param>
+        public static void StartMouseHook()
+        {
+            MyMouseHook.AddMouseHandler(MouseEventHandler);
+            MyMouseHook.Start();
+        }
+
+        /// <summary>
+        /// 关闭鼠标钩子
+        /// </summary>
+        public static void StopMouseHook()
+        {
+            MyMouseHook.Stop();
+        }
+
+        /// <summary>
+        /// 开启键盘钩子
+        /// </summary>
+        /// <param name="handler"></param>
+        public static void StartKeyboardHook()
+        {
+            MyKeyboardHook.AddKeyboardHandler(KeyboardHandler);
+            MyKeyboardHook.Start();
+        }
+
+        /// <summary>
+        /// 关闭键盘钩子
+        /// </summary>
+        public static void StopKeyboardHook()
+        {
+            MyKeyboardHook.Stop();
+        }
+
+        #endregion
+
+        #region 热键操作
+
+        #region 成员变量
+
+        private static int _x;
+
+        /// <summary>
+        /// 鼠标当前位置的X坐标
+        /// </summary>
+        public static int X
+        {
+            get { return _x; }
+            set { _x = value; }
+        }
+
+        private static int _y;
+
+        /// <summary>
+        /// 鼠标当前位置的Y坐标
+        /// </summary>
+        public static int Y
+        {
+            get { return _y; }
+            set { _y = value; }
+        }
+
+        private static double _z;
+
+        /// <summary>
+        /// 鼠标当前位置的Z坐标
+        /// </summary>
+        public static double Z
+        {
+            get { return _z; }
+            set { _z = value; }
+        }
+
+        private static int _wParam;
+
+        /// <summary>
+        /// 被按下的鼠标按键
+        /// </summary>
+        public static int WParam
+        {
+            get { return _wParam; }
+            set { _wParam = value; }
+        }
+
+
+        private static int _KeyStatus;
+
+        /// <summary>
+        /// 键钮状态
+        /// </summary>
+        public static int KeyStatus
+        {
+            get { return _KeyStatus; }
+            set { _KeyStatus = value; }
+        }
+
+        private static int _KeyValue;
+
+        /// <summary>
+        /// 键码
+        /// </summary>
+        public static int KeyValue
+        {
+            get { return _KeyValue; }
+            set { _KeyValue = value; }
+        }
+
+        private static bool[] _CtrlAlt = new bool[2] { false, false };
+
+        /// <summary>
+        /// Ctrl 和 Alt
+        /// </summary>
+        public static bool[] CtrlAlt
+        {
+            get { return _CtrlAlt; }
+            set { _CtrlAlt = value; }
+        }
+
+        private static bool[] _OneToNine = new bool[10] { false, false, false, false, false, false, false, false, false, false };
+
+        /// <summary>
+        /// 1-9
+        /// </summary>
+        public static bool[] OneToNine
+        {
+            get { return _OneToNine; }
+            set { _OneToNine = value; }
+        }
+
+        private static int _playerID;
+
+        /// <summary>
+        /// 玩家编号
+        /// </summary>
+        public static int PlayerID { get => _playerID; set => _playerID = value; }
+
+        #endregion
+
+        //以下处理动作不宜放时间复杂度高的函数动作，建议只记录变量变化，由其他线程读取这些变量后决定触发动作
+
+        #region 鼠标事件处理
+
+        /// <summary>
+        /// 鼠标事件处理函数，对接系统底层非托管事件，并按用户设定线程的周期间隔将指定状态记录到托管数据，本函数不做其他消耗时间的处理，请另外读取这些状态数据来组织动作
+        /// </summary>
+        /// <param name="wParam">鼠标事件状态</param>
+        /// <param name="mouseMsg">存储着鼠标信息</param>
+        private static void MouseEventHandler(Int32 wParam, MouseHookStruct mouseMsg)
+        {
+            WParam = wParam;
+            switch (wParam)
+            {
+                case WM_MOUSEMOVE:
+                    // 记录鼠标移动位置
+                    X = mouseMsg.pt.x;//UI坐标，是整数
+                    Y = mouseMsg.pt.y;//UI坐标，是整数
+
+                    //注：到此记录了WParam和X,Y即可，不宜写时间复杂度较高的逻辑，剩下的"按键总控"功能（给按键注册注销更换委托函数，用于蓄力、移动、释放技能、按弹菜单等游戏世界逻辑）通过读取本类信息另外开线程去制作即可
+
+                    //思考：X,Y如何转化为世界坐标？
+
+                    //Z从上述（X,Y）的信息中获得
+                    Z = MMCore.MapHeight + MMCore.TerrainHeight[X, Y] + (double)MMCore.HashTableLoad0(true, "Unit.TerrainHeight");
+
+                    MouseMoveEvent?.Invoke(PlayerID, new Vector3D(X, Y, Z), X, Y);//当没给函数注册事件时不运行
+
+                    break;
+                case WM_LBUTTONDOWN:
+                    // 记录鼠标左键按下
+                    MouseDownEvent?.Invoke(PlayerID, MMCore.c_mouseButtonLeft, Player.MouseVector3D[PlayerID], X, Y);
+
+                    //记录按键持续值，蓄力统计↓（待重新设计）
+
+                    //每帧持续值+1，最大持续值=蓄力值100 * (1000毫秒 /逻辑帧毫秒)
+                    //if (MetalMaxSystem.Player.MouseDownLoopOneBitNum[Player, MMCore.c_mouseButtonLeft] < 100 * (1000 / _period))
+                    //{
+                    //    MetalMaxSystem.Player.MouseDownLoopOneBitNum[Player, MMCore.c_mouseButtonLeft] += 1;
+                    //}
+                    ////持续值如果>1，则算鼠标在持续操作
+                    //if (MetalMaxSystem.Player.MouseDownLoopOneBitNum[Player, MMCore.c_mouseButtonLeft] > 1)
+                    //{
+                    //    MetalMaxSystem.Player.MouseDownLoop[Player, MMCore.c_mouseButtonLeft] = true;
+                    //}
+                    //else
+                    //{
+                    //    MetalMaxSystem.Player.MouseDownLoop[Player, MMCore.c_mouseButtonLeft] = false;
+                    //}
+                    break;
+                case WM_LBUTTONUP:
+                    // 记录鼠标左键弹起
+                    MouseUpEvent?.Invoke(PlayerID, MMCore.c_mouseButtonLeft, Player.MouseVector3D[PlayerID], X, Y);
+
+                    break;
+                case WM_LBUTTONDBLCLK:
+                    // 记录鼠标左键双击
+                    MouseLDownTwiceEvent?.Invoke(PlayerID, Player.MouseVector3D[PlayerID], X, Y);
+
+                    break;
+                case WM_RBUTTONDOWN:
+                    // 记录鼠标右键按下
+                    MouseDownEvent?.Invoke(PlayerID, MMCore.c_mouseButtonRight, Player.MouseVector3D[PlayerID], X, Y);
+
+                    break;
+                case WM_RBUTTONUP:
+                    // 记录鼠标右键弹起
+                    MouseUpEvent?.Invoke(PlayerID, MMCore.c_mouseButtonRight, Player.MouseVector3D[PlayerID], X, Y);
+
+                    break;
+                case WM_RBUTTONDBLCLK:
+                    // 记录鼠标右键双击
+                    MouseRDownTwiceEvent?.Invoke(PlayerID, Player.MouseVector3D[PlayerID], X, Y);
+
+                    break;
+            }
+
+            //以下动作搬到别的线程↓
+
+            //检查全鼠标按键，如果松开，则该键有持续值的话每帧-1
+            //for (; i <= 5; i++) { }
+            //if (MetalMaxSystem.Player.MouseDown[Player, i] = true && MetalMaxSystem.Player.MouseDownLoopOneBitNum[Player, i] > 0)
+            //{
+            //    MetalMaxSystem.Player.MouseDownLoopOneBitNum[Player, i] -= 1;
+            //}
+        }
+
+        #endregion
+
+        #region 键盘事件处理
+        // 虚拟键码
+        private const int CTRL = 162;
+        private const int ALT = 164;
+        private const int ZERO = 48;
+
+        /*
+         * ctrl 162
+         * alt 164
+         * 1-9 -》 49-57
+         * 0 -》48
+         */
+
+        /// <summary>
+        /// 键盘事件处理函数，对接系统底层非托管事件，并按用户设定线程的周期间隔将指定状态记录到托管数据，本函数不做其他消耗时间的处理，请另外读取这些状态数据来组织动作
+        /// </summary>
+        /// <param name="wParam">键盘事件状态</param>
+        /// <param name="keyboardHookStruct">存储着虚拟键码</param>
+        private static void KeyboardHandler(Int32 wParam, KeyboardHookStruct keyboardHookStruct)
+        {
+            KeyStatus = wParam;
+            KeyValue = keyboardHookStruct.vkCode;
+            // 热键判断
+            if (KeyStatus == KeyboardHook.WM_KEYDOWN || KeyStatus == KeyboardHook.WM_SYSKEYDOWN)
+            {
+                // 按下某个按钮
+                switch (KeyValue)
+                {
+                    case CTRL:
+                        CtrlAlt[0] = true;
+                        break;
+                    case ALT:
+                        CtrlAlt[1] = true;
+                        break;
+                }
+                if (KeyValue >= ZERO && KeyValue <= (ZERO + 9))
+                {
+                    // 按下了0-9
+                    int temp = KeyValue - ZERO;
+                    OneToNine[temp] = true;
+                }
+            }
+            else if (KeyStatus == KeyboardHook.WM_KEYUP || KeyStatus == KeyboardHook.WM_SYSKEYUP)
+            {
+                // 松开某个按钮
+                switch (KeyValue)
+                {
+                    case CTRL:
+                        CtrlAlt[0] = false;
+                        break;
+                    case ALT:
+                        CtrlAlt[1] = false;
+                        break;
+                }
+                if (KeyValue >= ZERO && KeyValue <= (ZERO + 9))
+                {
+                    // 按下了0-9
+                    int temp = KeyValue - ZERO;
+                    OneToNine[temp] = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 是否按下了 Ctrl + alt + 0-9
+        /// </summary>
+        /// <returns>返回0-9代表按下了Ctrl+alt+0-9，返回-1代表没有按下</returns>
+        public static int IsPressTarget()
         {
             if ((!CtrlAlt[0]) || (!CtrlAlt[1]))
             {

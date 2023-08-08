@@ -1,5 +1,4 @@
-﻿using MetalMaxSystem;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using HtmlAgilityPack;
+using MetalMaxSystem;
 
 namespace MMWFM
 {
@@ -22,7 +22,8 @@ namespace MMWFM
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //MMCore.UnZip(@"C:\Users\linsh\Desktop\Test\1122.7z", @"C:\Users\linsh\Desktop\TestOut", "1122");
+            //MMCore.DataTableType = "HashTable";
+            //Unit MyA001 = new Unit();
         }
 
     }

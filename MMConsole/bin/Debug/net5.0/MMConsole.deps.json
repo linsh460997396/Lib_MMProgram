@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v5.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v5.0": {
+      "MMConsole/1.0.0": {
+        "dependencies": {
+          "Lib_MMCore": "1.0.0"
+        },
+        "runtime": {
+          "MMConsole.dll": {}
+        }
+      },
+      "Lib_MMCore/1.0.0": {
+        "runtime": {
+          "Lib_MMCore.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "MMConsole/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lib_MMCore/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

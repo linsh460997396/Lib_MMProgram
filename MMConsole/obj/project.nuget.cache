@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "/0mXspa+pxFNp/NRvLD5AFYN9+K17lJ6TRp37XjgL4z5m/JLSlPKEUG2nRz9ZE52AQtMDJQOxpBA8s5DGoDO0Q==",
+  "success": true,
+  "projectFilePath": "D:\\VSWork\\2019\\Lib_MMProgram\\MMConsole\\MMConsole.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\linsh\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\5.0.15\\microsoft.netcore.app.host.win-x64.5.0.15.nupkg.sha512"
+  ],
+  "logs": []
+}
