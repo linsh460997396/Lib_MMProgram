@@ -11,7 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileMaster", "..\FileMaster
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "仓鼠文件处理程序", "..\仓鼠文件处理程序\仓鼠文件处理程序.vdproj", "{59904F78-8FDC-4191-BE35-27C71F4110EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MMConsole", "..\MMConsole\MMConsole.csproj", "{E536C975-FD0F-4AB5-9C10-D62758C54D8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MMConsole", "..\MMConsole\MMConsole.csproj", "{E536C975-FD0F-4AB5-9C10-D62758C54D8A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4238C5DF-3860-4DEB-B81A-C6AC20690E60} = {4238C5DF-3860-4DEB-B81A-C6AC20690E60}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

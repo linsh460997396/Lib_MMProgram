@@ -17,3 +17,4 @@ D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\System.Buffers.xml
 D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\System.Memory.xml
 D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\System.Numerics.Vectors.xml
 D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+D:\VSWork\2019\Lib_MMProgram\Lib_MMCore\obj\Debug\Lib_MMCore.csproj.AssemblyReference.cache
