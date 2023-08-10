@@ -97,7 +97,26 @@ namespace MetalMaxSystem
         /// <summary>
         /// 【MM_函数库】副循环摧毁阶段
         /// </summary>
-        SubDestroy,
+        SubDestroy
+    }
+
+    /// <summary>
+    /// 【MM_函数库】单位创建标旗
+    /// </summary>
+    public enum UnitCreateTag
+    {
+        /// <summary>
+        /// 【MM_函数库】诞生
+        /// </summary>
+        Birth,
+        /// <summary>
+        /// 【MM_函数库】主循环开始阶段
+        /// </summary>
+        IgnorePlacement,
+        /// <summary>
+        /// 【MM_函数库】主循环周期循环阶段
+        /// </summary>
+        Growing
     }
 
     #endregion
@@ -630,15 +649,53 @@ namespace MetalMaxSystem
         #region Functions 数学公式
 
         /// <summary>
-        /// 【MM_函数库】随机整数
+        /// 【MM_函数库】随机角度
         /// </summary>
         /// <param name="min"></param>
         /// <param name="max"></param>
-        /// <returns></returns>
+        /// <returns>返回[0,360)之间的随机角度</returns>
+        public static double RandomAngle()
+        {
+            Random r = new Random(Guid.NewGuid().GetHashCode());
+            return 360 * r.NextDouble();
+        }
+
+        /// <summary>
+        /// 【MM_函数库】随机实数（不含最大值）
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns>返回[min,max)之间的随机实数</returns>
+        public static double RandomDouble(double min, double max)
+        {
+            Random r = new Random(Guid.NewGuid().GetHashCode());
+            if (min <= max)
+            {
+                return min + (max - min) * r.NextDouble();
+            }
+            else
+            {
+                return max + (min - max) * r.NextDouble();
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】随机整数（不含最大值）
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns>返回[min,max)之间的随机整数</returns>
         public static int RandomInt(int min, int max)
         {
             Random r = new Random(Guid.NewGuid().GetHashCode());
-            return r.Next(min, max);
+            if (min <= max)
+            {
+                return r.Next(min, max);
+            }
+            else
+            {
+                return r.Next(max, min);
+            }
         }
 
         /// <summary>
@@ -1778,7 +1835,7 @@ namespace MetalMaxSystem
 
         #region Functions 数据表功能
 
-        #region 数据表封装使用
+        #region 数据表
 
         //建议使用泛型字典，值与引用类型不混用
 
@@ -24591,7 +24648,232 @@ namespace MetalMaxSystem
     /// </summary>
     public static class Game
     {
-        #region 地图相关字段及其属性
+        #region 字段及属性
+
+        #region EGameCatalog
+
+        const int c_gameCatalogAbil = 0;
+        const int c_gameCatalogAchievement = 1;
+        const int c_gameCatalogAchievementTerm = 2;
+        const int c_gameCatalogActor = 3;
+        const int c_gameCatalogActorSupport = 4;
+        const int c_gameCatalogAlert = 5;
+        const int c_gameCatalogArmyCategory = 6;
+        const int c_gameCatalogArmyUnit = 7;
+        const int c_gameCatalogArmyUpgrade = 8;
+        const int c_gameCatalogArtifact = 9;
+        const int c_gameCatalogArtifactSlot = 10;
+        const int c_gameCatalogAttachMethod = 11;
+        const int c_gameCatalogBankCondition = 12;
+        const int c_gameCatalogBeam = 13;
+        const int c_gameCatalogBehavior = 14;
+        const int c_gameCatalogBundle = 15;
+        const int c_gameCatalogBoost = 16;
+        const int c_gameCatalogButton = 17;
+        const int c_gameCatalogCamera = 18;
+        const int c_gameCatalogCampaign = 19;
+        const int c_gameCatalogCharacter = 20;
+        const int c_gameCatalogCliff = 21;
+        const int c_gameCatalogCliffMesh = 22;
+        const int c_gameCatalogColorStyle = 23;
+        const int c_gameCatalogCommander = 24;
+        const int c_gameCatalogConfig = 25;
+        const int c_gameCatalogConsoleSkin = 26;
+        const int c_gameCatalogConversation = 27;
+        const int c_gameCatalogConversationState = 28;
+        const int c_gameCatalogCursor = 29;
+        const int c_gameCatalogDecalPack = 30;
+        const int c_gameCatalogDSP = 31;
+        const int c_gameCatalogEffect = 32;
+        const int c_gameCatalogEmoticon = 33;
+        const int c_gameCatalogEmoticonPack = 34;
+        const int c_gameCatalogError = 35;
+        const int c_gameCatalogFootprint = 36;
+        const int c_gameCatalogFoW = 37;
+        const int c_gameCatalogGame = 38;
+        const int c_gameCatalogGameUI = 39;
+        const int c_gameCatalogHerd = 40;
+        const int c_gameCatalogHerdNode = 41;
+        const int c_gameCatalogHero = 42;
+        const int c_gameCatalogHeroAbil = 43;
+        const int c_gameCatalogHeroStat = 44;
+        const int c_gameCatalogItem = 45;
+        const int c_gameCatalogItemClass = 46;
+        const int c_gameCatalogItemContainer = 47;
+        const int c_gameCatalogKinetic = 48;
+        const int c_gameCatalogLensFlareSet = 49;
+        const int c_gameCatalogLight = 50;
+        const int c_gameCatalogLocation = 51;
+        const int c_gameCatalogLoot = 52;
+        const int c_gameCatalogMap = 53;
+        const int c_gameCatalogModel = 54;
+        const int c_gameCatalogMount = 55;
+        const int c_gameCatalogMover = 56;
+        const int c_gameCatalogObjective = 57;
+        const int c_gameCatalogPhysicsMaterial = 58;
+        const int c_gameCatalogPing = 59;
+        const int c_gameCatalogPortraitPack = 60;
+        const int c_gameCatalogPreload = 61;
+        const int c_gameCatalogPremiumMap = 62;
+        const int c_gameCatalogRace = 63;
+        const int c_gameCatalogRaceBannerPack = 64;
+        const int c_gameCatalogRequirement = 65;
+        const int c_gameCatalogRequirementNode = 66;
+        const int c_gameCatalogReverb = 67;
+        const int c_gameCatalogReward = 68;
+        const int c_gameCatalogScoreResult = 69;
+        const int c_gameCatalogScoreValue = 70;
+        const int c_gameCatalogShape = 71;
+        const int c_gameCatalogSkin = 72;
+        const int c_gameCatalogSkinPack = 73;
+        const int c_gameCatalogSound = 74;
+        const int c_gameCatalogSoundExclusivity = 75;
+        const int c_gameCatalogSoundMixSnapshot = 76;
+        const int c_gameCatalogSoundtrack = 77;
+        const int c_gameCatalogSpray = 78;
+        const int c_gameCatalogSprayPack = 79;
+        const int c_gameCatalogTacCooldown = 80;
+        const int c_gameCatalogTactical = 81;
+        const int c_gameCatalogTalent = 82;
+        const int c_gameCatalogTalentProfile = 83;
+        const int c_gameCatalogTargetFind = 84;
+        const int c_gameCatalogTargetSort = 85;
+        const int c_gameCatalogTerrain = 86;
+        const int c_gameCatalogTerrainObject = 87;
+        const int c_gameCatalogTerrainTex = 88;
+        const int c_gameCatalogTexture = 89;
+        const int c_gameCatalogTextureSheet = 90;
+        const int c_gameCatalogTile = 91;
+        const int c_gameCatalogTrophy = 92;
+        const int c_gameCatalogTurret = 93;
+        const int c_gameCatalogUnit = 94;
+        const int c_gameCatalogUpgrade = 95;
+        const int c_gameCatalogUser = 96;
+        const int c_gameCatalogValidator = 97;
+        const int c_gameCatalogVoiceOver = 98;
+        const int c_gameCatalogVoicePack = 99;
+        const int c_gameCatalogWarChest = 100;
+        const int c_gameCatalogWarChestSeason = 101;
+        const int c_gameCatalogWater = 102;
+        const int c_gameCatalogWeapon = 103;
+        const int c_gameCatalogStimPack = 104;
+        const int c_gameCatalogAccumulator = 105;
+        const int c_gameCatalogPlayerResponse = 106;
+        const int c_gameCatalogDataCollection = 107;
+        const int c_gameCatalogDataCollectionPattern = 108;
+        const string c_gameCatalogAbilName = "Abil";
+        const string c_gameCatalogAchievementName = "Achievement";
+        const string c_gameCatalogAchievementTermName = "AchievementTerm";
+        const string c_gameCatalogActorName = "Actor";
+        const string c_gameCatalogActorSupportName = "ActorSupport";
+        const string c_gameCatalogAlertName = "Alert";
+        const string c_gameCatalogArmyCategoryName = "ArmyCategory";
+        const string c_gameCatalogArmyUnitName = "ArmyUnit";
+        const string c_gameCatalogArmyUpgradeName = "ArmyUpgrade";
+        const string c_gameCatalogArtifactName = "Artifact";
+        const string c_gameCatalogArtifactSlotName = "ArtifactSlot";
+        const string c_gameCatalogAttachMethodName = "AttachMethod";
+        const string c_gameCatalogBankConditionName = "BankCondition";
+        const string c_gameCatalogBeamName = "Beam";
+        const string c_gameCatalogBehaviorName = "Behavior";
+        const string c_gameCatalogBundleName = "Bundle";
+        const string c_gameCatalogBoostName = "Boost";
+        const string c_gameCatalogButtonName = "Button";
+        const string c_gameCatalogCameraName = "Camera";
+        const string c_gameCatalogCampaignName = "Campaign";
+        const string c_gameCatalogCharacterName = "Character";
+        const string c_gameCatalogCliffName = "Cliff";
+        const string c_gameCatalogCliffMeshName = "CliffMesh";
+        const string c_gameCatalogColorStyleName = "ColorStyle";
+        const string c_gameCatalogCommanderName = "Commander";
+        const string c_gameCatalogConfigName = "Config";
+        const string c_gameCatalogConsoleSkinName = "ConsoleSkin";
+        const string c_gameCatalogConversationName = "Conversation";
+        const string c_gameCatalogConversationStateName = "ConversationState";
+        const string c_gameCatalogCursorName = "Cursor";
+        const string c_gameCatalogDecalPackName = "DecalPack";
+        const string c_gameCatalogDSPName = "DSP";
+        const string c_gameCatalogEffectName = "Effect";
+        const string c_gameCatalogEmoticonName = "Emoticon";
+        const string c_gameCatalogEmoticonPackName = "EmoticonPack";
+        const string c_gameCatalogErrorName = "Error";
+        const string c_gameCatalogFootprintName = "Footprint";
+        const string c_gameCatalogFoWName = "FoW";
+        const string c_gameCatalogGameName = "Game";
+        const string c_gameCatalogGameUIName = "GameUI";
+        const string c_gameCatalogHerdName = "Herd";
+        const string c_gameCatalogHerdNodeName = "HerdNode";
+        const string c_gameCatalogHeroName = "Hero";
+        const string c_gameCatalogHeroAbilName = "HeroAbil";
+        const string c_gameCatalogHeroStatName = "HeroStat";
+        const string c_gameCatalogItemName = "Item";
+        const string c_gameCatalogItemClassName = "ItemClass";
+        const string c_gameCatalogItemContainerName = "ItemContainer";
+        const string c_gameCatalogKineticName = "Kinetic";
+        const string c_gameCatalogLensFlareSetName = "LensFlareSet";
+        const string c_gameCatalogLightName = "Light";
+        const string c_gameCatalogLocationName = "Location";
+        const string c_gameCatalogLootName = "Loot";
+        const string c_gameCatalogMapName = "Map";
+        const string c_gameCatalogModelName = "Model";
+        const string c_gameCatalogMountName = "Mount";
+        const string c_gameCatalogMoverName = "Mover";
+        const string c_gameCatalogObjectiveName = "Objective";
+        const string c_gameCatalogPhysicsMaterialName = "PhysicsMaterial";
+        const string c_gameCatalogPingName = "Ping";
+        const string c_gameCatalogPortraitPackName = "PortraitPack";
+        const string c_gameCatalogPreloadName = "Preload";
+        const string c_gameCatalogPremiumMapName = "PremiumMap";
+        const string c_gameCatalogRaceName = "Race";
+        const string c_gameCatalogRaceBannerPackName = "RaceBannerPack";
+        const string c_gameCatalogRequirementName = "Requirement";
+        const string c_gameCatalogRequirementNodeName = "RequirementNode";
+        const string c_gameCatalogReverbName = "Reverb";
+        const string c_gameCatalogRewardName = "Reward";
+        const string c_gameCatalogScoreResultName = "ScoreResult";
+        const string c_gameCatalogScoreValueName = "ScoreValue";
+        const string c_gameCatalogShapeName = "Shape";
+        const string c_gameCatalogSkinName = "Skin";
+        const string c_gameCatalogSkinPackName = "SkinPack";
+        const string c_gameCatalogSoundName = "Sound";
+        const string c_gameCatalogSoundExclusivityName = "SoundExclusivity";
+        const string c_gameCatalogSoundMixSnapshotName = "SoundMixSnapshot";
+        const string c_gameCatalogSoundtrackName = "Soundtrack";
+        const string c_gameCatalogSprayName = "Spray";
+        const string c_gameCatalogSprayPackName = "SprayPack";
+        const string c_gameCatalogTacCooldownName = "TacCooldown";
+        const string c_gameCatalogTacticalName = "Tactical";
+        const string c_gameCatalogTalentName = "Talent";
+        const string c_gameCatalogTalentProfileName = "TalentProfile";
+        const string c_gameCatalogTargetFindName = "TargetFind";
+        const string c_gameCatalogTargetSortName = "TargetSort";
+        const string c_gameCatalogTerrainName = "Terrain";
+        const string c_gameCatalogTerrainObjectName = "TerrainObject";
+        const string c_gameCatalogTerrainTexName = "TerrainTex";
+        const string c_gameCatalogTextureName = "Texture";
+        const string c_gameCatalogTextureSheetName = "TextureSheet";
+        const string c_gameCatalogTileName = "Tile";
+        const string c_gameCatalogTrophyName = "Trophy";
+        const string c_gameCatalogTurretName = "Turret";
+        const string c_gameCatalogUnitName = "Unit";
+        const string c_gameCatalogUpgradeName = "Upgrade";
+        const string c_gameCatalogUserName = "User";
+        const string c_gameCatalogValidatorName = "Validator";
+        const string c_gameCatalogVoiceOverName = "VoiceOver";
+        const string c_gameCatalogVoicePackName = "VoicePack";
+        const string c_gameCatalogWarChestName = "WarChest";
+        const string c_gameCatalogWarChestSeasonName = "WarChestSeason";
+        const string c_gameCatalogWaterName = "Water";
+        const string c_gameCatalogWeaponName = "Weapon";
+        const string c_gameCatalogStimPackName = "StimPack";
+        const string c_gameCatalogAccumulatorName = "Accumulator";
+        const string c_gameCatalogPlayerResponseName = "PlayerResponse";
+        const string c_gameCatalogDataCollectionName = "DataCollection";
+        const string c_gameCatalogDataCollectionPatternName = "DataCollectionPattern";
+
+        #endregion
+
+        #region 地图相关
 
         private static double _mapHeight;
         private static double[,] _terrainHeight = new double[2560 + 1, 2560 + 1];
@@ -24614,6 +24896,8 @@ namespace MetalMaxSystem
 
         #endregion
 
+        #region 其他
+
         /// <summary>
         /// 【MM_函数库】载具类型上限
         /// </summary>
@@ -24634,6 +24918,86 @@ namespace MetalMaxSystem
         /// 【MM_函数库】本地用户玩家的编号
         /// </summary>
         public static int UID { get => _uID; set => _uID = value; }
+
+        private static int _currentUnitHandle;
+        /// <summary>
+        /// 【MM_函数库】最近一次新建的单位句柄
+        /// </summary>
+        public static int CurrentUnitHandle { get => _currentUnitHandle; set => _currentUnitHandle = value; }
+
+        #endregion
+
+        #endregion
+
+        #region 函数
+
+        /// <summary>
+        /// 设置指定目录数据类型的字段值
+        /// </summary>
+        /// <param name="catalog">目录</param>
+        /// <param name="entry">数据类型</param>
+        /// <param name="fieldPath">字段路径</param>
+        /// <param name="player">玩家</param>
+        /// <param name="value">值</param>
+        public static void CatalogFieldValueSet(int catalog, string entry, string fieldPath, int player, string value)
+        {
+            MMCore.DataTableStringSave0(true, catalog.ToString() + "_" + entry + "_" + fieldPath + "_" + player, value);
+        }
+
+        /// <summary>
+        /// 获取指定目录数据类型的字段值
+        /// </summary>
+        /// <param name="catalog">目录</param>
+        /// <param name="entry">数据类型</param>
+        /// <param name="fieldPath">字段路径</param>
+        /// <param name="player">玩家</param>
+        /// <returns></returns>
+        public static string CatalogFieldValueGet(int catalog, string entry, string fieldPath, int player)
+        {
+            return MMCore.DataTableStringLoad0(true, catalog.ToString() + "_" + entry + "_" + fieldPath + "_" + player);
+        }
+
+        /// <summary>
+        /// 使用默认朝向创建单位
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="unitType"></param>
+        /// <param name="vector"></param>
+        /// <param name="unitCreateTag"></param>
+        /// <returns>返回根据unitType创建的单位实例</returns>
+        public static Unit CreateUnitsWithDefaultFacing(int player, string unitType, Vector vector, UnitCreateTag unitCreateTag)
+        {
+            Unit unit = UnitCreate(player, unitType, vector, unitCreateTag);
+            unit.Angle -= 90.0;
+            return unit;
+        }
+
+        /// <summary>
+        /// 创建模板单位
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="unitType"></param>
+        /// <param name="vector"></param>
+        /// <param name="unitCreateTag"></param>
+        /// <returns>返回根据unitType创建的单位实例</returns>
+        public static Unit UnitCreate(int player, string unitType, Vector vector, UnitCreateTag unitCreateTag)
+        {
+            Unit unit;
+            switch (unitType)
+            {
+                case "Marine":
+                    unit = new Marine();
+                    break;
+                default:
+                    unit = new Unit();
+                    break;
+            }
+            unit.Owner = player;
+            if (unit.Hp <= 0.0) { unit.Hp = 1.0; }
+            return unit;
+        }
+
+        #endregion
     }
 
     /// <summary>
@@ -25401,11 +25765,13 @@ namespace MetalMaxSystem
     }
 
     /// <summary>
-    /// 【MM_函数库】单位类
+    /// 【MM_函数库】模板单位
     /// </summary>
     public class Unit
     {
-        #region 字段声明（字段用于每个实例存储不同的值）
+        #region 字段
+
+        //字段用于每个实例存储不同的值
 
         private string _name;
 
@@ -25490,17 +25856,21 @@ namespace MetalMaxSystem
         private double _height = 1.8;
         private double _radius = 0.5;
         private double _selectedRadius = 0.5;
+        private int _owner;
+        private int _controller;
+        private double _angle;
 
         #endregion
 
         #region 构造函数
 
         /// <summary>
-        /// 【MM_函数库】单位类
+        /// 【MM_函数库】模板单位
         /// </summary>
         public Unit()
         {
             //创建新类时的初始化动作
+            Tag = Game.CurrentUnitHandle + 1;
         }
 
         #endregion
@@ -25743,10 +26113,344 @@ namespace MetalMaxSystem
         /// </summary>
         public double SelectedRadius { get => _selectedRadius; set => _selectedRadius = value; }
 
+        /// <summary>
+        /// 单位所有者的玩家编号
+        /// </summary>
+        public int Owner { get => _owner; set => _owner = value; }
+
+        /// <summary>
+        /// 单位控制者的玩家编号
+        /// </summary>
+        public int Controller { get => _controller; set => _controller = value; }
+
+        /// <summary>
+        /// 单位朝向角度
+        /// </summary>
+        public double Angle { get => _angle; set => _angle = value; }
+
+        #endregion
+
+        #region 函数
+
+        /// <summary>
+        /// 返回单位的世界坐标点（二维）
+        /// </summary>
+        /// <returns></returns>
+        public Vector GetPosition()
+        {
+            return Vector;
+        }
 
         #endregion
 
     }
+
+    #region 派生单位
+
+    /// <summary>
+    /// 储物箱
+    /// </summary>
+    public class CCData_StorageBox : Unit { }
+
+    /// <summary>
+    /// 火焰虫
+    /// </summary>
+    public class CCData_FlameBeetle : Unit { }
+
+    /// <summary>
+    /// 建筑废墟
+    /// </summary>
+    public class CCData_BuildingRuin : Unit { }
+
+    /// <summary>
+    /// 通讯大楼
+    /// </summary>
+    public class CCData_TongXunDaLou : Unit { }
+
+    /// <summary>
+    /// 备用车库
+    /// </summary>
+    public class CCData_BeiYongCheKu : Unit { }
+
+    /// <summary>
+    /// 生产车间
+    /// </summary>
+    public class CCData_ShengChanCheJian : Unit { }
+
+    /// <summary>
+    /// 修理场
+    /// </summary>
+    public class CCData_XiuLiChang : Unit { }
+
+    /// <summary>
+    /// 主车库
+    /// </summary>
+    public class CCData_ZhuCheKu : Unit { }
+
+    /// <summary>
+    /// 飞船（剧情）
+    /// </summary>
+    public class CCData_Story_FeiChuan : Unit { }
+
+    /// <summary>
+    /// 巴拉克
+    /// </summary>
+    public class CCData_StoryBoss_Brakk : Unit { }
+
+    /// <summary>
+    /// 百生丝莉芬
+    /// </summary>
+    public class CCData_StoryBoss_Slivan : Unit { }
+
+    /// <summary>
+    /// 毒裂兽
+    /// </summary>
+    public class CCData_StoryBoss_Mitosaurus : Unit { }
+
+    /// <summary>
+    /// 毒瘴兽
+    /// </summary>
+    public class CCData_StoryBoss_HotSNoxious : Unit { }
+
+    /// <summary>
+    /// 异形大牛
+    /// </summary>
+    public class CCData_StoryBoss_HotSTorrasque : Unit { }
+
+    /// <summary>
+    /// 僵尸
+    /// </summary>
+    public class CCData_Zombie : Unit { }
+
+    /// <summary>
+    /// 僵尸生成器
+    /// </summary>
+    public class CCData_ZobieMaker : Unit { }
+
+    /// <summary>
+    /// 瓦力生成器
+    /// </summary>
+    public class CCData_WaLiMaker : Unit { }
+
+    /// <summary>
+    /// 外星生成器
+    /// </summary>
+    public class CCData_AlienMaker : Unit { }
+
+    /// <summary>
+    /// 火王兽
+    /// </summary>
+    public class CCData_KingBoss_HuoWangShou : Unit { }
+
+    /// <summary>
+    /// 机械雷王兽
+    /// </summary>
+    public class CCData_KingBoss_MechanicalThunderBeast : Unit { }
+
+    /// <summary>
+    /// 雷王兽
+    /// </summary>
+    public class CCData_KingBoss_LeiWangShou : Unit { }
+
+    /// <summary>
+    /// 末日兽
+    /// </summary>
+    public class CCData_KingBoss_MoRiShou : Unit { }
+
+    /// <summary>
+    /// 虚空兽
+    /// </summary>
+    public class CCData_KingBoss_XuKongShou : Unit { }
+
+    /// <summary>
+    /// 亚格卓拉
+    /// </summary>
+    public class CCData_KingBoss_Yagdra : Unit { }
+
+    /// <summary>
+    /// 武装者
+    /// </summary>
+    public class CCData_Hero_Armer : Unit { }
+
+    /// <summary>
+    /// 陆战队员
+    /// </summary>
+    public class Marine : Unit { }
+
+    /// <summary>
+    /// 伪装者（诺亚势力）
+    /// </summary>
+    public class CCData_Pretender : Unit { }
+
+    /// <summary>
+    /// 沙袋
+    /// </summary>
+    public class CCData_HB_SandBag : Unit { }
+
+    /// <summary>
+    /// 营火
+    /// </summary>
+    public class CCData_HB_Campfire : Unit { }
+
+    /// <summary>
+    /// 自动机炮
+    /// </summary>
+    public class CCData_HB_AutoTurret : Unit { }
+
+    /// <summary>
+    /// 末日炮塔
+    /// </summary>
+    public class CCData_HB_PerditionTurret : Unit { }
+
+    /// <summary>
+    /// 方阵机炮
+    /// </summary>
+    public class CCData_HB_FangZhenJiPao : Unit { }
+
+    /// <summary>
+    /// 特斯拉电磁塔
+    /// </summary>
+    public class CCData_HB_TeslaTurret : Unit { }
+
+    /// <summary>
+    /// 导弹塔
+    /// </summary>
+    public class CCData_HB_MissileTurret : Unit { }
+
+    /// <summary>
+    /// 地堡
+    /// </summary>
+    public class CCData_HB_Bunker : Unit { }
+
+    /// <summary>
+    /// 军用沙袋
+    /// </summary>
+    public class CCData_HB_MilitarySandbag : Unit { }
+
+    /// <summary>
+    /// 路障
+    /// </summary>
+    public class CCData_HB_Barricade : Unit { }
+
+    /// <summary>
+    /// 机枪炮台
+    /// </summary>
+    public class CCData_HB_GunTurret : Unit { }
+
+    /// <summary>
+    /// 毒气炮台
+    /// </summary>
+    public class CCData_HB_GasFortDown : Unit { }
+
+    /// <summary>
+    /// 旋转炮台
+    /// </summary>
+    public class CCData_HB_RotatingTurret : Unit { }
+
+    /// <summary>
+    /// 宝箱
+    /// </summary>
+    public class CCData_BaoXiang : Unit { }
+
+    /// <summary>
+    /// 特殊宝箱
+    /// </summary>
+    public class CCData_TeShuBaoXiang : Unit { }
+
+    /// <summary>
+    /// 特异宝箱
+    /// </summary>
+    public class CCData_TeYiBaoXiang : Unit { }
+
+    /// <summary>
+    /// 王兽宝箱
+    /// </summary>
+    public class CCData_WangShouBaoXiang : Unit { }
+
+    /// <summary>
+    /// 珍宝箱
+    /// </summary>
+    public class CCData_ZhenBaoXiang : Unit { }
+
+    /// <summary>
+    /// 功勋
+    /// </summary>
+    public class CCData_Honor : Unit { }
+
+    /// <summary>
+    /// 机件
+    /// </summary>
+    public class CCData_JiJian : Unit { }
+
+    /// <summary>
+    /// 强化星
+    /// </summary>
+    public class CCData_Star : Unit { }
+
+    /// <summary>
+    /// 全满补给
+    /// </summary>
+    public class CCData_PickupHealthFull : Unit { }
+
+    /// <summary>
+    /// 设计图
+    /// </summary>
+    public class CCData_SheJiTu : Unit { }
+
+    /// <summary>
+    /// 武器
+    /// </summary>
+    public class CCData_WuQi : Unit { }
+
+    /// <summary>
+    /// 新机件
+    /// </summary>
+    public class CCData_JiJianNew : Unit { }
+
+    /// <summary>
+    /// 新型设计图
+    /// </summary>
+    public class CCData_SheJiTuNew : Unit { }
+
+    /// <summary>
+    /// 新型武器
+    /// </summary>
+    public class CCData_WuQiNew : Unit { }
+
+    /// <summary>
+    /// 诺亚核心（不完全形态）
+    /// </summary>
+    public class CCData_NYCoreImperfection : Unit { }
+
+    /// <summary>
+    /// 诺亚核心
+    /// </summary>
+    public class CCData_NYCore : Unit { }
+
+    /// <summary>
+    /// 储藏箱
+    /// </summary>
+    public class CCData_NovaResupplyCrate : Unit { }
+
+    /// <summary>
+    /// 手榴弹
+    /// </summary>
+    public class CCData_PickupGrenades : Unit { }
+
+    /// <summary>
+    /// 飞行装备
+    /// </summary>
+    public class CCData_FlightEquipment : Unit { }
+
+    /// <summary>
+    /// 装备箱（里面存放着几件随机物品）
+    /// </summary>
+    public class CCData_PickupZbx : Unit { }
+
+
+
+
+    #endregion
 
     /// <summary>
     /// 【MM_函数库】玩家类，为每个玩家创建它并初始化所需信息，内置字段以外的临时属性可用数据表添加修改
