@@ -3,9 +3,10 @@ using MetalMaxSystem;
 
 namespace MMConsole
 {
-    class Console
+    public class Console
     {
-        static void Main(string[] args)
+
+        public static void Main(string[] args)
         {
 
             TimerUpdate A = new TimerUpdate();
@@ -30,5 +31,6 @@ namespace MMConsole
         {
             //测试多参任意类型
         }
+
     }
 }
