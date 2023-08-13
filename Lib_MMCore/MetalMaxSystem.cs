@@ -110,11 +110,11 @@ namespace MetalMaxSystem
         /// </summary>
         Birth,
         /// <summary>
-        /// 【MM_函数库】主循环开始阶段
+        /// 【MM_函数库】忽略占位
         /// </summary>
         IgnorePlacement,
         /// <summary>
-        /// 【MM_函数库】主循环周期循环阶段
+        /// 【MM_函数库】成长中
         /// </summary>
         Growing
     }
@@ -257,7 +257,7 @@ namespace MetalMaxSystem
     //委托是引用类型
 
     //个人书写习惯↓
-    //声明的委托类型首字母大写、委托类型变量（执行函数）首字母大写；
+    //声明的委托类型首字母大写
     //结尾Funcref 表示无事件event记号的常规委托类型（不安全使用）
     //结尾Handler 表示有事件event记号的事件委托类型（可安全使用）
 
@@ -2622,12 +2622,107 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static Vector? DataTableVectorLoad0(bool place, string key)
+        public static Vector? DataTableVectorLoad0_N(bool place, string key)
         {
             switch (DataTableType)
             {
                 case "HashTable":
                     return (Vector?)HashTableLoad0(place, "HD_" + key);
+                default:
+                    return DictionaryVectorLoad0_N(place, "HD_" + key);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟1维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <returns></returns>
+        public static Vector? DataTableVectorLoad1_N(bool place, string key, int lp_1)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Vector?)HashTableLoad1(place, "HD_" + key, lp_1);
+                default:
+                    return DictionaryVectorLoad1_N(place, "HD_" + key, lp_1);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟2维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <returns></returns>
+        public static Vector? DataTableVectorLoad2_N(bool place, string key, int lp_1, int lp_2)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Vector?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                default:
+                    return DictionaryVectorLoad2_N(place, "HD_" + key, lp_1, lp_2);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟3维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <returns></returns>
+        public static Vector? DataTableVectorLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Vector?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryVectorLoad3_N(place, "HD_" + key, lp_1, lp_2, lp_3);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟4维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <param name="lp_4"></param>
+        /// <returns></returns>
+        public static Vector? DataTableVectorLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Vector?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryVectorLoad4_N(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <returns>错误时返回new Vector(0,0)</returns>
+        public static Vector DataTableVectorLoad0(bool place, string key)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (Vector)HashTableLoad0(place, "HD_" + key);
                 default:
                     return DictionaryVectorLoad0(place, "HD_" + key);
             }
@@ -2640,12 +2735,12 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns></returns>
-        public static Vector? DataTableVectorLoad1(bool place, string key, int lp_1)
+        public static Vector DataTableVectorLoad1(bool place, string key, int lp_1)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (Vector?)HashTableLoad1(place, "HD_" + key, lp_1);
+                    return (Vector)HashTableLoad1(place, "HD_" + key, lp_1);
                 default:
                     return DictionaryVectorLoad1(place, "HD_" + key, lp_1);
             }
@@ -2659,12 +2754,12 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns></returns>
-        public static Vector? DataTableVectorLoad2(bool place, string key, int lp_1, int lp_2)
+        public static Vector DataTableVectorLoad2(bool place, string key, int lp_1, int lp_2)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (Vector?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                    return (Vector)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
                 default:
                     return DictionaryVectorLoad2(place, "HD_" + key, lp_1, lp_2);
             }
@@ -2679,12 +2774,12 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns></returns>
-        public static Vector? DataTableVectorLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static Vector DataTableVectorLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (Vector?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                    return (Vector)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
                 default:
                     return DictionaryVectorLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
             }
@@ -2700,12 +2795,12 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns></returns>
-        public static Vector? DataTableVectorLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static Vector DataTableVectorLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (Vector?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                    return (Vector)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
                 default:
                     return DictionaryVectorLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
             }
@@ -3745,12 +3840,107 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static int? DataTableIntLoad0(bool place, string key)
+        public static int? DataTableIntLoad0_N(bool place, string key)
         {
             switch (DataTableType)
             {
                 case "HashTable":
                     return (int?)HashTableLoad0(place, "HD_" + key);
+                default:
+                    return DictionaryIntLoad0_N(place, "HD_" + key);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟1维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <returns></returns>
+        public static int? DataTableIntLoad1_N(bool place, string key, int lp_1)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (int?)HashTableLoad1(place, "HD_" + key, lp_1);
+                default:
+                    return DictionaryIntLoad1_N(place, "HD_" + key, lp_1);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟2维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <returns></returns>
+        public static int? DataTableIntLoad2_N(bool place, string key, int lp_1, int lp_2)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (int?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                default:
+                    return DictionaryIntLoad2_N(place, "HD_" + key, lp_1, lp_2);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟3维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <returns></returns>
+        public static int? DataTableIntLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (int?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryIntLoad3_N(place, "HD_" + key, lp_1, lp_2, lp_3);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟4维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <param name="lp_4"></param>
+        /// <returns></returns>
+        public static int? DataTableIntLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (int?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryIntLoad4_N(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static int DataTableIntLoad0(bool place, string key)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (int)HashTableLoad0(place, "HD_" + key);
                 default:
                     return DictionaryIntLoad0(place, "HD_" + key);
             }
@@ -3763,12 +3953,12 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns></returns>
-        public static int? DataTableIntLoad1(bool place, string key, int lp_1)
+        public static int DataTableIntLoad1(bool place, string key, int lp_1)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (int?)HashTableLoad1(place, "HD_" + key, lp_1);
+                    return (int)HashTableLoad1(place, "HD_" + key, lp_1);
                 default:
                     return DictionaryIntLoad1(place, "HD_" + key, lp_1);
             }
@@ -3782,12 +3972,12 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns></returns>
-        public static int? DataTableIntLoad2(bool place, string key, int lp_1, int lp_2)
+        public static int DataTableIntLoad2(bool place, string key, int lp_1, int lp_2)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (int?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                    return (int)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
                 default:
                     return DictionaryIntLoad2(place, "HD_" + key, lp_1, lp_2);
             }
@@ -3802,12 +3992,12 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns></returns>
-        public static int? DataTableIntLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static int DataTableIntLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (int?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                    return (int)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
                 default:
                     return DictionaryIntLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
             }
@@ -3823,12 +4013,12 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns></returns>
-        public static int? DataTableIntLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static int DataTableIntLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (int?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                    return (int)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
                 default:
                     return DictionaryIntLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
             }
@@ -4118,12 +4308,107 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static long? DataTableLongLoad0(bool place, string key)
+        public static long? DataTableLongLoad0_N(bool place, string key)
         {
             switch (DataTableType)
             {
                 case "HashTable":
                     return (long?)HashTableLoad0(place, "HD_" + key);
+                default:
+                    return DictionaryLongLoad0_N(place, "HD_" + key);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟1维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <returns></returns>
+        public static long? DataTableLongLoad1_N(bool place, string key, int lp_1)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (long?)HashTableLoad1(place, "HD_" + key, lp_1);
+                default:
+                    return DictionaryLongLoad1_N(place, "HD_" + key, lp_1);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟2维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <returns></returns>
+        public static long? DataTableLongLoad2_N(bool place, string key, int lp_1, int lp_2)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (long?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                default:
+                    return DictionaryLongLoad2_N(place, "HD_" + key, lp_1, lp_2);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟3维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <returns></returns>
+        public static long? DataTableLongLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (long?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryLongLoad3_N(place, "HD_" + key, lp_1, lp_2, lp_3);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟4维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <param name="lp_4"></param>
+        /// <returns></returns>
+        public static long? DataTableLongLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (long?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryLongLoad4_N(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static long DataTableLongLoad0(bool place, string key)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (long)HashTableLoad0(place, "HD_" + key);
                 default:
                     return DictionaryLongLoad0(place, "HD_" + key);
             }
@@ -4136,12 +4421,12 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns></returns>
-        public static long? DataTableLongLoad1(bool place, string key, int lp_1)
+        public static long DataTableLongLoad1(bool place, string key, int lp_1)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (long?)HashTableLoad1(place, "HD_" + key, lp_1);
+                    return (long)HashTableLoad1(place, "HD_" + key, lp_1);
                 default:
                     return DictionaryLongLoad1(place, "HD_" + key, lp_1);
             }
@@ -4155,12 +4440,12 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns></returns>
-        public static long? DataTableLongLoad2(bool place, string key, int lp_1, int lp_2)
+        public static long DataTableLongLoad2(bool place, string key, int lp_1, int lp_2)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (long?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                    return (long)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
                 default:
                     return DictionaryLongLoad2(place, "HD_" + key, lp_1, lp_2);
             }
@@ -4175,12 +4460,12 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns></returns>
-        public static long? DataTableLongLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static long DataTableLongLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (long?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                    return (long)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
                 default:
                     return DictionaryLongLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
             }
@@ -4196,12 +4481,12 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns></returns>
-        public static long? DataTableLongLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static long DataTableLongLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (long?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                    return (long)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
                 default:
                     return DictionaryLongLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
             }
@@ -4491,12 +4776,107 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static char? DataTableCharLoad0(bool place, string key)
+        public static char? DataTableCharLoad0_N(bool place, string key)
         {
             switch (DataTableType)
             {
                 case "HashTable":
                     return (char?)HashTableLoad0(place, "HD_" + key);
+                default:
+                    return DictionaryCharLoad0_N(place, "HD_" + key);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟1维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <returns></returns>
+        public static char? DataTableCharLoad1_N(bool place, string key, int lp_1)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (char?)HashTableLoad1(place, "HD_" + key, lp_1);
+                default:
+                    return DictionaryCharLoad1_N(place, "HD_" + key, lp_1);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟2维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <returns></returns>
+        public static char? DataTableCharLoad2_N(bool place, string key, int lp_1, int lp_2)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (char?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                default:
+                    return DictionaryCharLoad2_N(place, "HD_" + key, lp_1, lp_2);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟3维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <returns></returns>
+        public static char? DataTableCharLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (char?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryCharLoad3_N(place, "HD_" + key, lp_1, lp_2, lp_3);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟4维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <param name="lp_4"></param>
+        /// <returns></returns>
+        public static char? DataTableCharLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (char?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryCharLoad4_N(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static char DataTableCharLoad0(bool place, string key)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (char)HashTableLoad0(place, "HD_" + key);
                 default:
                     return DictionaryCharLoad0(place, "HD_" + key);
             }
@@ -4509,12 +4889,12 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns></returns>
-        public static char? DataTableCharLoad1(bool place, string key, int lp_1)
+        public static char DataTableCharLoad1(bool place, string key, int lp_1)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (char?)HashTableLoad1(place, "HD_" + key, lp_1);
+                    return (char)HashTableLoad1(place, "HD_" + key, lp_1);
                 default:
                     return DictionaryCharLoad1(place, "HD_" + key, lp_1);
             }
@@ -4528,12 +4908,12 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns></returns>
-        public static char? DataTableCharLoad2(bool place, string key, int lp_1, int lp_2)
+        public static char DataTableCharLoad2(bool place, string key, int lp_1, int lp_2)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (char?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                    return (char)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
                 default:
                     return DictionaryCharLoad2(place, "HD_" + key, lp_1, lp_2);
             }
@@ -4548,12 +4928,12 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns></returns>
-        public static char? DataTableCharLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static char DataTableCharLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (char?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                    return (char)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
                 default:
                     return DictionaryCharLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
             }
@@ -4569,19 +4949,18 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns></returns>
-        public static char? DataTableCharLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static char DataTableCharLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (char?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                    return (char)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
                 default:
                     return DictionaryCharLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
             }
         }
 
         #endregion
-
 
         #region Float
 
@@ -4865,12 +5244,107 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static float? DataTableFloatLoad0(bool place, string key)
+        public static float? DataTableFloatLoad0_N(bool place, string key)
         {
             switch (DataTableType)
             {
                 case "HashTable":
                     return (float?)HashTableLoad0(place, "HD_" + key);
+                default:
+                    return DictionaryFloatLoad0_N(place, "HD_" + key);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟1维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <returns></returns>
+        public static float? DataTableFloatLoad1_N(bool place, string key, int lp_1)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (float?)HashTableLoad1(place, "HD_" + key, lp_1);
+                default:
+                    return DictionaryFloatLoad1_N(place, "HD_" + key, lp_1);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟2维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <returns></returns>
+        public static float? DataTableFloatLoad2_N(bool place, string key, int lp_1, int lp_2)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (float?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                default:
+                    return DictionaryFloatLoad2_N(place, "HD_" + key, lp_1, lp_2);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟3维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <returns></returns>
+        public static float? DataTableFloatLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (float?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryFloatLoad3_N(place, "HD_" + key, lp_1, lp_2, lp_3);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟4维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <param name="lp_4"></param>
+        /// <returns></returns>
+        public static float? DataTableFloatLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (float?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryFloatLoad4_N(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static float DataTableFloatLoad0(bool place, string key)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (float)HashTableLoad0(place, "HD_" + key);
                 default:
                     return DictionaryFloatLoad0(place, "HD_" + key);
             }
@@ -4883,12 +5357,12 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns></returns>
-        public static float? DataTableFloatLoad1(bool place, string key, int lp_1)
+        public static float DataTableFloatLoad1(bool place, string key, int lp_1)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (float?)HashTableLoad1(place, "HD_" + key, lp_1);
+                    return (float)HashTableLoad1(place, "HD_" + key, lp_1);
                 default:
                     return DictionaryFloatLoad1(place, "HD_" + key, lp_1);
             }
@@ -4902,12 +5376,12 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns></returns>
-        public static float? DataTableFloatLoad2(bool place, string key, int lp_1, int lp_2)
+        public static float DataTableFloatLoad2(bool place, string key, int lp_1, int lp_2)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (float?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                    return (float)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
                 default:
                     return DictionaryFloatLoad2(place, "HD_" + key, lp_1, lp_2);
             }
@@ -4922,12 +5396,12 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns></returns>
-        public static float? DataTableFloatLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static float DataTableFloatLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (float?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                    return (float)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
                 default:
                     return DictionaryFloatLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
             }
@@ -4943,12 +5417,12 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns></returns>
-        public static float? DataTableFloatLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static float DataTableFloatLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (float?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                    return (float)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
                 default:
                     return DictionaryFloatLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
             }
@@ -5238,12 +5712,107 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static double? DataTableDoubleLoad0(bool place, string key)
+        public static double? DataTableDoubleLoad0_N(bool place, string key)
         {
             switch (DataTableType)
             {
                 case "HashTable":
                     return (double?)HashTableLoad0(place, "HD_" + key);
+                default:
+                    return DictionaryDoubleLoad0_N(place, "HD_" + key);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟1维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <returns></returns>
+        public static double? DataTableDoubleLoad1_N(bool place, string key, int lp_1)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (double?)HashTableLoad1(place, "HD_" + key, lp_1);
+                default:
+                    return DictionaryDoubleLoad1_N(place, "HD_" + key, lp_1);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟2维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <returns></returns>
+        public static double? DataTableDoubleLoad2_N(bool place, string key, int lp_1, int lp_2)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (double?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                default:
+                    return DictionaryDoubleLoad2_N(place, "HD_" + key, lp_1, lp_2);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟3维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <returns></returns>
+        public static double? DataTableDoubleLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (double?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryDoubleLoad3_N(place, "HD_" + key, lp_1, lp_2, lp_3);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟4维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <param name="lp_4"></param>
+        /// <returns></returns>
+        public static double? DataTableDoubleLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (double?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryDoubleLoad4_N(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static double DataTableDoubleLoad0(bool place, string key)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (double)HashTableLoad0(place, "HD_" + key);
                 default:
                     return DictionaryDoubleLoad0(place, "HD_" + key);
             }
@@ -5256,12 +5825,12 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns></returns>
-        public static double? DataTableDoubleLoad1(bool place, string key, int lp_1)
+        public static double DataTableDoubleLoad1(bool place, string key, int lp_1)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (double?)HashTableLoad1(place, "HD_" + key, lp_1);
+                    return (double)HashTableLoad1(place, "HD_" + key, lp_1);
                 default:
                     return DictionaryDoubleLoad1(place, "HD_" + key, lp_1);
             }
@@ -5275,12 +5844,12 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns></returns>
-        public static double? DataTableDoubleLoad2(bool place, string key, int lp_1, int lp_2)
+        public static double DataTableDoubleLoad2(bool place, string key, int lp_1, int lp_2)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (double?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                    return (double)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
                 default:
                     return DictionaryDoubleLoad2(place, "HD_" + key, lp_1, lp_2);
             }
@@ -5295,12 +5864,12 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns></returns>
-        public static double? DataTableDoubleLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static double DataTableDoubleLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (double?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                    return (double)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
                 default:
                     return DictionaryDoubleLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
             }
@@ -5316,12 +5885,12 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns></returns>
-        public static double? DataTableDoubleLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static double DataTableDoubleLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (double?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                    return (double)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
                 default:
                     return DictionaryDoubleLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
             }
@@ -5611,12 +6180,107 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static bool? DataTableBoolLoad0(bool place, string key)
+        public static bool? DataTableBoolLoad0_N(bool place, string key)
         {
             switch (DataTableType)
             {
                 case "HashTable":
                     return (bool?)HashTableLoad0(place, "HD_" + key);
+                default:
+                    return DictionaryBoolLoad0_N(place, "HD_" + key);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟1维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <returns></returns>
+        public static bool? DataTableBoolLoad1_N(bool place, string key, int lp_1)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (bool?)HashTableLoad1(place, "HD_" + key, lp_1);
+                default:
+                    return DictionaryBoolLoad1_N(place, "HD_" + key, lp_1);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟2维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <returns></returns>
+        public static bool? DataTableBoolLoad2_N(bool place, string key, int lp_1, int lp_2)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (bool?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                default:
+                    return DictionaryBoolLoad2_N(place, "HD_" + key, lp_1, lp_2);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟3维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <returns></returns>
+        public static bool? DataTableBoolLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (bool?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryBoolLoad3_N(place, "HD_" + key, lp_1, lp_2, lp_3);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟4维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <param name="lp_4"></param>
+        /// <returns></returns>
+        public static bool? DataTableBoolLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (bool?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryBoolLoad4_N(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static bool DataTableBoolLoad0(bool place, string key)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (bool)HashTableLoad0(place, "HD_" + key);
                 default:
                     return DictionaryBoolLoad0(place, "HD_" + key);
             }
@@ -5629,12 +6293,12 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns></returns>
-        public static bool? DataTableBoolLoad1(bool place, string key, int lp_1)
+        public static bool DataTableBoolLoad1(bool place, string key, int lp_1)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (bool?)HashTableLoad1(place, "HD_" + key, lp_1);
+                    return (bool)HashTableLoad1(place, "HD_" + key, lp_1);
                 default:
                     return DictionaryBoolLoad1(place, "HD_" + key, lp_1);
             }
@@ -5648,12 +6312,12 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns></returns>
-        public static bool? DataTableBoolLoad2(bool place, string key, int lp_1, int lp_2)
+        public static bool DataTableBoolLoad2(bool place, string key, int lp_1, int lp_2)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (bool?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                    return (bool)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
                 default:
                     return DictionaryBoolLoad2(place, "HD_" + key, lp_1, lp_2);
             }
@@ -5668,12 +6332,12 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns></returns>
-        public static bool? DataTableBoolLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static bool DataTableBoolLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (bool?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                    return (bool)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
                 default:
                     return DictionaryBoolLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
             }
@@ -5689,12 +6353,12 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns></returns>
-        public static bool? DataTableBoolLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static bool DataTableBoolLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (bool?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                    return (bool)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
                 default:
                     return DictionaryBoolLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
             }
@@ -5984,12 +6648,107 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static byte? DataTableByteLoad0(bool place, string key)
+        public static byte? DataTableByteLoad0_N(bool place, string key)
         {
             switch (DataTableType)
             {
                 case "HashTable":
                     return (byte?)HashTableLoad0(place, "HD_" + key);
+                default:
+                    return DictionaryByteLoad0_N(place, "HD_" + key);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟1维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <returns></returns>
+        public static byte? DataTableByteLoad1_N(bool place, string key, int lp_1)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (byte?)HashTableLoad1(place, "HD_" + key, lp_1);
+                default:
+                    return DictionaryByteLoad1_N(place, "HD_" + key, lp_1);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟2维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <returns></returns>
+        public static byte? DataTableByteLoad2_N(bool place, string key, int lp_1, int lp_2)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (byte?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                default:
+                    return DictionaryByteLoad2_N(place, "HD_" + key, lp_1, lp_2);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟3维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <returns></returns>
+        public static byte? DataTableByteLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (byte?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                default:
+                    return DictionaryByteLoad3_N(place, "HD_" + key, lp_1, lp_2, lp_3);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对，模拟4维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <param name="lp_4"></param>
+        /// <returns></returns>
+        public static byte? DataTableByteLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (byte?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                default:
+                    return DictionaryByteLoad4_N(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+            }
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取数据表键值对
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static byte DataTableByteLoad0(bool place, string key)
+        {
+            switch (DataTableType)
+            {
+                case "HashTable":
+                    return (byte)HashTableLoad0(place, "HD_" + key);
                 default:
                     return DictionaryByteLoad0(place, "HD_" + key);
             }
@@ -6002,12 +6761,12 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns></returns>
-        public static byte? DataTableByteLoad1(bool place, string key, int lp_1)
+        public static byte DataTableByteLoad1(bool place, string key, int lp_1)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (byte?)HashTableLoad1(place, "HD_" + key, lp_1);
+                    return (byte)HashTableLoad1(place, "HD_" + key, lp_1);
                 default:
                     return DictionaryByteLoad1(place, "HD_" + key, lp_1);
             }
@@ -6021,12 +6780,12 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns></returns>
-        public static byte? DataTableByteLoad2(bool place, string key, int lp_1, int lp_2)
+        public static byte DataTableByteLoad2(bool place, string key, int lp_1, int lp_2)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (byte?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                    return (byte)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
                 default:
                     return DictionaryByteLoad2(place, "HD_" + key, lp_1, lp_2);
             }
@@ -6041,12 +6800,12 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns></returns>
-        public static byte? DataTableByteLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static byte DataTableByteLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (byte?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                    return (byte)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
                 default:
                     return DictionaryByteLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
             }
@@ -6062,19 +6821,18 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns></returns>
-        public static byte? DataTableByteLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static byte DataTableByteLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (byte?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                    return (byte)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
                 default:
                     return DictionaryByteLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
             }
         }
 
         #endregion
-
 
         #endregion
 
@@ -6591,7 +7349,7 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns>错误时返回null</returns>
-        public static int? DictionaryIntLoad0(bool place, string key)
+        public static int? DictionaryIntLoad0_N(bool place, string key)
         {
             if ((DictionaryIntKeyExists(place, key) == false))
             {
@@ -6607,7 +7365,7 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns>错误时返回null</returns>
-        public static int? DictionaryIntLoad1(bool place, string key, int lp_1)
+        public static int? DictionaryIntLoad1_N(bool place, string key, int lp_1)
         {
             if ((DictionaryIntKeyExists(place, (key + "_" + lp_1.ToString())) == false))
             {
@@ -6624,7 +7382,7 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns>错误时返回null</returns>
-        public static int? DictionaryIntLoad2(bool place, string key, int lp_1, int lp_2)
+        public static int? DictionaryIntLoad2_N(bool place, string key, int lp_1, int lp_2)
         {
             if ((DictionaryIntKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
             {
@@ -6642,7 +7400,7 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns>错误时返回null</returns>
-        public static int? DictionaryIntLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static int? DictionaryIntLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             if ((DictionaryIntKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
             {
@@ -6661,11 +7419,96 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns>错误时返回null</returns>
-        public static int? DictionaryIntLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static int? DictionaryIntLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             if ((DictionaryIntKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
             {
                 return null;
+            }
+            return DictionaryIntGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <returns>错误时返回0</returns>
+        public static int DictionaryIntLoad0(bool place, string key)
+        {
+            if ((DictionaryIntKeyExists(place, key) == false))
+            {
+                return 0;
+            }
+            return DictionaryIntGetValue(place, key);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟1维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <returns>错误时返回0</returns>
+        public static int DictionaryIntLoad1(bool place, string key, int lp_1)
+        {
+            if ((DictionaryIntKeyExists(place, (key + "_" + lp_1.ToString())) == false))
+            {
+                return 0;
+            }
+            return DictionaryIntGetValue(place, (key + "_" + lp_1.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟2维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <returns>错误时返回0</returns>
+        public static int DictionaryIntLoad2(bool place, string key, int lp_1, int lp_2)
+        {
+            if ((DictionaryIntKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
+            {
+                return 0;
+            }
+            return DictionaryIntGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟3维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <returns>错误时返回0</returns>
+        public static int DictionaryIntLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        {
+            if ((DictionaryIntKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
+            {
+                return 0;
+            }
+            return DictionaryIntGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟4维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <param name="lp_4"></param>
+        /// <returns>错误时返回0</returns>
+        public static int DictionaryIntLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        {
+            if ((DictionaryIntKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
+            {
+                return 0;
             }
             return DictionaryIntGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
         }
@@ -6882,7 +7725,7 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns>错误时返回null</returns>
-        public static long? DictionaryLongLoad0(bool place, string key)
+        public static long? DictionaryLongLoad0_N(bool place, string key)
         {
             if ((DictionaryLongKeyExists(place, key) == false))
             {
@@ -6898,7 +7741,7 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns>错误时返回null</returns>
-        public static long? DictionaryLongLoad1(bool place, string key, int lp_1)
+        public static long? DictionaryLongLoad1_N(bool place, string key, int lp_1)
         {
             if ((DictionaryLongKeyExists(place, (key + "_" + lp_1.ToString())) == false))
             {
@@ -6915,7 +7758,7 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns>错误时返回null</returns>
-        public static long? DictionaryLongLoad2(bool place, string key, int lp_1, int lp_2)
+        public static long? DictionaryLongLoad2_N(bool place, string key, int lp_1, int lp_2)
         {
             if ((DictionaryLongKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
             {
@@ -6933,7 +7776,7 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns>错误时返回null</returns>
-        public static long? DictionaryLongLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static long? DictionaryLongLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             if ((DictionaryLongKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
             {
@@ -6952,11 +7795,96 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns>错误时返回null</returns>
-        public static long? DictionaryLongLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static long? DictionaryLongLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             if ((DictionaryLongKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
             {
                 return null;
+            }
+            return DictionaryLongGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <returns>错误时返回0</returns>
+        public static long DictionaryLongLoad0(bool place, string key)
+        {
+            if ((DictionaryLongKeyExists(place, key) == false))
+            {
+                return 0;
+            }
+            return DictionaryLongGetValue(place, key);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟1维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <returns>错误时返回0</returns>
+        public static long DictionaryLongLoad1(bool place, string key, int lp_1)
+        {
+            if ((DictionaryLongKeyExists(place, (key + "_" + lp_1.ToString())) == false))
+            {
+                return 0;
+            }
+            return DictionaryLongGetValue(place, (key + "_" + lp_1.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟2维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <returns>错误时返回0</returns>
+        public static long DictionaryLongLoad2(bool place, string key, int lp_1, int lp_2)
+        {
+            if ((DictionaryLongKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
+            {
+                return 0;
+            }
+            return DictionaryLongGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟3维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <returns>错误时返回0</returns>
+        public static long DictionaryLongLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        {
+            if ((DictionaryLongKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
+            {
+                return 0;
+            }
+            return DictionaryLongGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟4维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <param name="lp_4"></param>
+        /// <returns>错误时返回0</returns>
+        public static long DictionaryLongLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        {
+            if ((DictionaryLongKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
+            {
+                return 0;
             }
             return DictionaryLongGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
         }
@@ -7173,7 +8101,7 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns>错误时返回null</returns>
-        public static char? DictionaryCharLoad0(bool place, string key)
+        public static char? DictionaryCharLoad0_N(bool place, string key)
         {
             if ((DictionaryCharKeyExists(place, key) == false))
             {
@@ -7189,7 +8117,7 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns>错误时返回null</returns>
-        public static char? DictionaryCharLoad1(bool place, string key, int lp_1)
+        public static char? DictionaryCharLoad1_N(bool place, string key, int lp_1)
         {
             if ((DictionaryCharKeyExists(place, (key + "_" + lp_1.ToString())) == false))
             {
@@ -7206,7 +8134,7 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns>错误时返回null</returns>
-        public static char? DictionaryCharLoad2(bool place, string key, int lp_1, int lp_2)
+        public static char? DictionaryCharLoad2_N(bool place, string key, int lp_1, int lp_2)
         {
             if ((DictionaryCharKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
             {
@@ -7224,7 +8152,7 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns>错误时返回null</returns>
-        public static char? DictionaryCharLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static char? DictionaryCharLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             if ((DictionaryCharKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
             {
@@ -7243,11 +8171,96 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns>错误时返回null</returns>
-        public static char? DictionaryCharLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static char? DictionaryCharLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             if ((DictionaryCharKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
             {
                 return null;
+            }
+            return DictionaryCharGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <returns>错误时返回' '</returns>
+        public static char DictionaryCharLoad0(bool place, string key)
+        {
+            if ((DictionaryCharKeyExists(place, key) == false))
+            {
+                return ' ';
+            }
+            return DictionaryCharGetValue(place, key);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟1维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <returns>错误时返回' '</returns>
+        public static char DictionaryCharLoad1(bool place, string key, int lp_1)
+        {
+            if ((DictionaryCharKeyExists(place, (key + "_" + lp_1.ToString())) == false))
+            {
+                return ' ';
+            }
+            return DictionaryCharGetValue(place, (key + "_" + lp_1.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟2维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <returns>错误时返回' '</returns>
+        public static char DictionaryCharLoad2(bool place, string key, int lp_1, int lp_2)
+        {
+            if ((DictionaryCharKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
+            {
+                return ' ';
+            }
+            return DictionaryCharGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟3维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <returns>错误时返回' '</returns>
+        public static char DictionaryCharLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        {
+            if ((DictionaryCharKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
+            {
+                return ' ';
+            }
+            return DictionaryCharGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟4维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <param name="lp_4"></param>
+        /// <returns>错误时返回' '</returns>
+        public static char DictionaryCharLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        {
+            if ((DictionaryCharKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
+            {
+                return ' ';
             }
             return DictionaryCharGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
         }
@@ -7464,7 +8477,7 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns>错误时返回null</returns>
-        public static float? DictionaryFloatLoad0(bool place, string key)
+        public static float? DictionaryFloatLoad0_N(bool place, string key)
         {
             if ((DictionaryFloatKeyExists(place, key) == false))
             {
@@ -7480,7 +8493,7 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns>错误时返回null</returns>
-        public static float? DictionaryFloatLoad1(bool place, string key, int lp_1)
+        public static float? DictionaryFloatLoad1_N(bool place, string key, int lp_1)
         {
             if ((DictionaryFloatKeyExists(place, (key + "_" + lp_1.ToString())) == false))
             {
@@ -7497,7 +8510,7 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns>错误时返回null</returns>
-        public static float? DictionaryFloatLoad2(bool place, string key, int lp_1, int lp_2)
+        public static float? DictionaryFloatLoad2_N(bool place, string key, int lp_1, int lp_2)
         {
             if ((DictionaryFloatKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
             {
@@ -7515,7 +8528,7 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns>错误时返回null</returns>
-        public static float? DictionaryFloatLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static float? DictionaryFloatLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             if ((DictionaryFloatKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
             {
@@ -7534,11 +8547,96 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns>错误时返回null</returns>
-        public static float? DictionaryFloatLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static float? DictionaryFloatLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             if ((DictionaryFloatKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
             {
                 return null;
+            }
+            return DictionaryFloatGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <returns>错误时返回0.0f</returns>
+        public static float DictionaryFloatLoad0(bool place, string key)
+        {
+            if ((DictionaryFloatKeyExists(place, key) == false))
+            {
+                return 0.0f;
+            }
+            return DictionaryFloatGetValue(place, key);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟1维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <returns>错误时返回0.0f</returns>
+        public static float DictionaryFloatLoad1(bool place, string key, int lp_1)
+        {
+            if ((DictionaryFloatKeyExists(place, (key + "_" + lp_1.ToString())) == false))
+            {
+                return 0.0f;
+            }
+            return DictionaryFloatGetValue(place, (key + "_" + lp_1.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟2维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <returns>错误时返回0.0f</returns>
+        public static float DictionaryFloatLoad2(bool place, string key, int lp_1, int lp_2)
+        {
+            if ((DictionaryFloatKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
+            {
+                return 0.0f;
+            }
+            return DictionaryFloatGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟3维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <returns>错误时返回0.0f</returns>
+        public static float DictionaryFloatLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        {
+            if ((DictionaryFloatKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
+            {
+                return 0.0f;
+            }
+            return DictionaryFloatGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟4维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <param name="lp_4"></param>
+        /// <returns>错误时返回0.0f</returns>
+        public static float DictionaryFloatLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        {
+            if ((DictionaryFloatKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
+            {
+                return 0.0f;
             }
             return DictionaryFloatGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
         }
@@ -7755,9 +8853,9 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns>错误时返回null</returns>
-        public static double? DictionaryDoubleLoad0(bool place, string key)
+        public static double? DictionaryDoubleLoad0_N(bool place, string key)
         {
-            if ((DictionaryDoubleKeyExists(place, key) == false))
+            if (DictionaryDoubleKeyExists(place, key) == false)
             {
                 return null;
             }
@@ -7771,7 +8869,7 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns>错误时返回null</returns>
-        public static double? DictionaryDoubleLoad1(bool place, string key, int lp_1)
+        public static double? DictionaryDoubleLoad1_N(bool place, string key, int lp_1)
         {
             if ((DictionaryDoubleKeyExists(place, (key + "_" + lp_1.ToString())) == false))
             {
@@ -7788,7 +8886,7 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns>错误时返回null</returns>
-        public static double? DictionaryDoubleLoad2(bool place, string key, int lp_1, int lp_2)
+        public static double? DictionaryDoubleLoad2_N(bool place, string key, int lp_1, int lp_2)
         {
             if ((DictionaryDoubleKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
             {
@@ -7806,7 +8904,7 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns>错误时返回null</returns>
-        public static double? DictionaryDoubleLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static double? DictionaryDoubleLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             if ((DictionaryDoubleKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
             {
@@ -7825,11 +8923,96 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns>错误时返回null</returns>
-        public static double? DictionaryDoubleLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static double? DictionaryDoubleLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             if ((DictionaryDoubleKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
             {
                 return null;
+            }
+            return DictionaryDoubleGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <returns>错误时返回0.0</returns>
+        public static double DictionaryDoubleLoad0(bool place, string key)
+        {
+            if (DictionaryDoubleKeyExists(place, key) == false)
+            {
+                return 0.0;
+            }
+            return DictionaryDoubleGetValue(place, key);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟1维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <returns>错误时返回0.0</returns>
+        public static double DictionaryDoubleLoad1(bool place, string key, int lp_1)
+        {
+            if ((DictionaryDoubleKeyExists(place, (key + "_" + lp_1.ToString())) == false))
+            {
+                return 0.0;
+            }
+            return DictionaryDoubleGetValue(place, (key + "_" + lp_1.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟2维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <returns>错误时返回0.0</returns>
+        public static double DictionaryDoubleLoad2(bool place, string key, int lp_1, int lp_2)
+        {
+            if ((DictionaryDoubleKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
+            {
+                return 0.0;
+            }
+            return DictionaryDoubleGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟3维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <returns>错误时返回0.0</returns>
+        public static double DictionaryDoubleLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        {
+            if ((DictionaryDoubleKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
+            {
+                return 0.0;
+            }
+            return DictionaryDoubleGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟4维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <param name="lp_4"></param>
+        /// <returns>错误时返回0.0</returns>
+        public static double DictionaryDoubleLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        {
+            if ((DictionaryDoubleKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
+            {
+                return 0.0;
             }
             return DictionaryDoubleGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
         }
@@ -8049,7 +9232,7 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns>错误时返回null</returns>
-        public static bool? DictionaryBoolLoad0(bool place, string key)
+        public static bool? DictionaryBoolLoad0_N(bool place, string key)
         {
             if ((DictionaryBoolKeyExists(place, key) == false))
             {
@@ -8065,7 +9248,7 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns>错误时返回null</returns>
-        public static bool? DictionaryBoolLoad1(bool place, string key, int lp_1)
+        public static bool? DictionaryBoolLoad1_N(bool place, string key, int lp_1)
         {
             if ((DictionaryBoolKeyExists(place, (key + "_" + lp_1.ToString())) == false))
             {
@@ -8082,7 +9265,7 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns>错误时返回null</returns>
-        public static bool? DictionaryBoolLoad2(bool place, string key, int lp_1, int lp_2)
+        public static bool? DictionaryBoolLoad2_N(bool place, string key, int lp_1, int lp_2)
         {
             if ((DictionaryBoolKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
             {
@@ -8100,7 +9283,7 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns>错误时返回null</returns>
-        public static bool? DictionaryBoolLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static bool? DictionaryBoolLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             if ((DictionaryBoolKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
             {
@@ -8119,11 +9302,96 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns>错误时返回null</returns>
-        public static bool? DictionaryBoolLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static bool? DictionaryBoolLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             if ((DictionaryBoolKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
             {
                 return null;
+            }
+            return DictionaryBoolGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <returns>错误时返回false</returns>
+        public static bool DictionaryBoolLoad0(bool place, string key)
+        {
+            if ((DictionaryBoolKeyExists(place, key) == false))
+            {
+                return false;
+            }
+            return DictionaryBoolGetValue(place, key);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟1维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <returns>错误时返回false</returns>
+        public static bool DictionaryBoolLoad1(bool place, string key, int lp_1)
+        {
+            if ((DictionaryBoolKeyExists(place, (key + "_" + lp_1.ToString())) == false))
+            {
+                return false;
+            }
+            return DictionaryBoolGetValue(place, (key + "_" + lp_1.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟2维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <returns>错误时返回false</returns>
+        public static bool DictionaryBoolLoad2(bool place, string key, int lp_1, int lp_2)
+        {
+            if ((DictionaryBoolKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
+            {
+                return false;
+            }
+            return DictionaryBoolGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟3维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <returns>错误时返回false</returns>
+        public static bool DictionaryBoolLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        {
+            if ((DictionaryBoolKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
+            {
+                return false;
+            }
+            return DictionaryBoolGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟4维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <param name="lp_4"></param>
+        /// <returns>错误时返回false</returns>
+        public static bool DictionaryBoolLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        {
+            if ((DictionaryBoolKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
+            {
+                return false;
             }
             return DictionaryBoolGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
         }
@@ -8340,7 +9608,7 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns>错误时返回null</returns>
-        public static byte? DictionaryByteLoad0(bool place, string key)
+        public static byte? DictionaryByteLoad0_N(bool place, string key)
         {
             if ((DictionaryByteKeyExists(place, key) == false))
             {
@@ -8356,7 +9624,7 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns>错误时返回null</returns>
-        public static byte? DictionaryByteLoad1(bool place, string key, int lp_1)
+        public static byte? DictionaryByteLoad1_N(bool place, string key, int lp_1)
         {
             if ((DictionaryByteKeyExists(place, (key + "_" + lp_1.ToString())) == false))
             {
@@ -8373,7 +9641,7 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns>错误时返回null</returns>
-        public static byte? DictionaryByteLoad2(bool place, string key, int lp_1, int lp_2)
+        public static byte? DictionaryByteLoad2_N(bool place, string key, int lp_1, int lp_2)
         {
             if ((DictionaryByteKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
             {
@@ -8391,7 +9659,7 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns>错误时返回null</returns>
-        public static byte? DictionaryByteLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static byte? DictionaryByteLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             if ((DictionaryByteKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
             {
@@ -8410,11 +9678,96 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns>错误时返回null</returns>
-        public static byte? DictionaryByteLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static byte? DictionaryByteLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             if ((DictionaryByteKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
             {
                 return null;
+            }
+            return DictionaryByteGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <returns>错误时返回0</returns>
+        public static byte DictionaryByteLoad0(bool place, string key)
+        {
+            if ((DictionaryByteKeyExists(place, key) == false))
+            {
+                return 0;
+            }
+            return DictionaryByteGetValue(place, key);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟1维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <returns>错误时返回0</returns>
+        public static byte DictionaryByteLoad1(bool place, string key, int lp_1)
+        {
+            if ((DictionaryByteKeyExists(place, (key + "_" + lp_1.ToString())) == false))
+            {
+                return 0;
+            }
+            return DictionaryByteGetValue(place, (key + "_" + lp_1.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟2维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <returns>错误时返回0</returns>
+        public static byte DictionaryByteLoad2(bool place, string key, int lp_1, int lp_2)
+        {
+            if ((DictionaryByteKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
+            {
+                return 0;
+            }
+            return DictionaryByteGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟3维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <returns>错误时返回0</returns>
+        public static byte DictionaryByteLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        {
+            if ((DictionaryByteKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
+            {
+                return 0;
+            }
+            return DictionaryByteGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟4维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <param name="lp_4"></param>
+        /// <returns>错误时返回0</returns>
+        public static byte DictionaryByteLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        {
+            if ((DictionaryByteKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
+            {
+                return 0;
             }
             return DictionaryByteGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
         }
@@ -8926,7 +10279,7 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns>错误时返回null</returns>
-        public static Vector? DictionaryVectorLoad0(bool place, string key)
+        public static Vector? DictionaryVectorLoad0_N(bool place, string key)
         {
             if ((DictionaryVectorKeyExists(place, key) == false))
             {
@@ -8942,7 +10295,7 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns>错误时返回null</returns>
-        public static Vector? DictionaryVectorLoad1(bool place, string key, int lp_1)
+        public static Vector? DictionaryVectorLoad1_N(bool place, string key, int lp_1)
         {
             if ((DictionaryVectorKeyExists(place, (key + "_" + lp_1.ToString())) == false))
             {
@@ -8959,7 +10312,7 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns>错误时返回null</returns>
-        public static Vector? DictionaryVectorLoad2(bool place, string key, int lp_1, int lp_2)
+        public static Vector? DictionaryVectorLoad2_N(bool place, string key, int lp_1, int lp_2)
         {
             if ((DictionaryVectorKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
             {
@@ -8977,7 +10330,7 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns>错误时返回null</returns>
-        public static Vector? DictionaryVectorLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static Vector? DictionaryVectorLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             if ((DictionaryVectorKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
             {
@@ -8996,11 +10349,96 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns>错误时返回null</returns>
-        public static Vector? DictionaryVectorLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static Vector? DictionaryVectorLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             if ((DictionaryVectorKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
             {
                 return null;
+            }
+            return DictionaryVectorGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <returns>错误时返回new Vector(0,0)</returns>
+        public static Vector DictionaryVectorLoad0(bool place, string key)
+        {
+            if ((DictionaryVectorKeyExists(place, key) == false))
+            {
+                return new Vector(0, 0);
+            }
+            return DictionaryVectorGetValue(place, key);
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟1维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <returns>错误时返回new Vector(0,0)</returns>
+        public static Vector DictionaryVectorLoad1(bool place, string key, int lp_1)
+        {
+            if ((DictionaryVectorKeyExists(place, (key + "_" + lp_1.ToString())) == false))
+            {
+                return new Vector(0, 0);
+            }
+            return DictionaryVectorGetValue(place, (key + "_" + lp_1.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟2维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <returns>错误时返回new Vector(0,0)</returns>
+        public static Vector DictionaryVectorLoad2(bool place, string key, int lp_1, int lp_2)
+        {
+            if ((DictionaryVectorKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
+            {
+                return new Vector(0, 0);
+            }
+            return DictionaryVectorGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟3维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <returns>错误时返回new Vector(0,0)</returns>
+        public static Vector DictionaryVectorLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        {
+            if ((DictionaryVectorKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
+            {
+                return new Vector(0, 0);
+            }
+            return DictionaryVectorGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString()));
+        }
+
+        /// <summary>
+        /// 【MM_函数库】读取字典键值对，模拟4维数组
+        /// </summary>
+        /// <param name="place"></param>
+        /// <param name="key"></param>
+        /// <param name="lp_1"></param>
+        /// <param name="lp_2"></param>
+        /// <param name="lp_3"></param>
+        /// <param name="lp_4"></param>
+        /// <returns>错误时返回new Vector(0,0)</returns>
+        public static Vector DictionaryVectorLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        {
+            if ((DictionaryVectorKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
+            {
+                return new Vector(0, 0);
             }
             return DictionaryVectorGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
         }
@@ -9681,7 +11119,7 @@ namespace MetalMaxSystem
 
         #region 任意类型
 
-        //提示：可以将任意类型作为模板修改后产生其他类型
+        //提示：可以将本类型作为模板修改后产生其他类型
         //提示：尽可能使用对口类型，以防值类型与引用类型发生转换时拆装箱降低性能
 
         //--------------------------------------------------------------------------------------------------
@@ -9689,10 +11127,10 @@ namespace MetalMaxSystem
         //--------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// 【MM_函数库】互动O_注册Object标签句柄并返回。为Object自动设置新的标签句柄，重复时会返回已注册的Object标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动O_注册Object标签句柄并返回。为Object自动设置新的标签句柄，重复时会返回已注册的Object标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_object"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Object的已注册标签</returns>
         private static int HD_RegObjectTagAndReturn_Int(object lp_object)//内部使用
         {
             // Variable Declarations
@@ -9702,7 +11140,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_ObjectJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_ObjectJBNum");
             // Implementation
             if ((lv_jBNum == 0))
             {
@@ -9736,10 +11174,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动O_返回Object已注册标签句柄。返回一个Object的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动O_返回Object已注册标签句柄
         /// </summary>
         /// <param name="lp_object"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Object的已注册标签，错误返回0</returns>
         public static int HD_ReturnObjectTag_Int(object lp_object)
         {
             // Variable Declarations
@@ -9749,7 +11187,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_ObjectJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_ObjectJBNum");
             // Implementation
             auto_ae = lv_jBNum;
             auto_var = 1;
@@ -9760,15 +11198,22 @@ namespace MetalMaxSystem
                 {
                     break;
                 }
+                else
+                {
+                    if ((lv_j == lv_jBNum))
+                    {
+                        lv_j = 0;
+                    }
+                }
             }
             return lv_j;
         }
 
         /// <summary>
-        /// 【MM_函数库】互动O_注册Object标签句柄并返回。为Object自动设置新的标签句柄，重复时会返回已注册的Object标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动O_注册Object标签句柄并返回。为Object自动设置新的标签句柄，重复时会返回已注册的Object标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_object"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Object的已注册标签""</returns>
         private static string HD_RegObjectTagAndReturn(object lp_object)//内部使用
         {
             // Variable Declarations
@@ -9779,7 +11224,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_ObjectJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_ObjectJBNum");
             // Implementation
             if ((lv_jBNum == 0))
             {
@@ -9815,10 +11260,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动O_返回Object已注册标签句柄。返回一个Object的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动O_返回Object已注册标签句柄
         /// </summary>
         /// <param name="lp_object"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Object的已注册标签，错误返回""</returns>
         public static string HD_ReturnObjectTag(object lp_object)
         {
             // Variable Declarations
@@ -9829,7 +11274,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_ObjectJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_ObjectJBNum");
             // Implementation
             auto_ae = lv_jBNum;
             auto_var = 1;
@@ -9867,8 +11312,8 @@ namespace MetalMaxSystem
             int auto_var;
             // Variable Initialization
             lv_str = (lp_key + "Object");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
-            lv_jBNum = (int)DataTableIntLoad0(true, (lv_str + "JBNum"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_jBNum = DataTableIntLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
             // Implementation
             ThreadWait(lv_str);
@@ -9933,8 +11378,8 @@ namespace MetalMaxSystem
             int auto_var;
             // Variable Initialization
             lv_str = (lp_key + "Object");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
-            lv_jBNum = (int)DataTableIntLoad0(true, (lv_str + "JBNum"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_jBNum = DataTableIntLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
             // Implementation
             ThreadWait(lv_str);
@@ -9997,7 +11442,7 @@ namespace MetalMaxSystem
             string lv_c;
             // Variable Initialization
             lv_str = (lp_key + "Object");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnObjectTag(lp_object);
             lv_c = "";
             // Implementation
@@ -10047,7 +11492,7 @@ namespace MetalMaxSystem
             string lv_c;
             // Variable Initialization
             lv_str = (lp_key + "Object");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnObjectTag(lp_object);
             lv_c = "";
             // Implementation
@@ -10089,7 +11534,7 @@ namespace MetalMaxSystem
             int lv_num;
             // Variable Initialization
             lv_str = (lp_key + "Object");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             // Implementation
             return lv_num;
         }
@@ -10115,7 +11560,7 @@ namespace MetalMaxSystem
             int auto_var;
             // Variable Initialization
             lv_str = (lp_key + "Object");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnObjectTag(lp_object);
             lv_torf = -1;
             // Implementation
@@ -10161,7 +11606,7 @@ namespace MetalMaxSystem
         {
             // Variable Declarations
             string lv_str;
-            string lv_tag = "";
+            string lv_tag;
             object lv_object;
             // Variable Initialization
             lv_str = (lp_key + "Object");
@@ -10198,7 +11643,7 @@ namespace MetalMaxSystem
         {
             // Variable Declarations
             string lv_str;
-            string lv_tag = "";
+            string lv_tag;
             // Variable Initialization
             lv_str = (lp_key + "Object");
             lv_tag = DataTableIntLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
@@ -10216,7 +11661,7 @@ namespace MetalMaxSystem
         {
             // Variable Declarations
             string lv_str;
-            string lv_tag = "";
+            string lv_tag;
             // Variable Initialization
             lv_str = (lp_key + "Object");
             lv_tag = DataTableIntLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
@@ -10234,7 +11679,7 @@ namespace MetalMaxSystem
         {
             // Variable Declarations
             string lv_str;
-            string lv_tag = "";
+            string lv_tag;
             // Variable Initialization
             lv_str = (lp_key + "Object");
             lv_tag = HD_RegObjectTagAndReturn(lp_object);
@@ -10252,7 +11697,7 @@ namespace MetalMaxSystem
         {
             // Variable Declarations
             string lv_str;
-            string lv_tag = "";
+            string lv_tag;
             string lv_stats;
             // Variable Initialization
             lv_str = (lp_key + "Object");
@@ -10272,7 +11717,7 @@ namespace MetalMaxSystem
         {
             // Variable Declarations
             string lv_str;
-            string lv_tag = "";
+            string lv_tag;
             // Variable Initialization
             lv_str = (lp_key + "Object");
             lv_tag = HD_RegObjectTagAndReturn(lp_object);
@@ -10290,7 +11735,7 @@ namespace MetalMaxSystem
         {
             // Variable Declarations
             string lv_str;
-            string lv_tag = "";
+            string lv_tag;
             string lv_customValue;
             // Variable Initialization
             lv_str = (lp_key + "Object");
@@ -10308,7 +11753,7 @@ namespace MetalMaxSystem
         public static string HD_ReturnObjectState_Only(object lp_object)
         {
             // Variable Declarations
-            string lv_tag = "";
+            string lv_tag;
             string lv_stats;
             // Variable Initialization
             lv_tag = HD_ReturnObjectTag(lp_object);
@@ -10325,7 +11770,7 @@ namespace MetalMaxSystem
         public static string HD_ReturnObjectCV_Only(object lp_object)
         {
             // Variable Declarations
-            string lv_tag = "";
+            string lv_tag;
             string lv_customValue;
             // Variable Initialization
             lv_tag = HD_ReturnObjectTag(lp_object);
@@ -10354,7 +11799,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_object"></param>
         /// <returns></returns>
-        public static double? HD_ReturnObjectDouble(object lp_object)
+        public static double HD_ReturnObjectDouble(object lp_object)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -10369,7 +11814,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_object"></param>
         /// <returns></returns>
-        public static bool? HD_ReturnIfObjectTag(object lp_object)
+        public static bool HD_ReturnIfObjectTag(object lp_object)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -10385,7 +11830,7 @@ namespace MetalMaxSystem
         /// <param name="lp_object"></param>
         /// <param name="lp_key">存储键区，默认值"_Object"</param>
         /// <returns></returns>
-        public static bool? HD_ReturnIfObjectTagKey(object lp_object, string lp_key)
+        public static bool HD_ReturnIfObjectTagKey(object lp_object, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -10429,7 +11874,7 @@ namespace MetalMaxSystem
             lv_str = (lp_key + "Object");
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_ObjectGroup" + lv_str, true);
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
             autoB_ae = lv_num;
@@ -10466,9 +11911,9 @@ namespace MetalMaxSystem
                                 lv_c = lv_intStackOutSize;
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
                                 DataTableIntSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
@@ -10493,11 +11938,11 @@ namespace MetalMaxSystem
                                 //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoHD_ae));
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
                                     //Console.WriteLine("交换元素" + IntToString(DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
                                     //Console.WriteLine("交换值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                     //Console.WriteLine("交换新序值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
@@ -10530,11 +11975,11 @@ namespace MetalMaxSystem
             {
                 //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
                 //lv_tag = DataTableIntLoad1(true, (lp_key + "ObjectTag"), lv_a).ToString(); //原始序号元素
-                lv_tag = (int)DataTableIntLoad1(false, "IntStackOutTag", lv_a);
+                lv_tag = DataTableIntLoad1(false, "IntStackOutTag", lv_a);
                 lv_tagValuestr = HD_ReturnObjectCV(HD_ReturnObjectFromTag(lv_tag), lp_cVStr);
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
-                lv_b = (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                lv_b = DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
@@ -10578,7 +12023,7 @@ namespace MetalMaxSystem
             lv_str = (lp_key + "Object");
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_ObjectGroup" + lv_str, true);
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
             autoB_ae = lv_num;
@@ -10614,9 +12059,9 @@ namespace MetalMaxSystem
                                 lv_c = lv_intStackOutSize;
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
                                 DataTableIntSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
@@ -10641,11 +12086,11 @@ namespace MetalMaxSystem
                                 //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoHD_ae));
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
                                     //Console.WriteLine("交换元素" + IntToString(DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
                                     //Console.WriteLine("交换值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                     //Console.WriteLine("交换新序值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
@@ -10678,10 +12123,10 @@ namespace MetalMaxSystem
             {
                 //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
                 //lv_tag = DataTableIntLoad1(true, (lp_key + "ObjectTag"), lv_a).ToString(); //原始序号元素
-                lv_tag = (int)DataTableIntLoad1(false, "IntStackOutTag", lv_a);
+                lv_tag = DataTableIntLoad1(false, "IntStackOutTag", lv_a);
                 lv_tagValue = lv_tag;
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
-                lv_b = (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                lv_b = DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
                                                                                        //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
@@ -10724,7 +12169,7 @@ namespace MetalMaxSystem
         {
             // Variable Declarations
             string lv_str;
-            string lv_tag = "";
+            string lv_tag;
             object lv_object;
             // Variable Initialization
             lv_str = (lp_gs + "Object");
@@ -10738,8 +12183,8 @@ namespace MetalMaxSystem
         /// 【MM_函数库】互动OG_返回Object组元素总数。返回指定Object组的元素数量。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
-        /// <returns></returns>
-        public static int? HD_ReturnObjectGNumMax(string lp_gs)
+        /// <returns>错误时返回0</returns>
+        public static int HD_ReturnObjectGNumMax(string lp_gs)
         {
             return DataTableIntLoad0(true, lp_gs + "ObjectNum");
         }
@@ -11010,7 +12455,6 @@ namespace MetalMaxSystem
         //     HD_AddObjectToGroup(#AUTOVAR(var), #AUTOVAR(vsb));
         // }
 
-
         /// <summary>
         /// 【MM_函数库】互动OG_添加Object组到Object组。添加一个Object组A的元素到另一个Object组B，相同Object被认为是同一个。Object组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Object组到Object组"函数来完成赋值需求
         /// </summary>
@@ -11076,7 +12520,7 @@ namespace MetalMaxSystem
             int lv_a;
             // Variable Initialization
             lv_str = (lp_key + "Object");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             // Implementation
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_ObjectGroup" + lv_str, true);
@@ -11107,10 +12551,10 @@ namespace MetalMaxSystem
         //--------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// 【MM_函数库】互动V_注册Vector标签句柄并返回。为Vector自动设置新的标签句柄，重复时会返回已注册的Vector标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动V_注册Vector标签句柄并返回。为Vector自动设置新的标签句柄，重复时会返回已注册的Vector标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Vector的已注册标签</returns>
         private static int HD_RegVectorTagAndReturn_Int(Vector lp_vector)//内部使用
         {
             // Variable Declarations
@@ -11120,7 +12564,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_VectorJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_VectorJBNum");
             // Implementation
             if ((lv_jBNum == 0))
             {
@@ -11154,10 +12598,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动V_返回Vector已注册标签句柄。返回一个Vector的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动V_返回Vector已注册标签句柄
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Vector的已注册标签，错误返回0</returns>
         public static int HD_ReturnVectorTag_Int(Vector lp_vector)
         {
             // Variable Declarations
@@ -11167,7 +12611,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_VectorJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_VectorJBNum");
             // Implementation
             auto_ae = lv_jBNum;
             auto_var = 1;
@@ -11178,15 +12622,22 @@ namespace MetalMaxSystem
                 {
                     break;
                 }
+                else
+                {
+                    if ((lv_j == lv_jBNum))
+                    {
+                        lv_j = 0;
+                    }
+                }
             }
             return lv_j;
         }
 
         /// <summary>
-        /// 【MM_函数库】互动V_注册Vector标签句柄并返回。为Vector自动设置新的标签句柄，重复时会返回已注册的Vector标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动V_注册Vector标签句柄并返回。为Vector自动设置新的标签句柄，重复时会返回已注册的Vector标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Vector的已注册标签</returns>
         private static string HD_RegVectorTagAndReturn(Vector lp_vector)//内部使用
         {
             // Variable Declarations
@@ -11197,7 +12648,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_VectorJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_VectorJBNum");
             // Implementation
             if ((lv_jBNum == 0))
             {
@@ -11233,10 +12684,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动V_返回Vector已注册标签句柄。返回一个Vector的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动V_返回Vector已注册标签句柄
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Vector的已注册标签，错误返回""</returns>
         public static string HD_ReturnVectorTag(Vector lp_vector)
         {
             // Variable Declarations
@@ -11247,7 +12698,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_VectorJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_VectorJBNum");
             // Implementation
             auto_ae = lv_jBNum;
             auto_var = 1;
@@ -11285,8 +12736,8 @@ namespace MetalMaxSystem
             int auto_var;
             // Variable Initialization
             lv_str = (lp_key + "Vector");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
-            lv_jBNum = (int)DataTableIntLoad0(true, (lv_str + "JBNum"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_jBNum = DataTableIntLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
             // Implementation
             ThreadWait(lv_str);
@@ -11351,8 +12802,8 @@ namespace MetalMaxSystem
             int auto_var;
             // Variable Initialization
             lv_str = (lp_key + "Vector");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
-            lv_jBNum = (int)DataTableIntLoad0(true, (lv_str + "JBNum"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_jBNum = DataTableIntLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
             // Implementation
             ThreadWait(lv_str);
@@ -11415,7 +12866,7 @@ namespace MetalMaxSystem
             string lv_c;
             // Variable Initialization
             lv_str = (lp_key + "Vector");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnVectorTag(lp_vector);
             lv_c = "";
             // Implementation
@@ -11465,7 +12916,7 @@ namespace MetalMaxSystem
             string lv_c;
             // Variable Initialization
             lv_str = (lp_key + "Vector");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnVectorTag(lp_vector);
             lv_c = "";
             // Implementation
@@ -11507,7 +12958,7 @@ namespace MetalMaxSystem
             int lv_num;
             // Variable Initialization
             lv_str = (lp_key + "Vector");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             // Implementation
             return lv_num;
         }
@@ -11533,7 +12984,7 @@ namespace MetalMaxSystem
             int auto_var;
             // Variable Initialization
             lv_str = (lp_key + "Vector");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnVectorTag(lp_vector);
             lv_torf = -1;
             // Implementation
@@ -11574,8 +13025,8 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_regNum"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
-        /// <returns></returns>
-        public static Vector? HD_ReturnVectorFromRegNum(int lp_regNum, string lp_key)
+        /// <returns>错误时返回new Vector(0,0)</returns>
+        public static Vector HD_ReturnVectorFromRegNum(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -11591,8 +13042,8 @@ namespace MetalMaxSystem
         /// 【MM_函数库】互动V_返回句柄标签对应Vector。使用"互动V_注册Vector"后，在参数填入句柄标签（整数）可返回Vector，标签是Vector的句柄。Vector组使用时，可用"获取变量的内部名称"将Vector组转为Key
         /// </summary>
         /// <param name="lp_tag">句柄标签</param>
-        /// <returns></returns>
-        public static Vector? HD_ReturnVectorFromTag(int lp_tag)
+        /// <returns>错误时返回new Vector(0,0)</returns>
+        public static Vector HD_ReturnVectorFromTag(int lp_tag)
         {
             // Variable Declarations
             string lv_tag;
@@ -11768,7 +13219,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static double? HD_ReturnVectorDouble(Vector lp_vector)
+        public static double HD_ReturnVectorDouble(Vector lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -11783,7 +13234,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static bool? HD_ReturnIfVectorTag(Vector lp_vector)
+        public static bool HD_ReturnIfVectorTag(Vector lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -11799,7 +13250,7 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
         /// <returns></returns>
-        public static bool? HD_ReturnIfVectorTagKey(Vector lp_vector, string lp_key)
+        public static bool HD_ReturnIfVectorTagKey(Vector lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -11843,7 +13294,7 @@ namespace MetalMaxSystem
             lv_str = (lp_key + "Vector");
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_VectorGroup" + lv_str, true);
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
             autoB_ae = lv_num;
@@ -11880,9 +13331,9 @@ namespace MetalMaxSystem
                                 lv_c = lv_intStackOutSize;
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
                                 DataTableIntSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
@@ -11907,11 +13358,11 @@ namespace MetalMaxSystem
                                 //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoHD_ae));
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
                                     //Console.WriteLine("交换元素" + IntToString(DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
                                     //Console.WriteLine("交换值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                     //Console.WriteLine("交换新序值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
@@ -11944,11 +13395,11 @@ namespace MetalMaxSystem
             {
                 //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
                 //lv_tag = DataTableIntLoad1(true, (lp_key + "VectorTag"), lv_a).ToString(); //原始序号元素
-                lv_tag = (int)DataTableIntLoad1(false, "IntStackOutTag", lv_a);
+                lv_tag = DataTableIntLoad1(false, "IntStackOutTag", lv_a);
                 lv_tagValuestr = HD_ReturnVectorCV((Vector)HD_ReturnVectorFromTag(lv_tag), lp_cVStr);
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
-                lv_b = (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                lv_b = DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
@@ -11992,7 +13443,7 @@ namespace MetalMaxSystem
             lv_str = (lp_key + "Vector");
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_VectorGroup" + lv_str, true);
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
             autoB_ae = lv_num;
@@ -12028,9 +13479,9 @@ namespace MetalMaxSystem
                                 lv_c = lv_intStackOutSize;
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
                                 DataTableIntSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
@@ -12055,11 +13506,11 @@ namespace MetalMaxSystem
                                 //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoHD_ae));
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
                                     //Console.WriteLine("交换元素" + IntToString(DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
                                     //Console.WriteLine("交换值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                     //Console.WriteLine("交换新序值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
@@ -12092,10 +13543,10 @@ namespace MetalMaxSystem
             {
                 //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
                 //lv_tag = DataTableIntLoad1(true, (lp_key + "VectorTag"), lv_a).ToString(); //原始序号元素
-                lv_tag = (int)DataTableIntLoad1(false, "IntStackOutTag", lv_a);
+                lv_tag = DataTableIntLoad1(false, "IntStackOutTag", lv_a);
                 lv_tagValue = lv_tag;
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
-                lv_b = (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                lv_b = DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
                                                                                        //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
@@ -12134,7 +13585,7 @@ namespace MetalMaxSystem
         /// <param name="lp_regNum">注册序号</param>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static Vector? HD_ReturnVectorFromVectorGFunc(int lp_regNum, string lp_gs)
+        public static Vector HD_ReturnVectorFromVectorGFunc(int lp_regNum, string lp_gs)
         {
             // Variable Declarations
             string lv_str;
@@ -12151,7 +13602,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static int? HD_ReturnVectorGNumMax(string lp_gs)
+        public static int HD_ReturnVectorGNumMax(string lp_gs)
         {
             return DataTableIntLoad0(true, lp_gs + "VectorNum");
         }
@@ -12392,13 +13843,13 @@ namespace MetalMaxSystem
         /// 【MM_函数库】互动VG_返回Vector组中随机元素。返回指定Vector组中的随机Vector。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
-        /// <returns></returns>
-        public static Vector? HD_ReturnRandomVectorFromVectorGFunc(string lp_gs)
+        /// <returns>错误时返回new Vector(0,0)</returns>
+        public static Vector HD_ReturnRandomVectorFromVectorGFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_num;
             int lv_a;
-            Vector? lv_c = null;
+            Vector lv_c = new Vector(0,0);
             // Variable Initialization
             lv_num = HD_ReturnVectorNumMax(lp_gs);
             // Implementation
@@ -12488,7 +13939,7 @@ namespace MetalMaxSystem
             int lv_a;
             // Variable Initialization
             lv_str = (lp_key + "Vector");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             // Implementation
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_VectorGroup" + lv_str, true);
@@ -12519,10 +13970,10 @@ namespace MetalMaxSystem
         //--------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// 【MM_函数库】互动T_注册Timer标签句柄并返回。为Timer自动设置新的标签句柄，重复时会返回已注册的Timer标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动T_注册Timer标签句柄并返回。为Timer自动设置新的标签句柄，重复时会返回已注册的Timer标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Timer的已注册标签</returns>
         private static int HD_RegTimerTagAndReturn_Int(Timer lp_timer)//内部使用
         {
             // Variable Declarations
@@ -12532,7 +13983,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_TimerJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_TimerJBNum");
             // Implementation
             if ((lv_jBNum == 0))
             {
@@ -12566,10 +14017,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动T_返回Timer已注册标签句柄。返回一个Timer的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动T_返回Timer已注册标签句柄
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Timer的已注册标签，错误返回0</returns>
         public static int HD_ReturnTimerTag_Int(Timer lp_timer)
         {
             // Variable Declarations
@@ -12579,7 +14030,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_TimerJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_TimerJBNum");
             // Implementation
             auto_ae = lv_jBNum;
             auto_var = 1;
@@ -12590,15 +14041,22 @@ namespace MetalMaxSystem
                 {
                     break;
                 }
+                else
+                {
+                    if ((lv_j == lv_jBNum))
+                    {
+                        lv_j = 0;
+                    }
+                }
             }
             return lv_j;
         }
 
         /// <summary>
-        /// 【MM_函数库】互动T_注册Timer标签句柄并返回。为Timer自动设置新的标签句柄，重复时会返回已注册的Timer标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动T_注册Timer标签句柄并返回。为Timer自动设置新的标签句柄，重复时会返回已注册的Timer标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Timer的已注册标签</returns>
         private static string HD_RegTimerTagAndReturn(Timer lp_timer)//内部使用
         {
             // Variable Declarations
@@ -12609,7 +14067,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_TimerJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_TimerJBNum");
             // Implementation
             if ((lv_jBNum == 0))
             {
@@ -12645,10 +14103,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动T_返回Timer已注册标签句柄。返回一个Timer的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动T_返回Timer已注册标签句柄
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Timer的已注册标签，错误返回""</returns>
         public static string HD_ReturnTimerTag(Timer lp_timer)
         {
             // Variable Declarations
@@ -12659,7 +14117,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_TimerJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_TimerJBNum");
             // Implementation
             auto_ae = lv_jBNum;
             auto_var = 1;
@@ -12697,8 +14155,8 @@ namespace MetalMaxSystem
             int auto_var;
             // Variable Initialization
             lv_str = (lp_key + "Timer");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
-            lv_jBNum = (int)DataTableIntLoad0(true, (lv_str + "JBNum"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_jBNum = DataTableIntLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
             // Implementation
             ThreadWait(lv_str);
@@ -12763,8 +14221,8 @@ namespace MetalMaxSystem
             int auto_var;
             // Variable Initialization
             lv_str = (lp_key + "Timer");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
-            lv_jBNum = (int)DataTableIntLoad0(true, (lv_str + "JBNum"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_jBNum = DataTableIntLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
             // Implementation
             ThreadWait(lv_str);
@@ -12827,7 +14285,7 @@ namespace MetalMaxSystem
             string lv_c;
             // Variable Initialization
             lv_str = (lp_key + "Timer");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnTimerTag(lp_timer);
             lv_c = "";
             // Implementation
@@ -12877,7 +14335,7 @@ namespace MetalMaxSystem
             string lv_c;
             // Variable Initialization
             lv_str = (lp_key + "Timer");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnTimerTag(lp_timer);
             lv_c = "";
             // Implementation
@@ -12919,7 +14377,7 @@ namespace MetalMaxSystem
             int lv_num;
             // Variable Initialization
             lv_str = (lp_key + "Timer");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             // Implementation
             return lv_num;
         }
@@ -12945,7 +14403,7 @@ namespace MetalMaxSystem
             int auto_var;
             // Variable Initialization
             lv_str = (lp_key + "Timer");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnTimerTag(lp_timer);
             lv_torf = -1;
             // Implementation
@@ -13179,8 +14637,8 @@ namespace MetalMaxSystem
         /// 【MM_函数库】互动T_返回Timer的实数标记。使用"互动T_设定Timer的实数标记"后可使用本函数。Timer组使用时，可用"获取变量的内部名称"将Timer组转为Key
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
-        public static double? HD_ReturnTimerDouble(Timer lp_timer)
+        /// <returns>错误时返回null</returns>
+        public static double HD_ReturnTimerDouble(Timer lp_timer)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -13194,8 +14652,8 @@ namespace MetalMaxSystem
         /// 【MM_函数库】互动T_返回Timer标签句柄有效状态。将Timer视作独一无二的个体，标签是它本身，有效状态则类似"单位是否有效"，当使用"互动T_注册Timer"或"互动TG_添加Timer到Timer组"后激活Timer有效状态（值为"true"），除非使用"互动T_注册Timer（高级）"改写，否则直到注销才会摧毁
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
-        public static bool? HD_ReturnIfTimerTag(Timer lp_timer)
+        /// <returns>错误时返回null</returns>
+        public static bool HD_ReturnIfTimerTag(Timer lp_timer)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -13210,8 +14668,8 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_timer"></param>
         /// <param name="lp_key">存储键区，默认值"_Timer"</param>
-        /// <returns></returns>
-        public static bool? HD_ReturnIfTimerTagKey(Timer lp_timer, string lp_key)
+        /// <returns>错误时返回null</returns>
+        public static bool HD_ReturnIfTimerTagKey(Timer lp_timer, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -13255,7 +14713,7 @@ namespace MetalMaxSystem
             lv_str = (lp_key + "Timer");
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_TimerGroup" + lv_str, true);
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
             autoB_ae = lv_num;
@@ -13292,9 +14750,9 @@ namespace MetalMaxSystem
                                 lv_c = lv_intStackOutSize;
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
                                 DataTableIntSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
@@ -13319,11 +14777,11 @@ namespace MetalMaxSystem
                                 //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoHD_ae));
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
                                     //Console.WriteLine("交换元素" + IntToString(DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
                                     //Console.WriteLine("交换值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                     //Console.WriteLine("交换新序值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
@@ -13356,11 +14814,11 @@ namespace MetalMaxSystem
             {
                 //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
                 //lv_tag = DataTableIntLoad1(true, (lp_key + "TimerTag"), lv_a).ToString(); //原始序号元素
-                lv_tag = (int)DataTableIntLoad1(false, "IntStackOutTag", lv_a);
+                lv_tag = DataTableIntLoad1(false, "IntStackOutTag", lv_a);
                 lv_tagValuestr = HD_ReturnTimerCV((Timer)HD_ReturnTimerFromTag(lv_tag), lp_cVStr);
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
-                lv_b = (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                lv_b = DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
@@ -13404,7 +14862,7 @@ namespace MetalMaxSystem
             lv_str = (lp_key + "Timer");
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_TimerGroup" + lv_str, true);
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
             autoB_ae = lv_num;
@@ -13440,9 +14898,9 @@ namespace MetalMaxSystem
                                 lv_c = lv_intStackOutSize;
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
                                 DataTableIntSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
@@ -13467,11 +14925,11 @@ namespace MetalMaxSystem
                                 //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoHD_ae));
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
                                     //Console.WriteLine("交换元素" + IntToString(DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
                                     //Console.WriteLine("交换值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                     //Console.WriteLine("交换新序值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
@@ -13504,10 +14962,10 @@ namespace MetalMaxSystem
             {
                 //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
                 //lv_tag = DataTableIntLoad1(true, (lp_key + "TimerTag"), lv_a).ToString(); //原始序号元素
-                lv_tag = (int)DataTableIntLoad1(false, "IntStackOutTag", lv_a);
+                lv_tag = DataTableIntLoad1(false, "IntStackOutTag", lv_a);
                 lv_tagValue = lv_tag;
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
-                lv_b = (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                lv_b = DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
                                                                                        //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
@@ -13563,7 +15021,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static int? HD_ReturnTimerGNumMax(string lp_gs)
+        public static int HD_ReturnTimerGNumMax(string lp_gs)
         {
             return DataTableIntLoad0(true, lp_gs + "TimerNum");
         }
@@ -13900,7 +15358,7 @@ namespace MetalMaxSystem
             int lv_a;
             // Variable Initialization
             lv_str = (lp_key + "Timer");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             // Implementation
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_TimerGroup" + lv_str, true);
@@ -13931,10 +15389,10 @@ namespace MetalMaxSystem
         //--------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// 【MM_函数库】互动S_注册String标签句柄并返回。为String自动设置新的标签句柄，重复时会返回已注册的String标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动S_注册String标签句柄并返回。为String自动设置新的标签句柄，重复时会返回已注册的String标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个String的已注册标签</returns>
         private static int HD_RegStringTagAndReturn_Int(string lp_timer)//内部使用
         {
             // Variable Declarations
@@ -13944,7 +15402,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_StringJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_StringJBNum");
             // Implementation
             if ((lv_jBNum == 0))
             {
@@ -13978,10 +15436,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动S_返回String已注册标签句柄。返回一个String的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动S_返回String已注册标签句柄
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个String的已注册标签，错误返回0</returns>
         public static int HD_ReturnStringTag_Int(string lp_timer)
         {
             // Variable Declarations
@@ -13991,7 +15449,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_StringJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_StringJBNum");
             // Implementation
             auto_ae = lv_jBNum;
             auto_var = 1;
@@ -14002,15 +15460,22 @@ namespace MetalMaxSystem
                 {
                     break;
                 }
+                else
+                {
+                    if ((lv_j == lv_jBNum))
+                    {
+                        lv_j = 0;
+                    }
+                }
             }
             return lv_j;
         }
 
         /// <summary>
-        /// 【MM_函数库】互动S_注册String标签句柄并返回。为String自动设置新的标签句柄，重复时会返回已注册的String标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动S_注册String标签句柄并返回。为String自动设置新的标签句柄，重复时会返回已注册的String标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个String的已注册标签</returns>
         private static string HD_RegStringTagAndReturn(string lp_timer)//内部使用
         {
             // Variable Declarations
@@ -14021,7 +15486,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_StringJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_StringJBNum");
             // Implementation
             if ((lv_jBNum == 0))
             {
@@ -14057,10 +15522,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动S_返回String已注册标签句柄。返回一个String的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动S_返回String已注册标签句柄
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个String的已注册标签，错误返回""</returns>
         public static string HD_ReturnStringTag(string lp_timer)
         {
             // Variable Declarations
@@ -14071,7 +15536,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_StringJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_StringJBNum");
             // Implementation
             auto_ae = lv_jBNum;
             auto_var = 1;
@@ -14109,8 +15574,8 @@ namespace MetalMaxSystem
             int auto_var;
             // Variable Initialization
             lv_str = (lp_key + "String");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
-            lv_jBNum = (int)DataTableIntLoad0(true, (lv_str + "JBNum"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_jBNum = DataTableIntLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
             // Implementation
             ThreadWait(lv_str);
@@ -14175,8 +15640,8 @@ namespace MetalMaxSystem
             int auto_var;
             // Variable Initialization
             lv_str = (lp_key + "String");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
-            lv_jBNum = (int)DataTableIntLoad0(true, (lv_str + "JBNum"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_jBNum = DataTableIntLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
             // Implementation
             ThreadWait(lv_str);
@@ -14239,7 +15704,7 @@ namespace MetalMaxSystem
             string lv_c;
             // Variable Initialization
             lv_str = (lp_key + "String");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnStringTag(lp_timer);
             lv_c = "";
             // Implementation
@@ -14289,7 +15754,7 @@ namespace MetalMaxSystem
             string lv_c;
             // Variable Initialization
             lv_str = (lp_key + "String");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnStringTag(lp_timer);
             lv_c = "";
             // Implementation
@@ -14331,7 +15796,7 @@ namespace MetalMaxSystem
             int lv_num;
             // Variable Initialization
             lv_str = (lp_key + "String");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             // Implementation
             return lv_num;
         }
@@ -14357,7 +15822,7 @@ namespace MetalMaxSystem
             int auto_var;
             // Variable Initialization
             lv_str = (lp_key + "String");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnStringTag(lp_timer);
             lv_torf = -1;
             // Implementation
@@ -14592,7 +16057,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_timer"></param>
         /// <returns></returns>
-        public static double? HD_ReturnStringDouble(string lp_timer)
+        public static double HD_ReturnStringDouble(string lp_timer)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -14607,7 +16072,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_timer"></param>
         /// <returns></returns>
-        public static bool? HD_ReturnIfStringTag(string lp_timer)
+        public static bool HD_ReturnIfStringTag(string lp_timer)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -14623,7 +16088,7 @@ namespace MetalMaxSystem
         /// <param name="lp_timer"></param>
         /// <param name="lp_key">存储键区，默认值"_String"</param>
         /// <returns></returns>
-        public static bool? HD_ReturnIfStringTagKey(string lp_timer, string lp_key)
+        public static bool HD_ReturnIfStringTagKey(string lp_timer, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -14667,7 +16132,7 @@ namespace MetalMaxSystem
             lv_str = (lp_key + "String");
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_StringGroup" + lv_str, true);
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
             autoB_ae = lv_num;
@@ -14704,9 +16169,9 @@ namespace MetalMaxSystem
                                 lv_c = lv_intStackOutSize;
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
                                 DataTableIntSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
@@ -14731,11 +16196,11 @@ namespace MetalMaxSystem
                                 //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoHD_ae));
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
                                     //Console.WriteLine("交换元素" + IntToString(DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
                                     //Console.WriteLine("交换值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                     //Console.WriteLine("交换新序值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
@@ -14768,11 +16233,11 @@ namespace MetalMaxSystem
             {
                 //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
                 //lv_tag = DataTableIntLoad1(true, (lp_key + "StringTag"), lv_a).ToString(); //原始序号元素
-                lv_tag = (int)DataTableIntLoad1(false, "IntStackOutTag", lv_a);
+                lv_tag = DataTableIntLoad1(false, "IntStackOutTag", lv_a);
                 lv_tagValuestr = HD_ReturnStringCV((string)HD_ReturnStringFromTag(lv_tag), lp_cVStr);
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
-                lv_b = (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                lv_b = DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
@@ -14816,7 +16281,7 @@ namespace MetalMaxSystem
             lv_str = (lp_key + "String");
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_StringGroup" + lv_str, true);
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
             autoB_ae = lv_num;
@@ -14852,9 +16317,9 @@ namespace MetalMaxSystem
                                 lv_c = lv_intStackOutSize;
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
                                 DataTableIntSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
@@ -14879,11 +16344,11 @@ namespace MetalMaxSystem
                                 //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoHD_ae));
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
                                     //Console.WriteLine("交换元素" + IntToString(DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
                                     //Console.WriteLine("交换值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                     //Console.WriteLine("交换新序值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
@@ -14916,10 +16381,10 @@ namespace MetalMaxSystem
             {
                 //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
                 //lv_tag = DataTableIntLoad1(true, (lp_key + "StringTag"), lv_a).ToString(); //原始序号元素
-                lv_tag = (int)DataTableIntLoad1(false, "IntStackOutTag", lv_a);
+                lv_tag = DataTableIntLoad1(false, "IntStackOutTag", lv_a);
                 lv_tagValue = lv_tag;
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
-                lv_b = (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                lv_b = DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
                                                                                        //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
@@ -14975,7 +16440,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static int? HD_ReturnStringGNumMax(string lp_gs)
+        public static int HD_ReturnStringGNumMax(string lp_gs)
         {
             return DataTableIntLoad0(true, lp_gs + "StringNum");
         }
@@ -15312,7 +16777,7 @@ namespace MetalMaxSystem
             int lv_a;
             // Variable Initialization
             lv_str = (lp_key + "String");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             // Implementation
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_StringGroup" + lv_str, true);
@@ -15343,10 +16808,10 @@ namespace MetalMaxSystem
         //--------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// 【MM_函数库】互动I_注册Int标签句柄并返回。为Int自动设置新的标签句柄，重复时会返回已注册的Int标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动I_注册Int标签句柄并返回。为Int自动设置新的标签句柄，重复时会返回已注册的Int标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Int的已注册标签</returns>
         private static int HD_RegIntTagAndReturn_Int(int lp_vector)//内部使用
         {
             // Variable Declarations
@@ -15356,7 +16821,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_IntJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_IntJBNum");
             // Implementation
             if ((lv_jBNum == 0))
             {
@@ -15390,10 +16855,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动I_返回Int已注册标签句柄。返回一个Int的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动I_返回Int已注册标签句柄
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Int的已注册标签，错误返回0</returns>
         public static int HD_ReturnIntTag_Int(int lp_vector)
         {
             // Variable Declarations
@@ -15403,7 +16868,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_IntJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_IntJBNum");
             // Implementation
             auto_ae = lv_jBNum;
             auto_var = 1;
@@ -15414,15 +16879,22 @@ namespace MetalMaxSystem
                 {
                     break;
                 }
+                else
+                {
+                    if ((lv_j == lv_jBNum))
+                    {
+                        lv_j = 0;
+                    }
+                }
             }
             return lv_j;
         }
 
         /// <summary>
-        /// 【MM_函数库】互动I_注册Int标签句柄并返回。为Int自动设置新的标签句柄，重复时会返回已注册的Int标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动I_注册Int标签句柄并返回。为Int自动设置新的标签句柄，重复时会返回已注册的Int标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Int的已注册标签</returns>
         private static string HD_RegIntTagAndReturn(int lp_vector)//内部使用
         {
             // Variable Declarations
@@ -15433,7 +16905,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            try { lv_jBNum = (int)DataTableIntLoad0(true, "HD_IntJBNum"); } catch { lv_jBNum = 0; }
+            try { lv_jBNum = DataTableIntLoad0(true, "HD_IntJBNum"); } catch { lv_jBNum = 0; }
             // Implementation
             if ((lv_jBNum == 0))
             {
@@ -15469,10 +16941,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动I_返回Int已注册标签句柄。返回一个Int的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动I_返回Int已注册标签句柄
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Int的已注册标签，错误返回""</returns>
         public static string HD_ReturnIntTag(int lp_vector)
         {
             // Variable Declarations
@@ -15483,7 +16955,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_jBNum = (int)DataTableIntLoad0(true, "HD_IntJBNum");
+            lv_jBNum = DataTableIntLoad0(true, "HD_IntJBNum");
             // Implementation
             auto_ae = lv_jBNum;
             auto_var = 1;
@@ -15521,8 +16993,8 @@ namespace MetalMaxSystem
             int auto_var;
             // Variable Initialization
             lv_str = (lp_key + "Int");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
-            lv_jBNum = (int)DataTableIntLoad0(true, (lv_str + "JBNum"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_jBNum = DataTableIntLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
             // Implementation
             ThreadWait(lv_str);
@@ -15587,9 +17059,9 @@ namespace MetalMaxSystem
             int auto_var;
             // Variable Initialization
             lv_str = (lp_key + "Int");
-            try { lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num")); }
+            try { lv_num = DataTableIntLoad0(true, (lv_str + "Num")); }
             catch { lv_num = 0; }
-            try { lv_jBNum = (int)DataTableIntLoad0(true, (lv_str + "JBNum")); }
+            try { lv_jBNum = DataTableIntLoad0(true, (lv_str + "JBNum")); }
             catch { lv_jBNum = 0; }
             lv_tagStr = "";
             // Implementation
@@ -15653,7 +17125,7 @@ namespace MetalMaxSystem
             string lv_c;
             // Variable Initialization
             lv_str = (lp_key + "Int");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnIntTag(lp_vector);
             lv_c = "";
             // Implementation
@@ -15703,7 +17175,7 @@ namespace MetalMaxSystem
             string lv_c;
             // Variable Initialization
             lv_str = (lp_key + "Int");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnIntTag(lp_vector);
             lv_c = "";
             // Implementation
@@ -15745,7 +17217,7 @@ namespace MetalMaxSystem
             int lv_num;
             // Variable Initialization
             lv_str = (lp_key + "Int");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             // Implementation
             return lv_num;
         }
@@ -15771,7 +17243,7 @@ namespace MetalMaxSystem
             int auto_var;
             // Variable Initialization
             lv_str = (lp_key + "Int");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnIntTag(lp_vector);
             lv_torf = -1;
             // Implementation
@@ -15813,7 +17285,7 @@ namespace MetalMaxSystem
         /// <param name="lp_regNum"></param>
         /// <param name="lp_key">存储键区，默认值"_Int"</param>
         /// <returns></returns>
-        public static int? HD_ReturnIntFromRegNum(int lp_regNum, string lp_key)
+        public static int HD_ReturnIntFromRegNum(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -15830,7 +17302,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_tag">句柄标签</param>
         /// <returns></returns>
-        public static int? HD_ReturnIntFromTag(int lp_tag)
+        public static int HD_ReturnIntFromTag(int lp_tag)
         {
             // Variable Declarations
             string lv_tag;
@@ -16006,7 +17478,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static double? HD_ReturnIntDouble(int lp_vector)
+        public static double HD_ReturnIntDouble(int lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -16021,7 +17493,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static bool? HD_ReturnIfIntTag(int lp_vector)
+        public static bool HD_ReturnIfIntTag(int lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -16037,7 +17509,7 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Int"</param>
         /// <returns></returns>
-        public static bool? HD_ReturnIfIntTagKey(int lp_vector, string lp_key)
+        public static bool HD_ReturnIfIntTagKey(int lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -16081,7 +17553,7 @@ namespace MetalMaxSystem
             lv_str = (lp_key + "Int");
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_IntGroup" + lv_str, true);
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
             autoB_ae = lv_num;
@@ -16089,7 +17561,7 @@ namespace MetalMaxSystem
             for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
             {
                 lv_tag = HD_ReturnIntTagFromRegNum_Int(lv_a, lp_key);
-                lv_tagValuestr = HD_ReturnIntCV((int)HD_ReturnIntFromTag(lv_tag), lp_cVStr);
+                lv_tagValuestr = HD_ReturnIntCV(HD_ReturnIntFromTag(lv_tag), lp_cVStr);
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
                 if ((lv_intStackOutSize == 0))
@@ -16118,9 +17590,9 @@ namespace MetalMaxSystem
                                 lv_c = lv_intStackOutSize;
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
                                 DataTableIntSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
@@ -16145,11 +17617,11 @@ namespace MetalMaxSystem
                                 //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoHD_ae));
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
                                     //Console.WriteLine("交换元素" + IntToString(DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
                                     //Console.WriteLine("交换值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                     //Console.WriteLine("交换新序值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
@@ -16182,11 +17654,11 @@ namespace MetalMaxSystem
             {
                 //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
                 //lv_tag = DataTableIntLoad1(true, (lp_key + "IntTag"), lv_a).ToString(); //原始序号元素
-                lv_tag = (int)DataTableIntLoad1(false, "IntStackOutTag", lv_a);
-                lv_tagValuestr = HD_ReturnIntCV((int)HD_ReturnIntFromTag(lv_tag), lp_cVStr);
+                lv_tag = DataTableIntLoad1(false, "IntStackOutTag", lv_a);
+                lv_tagValuestr = HD_ReturnIntCV(HD_ReturnIntFromTag(lv_tag), lp_cVStr);
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
-                lv_b = (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                lv_b = DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
@@ -16230,7 +17702,7 @@ namespace MetalMaxSystem
             lv_str = (lp_key + "Int");
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_IntGroup" + lv_str, true);
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_intStackOutSize = 0;
             // Implementation
             autoB_ae = lv_num;
@@ -16266,9 +17738,9 @@ namespace MetalMaxSystem
                                 lv_c = lv_intStackOutSize;
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
                                 DataTableIntSave1(false, "IntStackOutTagValue", lv_b, lv_tagValue);
@@ -16293,11 +17765,11 @@ namespace MetalMaxSystem
                                 //Console.WriteLine("递减For lv_c=" + IntToString(lv_c) +"≥"+IntToString(autoHD_ae));
                                 for (; ((autoHD_ai >= 0 && lv_c <= autoHD_ae) || (autoHD_ai < 0 && lv_c >= autoHD_ae)); lv_c += autoHD_ai)
                                 {
-                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTag", lv_c, DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1)));
                                     //Console.WriteLine("交换元素" + IntToString(DataTableIntLoad1(false, "IntStackOutTag", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagValue", lv_c, DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1)));
                                     //Console.WriteLine("交换值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagValue", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
-                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
+                                    DataTableIntSave1(false, "IntStackOutTagIteraOrig", lv_c, DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1)));
                                     //Console.WriteLine("交换新序值" + IntToString(DataTableIntLoad1(false, "IntStackOutTagIteraOrig", (lv_c - 1))) +"从序号"+IntToString(lv_c - 1) +"到"+IntToString(lv_c));
                                 }
                                 DataTableIntSave1(false, "IntStackOutTag", lv_b, lv_tag);
@@ -16330,10 +17802,10 @@ namespace MetalMaxSystem
             {
                 //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
                 //lv_tag = DataTableIntLoad1(true, (lp_key + "IntTag"), lv_a).ToString(); //原始序号元素
-                lv_tag = (int)DataTableIntLoad1(false, "IntStackOutTag", lv_a);
+                lv_tag = DataTableIntLoad1(false, "IntStackOutTag", lv_a);
                 lv_tagValue = lv_tag;
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
-                lv_b = (int)DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
+                lv_b = DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
                                                                                        //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
@@ -16372,7 +17844,7 @@ namespace MetalMaxSystem
         /// <param name="lp_regNum">注册序号</param>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static int? HD_ReturnIntFromIntGFunc(int lp_regNum, string lp_gs)
+        public static int HD_ReturnIntFromIntGFunc(int lp_regNum, string lp_gs)
         {
             // Variable Declarations
             string lv_str;
@@ -16389,7 +17861,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static int? HD_ReturnIntGNumMax(string lp_gs)
+        public static int HD_ReturnIntGNumMax(string lp_gs)
         {
             return DataTableIntLoad0(true, lp_gs + "IntNum");
         }
@@ -16416,7 +17888,7 @@ namespace MetalMaxSystem
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = (int)HD_ReturnIntFromRegNum(lv_a, lp_gs);
+                lv_c = HD_ReturnIntFromRegNum(lv_a, lp_gs);
                 lv_b = HD_ReturnIntState(lv_c, lp_gs);
                 if ((lv_b == "true"))
                 {
@@ -16448,7 +17920,7 @@ namespace MetalMaxSystem
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = (int)HD_ReturnIntFromRegNum(lv_a, lp_gs);
+                lv_c = HD_ReturnIntFromRegNum(lv_a, lp_gs);
                 lv_b = HD_ReturnIntState(lv_c, lp_gs);
                 if ((lv_b == "false"))
                 {
@@ -16480,7 +17952,7 @@ namespace MetalMaxSystem
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = (int)HD_ReturnIntFromRegNum(lv_a, lp_gs);
+                lv_c = HD_ReturnIntFromRegNum(lv_a, lp_gs);
                 lv_b = HD_ReturnIntState(lv_c, lp_gs);
                 if (((lv_b == "false") || (lv_b == "") || (lv_b == null)))
                 {
@@ -16513,7 +17985,7 @@ namespace MetalMaxSystem
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = (int)HD_ReturnIntFromRegNum(lv_a, lp_gs);
+                lv_c = HD_ReturnIntFromRegNum(lv_a, lp_gs);
                 lv_b = HD_ReturnIntState(lv_c, lp_gs);
                 if ((lv_b == lp_State))
                 {
@@ -16616,12 +18088,12 @@ namespace MetalMaxSystem
             int lv_vector;
             for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
             {
-                DataTableIntSave0(false, "IntGFor" + lv_vs + lv_va.ToString(), (int)HD_ReturnIntFromRegNum(lv_va, lv_vs));
+                DataTableIntSave0(false, "IntGFor" + lv_vs + lv_va.ToString(), HD_ReturnIntFromRegNum(lv_va, lv_vs));
             }
             lv_va = lp_start;
             for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
             {
-                lv_vector = (int)DataTableIntLoad0(false, "IntGFor" + lv_vs + lv_va.ToString());
+                lv_vector = DataTableIntLoad0(false, "IntGFor" + lv_vs + lv_va.ToString());
                 lp_funcref(lv_vector);//用户填写的所有动作
             }
         }
@@ -16631,19 +18103,19 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static int? HD_ReturnRandomIntFromIntGFunc(string lp_gs)
+        public static int HD_ReturnRandomIntFromIntGFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_num;
             int lv_a;
-            int? lv_c = null;
+            int lv_c = 0;
             // Variable Initialization
             lv_num = HD_ReturnIntNumMax(lp_gs);
             // Implementation
             if ((lv_num >= 1))
             {
                 lv_a = RandomInt(1, lv_num);
-                lv_c = (int)HD_ReturnIntFromRegNum(lv_a, lp_gs);
+                lv_c = HD_ReturnIntFromRegNum(lv_a, lp_gs);
             }
             return lv_c;
         }
@@ -16676,7 +18148,7 @@ namespace MetalMaxSystem
             int lv_var;
             for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
             {
-                lv_var = (int)HD_ReturnIntFromRegNum(lv_va, lv_vsa);
+                lv_var = HD_ReturnIntFromRegNum(lv_va, lv_vsa);
                 HD_AddIntToGroup(lv_var, lv_vsb);
             }
         }
@@ -16708,7 +18180,7 @@ namespace MetalMaxSystem
             int lv_var;
             for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
             {
-                lv_var = (int)HD_ReturnIntFromRegNum(lv_va, lv_vsa);
+                lv_var = HD_ReturnIntFromRegNum(lv_va, lv_vsa);
                 HD_RemoveInt(lv_var, lv_vsb);
             }
         }
@@ -16726,7 +18198,7 @@ namespace MetalMaxSystem
             int lv_a;
             // Variable Initialization
             lv_str = (lp_key + "Int");
-            lv_num = (int)DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             // Implementation
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_IntGroup" + lv_str, true);
@@ -16764,10 +18236,10 @@ namespace MetalMaxSystem
         //--------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// 【MM_函数库】互动O_注册Object标签句柄并返回。为Object自动设置新的标签句柄，重复时会返回已注册的Object标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动O_注册Object标签句柄并返回。为Object自动设置新的标签句柄，重复时会返回已注册的Object标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_object"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Object的已注册标签</returns>
         private static int DHD_RegObjectTagAndReturn_Int(object lp_object)//内部使用
         {
             // Variable Declarations
@@ -16811,10 +18283,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动O_返回Object已注册标签句柄。返回一个Object的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动O_返回Object已注册标签句柄
         /// </summary>
         /// <param name="lp_object"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Object的已注册标签，错误返回0</returns>
         public static int DHD_ReturnObjectTag_Int(object lp_object)
         {
             // Variable Declarations
@@ -16835,15 +18307,22 @@ namespace MetalMaxSystem
                 {
                     break;
                 }
+                else
+                {
+                    if ((lv_j == lv_jBNum))
+                    {
+                        lv_j = 0;
+                    }
+                }
             }
             return lv_j;
         }
 
         /// <summary>
-        /// 【MM_函数库】互动O_注册Object标签句柄并返回。为Object自动设置新的标签句柄，重复时会返回已注册的Object标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动O_注册Object标签句柄并返回。为Object自动设置新的标签句柄，重复时会返回已注册的Object标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_object"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Object的已注册标签</returns>
         private static string DHD_RegObjectTagAndReturn(object lp_object)//内部使用
         {
             // Variable Declarations
@@ -16890,10 +18369,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动O_返回Object已注册标签句柄。返回一个Object的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动O_返回Object已注册标签句柄
         /// </summary>
         /// <param name="lp_object"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Object的已注册标签，错误返回""</returns>
         public static string DHD_ReturnObjectTag(object lp_object)
         {
             // Variable Declarations
@@ -17429,7 +18908,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_object"></param>
         /// <returns></returns>
-        public static double? DHD_ReturnObjectDouble(object lp_object)
+        public static double DHD_ReturnObjectDouble(object lp_object)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -17444,7 +18923,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_object"></param>
         /// <returns></returns>
-        public static bool? DHD_ReturnIfObjectTag(object lp_object)
+        public static bool DHD_ReturnIfObjectTag(object lp_object)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -17460,7 +18939,7 @@ namespace MetalMaxSystem
         /// <param name="lp_object"></param>
         /// <param name="lp_key">存储键区，默认值"_Object"</param>
         /// <returns></returns>
-        public static bool? DHD_ReturnIfObjectTagKey(object lp_object, string lp_key)
+        public static bool DHD_ReturnIfObjectTagKey(object lp_object, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -17814,7 +19293,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static int? DHD_ReturnObjectGNumMax(string lp_gs)
+        public static int DHD_ReturnObjectGNumMax(string lp_gs)
         {
             return DictionaryIntLoad0(true, lp_gs + "ObjectNum");
         }
@@ -18182,10 +19661,10 @@ namespace MetalMaxSystem
         //--------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// 【MM_函数库】互动V_注册Vector标签句柄并返回。为Vector自动设置新的标签句柄，重复时会返回已注册的Vector标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动V_注册Vector标签句柄并返回。为Vector自动设置新的标签句柄，重复时会返回已注册的Vector标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Vector的已注册标签</returns>
         private static int DHD_RegVectorTagAndReturn_Int(Vector lp_vector)//内部使用
         {
             // Variable Declarations
@@ -18229,10 +19708,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动V_返回Vector已注册标签句柄。返回一个Vector的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动V_返回Vector已注册标签句柄
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Vector的已注册标签，错误返回0</returns>
         public static int DHD_ReturnVectorTag_Int(Vector lp_vector)
         {
             // Variable Declarations
@@ -18253,15 +19732,22 @@ namespace MetalMaxSystem
                 {
                     break;
                 }
+                else
+                {
+                    if ((lv_j == lv_jBNum))
+                    {
+                        lv_j = 0;
+                    }
+                }
             }
             return lv_j;
         }
 
         /// <summary>
-        /// 【MM_函数库】互动V_注册Vector标签句柄并返回。为Vector自动设置新的标签句柄，重复时会返回已注册的Vector标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动V_注册Vector标签句柄并返回。为Vector自动设置新的标签句柄，重复时会返回已注册的Vector标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Vector的已注册标签</returns>
         private static string DHD_RegVectorTagAndReturn(Vector lp_vector)//内部使用
         {
             // Variable Declarations
@@ -18308,10 +19794,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动V_返回Vector已注册标签句柄。返回一个Vector的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动V_返回Vector已注册标签句柄
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Vector的已注册标签，错误返回""</returns>
         public static string DHD_ReturnVectorTag(Vector lp_vector)
         {
             // Variable Declarations
@@ -18650,7 +20136,7 @@ namespace MetalMaxSystem
         /// <param name="lp_regNum"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
         /// <returns></returns>
-        public static Vector? DHD_ReturnVectorFromRegNum(int lp_regNum, string lp_key)
+        public static Vector DHD_ReturnVectorFromRegNum(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -18667,7 +20153,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_tag">句柄标签</param>
         /// <returns></returns>
-        public static Vector? DHD_ReturnVectorFromTag(int lp_tag)
+        public static Vector DHD_ReturnVectorFromTag(int lp_tag)
         {
             // Variable Declarations
             string lv_tag;
@@ -18843,7 +20329,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static double? DHD_ReturnVectorDouble(Vector lp_vector)
+        public static double DHD_ReturnVectorDouble(Vector lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -18858,7 +20344,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static bool? DHD_ReturnIfVectorTag(Vector lp_vector)
+        public static bool DHD_ReturnIfVectorTag(Vector lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -18874,7 +20360,7 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
         /// <returns></returns>
-        public static bool? DHD_ReturnIfVectorTagKey(Vector lp_vector, string lp_key)
+        public static bool DHD_ReturnIfVectorTagKey(Vector lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -19209,7 +20695,7 @@ namespace MetalMaxSystem
         /// <param name="lp_regNum">注册序号</param>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static Vector? DHD_ReturnVectorFromVectorGFunc(int lp_regNum, string lp_gs)
+        public static Vector DHD_ReturnVectorFromVectorGFunc(int lp_regNum, string lp_gs)
         {
             // Variable Declarations
             string lv_str;
@@ -19226,7 +20712,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static int? DHD_ReturnVectorGNumMax(string lp_gs)
+        public static int DHD_ReturnVectorGNumMax(string lp_gs)
         {
             return DictionaryIntLoad0(true, lp_gs + "VectorNum");
         }
@@ -19468,12 +20954,12 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static Vector? DHD_ReturnRandomVectorFromVectorGFunc(string lp_gs)
+        public static Vector DHD_ReturnRandomVectorFromVectorGFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_num;
             int lv_a;
-            Vector? lv_c = null;
+            Vector lv_c = new Vector(0,0);
             // Variable Initialization
             lv_num = DHD_ReturnVectorNumMax(lp_gs);
             // Implementation
@@ -19594,10 +21080,10 @@ namespace MetalMaxSystem
         //--------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// 【MM_函数库】互动T_注册Timer标签句柄并返回。为Timer自动设置新的标签句柄，重复时会返回已注册的Timer标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动T_注册Timer标签句柄并返回。为Timer自动设置新的标签句柄，重复时会返回已注册的Timer标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Timer的已注册标签</returns>
         private static int DHD_RegTimerTagAndReturn_Int(Timer lp_timer)//内部使用
         {
             // Variable Declarations
@@ -19641,10 +21127,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动T_返回Timer已注册标签句柄。返回一个Timer的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动T_返回Timer已注册标签句柄
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Timer的已注册标签，错误返回0</returns>
         public static int DHD_ReturnTimerTag_Int(Timer lp_timer)
         {
             // Variable Declarations
@@ -19665,15 +21151,22 @@ namespace MetalMaxSystem
                 {
                     break;
                 }
+                else
+                {
+                    if ((lv_j == lv_jBNum))
+                    {
+                        lv_j = 0;
+                    }
+                }
             }
             return lv_j;
         }
 
         /// <summary>
-        /// 【MM_函数库】互动T_注册Timer标签句柄并返回。为Timer自动设置新的标签句柄，重复时会返回已注册的Timer标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动T_注册Timer标签句柄并返回。为Timer自动设置新的标签句柄，重复时会返回已注册的Timer标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Timer的已注册标签</returns>
         private static string DHD_RegTimerTagAndReturn(Timer lp_timer)//内部使用
         {
             // Variable Declarations
@@ -19720,10 +21213,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动T_返回Timer已注册标签句柄。返回一个Timer的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动T_返回Timer已注册标签句柄
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Timer的已注册标签，错误返回""</returns>
         public static string DHD_ReturnTimerTag(Timer lp_timer)
         {
             // Variable Declarations
@@ -20255,7 +21748,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_timer"></param>
         /// <returns></returns>
-        public static double? DHD_ReturnTimerDouble(Timer lp_timer)
+        public static double DHD_ReturnTimerDouble(Timer lp_timer)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -20270,7 +21763,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_timer"></param>
         /// <returns></returns>
-        public static bool? DHD_ReturnIfTimerTag(Timer lp_timer)
+        public static bool DHD_ReturnIfTimerTag(Timer lp_timer)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -20286,7 +21779,7 @@ namespace MetalMaxSystem
         /// <param name="lp_timer"></param>
         /// <param name="lp_key">存储键区，默认值"_Timer"</param>
         /// <returns></returns>
-        public static bool? DHD_ReturnIfTimerTagKey(Timer lp_timer, string lp_key)
+        public static bool DHD_ReturnIfTimerTagKey(Timer lp_timer, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -20638,7 +22131,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static int? DHD_ReturnTimerGNumMax(string lp_gs)
+        public static int DHD_ReturnTimerGNumMax(string lp_gs)
         {
             return DictionaryIntLoad0(true, lp_gs + "TimerNum");
         }
@@ -21006,10 +22499,10 @@ namespace MetalMaxSystem
         //--------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// 【MM_函数库】互动S_注册String标签句柄并返回。为String自动设置新的标签句柄，重复时会返回已注册的String标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动S_注册String标签句柄并返回。为String自动设置新的标签句柄，重复时会返回已注册的String标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个String的已注册标签</returns>
         private static int DHD_RegStringTagAndReturn_Int(string lp_timer)//内部使用
         {
             // Variable Declarations
@@ -21053,10 +22546,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动S_返回String已注册标签句柄。返回一个String的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动S_返回String已注册标签句柄
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个String的已注册标签，错误返回0</returns>
         public static int DHD_ReturnStringTag_Int(string lp_timer)
         {
             // Variable Declarations
@@ -21077,15 +22570,22 @@ namespace MetalMaxSystem
                 {
                     break;
                 }
+                else
+                {
+                    if ((lv_j == lv_jBNum))
+                    {
+                        lv_j = 0;
+                    }
+                }
             }
             return lv_j;
         }
 
         /// <summary>
-        /// 【MM_函数库】互动S_注册String标签句柄并返回。为String自动设置新的标签句柄，重复时会返回已注册的String标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动S_注册String标签句柄并返回。为String自动设置新的标签句柄，重复时会返回已注册的String标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个String的已注册标签</returns>
         private static string DHD_RegStringTagAndReturn(string lp_timer)//内部使用
         {
             // Variable Declarations
@@ -21132,10 +22632,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动S_返回String已注册标签句柄。返回一个String的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动S_返回String已注册标签句柄
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个String的已注册标签，错误返回""</returns>
         public static string DHD_ReturnStringTag(string lp_timer)
         {
             // Variable Declarations
@@ -21667,7 +23167,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_timer"></param>
         /// <returns></returns>
-        public static double? DHD_ReturnStringDouble(string lp_timer)
+        public static double DHD_ReturnStringDouble(string lp_timer)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -21682,7 +23182,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_timer"></param>
         /// <returns></returns>
-        public static bool? DHD_ReturnIfStringTag(string lp_timer)
+        public static bool DHD_ReturnIfStringTag(string lp_timer)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -21698,7 +23198,7 @@ namespace MetalMaxSystem
         /// <param name="lp_timer"></param>
         /// <param name="lp_key">存储键区，默认值"_String"</param>
         /// <returns></returns>
-        public static bool? DHD_ReturnIfStringTagKey(string lp_timer, string lp_key)
+        public static bool DHD_ReturnIfStringTagKey(string lp_timer, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -22050,7 +23550,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static int? DHD_ReturnStringGNumMax(string lp_gs)
+        public static int DHD_ReturnStringGNumMax(string lp_gs)
         {
             return DictionaryIntLoad0(true, lp_gs + "StringNum");
         }
@@ -22418,10 +23918,10 @@ namespace MetalMaxSystem
         //--------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// 【MM_函数库】互动I_注册Int标签句柄并返回。为Int自动设置新的标签句柄，重复时会返回已注册的Int标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动I_注册Int标签句柄并返回。为Int自动设置新的标签句柄，重复时会返回已注册的Int标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Int的已注册标签</returns>
         private static int DHD_RegIntTagAndReturn_Int(int lp_vector)//内部使用
         {
             // Variable Declarations
@@ -22465,10 +23965,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动I_返回Int已注册标签句柄。返回一个Int的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动I_返回Int已注册标签句柄
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Int的已注册标签，错误返回0</returns>
         public static int DHD_ReturnIntTag_Int(int lp_vector)
         {
             // Variable Declarations
@@ -22489,15 +23989,22 @@ namespace MetalMaxSystem
                 {
                     break;
                 }
+                else
+                {
+                    if ((lv_j == lv_jBNum))
+                    {
+                        lv_j = 0;
+                    }
+                }
             }
             return lv_j;
         }
 
         /// <summary>
-        /// 【MM_函数库】互动I_注册Int标签句柄并返回。为Int自动设置新的标签句柄，重复时会返回已注册的Int标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动I_注册Int标签句柄并返回。为Int自动设置新的标签句柄，重复时会返回已注册的Int标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Int的已注册标签</returns>
         private static string DHD_RegIntTagAndReturn(int lp_vector)//内部使用
         {
             // Variable Declarations
@@ -22544,10 +24051,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动I_返回Int已注册标签句柄。返回一个Int的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动I_返回Int已注册标签句柄
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Int的已注册标签，错误返回""</returns>
         public static string DHD_ReturnIntTag(int lp_vector)
         {
             // Variable Declarations
@@ -22886,7 +24393,7 @@ namespace MetalMaxSystem
         /// <param name="lp_regNum"></param>
         /// <param name="lp_key">存储键区，默认值"_Int"</param>
         /// <returns></returns>
-        public static int? DHD_ReturnIntFromRegNum(int lp_regNum, string lp_key)
+        public static int DHD_ReturnIntFromRegNum(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -22903,7 +24410,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_tag">句柄标签</param>
         /// <returns></returns>
-        public static int? DHD_ReturnIntFromTag(int lp_tag)
+        public static int DHD_ReturnIntFromTag(int lp_tag)
         {
             // Variable Declarations
             string lv_tag;
@@ -23079,7 +24586,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static double? DHD_ReturnIntDouble(int lp_vector)
+        public static double DHD_ReturnIntDouble(int lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -23094,7 +24601,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static bool? DHD_ReturnIfIntTag(int lp_vector)
+        public static bool DHD_ReturnIfIntTag(int lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -23110,7 +24617,7 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Int"</param>
         /// <returns></returns>
-        public static bool? DHD_ReturnIfIntTagKey(int lp_vector, string lp_key)
+        public static bool DHD_ReturnIfIntTagKey(int lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -23445,7 +24952,7 @@ namespace MetalMaxSystem
         /// <param name="lp_regNum">注册序号</param>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static int? DHD_ReturnIntFromIntGFunc(int lp_regNum, string lp_gs)
+        public static int DHD_ReturnIntFromIntGFunc(int lp_regNum, string lp_gs)
         {
             // Variable Declarations
             string lv_str;
@@ -23462,7 +24969,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static int? DHD_ReturnIntGNumMax(string lp_gs)
+        public static int DHD_ReturnIntGNumMax(string lp_gs)
         {
             return DictionaryIntLoad0(true, lp_gs + "IntNum");
         }
@@ -23704,19 +25211,19 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static int? DHD_ReturnRandomIntFromIntGFunc(string lp_gs)
+        public static int DHD_ReturnRandomIntFromIntGFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_num;
             int lv_a;
-            int? lv_c = null;
+            int lv_c = 0;
             // Variable Initialization
             lv_num = DHD_ReturnIntNumMax(lp_gs);
             // Implementation
             if ((lv_num >= 1))
             {
                 lv_a = RandomInt(1, lv_num);
-                lv_c = (int)DHD_ReturnIntFromRegNum(lv_a, lp_gs);
+                lv_c = DHD_ReturnIntFromRegNum(lv_a, lp_gs);
             }
             return lv_c;
         }
@@ -23837,10 +25344,10 @@ namespace MetalMaxSystem
         //--------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// 【MM_函数库】互动O_注册Object标签句柄并返回。为Object自动设置新的标签句柄，重复时会返回已注册的Object标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动O_注册Object标签句柄并返回。为Object自动设置新的标签句柄，重复时会返回已注册的Object标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_object"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Object的已注册标签</returns>
         private static int HHD_RegObjectTagAndReturn_Int(object lp_object)//内部使用
         {
             // Variable Declarations
@@ -23884,10 +25391,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动O_返回Object已注册标签句柄。返回一个Object的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动O_返回Object已注册标签句柄
         /// </summary>
         /// <param name="lp_object"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Object的已注册标签，错误返回0</returns>
         public static int HHD_ReturnObjectTag_Int(object lp_object)
         {
             // Variable Declarations
@@ -23908,15 +25415,22 @@ namespace MetalMaxSystem
                 {
                     break;
                 }
+                else
+                {
+                    if ((lv_j == lv_jBNum))
+                    {
+                        lv_j = 0;
+                    }
+                }
             }
             return lv_j;
         }
 
         /// <summary>
-        /// 【MM_函数库】互动O_注册Object标签句柄并返回。为Object自动设置新的标签句柄，重复时会返回已注册的Object标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动O_注册Object标签句柄并返回。为Object自动设置新的标签句柄，重复时会返回已注册的Object标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_object"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Object的已注册标签</returns>
         private static string HHD_RegObjectTagAndReturn(object lp_object)//内部使用
         {
             // Variable Declarations
@@ -23963,10 +25477,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动O_返回Object已注册标签句柄。返回一个Object的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动O_返回Object已注册标签句柄
         /// </summary>
         /// <param name="lp_object"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Object的已注册标签，错误返回""</returns>
         public static string HHD_ReturnObjectTag(object lp_object)
         {
             // Variable Declarations
@@ -25261,10 +26775,10 @@ namespace MetalMaxSystem
         //--------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// 【MM_函数库】互动V_注册Vector标签句柄并返回。为Vector自动设置新的标签句柄，重复时会返回已注册的Vector标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动V_注册Vector标签句柄并返回。为Vector自动设置新的标签句柄，重复时会返回已注册的Vector标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Vector的已注册标签</returns>
         private static int HHD_RegVectorTagAndReturn_Int(Vector lp_vector)//内部使用
         {
             // Variable Declarations
@@ -25308,10 +26822,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动V_返回Vector已注册标签句柄。返回一个Vector的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动V_返回Vector已注册标签句柄
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Vector的已注册标签，错误返回0</returns>
         public static int HHD_ReturnVectorTag_Int(Vector lp_vector)
         {
             // Variable Declarations
@@ -25332,15 +26846,22 @@ namespace MetalMaxSystem
                 {
                     break;
                 }
+                else
+                {
+                    if ((lv_j == lv_jBNum))
+                    {
+                        lv_j = 0;
+                    }
+                }
             }
             return lv_j;
         }
 
         /// <summary>
-        /// 【MM_函数库】互动V_注册Vector标签句柄并返回。为Vector自动设置新的标签句柄，重复时会返回已注册的Vector标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动V_注册Vector标签句柄并返回。为Vector自动设置新的标签句柄，重复时会返回已注册的Vector标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Vector的已注册标签</returns>
         private static string HHD_RegVectorTagAndReturn(Vector lp_vector)//内部使用
         {
             // Variable Declarations
@@ -25388,10 +26909,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动V_返回Vector已注册标签句柄。返回一个Vector的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动V_返回Vector已注册标签句柄
         /// </summary>
         /// <param name="lp_vector"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Vector的已注册标签，错误返回""</returns>
         public static string HHD_ReturnVectorTag(Vector lp_vector)
         {
             // Variable Declarations
@@ -26560,12 +28081,12 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static Vector? HHD_ReturnRandomVectorFromVectorGFunc(string lp_gs)
+        public static Vector HHD_ReturnRandomVectorFromVectorGFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_num;
             int lv_a;
-            Vector? lv_c = null;
+            Vector lv_c = new Vector(0,0);
             // Variable Initialization
             lv_num = HHD_ReturnVectorNumMax(lp_gs);
             // Implementation
@@ -26686,10 +28207,10 @@ namespace MetalMaxSystem
         //--------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// 【MM_函数库】互动T_注册Timer标签句柄并返回。为Timer自动设置新的标签句柄，重复时会返回已注册的Timer标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动T_注册Timer标签句柄并返回。为Timer自动设置新的标签句柄，重复时会返回已注册的Timer标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Timer的已注册标签</returns>
         private static int HHD_RegTimerTagAndReturn_Int(Timer lp_timer)//内部使用
         {
             // Variable Declarations
@@ -26733,10 +28254,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动T_返回Timer已注册标签句柄。返回一个Timer的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动T_返回Timer已注册标签句柄
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Timer的已注册标签，错误返回0</returns>
         public static int HHD_ReturnTimerTag_Int(Timer lp_timer)
         {
             // Variable Declarations
@@ -26757,15 +28278,22 @@ namespace MetalMaxSystem
                 {
                     break;
                 }
+                else
+                {
+                    if ((lv_j == lv_jBNum))
+                    {
+                        lv_j = 0;
+                    }
+                }
             }
             return lv_j;
         }
 
         /// <summary>
-        /// 【MM_函数库】互动T_注册Timer标签句柄并返回。为Timer自动设置新的标签句柄，重复时会返回已注册的Timer标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动T_注册Timer标签句柄并返回。为Timer自动设置新的标签句柄，重复时会返回已注册的Timer标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Timer的已注册标签</returns>
         private static string HHD_RegTimerTagAndReturn(Timer lp_timer)//内部使用
         {
             // Variable Declarations
@@ -26813,10 +28341,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动T_返回Timer已注册标签句柄。返回一个Timer的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动T_返回Timer已注册标签句柄
         /// </summary>
         /// <param name="lp_timer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Timer的已注册标签，错误返回""</returns>
         public static string HHD_ReturnTimerTag(Timer lp_timer)
         {
             // Variable Declarations
@@ -28110,10 +29638,10 @@ namespace MetalMaxSystem
         //--------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// 【MM_函数库】互动S_注册String标签句柄并返回。为String自动设置新的标签句柄，重复时会返回已注册的String标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动S_注册String标签句柄并返回。为String自动设置新的标签句柄，重复时会返回已注册的String标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_string"></param>
-        /// <returns></returns>
+        /// <returns>返回一个String的已注册标签</returns>
         private static int HHD_RegStringTagAndReturn_Int(string lp_string)//内部使用
         {
             // Variable Declarations
@@ -28157,10 +29685,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动S_返回String已注册标签句柄。返回一个String的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动S_返回String已注册标签句柄
         /// </summary>
         /// <param name="lp_string"></param>
-        /// <returns></returns>
+        /// <returns>返回一个String的已注册标签，错误返回0</returns>
         public static int HHD_ReturnStringTag_Int(string lp_string)
         {
             // Variable Declarations
@@ -28181,15 +29709,22 @@ namespace MetalMaxSystem
                 {
                     break;
                 }
+                else
+                {
+                    if ((lv_j == lv_jBNum))
+                    {
+                        lv_j = 0;
+                    }
+                }
             }
             return lv_j;
         }
 
         /// <summary>
-        /// 【MM_函数库】互动S_注册String标签句柄并返回。为String自动设置新的标签句柄，重复时会返回已注册的String标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动S_注册String标签句柄并返回。为String自动设置新的标签句柄，重复时会返回已注册的String标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_string"></param>
-        /// <returns></returns>
+        /// <returns>返回一个String的已注册标签</returns>
         private static string HHD_RegStringTagAndReturn(string lp_string)//内部使用
         {
             // Variable Declarations
@@ -28237,10 +29772,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动S_返回String已注册标签句柄。返回一个String的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动S_返回String已注册标签句柄
         /// </summary>
         /// <param name="lp_string"></param>
-        /// <returns></returns>
+        /// <returns>返回一个String的已注册标签，错误返回""</returns>
         public static string HHD_ReturnStringTag(string lp_string)
         {
             // Variable Declarations
@@ -29535,10 +31070,10 @@ namespace MetalMaxSystem
         //--------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// 【MM_函数库】互动I_注册Integer标签句柄并返回。为Integer自动设置新的标签句柄，重复时会返回已注册的Integer标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动I_注册Integer标签句柄并返回。为Integer自动设置新的标签句柄，重复时会返回已注册的Integer标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_integer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Integer的已注册标签</returns>
         private static int HHD_RegIntegerTagAndReturn_Int(int lp_integer)//内部使用
         {
             // Variable Declarations
@@ -29582,10 +31117,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动I_返回Integer已注册标签句柄。返回一个Integer的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动I_返回Integer已注册标签句柄
         /// </summary>
         /// <param name="lp_integer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Integer的已注册标签，错误返回0</returns>
         public static int HHD_ReturnIntegerTag_Int(int lp_integer)
         {
             // Variable Declarations
@@ -29606,15 +31141,22 @@ namespace MetalMaxSystem
                 {
                     break;
                 }
+                else
+                {
+                    if ((lv_j == lv_jBNum))
+                    {
+                        lv_j = 0;
+                    }
+                }
             }
             return lv_j;
         }
 
         /// <summary>
-        /// 【MM_函数库】互动I_注册Integer标签句柄并返回。为Integer自动设置新的标签句柄，重复时会返回已注册的Integer标签。这是一个内部函数，一般不需要自动使用
+        /// 【MM_函数库】互动I_注册Integer标签句柄并返回。为Integer自动设置新的标签句柄，重复时会返回已注册的Integer标签。这是一个内部函数，一般不需要手动使用
         /// </summary>
         /// <param name="lp_integer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Integer的已注册标签</returns>
         private static string HHD_RegIntegerTagAndReturn(int lp_integer)//内部使用
         {
             // Variable Declarations
@@ -29662,10 +31204,10 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】互动I_返回Integer已注册标签句柄。返回一个Integer的已注册标签，如果失败返回null
+        /// 【MM_函数库】互动I_返回Integer已注册标签句柄
         /// </summary>
         /// <param name="lp_integer"></param>
-        /// <returns></returns>
+        /// <returns>返回一个Integer的已注册标签，错误返回""</returns>
         public static string HHD_ReturnIntegerTag(int lp_integer)
         {
             // Variable Declarations
@@ -33001,384 +34543,6 @@ namespace MetalMaxSystem
     /// <summary>
     /// 【MM_函数库】单位
     /// </summary>
-    public static class UnitType
-    {
-        #region 字段
-
-        //字段用于每个实例存储不同的值
-
-        private static string _name;
-
-        private static double _age;
-        private static double _speed;
-        private static double _attackSpeed;
-        private static double _strength;
-        private static double _vitality;
-        private static double _agility;
-        private static double _intelligence;
-        private static double _dexterity;
-        private static double _luck;
-        private static double _atk;
-        private static double _def;
-        private static double _matk;
-        private static double _mdef;
-        private static double _critical;
-        private static double _antiCritical;
-        private static double _maspd;
-        private static double _hp;
-        private static double _mp;
-        private static double _sp;
-        private static double[] _tp;
-        private static double _exp;
-        private static double _hps;
-        private static double _mps;
-        private static double _sps;
-        private static double[] _tps;
-        private static double _evasion;
-        private static double _evasionRate;
-        private static double _perfectEvasion;
-        private static double _perfectEvasionRate;
-        private static double _hit;
-        private static double _hitRate;
-        private static double _perfectHit;
-        private static double _perfectHitRate;
-        private static double _killRate;
-        private static double _antiAntiKilledRate;
-        private static double _carryWeight = 300.0;
-
-        private static double _ageMax;
-        private static double _speedMax;
-        private static double _strengthMax;
-        private static double _vitalityMax;
-        private static double _agilityMax;
-        private static double _intelligenceMax;
-        private static double _dexterityMax;
-        private static double _luckMax;
-        private static double _atkMax;
-        private static double _defMax;
-        private static double _matkMax;
-        private static double _mdefMax;
-        private static double _criticalMax;
-        private static double _antiCriticalMax;
-        private static double _maspdMax;
-        private static double _hpMax;
-        private static double _mpMax;
-        private static double _spMax;
-        private static double[] _tpMax;
-        private static double _expMax;
-        private static double _hpsMax;
-        private static double _mpsMax;
-        private static double _spsMax;
-        private static double[] _tpsMax;
-        private static double _evasionMax;
-        private static double _evasionRateMax;
-        private static double _perfectEvasionMax;
-        private static double _perfectEvasionRateMax;
-        private static double _hitMax;
-        private static double _hitRateMax;
-        private static double _perfectHitMax;
-        private static double _perfectHitRateMax;
-        private static double _killRateMax;
-        private static double _antiAntiKilledRateMax;
-        private static double _carryWeightMax = 300.0;
-
-        private static int _Tag;
-        private static string _typeName;
-        private static Vector3D _vector3D;
-        private static Vector _vector;
-        private static double _terrainHeight = 0.0;
-        private static double _height = 1.8;
-        private static double _radius = 0.5;
-        private static double _selectedRadius = 0.5;
-        private static int _owner;
-        private static int _controller;
-        private static double _angle;
-        private static bool _alive;
-
-        #endregion
-
-        #region 构造函数
-
-        /// <summary>
-        /// 【MM_函数库】单位
-        /// </summary>
-        static UnitType()
-        {
-            //创建静态类时的初始化动作
-        }
-
-        public static void SetProperty(UnitProp unitProp, double value)
-        {
-
-        }
-
-        #endregion
-
-        #region 属性方法
-
-        /// <summary>
-        /// 名字
-        /// </summary>
-        public static string Name { get => _name; set => _name = value; }
-        /// <summary>
-        /// 年龄
-        /// </summary>
-        public static double Age { get => _age; set => _age = value; }
-        /// <summary>
-        /// 移动速度（每帧行动距离换算到每秒），由游戏内部针对当前帧速进行修改（如每帧50ms时，实际每帧移动距离=50*Speed/1000）
-        /// </summary>
-        public static double Speed { get => _speed; set => _speed = value; }
-        /// <summary>
-        /// ASPD：物理攻击速度（每帧行动次数换算到每秒），受到多个因素同时影响如AGI、DEX、职业、武器、药水等（设计ASPD=100即每秒攻击5次，则每4帧攻击1次），由游戏内部针对当前帧速进行修改（如每帧50ms时，实际每次攻击等待毫秒数=50*ASPD/（100/5）=200ms）
-        /// </summary>
-        public static double AttackSpeed { get => _attackSpeed; set => _attackSpeed = value; }
-        /// <summary>
-        /// STR：力量，影响物理攻击（每点加2）、负重上限（每点加30，按牛顿为单位约50~60个鸡蛋）、武器发挥（当STR很低时，武器攻击无法完全发挥，在STR为0时只能发挥25%），但不影响暴击和抵挡几率和每秒伤害输出DPS(Attack Power)
-        /// 当用斧、书、剑、拳刃、拳套、钝器、矛等近战武器或空手时ATK +1、武器ATK+0.5%）仅对基础武器ATK有效，且强制无属性），当用弓、枪械、乐器、鞭等远程武器时ATK+0.2
-        /// </summary>
-        public static double Strength { get => _strength; set => _strength = value; }
-        /// <summary>
-        /// VIT：耐力（体力），影响生命值上限和物理防御，每点增加HP上限30或1%、HP恢复+0.2、物理防御0.5~1、魔防0.2、HP恢复类道具效果+2%，每5点增加HP回复1
-        /// 状态效果影响：中毒状态成功率-1%且持续时间减少，VIT≥100时免疫中毒状态，混乱状态成功率减少，昏迷状态成功率-1%且持续时间减少，VIT≥100时免疫昏迷状态，沉默状态成功率 -1%且持续时间-0.01秒，诅咒状态持续时间-0.01秒，霜冻状态成功率减少且持续时间-0.05秒，冷冻状态持续时间-0.1秒
-        /// </summary>
-        public static double Vitality { get => _vitality; set => _vitality = value; }
-        /// <summary>
-        /// AGI：敏捷，每点增加攻击速度1%、闪避1、防御力0.2、致命一击或暴击
-        /// 状态效果影响：出血状态成功率和持续时间减少，移动不可状态中部分陷阱类状态成功率和持续时间减少，灼烧状态成功率和持续时间减少
-        /// </summary>
-        public static double Agility { get => _agility; set => _agility = value; }
-        /// <summary>
-        /// INT：智力，影响魔攻、魔法值和魔法致命一击几率，每点加魔攻2、魔防0.5~1、魔法值1%，每6点增Sp恢复速度（INT<120时，SP自然恢复 +0.6，INT≥120时，SP自然恢复+1.3），增至偶数时Sp上限加7、奇数时Sp上限加6，可变吟唱时间减少，恢复类道具效果+1%
-        /// 状态效果影响：冰冻状态持续时间减少，对口职业睡眠状态成功率 -1%，持续时间减少，黑暗状态成功率减少，持续时间减少，恐惧状态成功率减少，持续时间减少，沉睡状态成功率减少，持续时间减少
-        /// </summary>
-        public static double Intelligence { get => _intelligence; set => _intelligence = value; }
-        /// <summary>
-        /// DEX：敏捷（灵巧），影响玩家命中和可变吟唱时间，每点加命中1，每3点减0.1秒可变咏唱时间并加物理攻击1，每5点加物理攻击1，每30点减1秒可变咏唱时间（游戏中有个重要名词叫“不可变吟唱时间”也就是说某个技能存在一个最低下限）
-        /// 当用弓、枪械、乐器、鞭等远程武器时ATK+1、武器ATK+0.5%（仅对基础武器ATK有效且强制无属性），当用斧、书、剑、拳刃、拳套、钝器、矛等近战武器或空手时ATK+0.2、MATK+0.2、HIT+1、MDEF+1、可变吟唱时间减少、按比例增加ASPD
-        /// 状态效果影响：装备卸除状态持续时间减少，霜冻状态成功率减少且持续时间-0.05秒
-        /// </summary>
-        public static double Dexterity { get => _dexterity; set => _dexterity = value; }
-        /// <summary>
-        /// LUK：幸运（厄运为负），影响装备道具的出现率&探索发现率、暴击率、完全回避等，每点CRI+0.3、ATK+0.3、MATK+0.3、HIT+0.3、回避+0.2、完全回避+0.1、免暴率+1，每3点加暴击1，每5点加物理攻击1和防暴击1
-        /// 状态效果影响：中毒状态成功率&持续时间减少，冰冻状态成功率减少，混乱状态成功率减少，石化状态成功率减少，睡眠状态成功率减少，昏迷状态成功率减少，持续时间减少，沉默状态成功率减少，诅咒状态成功率减少，黑暗状态成功率减少，沉睡状态成功率减少
-        /// </summary>
-        public static double Luck { get => _luck; set => _luck = value; }
-        /// <summary>
-        /// Atk：物理攻击力，力量的主要相关因素以及受其他辅助因素影响
-        /// </summary>
-        public static double Atk { get => _atk; set => _atk = value; }
-        /// <summary>
-        /// DEF：防御力，敏捷的主要相关因素以及受其他辅助因素影响
-        /// </summary>
-        public static double Def { get => _def; set => _def = value; }
-        /// <summary>
-        /// Matk：魔法攻击力
-        /// </summary>
-        public static double Matk { get => _matk; set => _matk = value; }
-        /// <summary>
-        /// Mdef ：魔法防御力
-        /// </summary>
-        public static double Mdef { get => _mdef; set => _mdef = value; }
-        /// <summary>
-        /// CRI：暴击率，一般根据人物等级设计攻击力来计算（按一定比率采取反推方式完成）
-        /// </summary>
-        public static double Critical { get => _critical; set => _critical = value; }
-        /// <summary>
-        /// 抗暴率，实际暴击率按抗暴率程度将暴击率消减再修正数值得到实际暴击率，简单点就直接相减
-        /// </summary>
-        public static double AntiCritical { get => _antiCritical; set => _antiCritical = value; }
-        /// <summary>
-        /// Maspd：魔法攻击速度，MASPD受到多个因素同时影响：INT、AGI、DEX、职业、武器、药水等，其中敏捷和常规物理攻击速度关联较大，施法频率参考ASPD
-        /// </summary>
-        public static double Maspd { get => _maspd; set => _maspd = value; }
-        /// <summary>
-        /// 生命值
-        /// </summary>
-        public static double Hp { get => _hp; set => _hp = value; }
-        /// <summary>
-        /// 魔法点：ManaPoint，当低于所需时，角色无法使用相关武器装备和常规技能
-        /// </summary>
-        public static double Mp { get => _mp; set => _mp = value; }
-        /// <summary>
-        /// 特殊技能点：当低于所需时，角色无法使用特殊技能
-        /// </summary>
-        public static double Sp { get => _sp; set => _sp = value; }
-        /// <summary>
-        /// 计时阶段状态条（可有多个），用于单位工作或施法阶段进行计时等用途
-        /// </summary>
-        public static double[] Tp { get => _tp; set => _tp = value; }
-        /// <summary>
-        /// 经验值：experience，积累到一定数量可提高等级、能力
-        /// </summary>
-        public static double Exp { get => _exp; set => _exp = value; }
-        /// <summary>
-        /// 生命值恢复速度（每帧），延时恢复另详设计
-        /// </summary>
-        public static double Hps { get => _hps; set => _hps = value; }
-        /// <summary>
-        /// 魔法点恢复速度（每帧），延时恢复另详设计
-        /// </summary>
-        public static double Mps { get => _mps; set => _mps = value; }
-        /// <summary>
-        /// 技能点恢复速度（每帧），延时恢复另详设计
-        /// </summary>
-        public static double Sps { get => _sps; set => _sps = value; }
-        /// <summary>
-        /// 工作、施法时间阶段的状态值恢复或倒计速度
-        /// </summary>
-        public static double[] Tps { get => _tps; set => _tps = value; }
-        /// <summary>
-        /// 闪避
-        /// </summary>
-        public static double Evasion { get => _evasion; set => _evasion = value; }
-        /// <summary>
-        /// 闪避率，其值=1 / (1 + 100 / 闪避面板数值)，允许超过100的原因是面对命中率时可扣减，并不是最终结果
-        /// </summary>
-        public static double EvasionRate { get => _evasionRate; set => _evasionRate = value; }
-        /// <summary>
-        /// 完美闪避，此项仅受幸运影响
-        /// </summary>
-        public static double PerfectEvasion { get => _perfectEvasion; set => _perfectEvasion = value; }
-        /// <summary>
-        /// 完美闪避率，根据完美闪避计算后修正得出，并用来参与结果
-        /// </summary>
-        public static double PerfectEvasionRate { get => _perfectEvasionRate; set => _perfectEvasionRate = value; }
-        /// <summary>
-        /// 命中
-        /// </summary>
-        public static double Hit { get => _hit; set => _hit = value; }
-        /// <summary>
-        /// 命中率
-        /// </summary>
-        public static double HitRate { get => _hitRate; set => _hitRate = value; }
-        /// <summary>
-        /// 完美命中，此项仅受幸运影响
-        /// </summary>
-        public static double PerfectHit { get => _perfectHit; set => _perfectHit = value; }
-        /// <summary>
-        /// 完美命中率，根据完美命中计算后修正得出，并用来参与结果
-        /// </summary>
-        public static double PerfectHitRate { get => _perfectHitRate; set => _perfectHitRate = value; }
-        /// <summary>
-        /// 致命一击率，允许超过100的原因是遇对方有抗即死率时进行扣减，并不是最终结果
-        /// </summary>
-        public static double KillRate { get => _killRate; set => _killRate = value; }
-        /// <summary>
-        /// 抗即死率，用来防御致命一击
-        /// </summary>
-        public static double AntiKilledRate { get => _antiAntiKilledRate; set => _antiAntiKilledRate = value; }
-        /// <summary>
-        /// 单位负重
-        /// </summary>
-        public static double CarryWeight { get => _carryWeight; set => _carryWeight = value; }
-
-        //↓限制
-
-        public static double AgeMax { get => _ageMax; set => _ageMax = value; }
-        public static double SpeedMax { get => _speedMax; set => _speedMax = value; }
-        public static double StrengthMax { get => _strengthMax; set => _strengthMax = value; }
-        public static double VitalityMax { get => _vitalityMax; set => _vitalityMax = value; }
-        public static double AgilityMax { get => _agilityMax; set => _agilityMax = value; }
-        public static double IntelligenceMax { get => _intelligenceMax; set => _intelligenceMax = value; }
-        public static double DexterityMax { get => _dexterityMax; set => _dexterityMax = value; }
-        public static double LuckMax { get => _luckMax; set => _luckMax = value; }
-        public static double AtkMax { get => _atkMax; set => _atkMax = value; }
-        public static double DefMax { get => _defMax; set => _defMax = value; }
-        public static double MatkMax { get => _matkMax; set => _matkMax = value; }
-        public static double MdefMax { get => _mdefMax; set => _mdefMax = value; }
-        public static double CriticalMax { get => _criticalMax; set => _criticalMax = value; }
-        public static double AntiCriticalMax { get => _antiCriticalMax; set => _antiCriticalMax = value; }
-        public static double MaspdMax { get => _maspdMax; set => _maspdMax = value; }
-        public static double HpMax { get => _hpMax; set => _hpMax = value; }
-        public static double MpMax { get => _mpMax; set => _mpMax = value; }
-        public static double SpMax { get => _spMax; set => _spMax = value; }
-        public static double[] TpMax { get => _tpMax; set => _tpMax = value; }
-        public static double ExpMax { get => _expMax; set => _expMax = value; }
-        public static double HpsMax { get => _hpsMax; set => _hpsMax = value; }
-        public static double MpsMax { get => _mpsMax; set => _mpsMax = value; }
-        public static double SpsMax { get => _spsMax; set => _spsMax = value; }
-        public static double[] TpsMax { get => _tpsMax; set => _tpsMax = value; }
-        public static double EvasionMax { get => _evasionMax; set => _evasionMax = value; }
-        public static double EvasionRateMax { get => _evasionRateMax; set => _evasionRateMax = value; }
-        public static double PerfectEvasionMax { get => _perfectEvasionMax; set => _perfectEvasionMax = value; }
-        public static double PerfectEvasionRateMax { get => _perfectEvasionRateMax; set => _perfectEvasionRateMax = value; }
-        public static double HitMax { get => _hitMax; set => _hitMax = value; }
-        public static double HitRateMax { get => _hitRateMax; set => _hitRateMax = value; }
-        public static double PerfectHitMax { get => _perfectHitMax; set => _perfectHitMax = value; }
-        public static double PerfectHitRateMax { get => _perfectHitRateMax; set => _perfectHitRateMax = value; }
-        public static double KillRateMax { get => _killRateMax; set => _killRateMax = value; }
-        public static double AntiKilledRateMax { get => _antiAntiKilledRateMax; set => _antiAntiKilledRateMax = value; }
-        public static double CarryWeightMax { get => _carryWeightMax; set => _carryWeightMax = value; }
-
-        //↓其他属性
-
-        /// <summary>
-        /// 单位标签（句柄）
-        /// </summary>
-        public static int Tag { get => _Tag; set => _Tag = value; }
-
-        /// <summary>
-        /// 单位类型在编辑器的名字
-        /// </summary>
-        public static string TypeName { get => _typeName; set => _typeName = value; }
-
-        /// <summary>
-        /// 单位脚底坐标向量(三维)，Z坐标是根据计算得到（Z=MapHeight+TerrainHeight+Unit.TerrainHeight），平时只要实时更新平面坐标即可根据该二维点高度信息更新3D高度
-        /// </summary>
-        public static Vector3D Vector3D { get => _vector3D; set => _vector3D = value; }
-
-        /// <summary>
-        /// 单位脚底坐标向量(二维)
-        /// </summary>
-        public static Vector Vector { get => _vector; set => _vector = value; }
-
-        /// <summary>
-        /// 单位层地形物件高度（区别地图层地形物件），其值使单位浮空或嵌入地面
-        /// </summary>
-        public static double TerrainHeight { get => _terrainHeight; set => _terrainHeight = value; }
-
-        /// <summary>
-        /// 单位高度，注意当鼠标划过或点击单位时返回的Z坐标是在其头顶的（mouseVectorZ=MapHeight+TerrainHeight+Unit.TerrainHeight+Unit.Height）
-        /// </summary>
-        public static double Height { get => _height; set => _height = value; }
-
-        /// <summary>
-        /// 单位碰撞检查半径，默认与模型半径一致，可修改每个单位的碰撞范围
-        /// </summary>
-        public static double Radius { get => _radius; set => _radius = value; }
-
-        /// <summary>
-        /// 鼠标点击单位时的选择及搜索范围
-        /// </summary>
-        public static double SelectedRadius { get => _selectedRadius; set => _selectedRadius = value; }
-
-        /// <summary>
-        /// 单位所有者的玩家编号
-        /// </summary>
-        public static int Owner { get => _owner; set => _owner = value; }
-
-        /// <summary>
-        /// 单位控制者的玩家编号
-        /// </summary>
-        public static int Controller { get => _controller; set => _controller = value; }
-
-        /// <summary>
-        /// 单位朝向角度
-        /// </summary>
-        public static double Angle { get => _angle; set => _angle = value; }
-
-        /// <summary>
-        /// 单位活体状态
-        /// </summary>
-        public static bool Alive { get => _alive; set => _alive = value; }
-
-        #endregion
-
-    }
-
-    /// <summary>
-    /// 【MM_函数库】单位
-    /// </summary>
     public class Unit
     {
         #region 字段
@@ -33784,12 +34948,12 @@ namespace MetalMaxSystem
 
     }
 
+    #region 派生单位
+
     /// <summary>
     /// 【MM_函数库】道具
     /// </summary>
     public class Item : Unit { }
-
-    #region 派生单位
 
     /// <summary>
     /// 轨道控制基地
@@ -34597,35 +35761,6 @@ namespace MetalMaxSystem
         /// </summary>
         public bool DefaultEvent { get => _defaultEvent; set => _defaultEvent = value; }
 
-        private int _period = 50;//默认逻辑帧是50ms
-        /// <summary>
-        /// 监听服务逻辑每帧（可设定范围0~1000），用于鼠标移动、键按下时计算最大持续值（实际每帧持续值+1时，最大持续值=蓄力值100 * 1000毫秒/逻辑帧毫秒），实际设置监听每帧超过1000ms基本不太可能，如果真的那样做，每次蓄力会很慢，默认为50ms（建议与默认运行时钟保持一致，如果监听循环不是50ms可自行匹配一致）
-        /// </summary>
-        public int Period
-        {
-            get => _period;
-            //如果用户输入错误，则什么也不变
-            set
-            {
-                if (value >= 0 && value <= 1000)
-                {
-                    _period = value;
-                }
-            }
-        }
-
-        private int _mouseLoop = 2;
-        /// <summary>
-        /// 设定多少逻辑帧算一次鼠标移动的成功持续，默认2帧激活持续状态（若监听实际每帧50ms，那么就是移动0.1现实时间秒算一次持续）
-        /// </summary>
-        public int MouseLoop { get => _mouseLoop; set => _mouseLoop = value; }
-
-        private int _keyLoop = 10;
-        /// <summary>
-        /// 设定多少逻辑帧算一次键按住的成功持续，默认10帧激活持续状态（若监听实际每帧50ms，那么就是按住0.5现实时间秒算一次持续）
-        /// </summary>
-        public int KeyLoop { get => _keyLoop; set => _keyLoop = value; }
-
         private readonly MouseHook MyMouseHook;
         private readonly KeyboardHook MyKeyboardHook;
 
@@ -34828,7 +35963,7 @@ namespace MetalMaxSystem
                     //思考：X,Y如何转化为世界坐标？
 
                     //Z从上述（X,Y）的信息中获得
-                    Z = Game.MapHeight + Game.TerrainHeight[X, Y] + (double)MMCore.HashTableLoad0(true, "Unit.TerrainHeight");
+                    Z = Game.MapHeight + Game.TerrainHeight[X, Y] + (double)MMCore.DictionaryDoubleLoad0(true, "Unit.TerrainHeight");
 
                     MouseMoveEvent?.Invoke(PlayerID, new Vector3D(X, Y, Z), X, Y);//当没给函数注册事件时不运行
 
@@ -34837,22 +35972,6 @@ namespace MetalMaxSystem
                     // 记录鼠标左键按下
                     MouseDownEvent?.Invoke(PlayerID, MMCore.c_mouseButtonLeft, Player.MouseVector3D[PlayerID], X, Y);
 
-                    //记录按键持续值，蓄力统计↓（待重新设计）
-
-                    //每帧持续值+1，最大持续值=蓄力值100 * (1000毫秒 /逻辑帧毫秒)
-                    //if (MetalMaxSystem.Player.MouseDownLoopOneBitNum[Player, MMCore.c_mouseButtonLeft] < 100 * (1000 / _period))
-                    //{
-                    //    MetalMaxSystem.Player.MouseDownLoopOneBitNum[Player, MMCore.c_mouseButtonLeft] += 1;
-                    //}
-                    ////持续值如果>1，则算鼠标在持续操作
-                    //if (MetalMaxSystem.Player.MouseDownLoopOneBitNum[Player, MMCore.c_mouseButtonLeft] > 1)
-                    //{
-                    //    MetalMaxSystem.Player.MouseDownLoop[Player, MMCore.c_mouseButtonLeft] = true;
-                    //}
-                    //else
-                    //{
-                    //    MetalMaxSystem.Player.MouseDownLoop[Player, MMCore.c_mouseButtonLeft] = false;
-                    //}
                     break;
                 case WM_LBUTTONUP:
                     // 记录鼠标左键弹起
@@ -34881,14 +36000,6 @@ namespace MetalMaxSystem
                     break;
             }
 
-            //以下动作搬到别的线程↓
-
-            //检查全鼠标按键，如果松开，则该键有持续值的话每帧-1
-            //for (; i <= 5; i++) { }
-            //if (MetalMaxSystem.Player.MouseDown[Player, i] = true && MetalMaxSystem.Player.MouseDownLoopOneBitNum[Player, i] > 0)
-            //{
-            //    MetalMaxSystem.Player.MouseDownLoopOneBitNum[Player, i] -= 1;
-            //}
         }
 
         #endregion
