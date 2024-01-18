@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\VSWork\\2019\\Lib_MMProgram\\MMConsole\\MMConsole.csproj": {}
+    "D:\\VSWork\\2022\\Lib_MMProgram\\MMConsole\\MMConsole.csproj": {}
   },
   "projects": {
-    "D:\\VSWork\\2019\\Lib_MMProgram\\MMConsole\\MMConsole.csproj": {
+    "D:\\VSWork\\2022\\Lib_MMProgram\\MMConsole\\MMConsole.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\VSWork\\2019\\Lib_MMProgram\\MMConsole\\MMConsole.csproj",
+        "projectUniqueName": "D:\\VSWork\\2022\\Lib_MMProgram\\MMConsole\\MMConsole.csproj",
         "projectName": "MMConsole",
-        "projectPath": "D:\\VSWork\\2019\\Lib_MMProgram\\MMConsole\\MMConsole.csproj",
+        "projectPath": "D:\\VSWork\\2022\\Lib_MMProgram\\MMConsole\\MMConsole.csproj",
         "packagesPath": "C:\\Users\\linsh\\.nuget\\packages\\",
-        "outputPath": "D:\\VSWork\\2019\\Lib_MMProgram\\MMConsole\\obj\\",
+        "outputPath": "D:\\VSWork\\2022\\Lib_MMProgram\\MMConsole\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\linsh\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -51,20 +51,8 @@
           "warn": true,
           "downloadDependencies": [
             {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[5.0.0, 5.0.0]"
-            },
-            {
               "name": "Microsoft.NETCore.App.Host.win-x64",
               "version": "[5.0.15, 5.0.15]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[5.0.0, 5.0.0]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[5.0.0, 5.0.0]"
             }
           ],
           "frameworkReferences": {

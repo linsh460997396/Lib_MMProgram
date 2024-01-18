@@ -1,13 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "yxfxwCCIHiP4zs6SQNu5F/3zs7IkyTSQVTJyScmMM9jbAWyX4RYtZT5zEETC1n03lmecgNIGicwbPcKWi3DwOw==",
+  "dgSpecHash": "9kqjGZowr1UwpUtyTi2o+L2RiXYWuG1Amg+OJfZxhKk455eL/HJdLwh5QtlwpxLuQ18D4R3gff1KFTl50/UiQQ==",
   "success": true,
-  "projectFilePath": "D:\\VSWork\\2019\\Lib_MMProgram\\MMConsole\\MMConsole.csproj",
+  "projectFilePath": "D:\\VSWork\\2022\\Lib_MMProgram\\MMConsole\\MMConsole.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\linsh\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\5.0.15\\microsoft.netcore.app.host.win-x64.5.0.15.nupkg.sha512",
-    "C:\\Users\\linsh\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\5.0.0\\microsoft.aspnetcore.app.ref.5.0.0.nupkg.sha512",
-    "C:\\Users\\linsh\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\5.0.0\\microsoft.windowsdesktop.app.ref.5.0.0.nupkg.sha512",
-    "C:\\Users\\linsh\\.nuget\\packages\\microsoft.netcore.app.ref\\5.0.0\\microsoft.netcore.app.ref.5.0.0.nupkg.sha512"
+    "C:\\Users\\linsh\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\5.0.15\\microsoft.netcore.app.host.win-x64.5.0.15.nupkg.sha512"
   ],
   "logs": []
 }

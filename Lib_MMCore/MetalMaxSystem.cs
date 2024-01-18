@@ -41,6 +41,7 @@ using MessageBox = System.Windows.MessageBox;
 using Timer = System.Threading.Timer;
 using static MetalMaxSystem.MouseHook;
 using static MetalMaxSystem.KeyboardHook;
+using System.Linq;
 
 #endregion
 
@@ -1030,6 +1031,86 @@ namespace MetalMaxSystem
         #endregion
 
         #region Functions 通用功能
+
+        /// <summary>
+        /// 使用自定义规则混肴代码
+        /// </summary>
+        /// <param name="codeStr">要混肴的原代码</param>
+        /// <param name="replacements">定义替换规则，建立要替换的键和替换后的值索引</param>
+        /// <returns></returns>
+        public static string ObfuscateCode(string codeStr, Dictionary<string, string> replacements)
+        {
+            // 构建正则表达式模式
+            var pattern = string.Join("|", replacements.Keys.Select(Regex.Escape));
+            var regex = new Regex(pattern);
+
+            // 执行替换
+            var obfuscatedCode = regex.Replace(codeStr, match => replacements[match.Value]);
+
+            return obfuscatedCode;
+        }
+
+        /// <summary>
+        /// 使用MMCore内部规则混肴Galaxy代码，该范例代码未完成，勿使用
+        /// </summary>
+        /// <param name="codeStr"></param>
+        /// <returns></returns>
+        public static string ObfuscateCodeForGalaxy(string codeStr)
+        {
+            // 定义替换规则
+            var replacements = new Dictionary<string, string>
+        {
+            { "if", "1f" },
+            { "for", "4r" },
+            { "while", "w1l3" },
+            // 添加更多的替换规则...
+        };
+
+            // 构建正则表达式模式
+            var pattern = string.Join("|", replacements.Keys.Select(Regex.Escape));
+            var regex = new Regex(pattern);
+
+            // 执行替换
+            var obfuscatedCode = regex.Replace(codeStr, match => replacements[match.Value]);
+
+            return obfuscatedCode;
+        }
+
+        /// <summary>
+        /// 匹配代码字符串中的函数名，可用“foreach (Match match in matches){Console.WriteLine("Function Name: " + match.Value);}”来遍历每个匹配的函数名。
+        /// </summary>
+        /// <param name="codeStr"></param>
+        /// <returns></returns>
+        public static MatchCollection MatchFuncNameGroup(string codeStr)
+        {
+            //string code = @"public class MyClass
+            //             {
+            //                 public int Add(int a, int b)
+            //                 {
+            //                     return a + b;
+            //                 }
+
+            //                 private bool IsEven(int number)
+            //                 {
+            //                     if (number % 2 == 0)
+            //                         return true;
+            //                     else
+            //                         return false;
+            //                 }
+            //             }";
+
+            // 定义正则表达式模式，匹配函数名
+            string pattern = @"(?<=^|[^a-zA-Z_])[a-zA-Z_][\w]*(?=\s*\([^\)]*\)(\s+|\n|$))";
+
+            MatchCollection matches = Regex.Matches(codeStr, pattern);
+
+            return matches;
+
+            //foreach (Match match in matches)
+            //{
+            //    Console.WriteLine("Function Name: " + match.Value);
+            //}
+        }
 
         #region 判断文件是否被占用
 
@@ -12127,7 +12208,7 @@ namespace MetalMaxSystem
                 lv_tagValue = lv_tag;
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
                 lv_b = DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
-                                                                                       //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                                                                                  //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
                     //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
@@ -13547,7 +13628,7 @@ namespace MetalMaxSystem
                 lv_tagValue = lv_tag;
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
                 lv_b = DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
-                                                                                       //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                                                                                  //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
                     //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
@@ -13849,7 +13930,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             int lv_num;
             int lv_a;
-            Vector lv_c = new Vector(0,0);
+            Vector lv_c = new Vector(0, 0);
             // Variable Initialization
             lv_num = HD_ReturnVectorNumMax(lp_gs);
             // Implementation
@@ -14966,7 +15047,7 @@ namespace MetalMaxSystem
                 lv_tagValue = lv_tag;
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
                 lv_b = DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
-                                                                                       //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                                                                                  //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
                     //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
@@ -16385,7 +16466,7 @@ namespace MetalMaxSystem
                 lv_tagValue = lv_tag;
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
                 lv_b = DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
-                                                                                       //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                                                                                  //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
                     //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
@@ -17806,7 +17887,7 @@ namespace MetalMaxSystem
                 lv_tagValue = lv_tag;
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
                 lv_b = DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
-                                                                                       //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
+                                                                                  //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag) + "值"+ IntToString(lv_tagValue)+"原序号：" + IntToString(lv_tag));
                 if (lv_a != lv_b)
                 {
                     //Console.WriteLine("lv_a："+IntToString(lv_a) +"不等于lv_b" + IntToString(lv_b));
@@ -20959,7 +21040,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             int lv_num;
             int lv_a;
-            Vector lv_c = new Vector(0,0);
+            Vector lv_c = new Vector(0, 0);
             // Variable Initialization
             lv_num = DHD_ReturnVectorNumMax(lp_gs);
             // Implementation
@@ -28086,7 +28167,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             int lv_num;
             int lv_a;
-            Vector lv_c = new Vector(0,0);
+            Vector lv_c = new Vector(0, 0);
             // Variable Initialization
             lv_num = HHD_ReturnVectorNumMax(lp_gs);
             // Implementation
@@ -36502,6 +36583,94 @@ namespace MetalMaxSystem
     #endregion
 
     #endregion
+
+    /// <summary>
+    /// 代码混肴器类
+    /// </summary>
+    public class CodeObfuscator
+    {
+        private Random random;
+        private HashSet<string> usedNames;
+        private Dictionary<string, string> _replacements;
+        /// <summary>
+        /// 自定义的混肴规则属性，用于正则匹配代码正文进行替换
+        /// </summary>
+        public Dictionary<string, string> Replacements { get => _replacements; set => _replacements = value; }
+
+        /// <summary>
+        /// 创建代码混肴器类实例，此后可使用"实例名.Replacements"属性自定义混肴规则以及使用"ObfuscateCode"方法进行代码混肴。
+        /// </summary>
+        public CodeObfuscator()
+        {
+            Replacements = new Dictionary<string, string>();
+            usedNames = new HashSet<string>();
+            random = new Random();
+        }
+
+        /// <summary>
+        /// 手动添加混肴规则（以字典中的键值对，字符形式添加）
+        /// </summary>
+        /// <param name="originalName"></param>
+        /// <param name="obfuscatedName"></param>
+        public void AddReplacement(string originalName, string obfuscatedName)
+        {
+            Replacements.Add(originalName, obfuscatedName);
+        }
+
+        /// <summary>
+        /// 自动添加混肴规则：指定函数名会自动生成其混肴名称到混肴规则（过程中会自动去重，也不会生成相同混肴名称）
+        /// </summary>
+        /// <param name="originalName"></param>
+        public void AddReplacement(string originalName)
+        {
+            string obfuscatedName = GenerateRandomString(8); // 生成8个字符的随机字符串作为替换名称
+
+            // 检查是否已经存在相同的键
+            if (Replacements.ContainsKey(originalName))
+            {
+                // 可以选择跳过重复的函数名或者生成一个不同的唯一替换名称
+                //Console.WriteLine($"函数名 {originalName} 已经存在相同的替换名称，将跳过该函数名。");
+                return;
+            }
+
+            Replacements.Add(originalName, obfuscatedName);
+        }
+
+        //使用指定长度的随机字符串生成算法，生成一个包含字母和数字的随机字符串。
+        private string GenerateRandomString(int length)
+        {
+            const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            //return new string(Enumerable.Repeat(chars, length)
+            //    .Select(s => s[random.Next(s.Length)]).ToArray());
+
+            string randomString = new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+
+            while (usedNames.Contains(randomString))
+            {
+                randomString = new string(Enumerable.Repeat(chars, length)
+                    .Select(s => s[random.Next(s.Length)]).ToArray());
+            }
+
+            usedNames.Add(randomString);
+            return randomString;
+        }
+
+        /// <summary>
+        /// 以字典中自定义的混肴规则，进行代码混肴
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public string ObfuscateCode(string code)
+        {
+            string pattern = string.Join("|", Replacements.Keys.Select(Regex.Escape));
+            Regex regex = new Regex(pattern);
+
+            string obfuscatedCode = regex.Replace(code, match => Replacements[match.Value]);
+
+            return obfuscatedCode;
+        }
+    }
 
 }
 
