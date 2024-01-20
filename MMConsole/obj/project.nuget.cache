@@ -1,10 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "9kqjGZowr1UwpUtyTi2o+L2RiXYWuG1Amg+OJfZxhKk455eL/HJdLwh5QtlwpxLuQ18D4R3gff1KFTl50/UiQQ==",
+  "dgSpecHash": "HUYP8zaiU7ANxG8+nN75XvKjmM/x43mCHLNv/7q/KMC1hygPM+5Yos0i5Q/sGR8ZdyCL5d6PdmYXgGL53fIdfg==",
   "success": true,
   "projectFilePath": "D:\\VSWork\\2022\\Lib_MMProgram\\MMConsole\\MMConsole.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\linsh\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\5.0.15\\microsoft.netcore.app.host.win-x64.5.0.15.nupkg.sha512"
-  ],
+  "expectedPackageFiles": [],
   "logs": []
 }

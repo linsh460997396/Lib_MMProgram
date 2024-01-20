@@ -1699,7 +1699,24 @@ namespace MetalMaxSystem
         {
             using (StreamWriter sw = new StreamWriter(path, torf, Encoding.Unicode))
             {
+                sw.WriteLine(value);
+                //sw.Flush(); 不等待Close()即刻写入，对于遍历大量写入来说并不效率，故此时不写
+            }
+
+        }
+
+        /// <summary>
+        /// 【MM_函数库】写文本，文件若不存在则自动新建
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="value"></param>
+        /// <param name="torf">false是覆盖，true是追加文本</param>
+        public static void Write(string path, string value, bool torf)
+        {
+            using (StreamWriter sw = new StreamWriter(path, torf, Encoding.Unicode))
+            {
                 sw.Write(value);
+                //sw.Flush(); 不等待Close()即刻写入，对于遍历大量写入来说并不效率，故此时不写
             }
 
         }
@@ -36591,6 +36608,7 @@ namespace MetalMaxSystem
     {
         private Random random;
         private HashSet<string> usedNames;
+        private HashSet<string> exclusionSet;
         private Dictionary<string, string> _replacements;
         /// <summary>
         /// 自定义的混肴规则属性，用于正则匹配代码正文进行替换
@@ -36604,7 +36622,24 @@ namespace MetalMaxSystem
         {
             Replacements = new Dictionary<string, string>();
             usedNames = new HashSet<string>();
+            exclusionSet = new HashSet<string>();
             random = new Random();
+        }
+
+        public void LoadExclusionRules(string exclusionFilePath)
+        {
+            if (!File.Exists(exclusionFilePath))
+            {
+                Console.WriteLine("排除规则文件不存在。");
+                return;
+            }
+
+            string[] exclusionRules = File.ReadAllLines(exclusionFilePath);
+            foreach (string rule in exclusionRules)
+            {
+                exclusionSet.Add(rule.Trim());
+                Console.WriteLine(rule.Trim());
+            }
         }
 
         /// <summary>
@@ -36623,6 +36658,12 @@ namespace MetalMaxSystem
         /// <param name="originalName"></param>
         public void AddReplacement(string originalName)
         {
+            if (exclusionSet.Contains(originalName))
+            {
+                Console.WriteLine($"函数名 {originalName} 在排除规则中，将跳过该函数名。");
+                return;
+            }
+
             string obfuscatedName = GenerateRandomString(8); // 生成8个字符的随机字符串作为替换名称
 
             // 检查是否已经存在相同的键
