@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
@@ -23,14 +25,19 @@ namespace MMWFM
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            SiGuo.GameInit();
+            //SiGuo.GameInit();
 
-            TimerUpdate AI = new TimerUpdate();//创建一个周期触发器
-            AI.Update += SiGuo.BattleAI;//注册触发器循环事件给指定函数
-            AI.Period = 2000;//周期间隔
-            AI.TriggerStart(true);//触发器后台执行
+            //TimerUpdate AI = new TimerUpdate();//创建一个周期触发器
+            //AI.Update += SiGuo.BattleAI;//注册触发器循环事件给指定函数
+            //AI.Period = 2000;//周期间隔
+            //AI.TriggerStart(true);//触发器后台执行
+
         }
 
+        private void button_Run_Click(object sender, EventArgs e)
+        {
+            
+        }
     }
 
     public static class SiGuo
@@ -140,7 +147,10 @@ namespace MMWFM
                     Game.UnitCreate("OrbitalCommand", 0, gv_ID_NY, new Vector(246.0, 246.0));
                 }
                 gv_campBase[lv_p] = Game.UnitLastCreated;
-                if (gv_campBase[lv_p] != null ) { Console.WriteLine("gv_campBase[" +lv_p.ToString()+"] = "+ Game.UnitLastCreated.ToString()); }
+                //if (gv_campBase[lv_p] != null ) 
+                //{ 
+                //    Debug.WriteLine("gv_campBase[" +lv_p.ToString()+"] = "+ Game.UnitLastCreated.ToString()); 
+                //}
                 Game.UnitLastCreated.SetProperty(UnitProp.LifeMax, 20000.0);
                 Game.UnitLastCreated.SetProperty(UnitProp.LifePercent, 100.0);
                 Player.ModifyProperty(lv_p, PlayerProp.SuppliesLimit, PlayerPropOp.SetTo, 200.0);

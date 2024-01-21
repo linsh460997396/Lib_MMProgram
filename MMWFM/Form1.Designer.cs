@@ -29,21 +29,48 @@ namespace MMWFM
         /// </summary>
         private void InitializeComponent()
         {
-            this.SuspendLayout();
+            richTextBox_Code = new System.Windows.Forms.RichTextBox();
+            button_Run = new System.Windows.Forms.Button();
+            SuspendLayout();
+            // 
+            // richTextBox_Code
+            // 
+            richTextBox_Code.Location = new System.Drawing.Point(7, 154);
+            richTextBox_Code.Margin = new System.Windows.Forms.Padding(4);
+            richTextBox_Code.Name = "richTextBox_Code";
+            richTextBox_Code.Size = new System.Drawing.Size(918, 470);
+            richTextBox_Code.TabIndex = 7;
+            richTextBox_Code.Text = "";
+            // 
+            // button_Run
+            // 
+            button_Run.Location = new System.Drawing.Point(841, 85);
+            button_Run.Margin = new System.Windows.Forms.Padding(4);
+            button_Run.Name = "button_Run";
+            button_Run.Size = new System.Drawing.Size(79, 61);
+            button_Run.TabIndex = 2;
+            button_Run.Text = "执行";
+            button_Run.UseVisualStyleBackColor = true;
+            button_Run.Click += button_Run_Click;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Name = "Form1";
-            this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(933, 638);
+            Controls.Add(button_Run);
+            Controls.Add(richTextBox_Code);
+            Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            Name = "Form1";
+            Text = "Form1";
+            Load += Form1_Load;
+            ResumeLayout(false);
         }
 
         #endregion
+
+        private System.Windows.Forms.RichTextBox richTextBox_Code;
+        private System.Windows.Forms.Button button_Run;
     }
 }
 

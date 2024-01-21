@@ -321,7 +321,7 @@ namespace FileMaster
             WorkErrCount = 0;//重置错误计数
             UserOpEnableChange(true);//重置用户操作状态
             button_run.Text = "执行";
-            WorkThread.Abort();
+            //WorkThread.Abort();
         }
 
         /// <summary>

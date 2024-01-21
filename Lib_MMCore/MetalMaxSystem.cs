@@ -1033,51 +1033,7 @@ namespace MetalMaxSystem
         #region Functions 通用功能
 
         /// <summary>
-        /// 使用自定义规则混肴代码
-        /// </summary>
-        /// <param name="codeStr">要混肴的原代码</param>
-        /// <param name="replacements">定义替换规则，建立要替换的键和替换后的值索引</param>
-        /// <returns></returns>
-        public static string ObfuscateCode(string codeStr, Dictionary<string, string> replacements)
-        {
-            // 构建正则表达式模式
-            var pattern = string.Join("|", replacements.Keys.Select(Regex.Escape));
-            var regex = new Regex(pattern);
-
-            // 执行替换
-            var obfuscatedCode = regex.Replace(codeStr, match => replacements[match.Value]);
-
-            return obfuscatedCode;
-        }
-
-        /// <summary>
-        /// 使用MMCore内部规则混肴Galaxy代码，该范例代码未完成，勿使用
-        /// </summary>
-        /// <param name="codeStr"></param>
-        /// <returns></returns>
-        public static string ObfuscateCodeForGalaxy(string codeStr)
-        {
-            // 定义替换规则
-            var replacements = new Dictionary<string, string>
-        {
-            { "if", "1f" },
-            { "for", "4r" },
-            { "while", "w1l3" },
-            // 添加更多的替换规则...
-        };
-
-            // 构建正则表达式模式
-            var pattern = string.Join("|", replacements.Keys.Select(Regex.Escape));
-            var regex = new Regex(pattern);
-
-            // 执行替换
-            var obfuscatedCode = regex.Replace(codeStr, match => replacements[match.Value]);
-
-            return obfuscatedCode;
-        }
-
-        /// <summary>
-        /// 匹配代码字符串中的函数名，可用“foreach (Match match in matches){Console.WriteLine("Function Name: " + match.Value);}”来遍历每个匹配的函数名。
+        /// 匹配代码字符串中的函数名，之后可用“foreach (Match match in matches){Console.WriteLine("Function Name: " + match.Value);}”来遍历每个匹配的函数名。
         /// </summary>
         /// <param name="codeStr"></param>
         /// <returns></returns>
@@ -1108,7 +1064,7 @@ namespace MetalMaxSystem
 
             //foreach (Match match in matches)
             //{
-            //    Console.WriteLine("Function Name: " + match.Value);
+            //   Debug.WriteLine("Function Name: " + match.Value);
             //}
         }
 
@@ -1700,7 +1656,7 @@ namespace MetalMaxSystem
             using (StreamWriter sw = new StreamWriter(path, torf, Encoding.Unicode))
             {
                 sw.WriteLine(value);
-                //sw.Flush(); 不等待Close()即刻写入，对于遍历大量写入来说并不效率，故此时不写
+                //sw.Flush(); 不等待sw.Close()即刻写入，对于遍历大量写入来说并不效率，故此时不写
             }
 
         }
@@ -1716,7 +1672,7 @@ namespace MetalMaxSystem
             using (StreamWriter sw = new StreamWriter(path, torf, Encoding.Unicode))
             {
                 sw.Write(value);
-                //sw.Flush(); 不等待Close()即刻写入，对于遍历大量写入来说并不效率，故此时不写
+                //sw.Flush(); 不等待sw.Close()即刻写入，对于遍历大量写入来说并不效率，故此时不写
             }
 
         }
@@ -1845,7 +1801,7 @@ namespace MetalMaxSystem
         /// HtmlNode img = doc.DocumentNode.SelectSingleNode("/html/body/div[3]/div[3]/div[1]/div[1]/div[1]/a/img");
         /// string imgUal = img.Attributes["src"].Value;
         /// MMCore.Download(imgUal, "123.jpg", @"C:\Users\Admin\Desktop\Download\", true);
-        /// Console.WriteLine("下载完成！");
+        ///// Debug.WriteLine("下载完成！");
         /// </summary>
         /// <param name="url">浏览器网址</param>
         /// <param name="filename">自定义文件名</param>
@@ -1883,7 +1839,7 @@ namespace MetalMaxSystem
             }
             catch (Exception ex)
             {
-                Console.WriteLine("错误:{0}", ex.Message);
+               // Debug.WriteLine("错误:{0}", ex.Message);
                 return false;
             }
             finally
@@ -36630,7 +36586,7 @@ namespace MetalMaxSystem
         {
             if (!File.Exists(exclusionFilePath))
             {
-                Console.WriteLine("排除规则文件不存在。");
+               // Debug.WriteLine("排除规则文件不存在！");
                 return;
             }
 
@@ -36638,7 +36594,7 @@ namespace MetalMaxSystem
             foreach (string rule in exclusionRules)
             {
                 exclusionSet.Add(rule.Trim());
-                Console.WriteLine(rule.Trim());
+                //Console.WriteLine(rule.Trim());
             }
         }
 
@@ -36658,32 +36614,30 @@ namespace MetalMaxSystem
         /// <param name="originalName"></param>
         public void AddReplacement(string originalName)
         {
-            if (exclusionSet.Contains(originalName))
+            if (originalName != "")
             {
-                Console.WriteLine($"函数名 {originalName} 在排除规则中，将跳过该函数名。");
-                return;
+                if (exclusionSet.Contains(originalName))
+                {
+                    //Debug.WriteLine($"函数名 {originalName} 在排除规则中，将跳过该函数名。");
+                    return;
+                }
+                
+                // 检查是否已经存在相同的键
+                if (Replacements.ContainsKey(originalName))
+                {
+                    // 可以选择跳过重复的函数名或者生成一个不同的唯一替换名称
+                    //Debug.WriteLine($"函数名 {originalName} 已经存在相同的替换名称，将跳过该函数名。");
+                    return;
+                }
+                string obfuscatedName = GenerateRandomString(8); // 生成8个字符的随机字符串作为替换名称
+                Replacements.Add(originalName, obfuscatedName);
             }
-
-            string obfuscatedName = GenerateRandomString(8); // 生成8个字符的随机字符串作为替换名称
-
-            // 检查是否已经存在相同的键
-            if (Replacements.ContainsKey(originalName))
-            {
-                // 可以选择跳过重复的函数名或者生成一个不同的唯一替换名称
-                //Console.WriteLine($"函数名 {originalName} 已经存在相同的替换名称，将跳过该函数名。");
-                return;
-            }
-
-            Replacements.Add(originalName, obfuscatedName);
         }
 
         //使用指定长度的随机字符串生成算法，生成一个包含字母和数字的随机字符串。
         private string GenerateRandomString(int length)
         {
             const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            //return new string(Enumerable.Repeat(chars, length)
-            //    .Select(s => s[random.Next(s.Length)]).ToArray());
-
             string randomString = new string(Enumerable.Repeat(chars, length)
             .Select(s => s[random.Next(s.Length)]).ToArray());
 
@@ -36698,19 +36652,59 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
+        /// 以字典中自定义的混肴规则，进行代码混肴（废弃！）
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        //public string ObfuscateCode(string code)
+        //{
+        //    //以分组形式创建正则匹配替换规则：将Replacements字典中所有键里的具有特殊含义的符号通过正则表达式进行转义（使用时不需要加@）
+        //    string pattern = string.Join("|", Replacements.Keys.Select(Regex.Escape));
+        //    //Debug.WriteLine(pattern);
+        //    Regex regex = new Regex(pattern);
+        //    //将代码中经过pattern正则匹配到的函数名替换为Replacements字典中以函数名为键对应的值
+        //    //已废弃！当键均不存在时（集合出现""），match => Replacements[match.Value]会报错
+        //    string obfuscatedCode = regex.Replace(code, 
+        //        match => Replacements[match.Value]
+        //        );
+        //    return obfuscatedCode;
+        //}
+
+        /// <summary>
         /// 以字典中自定义的混肴规则，进行代码混肴
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>
         public string ObfuscateCode(string code)
         {
+            //以分组形式创建正则匹配替换规则：将Replacements字典中所有键里的具有特殊含义的符号通过正则表达式进行转义（使用时不需要加@）
             string pattern = string.Join("|", Replacements.Keys.Select(Regex.Escape));
-            Regex regex = new Regex(pattern);
 
-            string obfuscatedCode = regex.Replace(code, match => Replacements[match.Value]);
+            //创建名为replacementDelegate的委托实例，它接受一个字符串参数（匹配项）
+            //在委托内部检查Replacements字典中是否存在该键，如果存在则返回相应的值，如果不存在则输出一条错误消息并将原始匹配项返回
+            Func<string, string> replacementDelegate = (match) =>
+            {
+                if (Replacements.ContainsKey(match))
+                {
+                    //键存在则返回键对应的替换值
+                    return Replacements[match];
+                }
+                else
+                {
+                    //键不存在则返回原字符（替换相同字符）
+                    //Debug.WriteLine("Key not found: " + match);
+                    return match;
+                }
+            };
+
+            //将代码中经过pattern正则匹配到的函数名替换为Replacements字典中以函数名为键对应的值
+            string obfuscatedCode = Regex.Replace(code, pattern,
+                (Match m) => replacementDelegate(m.Value)
+                );
 
             return obfuscatedCode;
         }
+
     }
 
 }

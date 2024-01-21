@@ -4,12 +4,8 @@ using System.Text.RegularExpressions;
 using MetalMaxSystem;
 using System.Threading;
 using System.Drawing;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 using System.Diagnostics;
-using System.IO;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using static System.Net.Mime.MediaTypeNames;
-using System.Runtime.InteropServices;
+//using System.Windows.Controls;
 
 namespace MMObfuscar
 {
@@ -42,6 +38,8 @@ namespace MMObfuscar
         public Form1()
         {
             InitializeComponent();
+            label_Tips.ForeColor = Color.Yellow;
+            label_Statistics.ForeColor = Color.Red;
         }
 
         private string GetCodeFromMainThread()
@@ -186,45 +184,26 @@ namespace MMObfuscar
         /// </summary>
         private void ButtonRun()
         {
-            string exclusionRulesPath;
-
             for (int i = 0; i < 1; i++)
             {
-                exclusionRulesPath = GetExclusionRulesPathFromMainThread();
-
-                switch (GetSelectedIndexFromMainThread())
-                {
-                    case 0:
-                        SetTipsToMainThread("对Galaxy代码进行混肴");
-                        break;
-                    default:
-                        SetTipsToMainThread("功能未选择！");
-                        break;
-                }
-                if ((GetTipsFromMainThread() == "功能未选择！") || (GetSelectedIndexFromMainThread() == -1))
-                {
-                    break;
-                }
-
-                //排除规则文件使用系统默认的情况：1）文件路径为空；2）文件路径虽不为空但后缀非.txt；3）文件路径非法。
-                if (
-                    exclusionRulesPath == ""
-                    || !(Regex.IsMatch(exclusionRulesPath, @"^(.*)(\.txt)$"))
-                    || !MMCore.IsDFPath(exclusionRulesPath)
-                )
-                {
-                    //文本路径错误，重置为系统默认
-                    exclusionRulesPath = AppDomain.CurrentDomain.BaseDirectory + @"exclusion_rules.txt";
-                    SetExclusionRulesPathToMainThread(exclusionRulesPath);
-                    SetTipsToMainThread("排除规则文件路径错误，重置为系统默认！");
-                }
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
-                //会计算耗时，这里填执行函数
-                SelectedFunc_0(exclusionRulesPath);
+                switch (GetSelectedIndexFromMainThread())
+                {
+                    case -1:
+                        SetTipsToMainThread("功能未选择！");
+                        break;
+                    case 0:
+                        //SetTipsToMainThread("对Galaxy代码进行混肴");
+                        SelectedFunc_0(GetExclusionRulesPathFromMainThread());
+                        break;
+                    default:
+                        SetTipsToMainThread("功能无效！");
+                        break;
+                }
                 stopwatch.Stop();
-                //MMCore.WriteLine(exclusionRulesPath, stopwatch.Elapsed.ToString(), true);
-                SetStatisticsToMainThread(" 时耗 => " + stopwatch.Elapsed.ToString());
+                Debug.WriteLine(stopwatch.Elapsed.ToString());
+                SetStatisticsToMainThread(" 时耗：" + stopwatch.Elapsed.ToString());
             }
             //放弃了线程注销做法，程序将始终运行至此，可以知道是用户中断还是正常运行结束
             WorkStatus = false;//重置工作状态
@@ -232,9 +211,9 @@ namespace MMObfuscar
             WorkStop = false;//重置_workStop状态，如果是用户取消的，打印告知
             UserOpEnableChange(true);//重置用户操作状态
             SetBtnRunTextToMainThread("执行");
-            //Console.WriteLine("子线程已经完成！");
+            //Debug.WriteLine("子线程已经完成！");
             //线程清除（如果不放心，Abort方法能在目标线程中抛出一个ThreadAbortException异常从而导致目标线程的终止）
-            WorkThread.Abort();
+            //WorkThread.Abort();
         }
 
         /// <summary>
@@ -260,9 +239,8 @@ namespace MMObfuscar
                         //创建后台线程实例来运行复杂任务
                         WorkThread = new Thread(ButtonRun) { IsBackground = true };
                         WorkThread.Start();
-                        // 等待子线程完成
-                        WorkThread.Join();
-                        Console.WriteLine("子线程已经完成！");
+                        // 等待子线程完成↓
+                        //WorkThread.Join();
                     }
                     else if (button_Run.Text == "取消" && WorkStatus == true)
                     {
@@ -274,20 +252,34 @@ namespace MMObfuscar
         }
 
         /// <summary>
-        /// 第一个功能索引的执行方法
+        /// 第1个功能索引的执行方法：对Galaxy代码进行混肴
         /// </summary>
-        /// <param name="ExclusionRulesPath"></param>
-        private void SelectedFunc_0(string ExclusionRulesPath)
+        /// <param name="exclusionRulesPath"></param>
+        private void SelectedFunc_0(string exclusionRulesPath)
         {
+            //排除规则文件使用系统默认的情况：1）文件路径为空；2）文件路径虽不为空但后缀非.txt；3）文件路径非法。
+            if (
+                exclusionRulesPath == ""
+                || !(Regex.IsMatch(exclusionRulesPath, @"^(.*)(\.txt)$"))
+                || !MMCore.IsDFPath(exclusionRulesPath)
+            )
+            {
+                //文本路径错误，重置为系统默认
+                exclusionRulesPath = AppDomain.CurrentDomain.BaseDirectory + @"exclusion_rules.txt";
+                SetExclusionRulesPathToMainThread(exclusionRulesPath);
+                SetTipsToMainThread("排除规则文件路径错误，重置为系统默认！");
+            }
+
             // 定义正则表达式模式，匹配函数名
             string pattern = @"(?<=^|[^a-zA-Z_])[a-zA-Z_][\w]*(?=\s*\([^\)]*\)(\s+|\n|$))";
             MatchCollection matches = Regex.Matches(GetCodeFromMainThread(), pattern);
             CodeObfuscator obfuscator = new CodeObfuscator();
-            obfuscator.LoadExclusionRules("exclusion_rules"); //读取排除规则文本，添加混肴规则时会防止它们参与混肴（格式：每行一个函数名）
-                                                              //遍历全部函数名
+            //读取排除规则文本，添加混肴规则时会防止它们参与混肴（格式：每行一个函数名）
+            obfuscator.LoadExclusionRules(exclusionRulesPath);
+            //遍历全部函数名
             foreach (Match match in matches)
             {
-                Console.WriteLine("Function Name: " + match.Value);
+                Debug.WriteLine("Function Name: " + match.Value);
                 //添加函数名及混肴后名称到混肴规则（这过程会自动去重，也不会生成相同混肴名称）
                 obfuscator.AddReplacement(match.Value);
             }
@@ -356,6 +348,28 @@ namespace MMObfuscar
         private void richTextBox_Code_TextChanged(object sender, EventArgs e)
         {
             //文本改变时不需要写任何动作
+        }
+
+        private void comboBox_SelectFunc_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (GetSelectedIndexFromMainThread())
+            {
+                case -1:
+                    SetTipsToMainThread("功能未选择！");
+                    break;
+                case 0:
+                    //SetTipsToMainThread("对Galaxy代码进行混肴");
+                    break;
+                default:
+                    SetTipsToMainThread("功能无效！");
+                    break;
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            comboBox_SelectFunc.Items.Add("对Galaxy代码进行混肴");
+            comboBox_SelectFunc.SelectedIndex = 0;
         }
     }
 }
