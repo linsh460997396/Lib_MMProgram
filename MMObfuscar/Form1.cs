@@ -38,7 +38,7 @@ namespace MMObfuscar
         public Form1()
         {
             InitializeComponent();
-            label_Tips.ForeColor = Color.Yellow;
+            //label_Tips.ForeColor = Color.Red;
             label_Statistics.ForeColor = Color.Red;
         }
 
@@ -46,7 +46,7 @@ namespace MMObfuscar
         {
             if (richTextBox_Code.InvokeRequired)
             {
-                return (string)richTextBox_Code.Invoke((Func<string>)GetCodeFromMainThread);
+                return richTextBox_Code.Invoke(GetCodeFromMainThread);
             }
             else
             {
@@ -67,7 +67,7 @@ namespace MMObfuscar
         {
             if (comboBox_SelectFunc.InvokeRequired)
             {
-                return (int)comboBox_SelectFunc.Invoke((Func<int>)GetSelectedIndexFromMainThread);
+                return comboBox_SelectFunc.Invoke(GetSelectedIndexFromMainThread);
             }
             else
             {
@@ -79,7 +79,7 @@ namespace MMObfuscar
         {
             if (label_Tips.InvokeRequired)
             {
-                return (string)label_Tips.Invoke((Func<string>)GetTipsFromMainThread);
+                return label_Tips.Invoke(GetTipsFromMainThread);
             }
             else
             {
@@ -100,7 +100,7 @@ namespace MMObfuscar
         {
             if (label_Statistics.InvokeRequired)
             {
-                return (string)label_Statistics.Invoke((Func<string>)GetStatisticsFromMainThread);
+                return label_Statistics.Invoke(GetStatisticsFromMainThread);
             }
             else
             {
@@ -112,7 +112,7 @@ namespace MMObfuscar
         {
             if (textBox_ExclusionRulesPath.InvokeRequired)
             {
-                return (string)textBox_ExclusionRulesPath.Invoke((Func<string>)GetExclusionRulesPathFromMainThread);
+                return textBox_ExclusionRulesPath.Invoke(GetExclusionRulesPathFromMainThread);
             }
             else
             {
@@ -279,9 +279,14 @@ namespace MMObfuscar
             //遍历全部函数名
             foreach (Match match in matches)
             {
-                Debug.WriteLine("Function Name: " + match.Value);
-                //添加函数名及混肴后名称到混肴规则（这过程会自动去重，也不会生成相同混肴名称）
-                obfuscator.AddReplacement(match.Value);
+                //Debug.WriteLine("Function Name: " + match.Value);
+                //构建正则表达式，让Lib、GAx3开头的函数名也避开混肴
+                if (!Regex.IsMatch(match.Value, "^(Lib|GAx3).*")) 
+                {
+                    //添加函数名及混肴后名称到混肴规则（这过程会自动去重，也不会生成相同混肴名称）
+                    obfuscator.AddReplacement(match.Value);
+                }
+                
             }
             string obfuscatedCode = obfuscator.ObfuscateCode(GetCodeFromMainThread());
             SetCodeToMainThread(obfuscatedCode);
