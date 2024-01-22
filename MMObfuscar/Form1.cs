@@ -202,7 +202,7 @@ namespace MMObfuscar
                         break;
                 }
                 stopwatch.Stop();
-                Debug.WriteLine(stopwatch.Elapsed.ToString());
+                //Debug.WriteLine(stopwatch.Elapsed.ToString());
                 SetStatisticsToMainThread(" 时耗：" + stopwatch.Elapsed.ToString());
             }
             //放弃了线程注销做法，程序将始终运行至此，可以知道是用户中断还是正常运行结束
@@ -267,12 +267,13 @@ namespace MMObfuscar
                 //文本路径错误，重置为系统默认
                 exclusionRulesPath = AppDomain.CurrentDomain.BaseDirectory + @"exclusion_rules.txt";
                 SetExclusionRulesPathToMainThread(exclusionRulesPath);
-                SetTipsToMainThread("排除规则文件路径错误，重置为系统默认！");
+                //SetTipsToMainThread("排除规则文件路径错误，重置为系统默认！");
             }
-
+            //去除代码里的注释
+            string mainCode = MMCore.RemoveEmptyLines(MMCore.RemoveComments(GetCodeFromMainThread()));
             // 定义正则表达式模式，匹配函数名
             string pattern = @"(?<=^|[^a-zA-Z_])[a-zA-Z_][\w]*(?=\s*\([^\)]*\)(\s+|\n|$))";
-            MatchCollection matches = Regex.Matches(GetCodeFromMainThread(), pattern);
+            MatchCollection matches = Regex.Matches(mainCode, pattern);
             CodeObfuscator obfuscator = new CodeObfuscator();
             //读取排除规则文本，添加混肴规则时会防止它们参与混肴（格式：每行一个函数名）
             obfuscator.LoadExclusionRules(exclusionRulesPath);
@@ -288,7 +289,7 @@ namespace MMObfuscar
                 }
                 
             }
-            string obfuscatedCode = obfuscator.ObfuscateCode(GetCodeFromMainThread());
+            string obfuscatedCode = obfuscator.ObfuscateCode(mainCode);
             SetCodeToMainThread(obfuscatedCode);
         }
 

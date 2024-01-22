@@ -3,10 +3,14 @@
   "WorkspaceRootPath": "D:\\VSWork\\2022\\Lib_MMProgram\\Lib_MMCore\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{42ECF10C-423E-4FC7-A638-DD96B7E7C26A}|..\\MMObfuscar\\MMObfuscar.csproj|d:\\vswork\\2022\\lib_mmprogram\\mmobfuscar\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4238C5DF-3860-4DEB-B81A-C6AC20690E60}|Lib_MMCore.csproj|d:\\vswork\\2022\\lib_mmprogram\\lib_mmcore\\metalmaxsystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4238C5DF-3860-4DEB-B81A-C6AC20690E60}|Lib_MMCore.csproj|solutionrelative:metalmaxsystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{42ECF10C-423E-4FC7-A638-DD96B7E7C26A}|..\\MMObfuscar\\MMObfuscar.csproj|d:\\vswork\\2022\\lib_mmprogram\\mmobfuscar\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{A3CD51A4-AB89-400C-BF31-9D3CE83B6981}|..\\MMConsole\\MMConsole.csproj|d:\\vswork\\2022\\lib_mmprogram\\mmconsole\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{42ECF10C-423E-4FC7-A638-DD96B7E7C26A}|..\\MMObfuscar\\MMObfuscar.csproj|d:\\vswork\\2022\\lib_mmprogram\\mmobfuscar\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -16,36 +20,51 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MetalMaxSystem.cs",
+              "DocumentMoniker": "D:\\VSWork\\2022\\Lib_MMProgram\\Lib_MMCore\\MetalMaxSystem.cs",
+              "RelativeDocumentMoniker": "MetalMaxSystem.cs",
+              "ToolTip": "D:\\VSWork\\2022\\Lib_MMProgram\\Lib_MMCore\\MetalMaxSystem.cs",
+              "RelativeToolTip": "MetalMaxSystem.cs",
+              "ViewState": "AQIAAHoBAAAAAAAAAAAAAAcDAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-01-21T21:37:50.852Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:7:0:{57d563b6-44a5-47df-85be-f4199ad6b651}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\VSWork\\2022\\Lib_MMProgram\\MMConsole\\Program.cs",
+              "RelativeDocumentMoniker": "..\\MMConsole\\Program.cs",
+              "ToolTip": "D:\\VSWork\\2022\\Lib_MMProgram\\MMConsole\\Program.cs",
+              "RelativeToolTip": "..\\MMConsole\\Program.cs",
+              "ViewState": "AQIAAAwAAAAAAAAAAAAAADAAAAAlAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-01-22T01:33:57.289Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Form1.cs",
               "DocumentMoniker": "D:\\VSWork\\2022\\Lib_MMProgram\\MMObfuscar\\Form1.cs",
               "RelativeDocumentMoniker": "..\\MMObfuscar\\Form1.cs",
               "ToolTip": "D:\\VSWork\\2022\\Lib_MMProgram\\MMObfuscar\\Form1.cs",
               "RelativeToolTip": "..\\MMObfuscar\\Form1.cs",
-              "ViewState": "AQIAAAYBAAAAAAAAAAAAABsBAAA8AAAA",
+              "ViewState": "AQIAAMoAAAAAAAAAAAAAAA8BAAAWAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-01-21T00:17:03.926Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Form1.cs [\u8BBE\u8BA1]",
-              "DocumentMoniker": "D:\\VSWork\\2022\\Lib_MMProgram\\MMObfuscar\\Form1.cs",
-              "RelativeDocumentMoniker": "..\\MMObfuscar\\Form1.cs",
-              "ToolTip": "D:\\VSWork\\2022\\Lib_MMProgram\\MMObfuscar\\Form1.cs [\u8BBE\u8BA1]",
-              "RelativeToolTip": "..\\MMObfuscar\\Form1.cs [\u8BBE\u8BA1]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-01-20T18:49:13.541Z",
-              "EditorCaption": " [\u8BBE\u8BA1]"
             }
           ]
         }

@@ -42,6 +42,10 @@ using Timer = System.Threading.Timer;
 using static MetalMaxSystem.MouseHook;
 using static MetalMaxSystem.KeyboardHook;
 using System.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
+using System.Threading.Tasks;
 
 #endregion
 
@@ -1033,39 +1037,30 @@ namespace MetalMaxSystem
         #region Functions 通用功能
 
         /// <summary>
-        /// 匹配代码字符串中的函数名，之后可用“foreach (Match match in matches){Console.WriteLine("Function Name: " + match.Value);}”来遍历每个匹配的函数名。
+        /// 去掉代码里的注释
         /// </summary>
-        /// <param name="codeStr"></param>
+        /// <param name="code"></param>
         /// <returns></returns>
-        public static MatchCollection MatchFuncNameGroup(string codeStr)
+        public static string RemoveComments(string code)
         {
-            //string code = @"public class MyClass
-            //             {
-            //                 public int Add(int a, int b)
-            //                 {
-            //                     return a + b;
-            //                 }
+            string pattern = @"//.*?$|/\*.*?\*/";
+            //使用 RegexOptions.Multiline 选项来指定模式应在多个行上进行匹配，并使用 RegexOptions.Singleline 选项来指定模式应在单个连续字符串上进行匹配
+            RegexOptions options = RegexOptions.Multiline | RegexOptions.Singleline;
+            string result = Regex.Replace(code, pattern, string.Empty, options);
+            return result;
+        }
 
-            //                 private bool IsEven(int number)
-            //                 {
-            //                     if (number % 2 == 0)
-            //                         return true;
-            //                     else
-            //                         return false;
-            //                 }
-            //             }";
-
-            // 定义正则表达式模式，匹配函数名
-            string pattern = @"(?<=^|[^a-zA-Z_])[a-zA-Z_][\w]*(?=\s*\([^\)]*\)(\s+|\n|$))";
-
-            MatchCollection matches = Regex.Matches(codeStr, pattern);
-
-            return matches;
-
-            //foreach (Match match in matches)
-            //{
-            //   Debug.WriteLine("Function Name: " + match.Value);
-            //}
+        /// <summary>
+        /// 去掉代码里的空行
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public static string RemoveEmptyLines(string code)
+        {
+            string pattern = @"^\s*$";
+            RegexOptions options = RegexOptions.Multiline;
+            string result = Regex.Replace(code, pattern, string.Empty, options);
+            return result;
         }
 
         #region 判断文件是否被占用
@@ -1839,7 +1834,7 @@ namespace MetalMaxSystem
             }
             catch (Exception ex)
             {
-               // Debug.WriteLine("错误:{0}", ex.Message);
+                //Debug.WriteLine("错误:{0}", ex.Message);
                 return false;
             }
             finally
@@ -36586,7 +36581,7 @@ namespace MetalMaxSystem
         {
             if (!File.Exists(exclusionFilePath))
             {
-               // Debug.WriteLine("排除规则文件不存在！");
+                //Debug.WriteLine("排除规则文件不存在！");
                 return;
             }
 
