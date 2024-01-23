@@ -43,9 +43,6 @@ using static MetalMaxSystem.MouseHook;
 using static MetalMaxSystem.KeyboardHook;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Text;
-using System.Threading.Tasks;
 
 #endregion
 
@@ -1035,6 +1032,67 @@ namespace MetalMaxSystem
         #endregion
 
         #region Functions 通用功能
+
+        /// <summary>
+        /// 将字符串转换为字节数组，再转成2位16进制字符串格式或转成10进制数字再转为3位8进制字符串格式，以供在Galaxy代码中混肴使用
+        /// Galaxy代码会自动转转义8和16位格式字符串（\0及\x）为ASCII值（数字）,再转为控制字符使用
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="r">向16进制转换的概率，否则向8进制转换</param>
+        /// <returns></returns>
+        public static string ConvertStringToHOMixed(string input, double r)
+        {
+            string result = "";
+            // 创建一个Random对象
+            Random random = new Random(Guid.NewGuid().GetHashCode());
+            foreach (byte b in Encoding.UTF8.GetBytes(input))
+            {
+                // 根据随机数和触发概率决定是否执行动作
+                if (random.NextDouble() < r)
+                {
+                    result += $"\\x{b:X2}";
+                }
+                else
+                {
+                    result += $"\\0{Convert.ToString(b, 8)}";
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 将字符串转换为字节数组，再转成10进制数字，再转为3位8进制字符串格式，以供在Galaxy代码中混肴使用
+        /// Galaxy代码会自动转转义8和16位格式字符串（\0及\x）为ASCII值（数字）,再转为控制字符使用
+        /// 如八进制"\0124"、"\0114"表示十进制的84和76，Galaxy脚本中识别为"T"和"L"
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string ConvertStringToOctal(string input)
+        {
+            string result = "";
+            foreach (byte b in Encoding.UTF8.GetBytes(input))
+            {
+                result += $"\\0{Convert.ToString(b, 8)}";
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 将字符串转换为字节数组，再转成2位16进制字符串格式，以供在Galaxy代码中混肴使用
+        /// Galaxy代码会自动转转义8和16位格式字符串（\0及\x）为ASCII值（数字）,再转为控制字符使用
+        /// 如十六进制"\x4C"表示十进制的84，Galaxy脚本中识别为"T"
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string ConvertStringToHex(string input) 
+        {
+            string result = "";
+            foreach (byte b in Encoding.UTF8.GetBytes(input))
+            {
+                result += $"\\x{b:X2}";
+            }
+            return result;
+        }
 
         /// <summary>
         /// 去掉代码里的注释
@@ -36561,10 +36619,15 @@ namespace MetalMaxSystem
         private HashSet<string> usedNames;
         private HashSet<string> exclusionSet;
         private Dictionary<string, string> _replacements;
+        private Dictionary<string, string> _replacements2;
         /// <summary>
         /// 自定义的混肴规则属性，用于正则匹配代码正文进行替换
         /// </summary>
         public Dictionary<string, string> Replacements { get => _replacements; set => _replacements = value; }
+        /// <summary>
+        /// 自定义的混肴规则属性，用于正则匹配代码正文进行第二遍替换
+        /// </summary>
+        public Dictionary<string, string> Replacements2 { get => _replacements2; set => _replacements2 = value; }
 
         /// <summary>
         /// 创建代码混肴器类实例，此后可使用"实例名.Replacements"属性自定义混肴规则以及使用"ObfuscateCode"方法进行代码混肴。
@@ -36572,9 +36635,10 @@ namespace MetalMaxSystem
         public CodeObfuscator()
         {
             Replacements = new Dictionary<string, string>();
+            Replacements2 = new Dictionary<string, string>();
             usedNames = new HashSet<string>();
             exclusionSet = new HashSet<string>();
-            random = new Random();
+            random = new Random(Guid.NewGuid().GetHashCode());
         }
 
         public void LoadExclusionRules(string exclusionFilePath)
@@ -36598,9 +36662,19 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="originalName"></param>
         /// <param name="obfuscatedName"></param>
-        public void AddReplacement(string originalName, string obfuscatedName)
+        public void AddReplacement2(string originalName, string obfuscatedName)
         {
-            Replacements.Add(originalName, obfuscatedName);
+            if (originalName != "")
+            {
+                // 检查是否已经存在相同的键
+                if (Replacements2.ContainsKey(originalName))
+                {
+                    // 可以选择跳过重复的函数名或者生成一个不同的唯一替换名称
+                    //Debug.WriteLine($"函数名 {originalName} 已经存在相同的替换名称，将跳过该函数名。");
+                    return;
+                }
+                Replacements2.Add(originalName, obfuscatedName);
+            }
         }
 
         /// <summary>
@@ -36625,6 +36699,12 @@ namespace MetalMaxSystem
                     return;
                 }
                 string obfuscatedName = GenerateRandomString(8); // 生成8个字符的随机字符串作为替换名称
+
+                Random random = new Random(Guid.NewGuid().GetHashCode());
+                int randomIndex = random.Next(65, 91); // 65-90 为大写字母 A-Z 的 ASCII 码
+                char randomLetter = Convert.ToChar(randomIndex);
+                obfuscatedName = randomLetter.ToString() + obfuscatedName;//防止函数名开头是数字，这里加一个随机大写字母
+
                 Replacements.Add(originalName, obfuscatedName);
             }
         }
@@ -36641,29 +36721,9 @@ namespace MetalMaxSystem
                 randomString = new string(Enumerable.Repeat(chars, length)
                     .Select(s => s[random.Next(s.Length)]).ToArray());
             }
-
             usedNames.Add(randomString);
             return randomString;
         }
-
-        /// <summary>
-        /// 以字典中自定义的混肴规则，进行代码混肴（废弃！）
-        /// </summary>
-        /// <param name="code"></param>
-        /// <returns></returns>
-        //public string ObfuscateCode(string code)
-        //{
-        //    //以分组形式创建正则匹配替换规则：将Replacements字典中所有键里的具有特殊含义的符号通过正则表达式进行转义（使用时不需要加@）
-        //    string pattern = string.Join("|", Replacements.Keys.Select(Regex.Escape));
-        //    //Debug.WriteLine(pattern);
-        //    Regex regex = new Regex(pattern);
-        //    //将代码中经过pattern正则匹配到的函数名替换为Replacements字典中以函数名为键对应的值
-        //    //已废弃！当键均不存在时（集合出现""），match => Replacements[match.Value]会报错
-        //    string obfuscatedCode = regex.Replace(code, 
-        //        match => Replacements[match.Value]
-        //        );
-        //    return obfuscatedCode;
-        //}
 
         /// <summary>
         /// 以字典中自定义的混肴规则，进行代码混肴
@@ -36681,12 +36741,49 @@ namespace MetalMaxSystem
             {
                 if (Replacements.ContainsKey(match))
                 {
-                    //键存在则返回键对应的替换值
+                    //键存在且没有指定前缀字符时返回键对应的替换值
+                    //要解决：Lib_gf_A和gf_A，如后者加到混肴规则，前者也会被替换一部分，需调用本函数前检查全函数名，如第一遍混肴规则里的键名是函数名的一部分则剔除该键
                     return Replacements[match];
                 }
                 else
                 {
-                    //键不存在则返回原字符（替换相同字符）
+                    //否则返回原字符（替换相同字符）
+                    //Debug.WriteLine("Key not found: " + match);
+                    return match;
+                }
+            };
+
+            //将代码中经过pattern正则匹配到的函数名替换为Replacements字典中以函数名为键对应的值
+            string obfuscatedCode = Regex.Replace(code, pattern,
+                (Match m) => replacementDelegate(m.Value)
+                );
+
+            return obfuscatedCode;
+        }
+
+        /// <summary>
+        /// 以字典中自定义的混肴规则，进行代码混肴
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public string ObfuscateCode2(string code)
+        {
+            //以分组形式创建正则匹配替换规则：将Replacements2字典中所有键里的具有特殊含义的符号通过正则表达式进行转义（使用时不需要加@）
+            string pattern = string.Join("|", Replacements2.Keys.Select(Regex.Escape));
+
+            //创建名为replacementDelegate2的委托实例，它接受一个字符串参数（匹配项）
+            //在委托内部检查Replacements2字典中是否存在该键，如果存在则返回相应的值，如果不存在则输出一条错误消息并将原始匹配项返回
+            Func<string, string> replacementDelegate = (match) =>
+            {
+                if (Replacements2.ContainsKey(match))
+                {
+                    //键存在且没有指定前缀字符时返回键对应的替换值
+                    //要解决：："A"+"A"和"+"，如后者加到混肴规则，会出问题，所幸分组显示混肴规则中+或&不打反斜线转义匹配不出来，所以大概无需改良
+                    return Replacements2[match];
+                }
+                else
+                {
+                    //否则返回原字符（替换相同字符）
                     //Debug.WriteLine("Key not found: " + match);
                     return match;
                 }

@@ -1,3 +1,4 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34511.98
@@ -11,6 +12,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MMObfuscar", "..\MMObfuscar\MMObfuscar.csproj", "{42ECF10C-423E-4FC7-A638-DD96B7E7C26A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MMConsole", "..\MMConsole\MMConsole.csproj", "{A3CD51A4-AB89-400C-BF31-9D3CE83B6981}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "仓鼠文件处理程序", "..\仓鼠文件处理程序\仓鼠文件处理程序.vdproj", "{2987D35C-88A2-45C1-8BFC-FB3801D4C13E}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "星海混肴器", "..\星海混肴器\星海混肴器.vdproj", "{11CE39C4-2E79-4244-9085-7DBADD0B6E5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +43,10 @@ Global
 		{A3CD51A4-AB89-400C-BF31-9D3CE83B6981}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3CD51A4-AB89-400C-BF31-9D3CE83B6981}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3CD51A4-AB89-400C-BF31-9D3CE83B6981}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2987D35C-88A2-45C1-8BFC-FB3801D4C13E}.Debug|Any CPU.ActiveCfg = Debug
+		{2987D35C-88A2-45C1-8BFC-FB3801D4C13E}.Release|Any CPU.ActiveCfg = Release
+		{11CE39C4-2E79-4244-9085-7DBADD0B6E5A}.Debug|Any CPU.ActiveCfg = Debug
+		{11CE39C4-2E79-4244-9085-7DBADD0B6E5A}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

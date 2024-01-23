@@ -5,6 +5,7 @@ using MetalMaxSystem;
 using System.Threading;
 using System.Drawing;
 using System.Diagnostics;
+using Microsoft.CodeAnalysis.Differencing;
 //using System.Windows.Controls;
 
 namespace MMObfuscar
@@ -281,22 +282,65 @@ namespace MMObfuscar
             foreach (Match match in matches)
             {
                 //Debug.WriteLine("Function Name: " + match.Value);
-                //构建正则表达式，让Lib、GAx3开头的函数名也避开混肴
-                if (!Regex.IsMatch(match.Value, "^(Lib|GAx3).*")) 
+                //构建正则表达式，除了排除规则文本指定，让Lib、GAx3开头的函数名也避开混肴
+                if (!Regex.IsMatch(match.Value, "^(Lib|lib|GAx3).*")) 
                 {
                     //添加函数名及混肴后名称到混肴规则（这过程会自动去重，也不会生成相同混肴名称）
                     obfuscator.AddReplacement(match.Value);
                 }
                 
             }
+            //要解决：Lib_gf_A和gf_A，如后者加到混肴规则，前者也会被替换一部分，需调用本函数前检查全函数名，如第一遍混肴规则里的键名是函数名的一部分则剔除该键
+            foreach (Match match in matches)
+            {
+                if (Regex.IsMatch(match.Value, "^(Lib|lib|GAx3).*"))
+                {
+                    //混肴规则字典里的键名是match.Value的一部分则从字典里剔除该键
+                    // 检查match.Value是否包含字典中的任何键
+                    foreach (var key in obfuscator.Replacements.Keys)
+                    {
+                        if (match.Value.Contains(key))
+                        {
+                            // 如果match.Value包含字典中的键，则从字典中删除该键
+                            obfuscator.Replacements.Remove(key);
+                        }
+                    }
+                }
+            }
+
+            //第一遍混肴后的代码
             string obfuscatedCode = obfuscator.ObfuscateCode(mainCode);
+            string temp = "";
+            //第二遍混肴
+            //对代码文本中的字符串进行混肴
+            MatchCollection matches2 = Regex.Matches(obfuscatedCode, @"""(.*?)""");
+            foreach (Match match in matches2)
+            {
+                //匹配到的字符串的内容(.*?)放在match.Groups[1].Value，内容非空则进行添加规则
+                if (match.Groups[1].Value != "") 
+                {
+                    //构建正则表达式，带有以下指定字符的字符串会避开混肴
+                    if (!Regex.IsMatch(match.Groups[1].Value, "^(\\|bnet:).*"))
+                    {
+                        //添加到混肴规则2（要替换的字符串为键，混肴成8进制或18进制后的字符串为值）
+                        temp = MMCore.ConvertStringToHOMixed(match.Groups[1].Value, 0.7); //这里是内容的混肴
+                        Debug.WriteLine($"Found string: {match.Groups[1].Value}, Value: {temp}");
+                        temp = "\"" + temp + "\""; //重新套上引号
+                        //注意此处第二项规则的键要带""不能光内容字符作为键
+                        obfuscator.AddReplacement2(match.Value, temp);
+                    }
+                }
+                
+            }
+            obfuscatedCode = obfuscator.ObfuscateCode2(obfuscatedCode);
+
             SetCodeToMainThread(obfuscatedCode);
         }
 
         private void UserOpEnableChange(bool torf)
         {
             UserOpEnable = torf;
-            //遍历全控件并获取类型可跨线程不用回调，但控件其他属性读写操作需要回调
+            //遍历全控件并获取类型可跨线程不用回调，但控件其他属性读写操作需要回调，但读不到富格式文本框
             foreach (Control a in Controls)
             {
                 if (a is Panel)
@@ -312,8 +356,13 @@ namespace MMObfuscar
                         //不执行时是白色
                         SetPanelBackColorToMainThread(p, Color.Transparent);
                     }
+
+                    //Controls读不到的控件单独设置
+                    SetControlEnableToMainThread(richTextBox_Code, torf);
+
                     foreach (Control c in p.Controls) //遍历面板中的每一个控件
                     {
+                        //Debug.WriteLine(c.GetType().Name);
                         if (c.GetType().Name.Equals("TextBox"))
                         {
                             //禁用文本框
@@ -325,6 +374,11 @@ namespace MMObfuscar
                             SetControlEnableToMainThread(c, torf);
                         }
                         if (c.GetType().Name.Equals("ComboBox"))
+                        {
+                            //禁用下拉框
+                            SetControlEnableToMainThread(c, torf);
+                        }
+                        if (c.GetType().Name.Equals("Label"))
                         {
                             //禁用下拉框
                             SetControlEnableToMainThread(c, torf);
