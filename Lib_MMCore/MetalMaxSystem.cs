@@ -1854,7 +1854,7 @@ namespace MetalMaxSystem
         /// HtmlNode img = doc.DocumentNode.SelectSingleNode("/html/body/div[3]/div[3]/div[1]/div[1]/div[1]/a/img");
         /// string imgUal = img.Attributes["src"].Value;
         /// MMCore.Download(imgUal, "123.jpg", @"C:\Users\Admin\Desktop\Download\", true);
-        ///// Debug.WriteLine("下载完成！");
+        /////Debug.WriteLine("下载完成！");
         /// </summary>
         /// <param name="url">浏览器网址</param>
         /// <param name="filename">自定义文件名</param>

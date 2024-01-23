@@ -6,6 +6,7 @@ using System.Threading;
 using System.Drawing;
 using System.Diagnostics;
 using Microsoft.CodeAnalysis.Differencing;
+using System.IO;
 //using System.Windows.Controls;
 
 namespace MMObfuscar
@@ -283,12 +284,12 @@ namespace MMObfuscar
             {
                 //Debug.WriteLine("Function Name: " + match.Value);
                 //构建正则表达式，除了排除规则文本指定，让Lib、GAx3开头的函数名也避开混肴
-                if (!Regex.IsMatch(match.Value, "^(Lib|lib|GAx3).*")) 
+                if (!Regex.IsMatch(match.Value, "^(Lib|lib|GAx3).*"))
                 {
                     //添加函数名及混肴后名称到混肴规则（这过程会自动去重，也不会生成相同混肴名称）
                     obfuscator.AddReplacement(match.Value);
                 }
-                
+
             }
             //要解决：Lib_gf_A和gf_A，如后者加到混肴规则，前者也会被替换一部分，需调用本函数前检查全函数名，如第一遍混肴规则里的键名是函数名的一部分则剔除该键
             foreach (Match match in matches)
@@ -310,29 +311,53 @@ namespace MMObfuscar
 
             //第一遍混肴后的代码
             string obfuscatedCode = obfuscator.ObfuscateCode(mainCode);
+
             string temp = "";
+
             //第二遍混肴
             //对代码文本中的字符串进行混肴
             MatchCollection matches2 = Regex.Matches(obfuscatedCode, @"""(.*?)""");
             foreach (Match match in matches2)
             {
                 //匹配到的字符串的内容(.*?)放在match.Groups[1].Value，内容非空则进行添加规则
-                if (match.Groups[1].Value != "") 
+                if (match.Groups[1].Value != "")
                 {
                     //构建正则表达式，带有以下指定字符的字符串会避开混肴
                     if (!Regex.IsMatch(match.Groups[1].Value, "^(\\|bnet:).*"))
                     {
                         //添加到混肴规则2（要替换的字符串为键，混肴成8进制或18进制后的字符串为值）
                         temp = MMCore.ConvertStringToHOMixed(match.Groups[1].Value, 0.7); //这里是内容的混肴
-                        Debug.WriteLine($"Found string: {match.Groups[1].Value}, Value: {temp}");
+                        //Debug.WriteLine($"Found string: {match.Groups[1].Value}, Value: {temp}");
                         temp = "\"" + temp + "\""; //重新套上引号
                         //注意此处第二项规则的键要带""不能光内容字符作为键
                         obfuscator.AddReplacement2(match.Value, temp);
                     }
                 }
-                
+
             }
             obfuscatedCode = obfuscator.ObfuscateCode2(obfuscatedCode);
+
+            //第三遍
+            //正则表达式匹配void InitMap () { 到 }的内容
+            //pattern = @"void\s*InitMap\s*\(\)\s*\{(.*\S)*\}";
+            ////使用 RegexOptions.Multiline 选项来指定模式应在多个行上进行匹配，并使用 RegexOptions.Singleline 选项来指定模式应在单个连续字符串上进行匹配
+            //RegexOptions options = RegexOptions.Multiline | RegexOptions.Singleline;
+            //MatchCollection matches3 = Regex.Matches(obfuscatedCode, pattern, options);
+            //foreach (Match match in matches3)
+            //{
+            //    if (match.Groups[1].Value != "")
+            //    {
+            //        temp = match.Groups[1].Value;
+            //        Debug.WriteLine(temp);
+            //    }
+            //}
+            //obfuscatedCode = Regex.Replace(obfuscatedCode, pattern, string.Empty, options);
+
+            string sCHeadPath = AppDomain.CurrentDomain.BaseDirectory + @"SCHead";
+            string sCEndPath = AppDomain.CurrentDomain.BaseDirectory + @"SCEnd";
+            string sCHead = File.ReadAllText(sCHeadPath);
+            string sCEnd = File.ReadAllText(sCEndPath);
+            obfuscatedCode = sCHead + obfuscatedCode + sCEnd;
 
             SetCodeToMainThread(obfuscatedCode);
         }
@@ -428,7 +453,7 @@ namespace MMObfuscar
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            comboBox_SelectFunc.Items.Add("对Galaxy代码进行混肴");
+            comboBox_SelectFunc.Items.Add("对Galaxy代码进行混肴（采用默认规则）");
             comboBox_SelectFunc.SelectedIndex = 0;
         }
     }

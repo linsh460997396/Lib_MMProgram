@@ -80,8 +80,7 @@ namespace MMObfuscar
             // 
             // checkBox_LC4
             // 
-            checkBox_LC4.Checked = true;
-            checkBox_LC4.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBox_LC4.Enabled = false;
             checkBox_LC4.Location = new System.Drawing.Point(772, 61);
             checkBox_LC4.Margin = new System.Windows.Forms.Padding(4);
             checkBox_LC4.Name = "checkBox_LC4";
@@ -169,7 +168,7 @@ namespace MMObfuscar
             Controls.Add(panel_Top);
             Margin = new System.Windows.Forms.Padding(4);
             Name = "Form1";
-            Text = "Form1";
+            Text = "代码混肴器V0.2（For Galaxy） By 蔚蓝星海";
             Load += Form1_Load;
             panel_Top.ResumeLayout(false);
             panel_Top.PerformLayout();
