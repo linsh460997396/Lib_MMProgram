@@ -35565,7 +35565,7 @@ namespace MetalMaxSystem
             MMCore.DHD_RemoveObject(unit, Name);
         }
 
-        public void DelALL()
+        public void DelAll()
         {
             MMCore.DHD_RemoveObjectGAll(Name);
         }
@@ -36694,7 +36694,7 @@ namespace MetalMaxSystem
                 // 检查是否已经存在相同的键
                 if (Replacements.ContainsKey(originalName))
                 {
-                    // 可以选择跳过重复的函数名或者生成一个不同的唯一替换名称
+                    //可以选择跳过重复的函数名或者生成一个不同的唯一替换名称
                     //Debug.WriteLine($"函数名 {originalName} 已经存在相同的替换名称，将跳过该函数名。");
                     return;
                 }
@@ -36726,7 +36726,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 以字典中自定义的混肴规则，进行代码混肴
+        /// 以字典中自定义的混肴规则，进行代码文本中的函数名混肴
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>
@@ -36747,7 +36747,7 @@ namespace MetalMaxSystem
                 }
                 else
                 {
-                    //否则返回原字符（替换相同字符）
+                    //否则返回原字符（届时替换相同字符）
                     //Debug.WriteLine("Key not found: " + match);
                     return match;
                 }
@@ -36762,7 +36762,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 以字典中自定义的混肴规则，进行代码混肴
+        /// 以字典（Replacements2）中自定义的混肴规则，进行代码文本中被双引号包围的字符串混肴
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>
@@ -36783,13 +36783,13 @@ namespace MetalMaxSystem
                 }
                 else
                 {
-                    //否则返回原字符（替换相同字符）
+                    //否则返回原字符（届时替换相同字符）
                     //Debug.WriteLine("Key not found: " + match);
                     return match;
                 }
             };
 
-            //将代码中经过pattern正则匹配到的函数名替换为Replacements字典中以函数名为键对应的值
+            //将代码中经过pattern正则匹配到的函数名替换为字典（Replacements2）中以函数名为键对应的值
             string obfuscatedCode = Regex.Replace(code, pattern,
                 (Match m) => replacementDelegate(m.Value)
                 );

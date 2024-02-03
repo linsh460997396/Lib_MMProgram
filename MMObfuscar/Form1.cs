@@ -283,7 +283,7 @@ namespace MMObfuscar
             foreach (Match match in matches)
             {
                 //Debug.WriteLine("Function Name: " + match.Value);
-                //构建正则表达式，除了排除规则文本指定，让Lib、GAx3开头的函数名也避开混肴
+                //构建正则表达式，除了"排除规则文本"指定的函数名，让Lib、GAx3开头的函数名也避开混肴
                 if (!Regex.IsMatch(match.Value, "^(Lib|lib|GAx3).*"))
                 {
                     //添加函数名及混肴后名称到混肴规则（这过程会自动去重，也不会生成相同混肴名称）
@@ -291,18 +291,18 @@ namespace MMObfuscar
                 }
 
             }
-            //要解决：Lib_gf_A和gf_A，如后者加到混肴规则，前者也会被替换一部分，需调用本函数前检查全函数名，如第一遍混肴规则里的键名是函数名的一部分则剔除该键
+            //要解决：Lib_gf_A和gf_A，如后者加到混肴规则，前者也会被替换一部分，所以混肴前得检查函数名并对混肴规则修改：如第一遍混肴规则里的键名是按库名匹配的函数名的一部分则剔除该键
             foreach (Match match in matches)
             {
                 if (Regex.IsMatch(match.Value, "^(Lib|lib|GAx3).*"))
                 {
                     //混肴规则字典里的键名是match.Value的一部分则从字典里剔除该键
-                    // 检查match.Value是否包含字典中的任何键
+                    //检查match.Value是否包含字典中的任何键
                     foreach (var key in obfuscator.Replacements.Keys)
                     {
                         if (match.Value.Contains(key))
                         {
-                            // 如果match.Value包含字典中的键，则从字典中删除该键
+                            //如果match.Value包含字典中的键，则从字典中删除该键
                             obfuscator.Replacements.Remove(key);
                         }
                     }
@@ -365,7 +365,7 @@ namespace MMObfuscar
         private void UserOpEnableChange(bool torf)
         {
             UserOpEnable = torf;
-            //遍历全控件并获取类型可跨线程不用回调，但控件其他属性读写操作需要回调，但读不到富格式文本框
+            //遍历全控件并获取类型（可跨线程不用回调），控件属性读写操作仍需要回调
             foreach (Control a in Controls)
             {
                 if (a is Panel)
@@ -381,9 +381,6 @@ namespace MMObfuscar
                         //不执行时是白色
                         SetPanelBackColorToMainThread(p, Color.Transparent);
                     }
-
-                    //Controls读不到的控件单独设置
-                    SetControlEnableToMainThread(richTextBox_Code, torf);
 
                     foreach (Control c in p.Controls) //遍历面板中的每一个控件
                     {
@@ -420,6 +417,8 @@ namespace MMObfuscar
                     }
                 }
             }
+            //上面Controls未读到富格式文本框，单独设置
+            SetControlEnableToMainThread(richTextBox_Code, torf);
         }
 
         private void button_SelectExclusionRulesFile_Click(object sender, EventArgs e)
