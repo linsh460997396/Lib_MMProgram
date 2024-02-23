@@ -1,0 +1,127 @@
+﻿<Window x:Class="RecordKeyBoardAndMouse.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RecordKeyBoardAndMouse"
+        mc:Ignorable="d"
+        Title="鼠标及键盘录制" Height="478.87" Width="478" Background="#FFFFFF">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="./styles/DicMainWindow.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Button Content="鼠标录制" HorizontalAlignment="Left" Margin="25,45,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" Style="{StaticResource BtnStyle}"/>
+
+        <Label Name="label" Content="Label" HorizontalAlignment="Left" Margin="266,42,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.465,0.484" Height="23" Width="189"/>
+        <Button Content="键盘录制开始" HorizontalAlignment="Left" Margin="25,77,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1" RenderTransformOrigin="0.5,0.5" Style="{StaticResource BtnStyle}">
+            <Button.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-0.208"/>
+                    <TranslateTransform Y="0.726"/>
+                </TransformGroup>
+            </Button.RenderTransform>
+        </Button>
+        <Label Name="label2" Content="Label" HorizontalAlignment="Left" Margin="264,73,0,0" VerticalAlignment="Top" Width="167" RenderTransformOrigin="0.5,0.5">
+            <Label.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-0.208"/>
+                    <TranslateTransform X="-0.001" Y="-0.436"/>
+                </TransformGroup>
+            </Label.RenderTransform>
+        </Label>
+        <Button Content="鼠标停止录制" HorizontalAlignment="Left" Margin="131,45,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_2" Style="{StaticResource BtnStyle}"/>
+        <Button Content="键盘停止录制" HorizontalAlignment="Left" Margin="131,77,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_3" RenderTransformOrigin="0.5,0.5" Style="{StaticResource BtnStyle}">
+            <Button.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-0.208"/>
+                    <TranslateTransform X="-0.001" Y="0.349"/>
+                </TransformGroup>
+            </Button.RenderTransform>
+        </Button>
+        <Grid Name="MyGrid" HorizontalAlignment="Left" Height="274" Margin="25,156,0,0" VerticalAlignment="Top" Width="418" >
+            <Grid.Resources>
+                <Style
+            TargetType="Border">
+                    <Setter
+                Property="BorderBrush"
+                Value="LightGray"></Setter>
+                    <Setter
+                Property="BorderThickness"
+                Value="1"></Setter>
+                </Style>
+            </Grid.Resources>
+
+            <!-- 定义Grid的列 -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition ></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <!--定义Grid的行，定义3行-->
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <!--添加边框-->
+            <Border Grid.Row="0" Grid.Column="0"></Border>
+            <Border Grid.Row="0" Grid.Column="1"></Border>
+            <Border Grid.Row="1" Grid.Column="0"></Border>
+            <Border Grid.Row="1" Grid.Column="1"></Border>
+            <Border Grid.Row="2" Grid.Column="0"></Border>
+            <Border Grid.Row="2" Grid.Column="1"></Border>
+            <Border Grid.Row="3" Grid.Column="0"></Border>
+            <Border Grid.Row="3" Grid.Column="1"></Border>
+            <Border Grid.Row="4" Grid.Column="0"></Border>
+            <Border Grid.Row="4" Grid.Column="1"></Border>
+            <Border Grid.Row="5" Grid.Column="0"></Border>
+            <Border Grid.Row="5" Grid.Column="1"></Border>
+            <Border Grid.Row="6" Grid.Column="0"></Border>
+            <Border Grid.Row="6" Grid.Column="1"></Border>
+            <Border Grid.Row="7" Grid.Column="0"></Border>
+            <Border Grid.Row="7" Grid.Column="1"></Border>
+            <Border Grid.Row="8" Grid.Column="0"></Border>
+            <Border Grid.Row="8" Grid.Column="1"></Border>
+            <Border Grid.Row="9" Grid.Column="0"></Border>
+            <Border Grid.Row="9" Grid.Column="1"></Border>
+            <Border Grid.Row="0" Grid.Column="0"></Border>
+            <Border Grid.Row="0" Grid.Column="1"></Border>
+            <Border Grid.Row="0" Grid.Column="0"></Border>
+            <Border Grid.Row="0" Grid.Column="1"></Border>
+
+            <Label Content="Ctrl+Alt+1" Grid.Row="0"  Grid.Column="0"></Label>
+            <Label Content="Ctrl+Alt+2" Grid.Row="1"  Grid.Column="0"></Label>
+            <Label Content="Ctrl+Alt+3" Grid.Row="2"  Grid.Column="0"></Label>
+            <Label Content="Ctrl+Alt+4" Grid.Row="3"  Grid.Column="0"></Label>
+            <Label Content="Ctrl+Alt+5" Grid.Row="4"  Grid.Column="0"></Label>
+            <Label Content="Ctrl+Alt+6" Grid.Row="5"  Grid.Column="0"></Label>
+            <Label Content="Ctrl+Alt+7" Grid.Row="6"  Grid.Column="0"></Label>
+            <Label Content="Ctrl+Alt+8" Grid.Row="7"  Grid.Column="0"></Label>
+            <Label Content="Ctrl+Alt+9" Grid.Row="8"  Grid.Column="0"></Label>
+            <Label Content="Ctrl+Alt+0" Grid.Row="9"  Grid.Column="0"></Label>
+        </Grid>
+        <Button Content="全部开始录制" HorizontalAlignment="Left" Margin="25,10,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_4" Style="{StaticResource BtnStyle}"
+                />
+
+        <Button Content="全部结束录制" HorizontalAlignment="Left" Margin="131,10,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_5" Style="{StaticResource BtnStyle}"/>
+        <Label Content="按全部开始录制后，按以下热键可以记录鼠标位置" HorizontalAlignment="Left" Margin="25,128,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.465,0.484" Height="23" Width="336"/>
+    </Grid>
+</Window>

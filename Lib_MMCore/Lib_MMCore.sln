@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34511.98
@@ -12,6 +12,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MMObfuscar", "..\MMObfuscar\MMObfuscar.csproj", "{42ECF10C-423E-4FC7-A638-DD96B7E7C26A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MMConsole", "..\MMConsole\MMConsole.csproj", "{A3CD51A4-AB89-400C-BF31-9D3CE83B6981}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecordKeyBoardAndMouse", "..\RecordKeyBoardAndMouse\RecordKeyBoardAndMouse.csproj", "{DD146295-1DB2-41E8-B85A-EC6371559E5F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{A3CD51A4-AB89-400C-BF31-9D3CE83B6981}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3CD51A4-AB89-400C-BF31-9D3CE83B6981}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3CD51A4-AB89-400C-BF31-9D3CE83B6981}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD146295-1DB2-41E8-B85A-EC6371559E5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD146295-1DB2-41E8-B85A-EC6371559E5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD146295-1DB2-41E8-B85A-EC6371559E5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD146295-1DB2-41E8-B85A-EC6371559E5F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

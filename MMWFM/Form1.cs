@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
-using HtmlAgilityPack;
 using MetalMaxSystem;
+using Label = System.Windows.Controls.Label;
 
 namespace MMWFM
 {
@@ -325,4 +318,5 @@ namespace MMWFM
             }
         }
     }
+
 }

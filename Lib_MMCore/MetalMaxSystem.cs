@@ -36157,7 +36157,7 @@ namespace MetalMaxSystem
                     //思考：x,Y如何转化为世界坐标？
 
                     //Z从上述（x,y）的信息中获得
-                    Z = Game.MapHeight + Game.TerrainHeight[X, Y] + (double)MMCore.DictionaryDoubleLoad0(true, "Unit.TerrainHeight");
+                    Z = Game.MapHeight + Game.TerrainHeight[X, Y] + MMCore.DictionaryDoubleLoad0(true, "Unit.TerrainHeight");
 
                     MouseMoveEvent?.Invoke(PlayerID, new System.Windows.Media.Media3D.Vector3D(X, Y, Z), X, Y);//当没给函数注册事件时不运行
 

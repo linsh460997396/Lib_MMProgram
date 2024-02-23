@@ -34,9 +34,9 @@ namespace MMConsole
             //}
             //Debug.WriteLine("Result: " + result); // 输出结果
 
-            Debug.WriteLine(MMCore.ConvertStringToHex("TriggerLibs/NativeLib"));
-            Debug.WriteLine("\x54\x72\x69\x67\x67\x65\x72\x4C\x69\x62\x73\x2F\x4E\x61\x74\x69\x76\x65\x4C\x69\x62");
-            Debug.WriteLine(MMCore.ConvertStringToHOMixed("TriggerLibs/NativeLib", 0.7)); //"\0124\0114"的十进制是84和76，Galaxy脚本中识别为TL
+            //Debug.WriteLine(MMCore.ConvertStringToHex("TriggerLibs/NativeLib"));
+            //Debug.WriteLine("\x54\x72\x69\x67\x67\x65\x72\x4C\x69\x62\x73\x2F\x4E\x61\x74\x69\x76\x65\x4C\x69\x62");
+            //Debug.WriteLine(MMCore.ConvertStringToHOMixed("TriggerLibs/NativeLib", 0.7)); //"\0124\0114"的十进制是84和76，Galaxy脚本中识别为TL
 
         }
         public static int Confuse(int input)
