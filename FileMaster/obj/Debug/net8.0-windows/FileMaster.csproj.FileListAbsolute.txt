@@ -88,3 +88,4 @@ D:\VSWork\2022\Lib_MMProgram\FileMaster\bin\Debug\net8.0-windows\ru\Microsoft.Co
 D:\VSWork\2022\Lib_MMProgram\FileMaster\bin\Debug\net8.0-windows\tr\Microsoft.CodeAnalysis.Workspaces.resources.dll
 D:\VSWork\2022\Lib_MMProgram\FileMaster\bin\Debug\net8.0-windows\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
 D:\VSWork\2022\Lib_MMProgram\FileMaster\bin\Debug\net8.0-windows\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
+D:\VSWork\2022\Lib_MMProgram\FileMaster\bin\Debug\net8.0-windows\System.CodeDom.dll

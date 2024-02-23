@@ -5,12 +5,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{4238C5DF-3860-4DEB-B81A-C6AC20690E60}|Lib_MMCore.csproj|d:\\vswork\\2022\\lib_mmprogram\\lib_mmcore\\metalmaxsystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4238C5DF-3860-4DEB-B81A-C6AC20690E60}|Lib_MMCore.csproj|solutionrelative:metalmaxsystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{42ECF10C-423E-4FC7-A638-DD96B7E7C26A}|..\\MMObfuscar\\MMObfuscar.csproj|d:\\vswork\\2022\\lib_mmprogram\\mmobfuscar\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{42ECF10C-423E-4FC7-A638-DD96B7E7C26A}|..\\MMObfuscar\\MMObfuscar.csproj|d:\\vswork\\2022\\lib_mmprogram\\mmobfuscar\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
   ],
   "DocumentGroupContainers": [
@@ -20,8 +14,12 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:7:0:{57d563b6-44a5-47df-85be-f4199ad6b651}"
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -30,39 +28,10 @@
               "RelativeDocumentMoniker": "MetalMaxSystem.cs",
               "ToolTip": "D:\\VSWork\\2022\\Lib_MMProgram\\Lib_MMCore\\MetalMaxSystem.cs",
               "RelativeToolTip": "MetalMaxSystem.cs",
-              "ViewState": "AQIAAIqPAAAAAAAAAAAAAAyPAAA5AAAA",
+              "ViewState": "AQIAADCDAAAAAAAAAAAQwCwBAAAOAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-01-21T21:37:50.852Z",
-              "IsPinned": true,
+              "WhenOpened": "2024-02-23T06:20:54.118Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:7:0:{57d563b6-44a5-47df-85be-f4199ad6b651}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Form1.cs [\u8BBE\u8BA1]",
-              "DocumentMoniker": "D:\\VSWork\\2022\\Lib_MMProgram\\MMObfuscar\\Form1.cs",
-              "RelativeDocumentMoniker": "..\\MMObfuscar\\Form1.cs",
-              "ToolTip": "D:\\VSWork\\2022\\Lib_MMProgram\\MMObfuscar\\Form1.cs [\u8BBE\u8BA1]",
-              "RelativeToolTip": "..\\MMObfuscar\\Form1.cs [\u8BBE\u8BA1]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-01-23T17:02:16.664Z",
-              "EditorCaption": " [\u8BBE\u8BA1]"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Form1.cs",
-              "DocumentMoniker": "D:\\VSWork\\2022\\Lib_MMProgram\\MMObfuscar\\Form1.cs",
-              "RelativeDocumentMoniker": "..\\MMObfuscar\\Form1.cs",
-              "ToolTip": "D:\\VSWork\\2022\\Lib_MMProgram\\MMObfuscar\\Form1.cs",
-              "RelativeToolTip": "..\\MMObfuscar\\Form1.cs",
-              "ViewState": "AQIAAAEBAAAAAAAAAAAAACUBAAA1AAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-01-23T13:47:58.19Z"
             }
           ]
         }

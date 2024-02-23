@@ -25,12 +25,12 @@ namespace MMWFM
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //SiGuo.GameInit();
+            SiGuo.GameInit();
 
-            //TimerUpdate AI = new TimerUpdate();//创建一个周期触发器
-            //AI.Update += SiGuo.BattleAI;//注册触发器循环事件给指定函数
-            //AI.Period = 2000;//周期间隔
-            //AI.TriggerStart(true);//触发器后台执行
+            TimerUpdate AI = new TimerUpdate();//创建一个周期触发器
+            AI.Update += SiGuo.BattleAI;//注册触发器循环事件给指定函数
+            AI.Period = 2000;//周期间隔
+            AI.TriggerStart(true);//触发器后台执行
 
         }
 

@@ -34,9 +34,8 @@ using Microsoft.Win32;
 using System.Collections;
 using System.Threading;
 using System.ComponentModel;
-using System.Windows;
-using System.Windows.Media.Media3D;
-using Point = System.Windows.Point;
+using Vector2D = System.Windows.Vector;
+using Point2D = System.Windows.Point;
 using MessageBox = System.Windows.MessageBox;
 using Timer = System.Threading.Timer;
 using static MetalMaxSystem.MouseHook;
@@ -250,7 +249,95 @@ namespace MetalMaxSystem
 
     //结构是值类型
 
-    //暂无
+    /// <summary>
+    /// 三维向量结构体
+    /// </summary>
+    public struct Vector3D
+    {
+        public double x;
+        public double y;
+        public double z;
+
+        public Vector3D(double x, double y, double z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public static Vector3D operator +(Vector3D vec1, Vector3D vec2)
+        {
+            return new Vector3D(vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z);
+        }
+
+        public static Vector3D operator -(Vector3D vec1, Vector3D vec2)
+        {
+            return new Vector3D(vec1.x - vec2.x, vec1.y - vec2.y, vec1.z - vec2.z);
+        }
+
+        public static Vector3D operator *(Vector3D vec, double scalar)
+        {
+            return new Vector3D(vec.x * scalar, vec.y * scalar, vec.z * scalar);
+        }
+
+        public static Vector3D operator /(Vector3D vec, double scalar)
+        {
+            return new Vector3D(vec.x / scalar, vec.y / scalar, vec.z / scalar);
+        }
+
+        public double Magnitude()
+        {
+            return Math.Sqrt(x * x + y * y + z * z);
+        }
+
+        public Vector3D Normalize()
+        {
+            double mag = Magnitude();
+            return new Vector3D(x / mag, y / mag, z / mag);
+        }
+    }
+
+    /// <summary>
+    /// 三维点结构体
+    /// </summary>
+    public struct Point3D
+    {
+        public double x;
+        public double y;
+        public double z;
+
+        public Point3D(double newX, double newY, double newZ)
+        {
+            x = newX;
+            y = newY;
+            z = newZ;
+        }
+
+        public void Move(double dx, double dy, double dz)
+        {
+            x += dx;
+            y += dy;
+            z += dz;
+        }
+
+        public double DistanceTo(Point3D otherPoint)
+        {
+            double dx = otherPoint.x - x;
+            double dy = otherPoint.y - y;
+            double dz = otherPoint.z - z;
+            return Math.Sqrt(dx * dx + dy * dy + dz * dz);
+        }
+
+        public static Point3D operator +(Point3D point1, Point3D point2)
+        {
+            return new Point3D(point1.x + point2.x, point1.y + point2.y, point1.z + point2.z);
+        }
+
+        public static Point3D operator -(Point3D point1, Point3D point2)
+        {
+            return new Point3D(point1.x - point2.x, point1.y - point2.y, point1.z - point2.z);
+        }
+    }
 
     #endregion
 
@@ -317,7 +404,7 @@ namespace MetalMaxSystem
     /// <param name="lp_mouseVector3D"></param>
     /// <param name="uiX"></param>
     /// <param name="uiY"></param>
-    public delegate void MouseMoveEventFuncref(int player, Vector3D lp_mouseVector3D, int uiX, int uiY);
+    public delegate void MouseMoveEventFuncref(int player, System.Windows.Media.Media3D.Vector3D lp_mouseVector3D, int uiX, int uiY);
     /// <summary>
     /// 【MM_函数库】监听服务鼠标按下常规函数引用（委托类型），特征：bool MouseDownEventFuncref(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
     /// </summary>
@@ -327,7 +414,7 @@ namespace MetalMaxSystem
     /// <param name="uiX"></param>
     /// <param name="uiY"></param>
     /// <returns></returns>
-    public delegate bool MouseDownEventFuncref(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY);
+    public delegate bool MouseDownEventFuncref(int player, int key, System.Windows.Media.Media3D.Vector3D lp_mouseVector3D, int uiX, int uiY);
     /// <summary>
     /// 【MM_函数库】监听服务鼠标左键双击常规函数引用（委托类型），特征：bool MouseLDoubleClickEventFuncref(int player, Vector3D lp_mouseVector3D, int uiX, int uiY)
     /// </summary>
@@ -336,7 +423,7 @@ namespace MetalMaxSystem
     /// <param name="uiX"></param>
     /// <param name="uiY"></param>
     /// <returns></returns>
-    public delegate bool MouseLDoubleClickEventFuncref(int player, Vector3D lp_mouseVector3D, int uiX, int uiY);
+    public delegate bool MouseLDoubleClickEventFuncref(int player, System.Windows.Media.Media3D.Vector3D lp_mouseVector3D, int uiX, int uiY);
     /// <summary>
     /// 【MM_函数库】监听服务鼠标右键双击常规函数引用（委托类型），特征：bool MouseRDoubleClickEventFuncref(int player, Vector3D lp_mouseVector3D, int uiX, int uiY)
     /// </summary>
@@ -345,7 +432,7 @@ namespace MetalMaxSystem
     /// <param name="uiX"></param>
     /// <param name="uiY"></param>
     /// <returns></returns>
-    public delegate bool MouseRDoubleClickEventFuncref(int player, Vector3D lp_mouseVector3D, int uiX, int uiY);
+    public delegate bool MouseRDoubleClickEventFuncref(int player, System.Windows.Media.Media3D.Vector3D lp_mouseVector3D, int uiX, int uiY);
     /// <summary>
     /// 【MM_函数库】监听服务鼠标弹起常规函数引用（委托类型），特征：bool MouseUpEventFuncref(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
     /// </summary>
@@ -355,7 +442,7 @@ namespace MetalMaxSystem
     /// <param name="uiX"></param>
     /// <param name="uiY"></param>
     /// <returns></returns>
-    public delegate bool MouseUpEventFuncref(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY);
+    public delegate bool MouseUpEventFuncref(int player, int key, System.Windows.Media.Media3D.Vector3D lp_mouseVector3D, int uiX, int uiY);
 
     #endregion
 
@@ -648,11 +735,11 @@ namespace MetalMaxSystem
         /// <summary>
         /// 【MM_函数库】全局字典<string,Vector> （不排泄，直到程序结束）
         /// </summary>
-        private static Dictionary<string, Vector> systemDictionaryVector = new Dictionary<string, Vector>();//内部使用
+        private static Dictionary<string, Vector2D> systemDictionaryVector = new Dictionary<string, Vector2D>();//内部使用
         /// <summary>
         /// 【MM_函数库】临时字典<string,Vector> （函数或动作集结束时应手动排泄）
         /// </summary>
-        private static Dictionary<string, Vector> tempDictionaryVector = new Dictionary<string, Vector>();//内部使用
+        private static Dictionary<string, Vector2D> tempDictionaryVector = new Dictionary<string, Vector2D>();//内部使用
 
         /// <summary>
         /// 【MM_函数库】全局字典<string,Timer> （不排泄，直到程序结束）
@@ -828,9 +915,9 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="vector"></param>
         /// <returns></returns>
-        public static Vector ToVector(Vector3D vector)
+        public static Vector2D ToVector(System.Windows.Media.Media3D.Vector3D vector)
         {
-            return new Vector(vector.X, vector.Y);
+            return new Vector2D(vector.X, vector.Y);
         }
 
         /// <summary>
@@ -843,7 +930,7 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static double AngleBetween(double x, double y, double a, double b)
         {
-            return Vector.AngleBetween(new Vector(x, y), new Vector(a, b));
+            return Vector2D.AngleBetween(new Vector2D(x, y), new Vector2D(a, b));
         }
 
         /// <summary>
@@ -858,7 +945,7 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static double AngleBetween(double x, double y, double z, double a, double b, double c)
         {
-            return Vector3D.AngleBetween(new Vector3D(x, y, z), new Vector3D(a, b, z));
+            return System.Windows.Media.Media3D.Vector3D.AngleBetween(new System.Windows.Media.Media3D.Vector3D(x, y, z), new System.Windows.Media.Media3D.Vector3D(a, b, z));
         }
 
         /// <summary>
@@ -868,12 +955,12 @@ namespace MetalMaxSystem
         /// <param name="point1">二维点</param>
         /// <param name="point2">二维点</param>
         /// <returns></returns>
-        public static double AngleBetween(Point point1, Point point2)
+        public static double AngleBetween(Point2D point1, Point2D point2)
         {
-            //double X1 = point1.X, Y1 = point1.Y, X2 = point2.Y, Y2 = point2.Y;
+            //double X1 = point1.x, Y1 = point1.y, X2 = point2.y, Y2 = point2.y;
             //double angleOfLine = Math.Atan2((Y2 - Y1), (X2 - X2)) * 180 / Math.PI;
 
-            return Vector.AngleBetween(new Vector(point1.X, point1.Y), new Vector(point2.X, point2.Y));
+            return Vector2D.AngleBetween(new Vector2D(point1.X, point1.Y), new Vector2D(point2.X, point2.Y));
         }
 
         /// <summary>
@@ -882,9 +969,9 @@ namespace MetalMaxSystem
         /// <param name="point1">三维点</param>
         /// <param name="point2">三维点</param>
         /// <returns></returns>
-        public static double AngleBetween(Point3D point1, Point3D point2)
+        public static double AngleBetween(System.Windows.Media.Media3D.Point3D point1, System.Windows.Media.Media3D.Point3D point2)
         {
-            return Vector3D.AngleBetween(new Vector3D(point1.X, point1.Y, point1.Z), new Vector3D(point2.X, point2.Y, point2.Z));
+            return System.Windows.Media.Media3D.Vector3D.AngleBetween(new System.Windows.Media.Media3D.Vector3D(point1.X, point1.Y, point1.Z), new System.Windows.Media.Media3D.Vector3D(point2.X, point2.Y, point2.Z));
         }
 
         /// <summary>
@@ -893,9 +980,9 @@ namespace MetalMaxSystem
         /// <param name="vector1"></param>
         /// <param name="vector2"></param>
         /// <returns></returns>
-        public static double AngleBetween(Vector vector1, Vector vector2)
+        public static double AngleBetween(Vector2D vector1, Vector2D vector2)
         {
-            return Vector.AngleBetween(vector1, vector2);
+            return Vector2D.AngleBetween(vector1, vector2);
         }
 
         /// <summary>
@@ -904,9 +991,9 @@ namespace MetalMaxSystem
         /// <param name="vector1"></param>
         /// <param name="vector2"></param>
         /// <returns></returns>
-        public static double AngleBetween(Vector3D vector1, Vector3D vector2)
+        public static double AngleBetween(System.Windows.Media.Media3D.Vector3D vector1, System.Windows.Media.Media3D.Vector3D vector2)
         {
-            return Vector3D.AngleBetween(vector1, vector2);
+            return System.Windows.Media.Media3D.Vector3D.AngleBetween(vector1, vector2);
         }
 
         /// <summary>
@@ -935,7 +1022,7 @@ namespace MetalMaxSystem
         /// <param name="point1"></param>
         /// <param name="point2"></param>
         /// <returns></returns>
-        public static double Distance(Point point1, Point point2)
+        public static double Distance(Point2D point1, Point2D point2)
         {
             double x1 = point1.X;
             double y1 = point1.Y;
@@ -953,7 +1040,7 @@ namespace MetalMaxSystem
         /// <param name="vector1"></param>
         /// <param name="vector2"></param>
         /// <returns></returns>
-        public static double Distance(Vector vector1, Vector vector2)
+        public static double Distance(Vector2D vector1, Vector2D vector2)
         {
             double x1 = vector1.X;
             double y1 = vector1.Y;
@@ -995,7 +1082,7 @@ namespace MetalMaxSystem
         /// <param name="point1"></param>
         /// <param name="point2"></param>
         /// <returns></returns>
-        public static double Distance(Point3D point1, Point3D point2)
+        public static double Distance(System.Windows.Media.Media3D.Point3D point1, System.Windows.Media.Media3D.Point3D point2)
         {
             double x1 = point1.X;
             double y1 = point1.Y;
@@ -1015,7 +1102,7 @@ namespace MetalMaxSystem
         /// <param name="vector1"></param>
         /// <param name="vector2"></param>
         /// <returns></returns>
-        public static double Distance(Vector3D vector1, Vector3D vector2)
+        public static double Distance(System.Windows.Media.Media3D.Vector3D vector1, System.Windows.Media.Media3D.Vector3D vector2)
         {
             double x1 = vector1.X;
             double y1 = vector1.Y;
@@ -1562,7 +1649,7 @@ namespace MetalMaxSystem
         {
             //发现带中文符号会识别不出，为中文符号继续追加（）【】：
             Regex regex = new Regex(
-                @"^([a-zA-Z]:\\)([-\u4e00-\u9fa5\w\s.（）【】：~!@#$%^&()\[\]{}+=]+\\?)*$"
+                @"^([a-zA-z]:\\)([-\u4e00-\u9fa5\w\s.（）【】：~!@#$%^&()\[\]{}+=]+\\?)*$"
             );
             Match result = regex.Match(path);
             return result.Success;
@@ -2472,7 +2559,7 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static bool DataTableVectorValueExists(bool place, Vector value)
+        public static bool DataTableVectorValueExists(bool place, Vector2D value)
         {
             switch (DataTableType)
             {
@@ -2489,12 +2576,12 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static Vector DataTableVectorGetValue(bool place, string key)
+        public static Vector2D DataTableVectorGetValue(bool place, string key)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (Vector)HashTableGetValue(place, "HD_" + key);
+                    return (Vector2D)HashTableGetValue(place, "HD_" + key);
                 default:
                     return DictionaryVectorGetValue(place, "HD_" + key);
             }
@@ -2624,7 +2711,7 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <param name="val"></param>
-        public static void DataTableVectorSave0(bool place, string key, Vector val)
+        public static void DataTableVectorSave0(bool place, string key, Vector2D val)
         {
             switch (DataTableType)
             {
@@ -2644,7 +2731,7 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <param name="val"></param>
-        public static void DataTableVectorSave1(bool place, string key, int lp_1, Vector val)
+        public static void DataTableVectorSave1(bool place, string key, int lp_1, Vector2D val)
         {
             switch (DataTableType)
             {
@@ -2665,7 +2752,7 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <param name="val"></param>
-        public static void DataTableVectorSave2(bool place, string key, int lp_1, int lp_2, Vector val)
+        public static void DataTableVectorSave2(bool place, string key, int lp_1, int lp_2, Vector2D val)
         {
             switch (DataTableType)
             {
@@ -2687,7 +2774,7 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <param name="val"></param>
-        public static void DataTableVectorSave3(bool place, string key, int lp_1, int lp_2, int lp_3, Vector val)
+        public static void DataTableVectorSave3(bool place, string key, int lp_1, int lp_2, int lp_3, Vector2D val)
         {
             switch (DataTableType)
             {
@@ -2710,7 +2797,7 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <param name="val"></param>
-        public static void DataTableVectorSave4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4, Vector val)
+        public static void DataTableVectorSave4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4, Vector2D val)
         {
             switch (DataTableType)
             {
@@ -2729,12 +2816,12 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static Vector? DataTableVectorLoad0_N(bool place, string key)
+        public static Vector2D? DataTableVectorLoad0_N(bool place, string key)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (Vector?)HashTableLoad0(place, "HD_" + key);
+                    return (Vector2D?)HashTableLoad0(place, "HD_" + key);
                 default:
                     return DictionaryVectorLoad0_N(place, "HD_" + key);
             }
@@ -2747,12 +2834,12 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns></returns>
-        public static Vector? DataTableVectorLoad1_N(bool place, string key, int lp_1)
+        public static Vector2D? DataTableVectorLoad1_N(bool place, string key, int lp_1)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (Vector?)HashTableLoad1(place, "HD_" + key, lp_1);
+                    return (Vector2D?)HashTableLoad1(place, "HD_" + key, lp_1);
                 default:
                     return DictionaryVectorLoad1_N(place, "HD_" + key, lp_1);
             }
@@ -2766,12 +2853,12 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns></returns>
-        public static Vector? DataTableVectorLoad2_N(bool place, string key, int lp_1, int lp_2)
+        public static Vector2D? DataTableVectorLoad2_N(bool place, string key, int lp_1, int lp_2)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (Vector?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                    return (Vector2D?)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
                 default:
                     return DictionaryVectorLoad2_N(place, "HD_" + key, lp_1, lp_2);
             }
@@ -2786,12 +2873,12 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns></returns>
-        public static Vector? DataTableVectorLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static Vector2D? DataTableVectorLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (Vector?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                    return (Vector2D?)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
                 default:
                     return DictionaryVectorLoad3_N(place, "HD_" + key, lp_1, lp_2, lp_3);
             }
@@ -2807,12 +2894,12 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns></returns>
-        public static Vector? DataTableVectorLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static Vector2D? DataTableVectorLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (Vector?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                    return (Vector2D?)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
                 default:
                     return DictionaryVectorLoad4_N(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
             }
@@ -2823,13 +2910,13 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
-        /// <returns>错误时返回new Vector(0,0)</returns>
-        public static Vector DataTableVectorLoad0(bool place, string key)
+        /// <returns>错误时返回new Vector2D(0,0)</returns>
+        public static Vector2D DataTableVectorLoad0(bool place, string key)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (Vector)HashTableLoad0(place, "HD_" + key);
+                    return (Vector2D)HashTableLoad0(place, "HD_" + key);
                 default:
                     return DictionaryVectorLoad0(place, "HD_" + key);
             }
@@ -2842,12 +2929,12 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns></returns>
-        public static Vector DataTableVectorLoad1(bool place, string key, int lp_1)
+        public static Vector2D DataTableVectorLoad1(bool place, string key, int lp_1)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (Vector)HashTableLoad1(place, "HD_" + key, lp_1);
+                    return (Vector2D)HashTableLoad1(place, "HD_" + key, lp_1);
                 default:
                     return DictionaryVectorLoad1(place, "HD_" + key, lp_1);
             }
@@ -2861,12 +2948,12 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns></returns>
-        public static Vector DataTableVectorLoad2(bool place, string key, int lp_1, int lp_2)
+        public static Vector2D DataTableVectorLoad2(bool place, string key, int lp_1, int lp_2)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (Vector)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
+                    return (Vector2D)HashTableLoad2(place, "HD_" + key, lp_1, lp_2);
                 default:
                     return DictionaryVectorLoad2(place, "HD_" + key, lp_1, lp_2);
             }
@@ -2881,12 +2968,12 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns></returns>
-        public static Vector DataTableVectorLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static Vector2D DataTableVectorLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (Vector)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
+                    return (Vector2D)HashTableLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
                 default:
                     return DictionaryVectorLoad3(place, "HD_" + key, lp_1, lp_2, lp_3);
             }
@@ -2902,12 +2989,12 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns></returns>
-        public static Vector DataTableVectorLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static Vector2D DataTableVectorLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             switch (DataTableType)
             {
                 case "HashTable":
-                    return (Vector)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
+                    return (Vector2D)HashTableLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
                 default:
                     return DictionaryVectorLoad4(place, "HD_" + key, lp_1, lp_2, lp_3, lp_4);
             }
@@ -10184,7 +10271,7 @@ namespace MetalMaxSystem
         /// <param name="place">true=全局，false=局部</param>
         /// <param name="key"></param>
         /// <param name="val"></param>
-        private static void DictionaryVectorSet(bool place, string key, Vector val)//内部使用
+        private static void DictionaryVectorSet(bool place, string key, Vector2D val)//内部使用
         {
             if (place)
             {
@@ -10226,7 +10313,7 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static bool DictionaryVectorValueExists(bool place, Vector value)
+        public static bool DictionaryVectorValueExists(bool place, Vector2D value)
         {
             if (place) { return systemDictionaryVector.ContainsValue(value); }
             else { return tempDictionaryVector.ContainsValue(value); }
@@ -10238,7 +10325,7 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static Vector DictionaryVectorGetValue(bool place, string key)
+        public static Vector2D DictionaryVectorGetValue(bool place, string key)
         {
             if (place) { return systemDictionaryVector[key]; }
             else { return tempDictionaryVector[key]; }
@@ -10321,7 +10408,7 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <param name="val"></param>
-        public static void DictionaryVectorSave0(bool place, string key, Vector val)
+        public static void DictionaryVectorSave0(bool place, string key, Vector2D val)
         {
             DictionaryVectorSet(place, key, val);
         }
@@ -10333,7 +10420,7 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <param name="val"></param>
-        public static void DictionaryVectorSave1(bool place, string key, int lp_1, Vector val)
+        public static void DictionaryVectorSave1(bool place, string key, int lp_1, Vector2D val)
         {
             DictionaryVectorSet(place, (key + "_" + lp_1.ToString()), val);
         }
@@ -10346,7 +10433,7 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <param name="val"></param>
-        public static void DictionaryVectorSave2(bool place, string key, int lp_1, int lp_2, Vector val)
+        public static void DictionaryVectorSave2(bool place, string key, int lp_1, int lp_2, Vector2D val)
         {
             DictionaryVectorSet(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString()), val);
         }
@@ -10360,7 +10447,7 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <param name="val"></param>
-        public static void DictionaryVectorSave3(bool place, string key, int lp_1, int lp_2, int lp_3, Vector val)
+        public static void DictionaryVectorSave3(bool place, string key, int lp_1, int lp_2, int lp_3, Vector2D val)
         {
             DictionaryVectorSet(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString()), val);
         }
@@ -10375,7 +10462,7 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <param name="val"></param>
-        public static void DictionaryVectorSave4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4, Vector val)
+        public static void DictionaryVectorSave4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4, Vector2D val)
         {
             DictionaryVectorSet(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()), val);
         }
@@ -10386,7 +10473,7 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns>错误时返回null</returns>
-        public static Vector? DictionaryVectorLoad0_N(bool place, string key)
+        public static Vector2D? DictionaryVectorLoad0_N(bool place, string key)
         {
             if ((DictionaryVectorKeyExists(place, key) == false))
             {
@@ -10402,7 +10489,7 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns>错误时返回null</returns>
-        public static Vector? DictionaryVectorLoad1_N(bool place, string key, int lp_1)
+        public static Vector2D? DictionaryVectorLoad1_N(bool place, string key, int lp_1)
         {
             if ((DictionaryVectorKeyExists(place, (key + "_" + lp_1.ToString())) == false))
             {
@@ -10419,7 +10506,7 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns>错误时返回null</returns>
-        public static Vector? DictionaryVectorLoad2_N(bool place, string key, int lp_1, int lp_2)
+        public static Vector2D? DictionaryVectorLoad2_N(bool place, string key, int lp_1, int lp_2)
         {
             if ((DictionaryVectorKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
             {
@@ -10437,7 +10524,7 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns>错误时返回null</returns>
-        public static Vector? DictionaryVectorLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static Vector2D? DictionaryVectorLoad3_N(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             if ((DictionaryVectorKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
             {
@@ -10456,7 +10543,7 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns>错误时返回null</returns>
-        public static Vector? DictionaryVectorLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static Vector2D? DictionaryVectorLoad4_N(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             if ((DictionaryVectorKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
             {
@@ -10470,12 +10557,12 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
-        /// <returns>错误时返回new Vector(0,0)</returns>
-        public static Vector DictionaryVectorLoad0(bool place, string key)
+        /// <returns>错误时返回new Vector2D(0,0)</returns>
+        public static Vector2D DictionaryVectorLoad0(bool place, string key)
         {
             if ((DictionaryVectorKeyExists(place, key) == false))
             {
-                return new Vector(0, 0);
+                return new Vector2D(0, 0);
             }
             return DictionaryVectorGetValue(place, key);
         }
@@ -10486,12 +10573,12 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
-        /// <returns>错误时返回new Vector(0,0)</returns>
-        public static Vector DictionaryVectorLoad1(bool place, string key, int lp_1)
+        /// <returns>错误时返回new Vector2D(0,0)</returns>
+        public static Vector2D DictionaryVectorLoad1(bool place, string key, int lp_1)
         {
             if ((DictionaryVectorKeyExists(place, (key + "_" + lp_1.ToString())) == false))
             {
-                return new Vector(0, 0);
+                return new Vector2D(0, 0);
             }
             return DictionaryVectorGetValue(place, (key + "_" + lp_1.ToString()));
         }
@@ -10503,12 +10590,12 @@ namespace MetalMaxSystem
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
-        /// <returns>错误时返回new Vector(0,0)</returns>
-        public static Vector DictionaryVectorLoad2(bool place, string key, int lp_1, int lp_2)
+        /// <returns>错误时返回new Vector2D(0,0)</returns>
+        public static Vector2D DictionaryVectorLoad2(bool place, string key, int lp_1, int lp_2)
         {
             if ((DictionaryVectorKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString())) == false))
             {
-                return new Vector(0, 0);
+                return new Vector2D(0, 0);
             }
             return DictionaryVectorGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString()));
         }
@@ -10521,12 +10608,12 @@ namespace MetalMaxSystem
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
-        /// <returns>错误时返回new Vector(0,0)</returns>
-        public static Vector DictionaryVectorLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        /// <returns>错误时返回new Vector2D(0,0)</returns>
+        public static Vector2D DictionaryVectorLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             if ((DictionaryVectorKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString())) == false))
             {
-                return new Vector(0, 0);
+                return new Vector2D(0, 0);
             }
             return DictionaryVectorGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString()));
         }
@@ -10540,12 +10627,12 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
-        /// <returns>错误时返回new Vector(0,0)</returns>
-        public static Vector DictionaryVectorLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        /// <returns>错误时返回new Vector2D(0,0)</returns>
+        public static Vector2D DictionaryVectorLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             if ((DictionaryVectorKeyExists(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString())) == false))
             {
-                return new Vector(0, 0);
+                return new Vector2D(0, 0);
             }
             return DictionaryVectorGetValue(place, (key + "_" + lp_1.ToString() + "_" + lp_2.ToString() + "_" + lp_3.ToString() + "_" + lp_4.ToString()));
         }
@@ -12662,7 +12749,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns>返回一个Vector的已注册标签</returns>
-        private static int HD_RegVectorTagAndReturn_Int(Vector lp_vector)//内部使用
+        private static int HD_RegVectorTagAndReturn_Int(Vector2D lp_vector)//内部使用
         {
             // Variable Declarations
             int lv_jBNum;
@@ -12709,7 +12796,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns>返回一个Vector的已注册标签，错误返回0</returns>
-        public static int HD_ReturnVectorTag_Int(Vector lp_vector)
+        public static int HD_ReturnVectorTag_Int(Vector2D lp_vector)
         {
             // Variable Declarations
             int lv_jBNum;
@@ -12745,7 +12832,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns>返回一个Vector的已注册标签</returns>
-        private static string HD_RegVectorTagAndReturn(Vector lp_vector)//内部使用
+        private static string HD_RegVectorTagAndReturn(Vector2D lp_vector)//内部使用
         {
             // Variable Declarations
             int lv_jBNum;
@@ -12795,7 +12882,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns>返回一个Vector的已注册标签，错误返回""</returns>
-        public static string HD_ReturnVectorTag(Vector lp_vector)
+        public static string HD_ReturnVectorTag(Vector2D lp_vector)
         {
             // Variable Declarations
             int lv_jBNum;
@@ -12828,7 +12915,7 @@ namespace MetalMaxSystem
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
         /// <param name="lp_inherentStats">固有状态</param>
         /// <param name="lp_inherentCustomValue">固有自定义值</param>
-        public static void HD_RegVector(Vector lp_vector, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
+        public static void HD_RegVector(Vector2D lp_vector, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
         {
             // Variable Declarations
             string lv_str;
@@ -12842,7 +12929,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_jBNum = DataTableIntLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
@@ -12894,7 +12981,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
-        public static void HD_RegVector_Simple(Vector lp_vector, string lp_key)
+        public static void HD_RegVector_Simple(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -12908,7 +12995,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_jBNum = DataTableIntLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
@@ -12962,7 +13049,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
-        public static void HD_DestroyVector(Vector lp_vector, string lp_key)
+        public static void HD_DestroyVector(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -12972,7 +13059,7 @@ namespace MetalMaxSystem
             int lv_b;
             string lv_c;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnVectorTag(lp_vector);
             lv_c = "";
@@ -13012,7 +13099,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
-        public static void HD_RemoveVector(Vector lp_vector, string lp_key)
+        public static void HD_RemoveVector(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -13022,7 +13109,7 @@ namespace MetalMaxSystem
             int lv_b;
             string lv_c;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnVectorTag(lp_vector);
             lv_c = "";
@@ -13064,7 +13151,7 @@ namespace MetalMaxSystem
             string lv_str;
             int lv_num;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             // Implementation
             return lv_num;
@@ -13076,7 +13163,7 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
         /// <returns></returns>
-        public static int HD_ReturnVectorNum(Vector lp_vector, string lp_key)
+        public static int HD_ReturnVectorNum(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -13090,7 +13177,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             lv_tag = HD_ReturnVectorTag(lp_vector);
             lv_torf = -1;
@@ -13132,14 +13219,14 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_regNum"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
-        /// <returns>错误时返回new Vector(0,0)</returns>
-        public static Vector HD_ReturnVectorFromRegNum(int lp_regNum, string lp_key)
+        /// <returns>错误时返回new Vector2D(0,0)</returns>
+        public static Vector2D HD_ReturnVectorFromRegNum(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = DataTableIntLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return DataTableVectorLoad0(true, ("HD_Vector_" + lv_tag));
@@ -13149,8 +13236,8 @@ namespace MetalMaxSystem
         /// 【MM_函数库】互动V_返回句柄标签对应Vector。使用"互动V_注册Vector"后，在参数填入句柄标签（整数）可返回Vector，标签是Vector的句柄。Vector组使用时，可用"获取变量的内部名称"将Vector组转为Key
         /// </summary>
         /// <param name="lp_tag">句柄标签</param>
-        /// <returns>错误时返回new Vector(0,0)</returns>
-        public static Vector HD_ReturnVectorFromTag(int lp_tag)
+        /// <returns>错误时返回new Vector2D(0,0)</returns>
+        public static Vector2D HD_ReturnVectorFromTag(int lp_tag)
         {
             // Variable Declarations
             string lv_tag;
@@ -13172,7 +13259,7 @@ namespace MetalMaxSystem
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = DataTableIntLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return lv_tag;
@@ -13190,7 +13277,7 @@ namespace MetalMaxSystem
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = DataTableIntLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return Convert.ToInt32(lv_tag);
@@ -13202,13 +13289,13 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储类型，默认值"State"</param>
         /// <param name="lp_stats">状态</param>
-        public static void HD_SetVectorState(Vector lp_vector, string lp_key, string lp_stats)
+        public static void HD_SetVectorState(Vector2D lp_vector, string lp_key, string lp_stats)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = HD_RegVectorTagAndReturn(lp_vector);
             // Implementation
             DataTableStringSave0(true, ("HD_VectorState" + lv_str + "_" + lv_tag), lp_stats);
@@ -13220,14 +13307,14 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储类型，默认值"State"</param>
         /// <returns></returns>
-        public static string HD_ReturnVectorState(Vector lp_vector, string lp_key)
+        public static string HD_ReturnVectorState(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_stats;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = HD_ReturnVectorTag(lp_vector);
             lv_stats = DataTableStringLoad0(true, ("HD_VectorState" + lv_str + "_" + lv_tag));
             // Implementation
@@ -13240,13 +13327,13 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储类型，默认值"A"</param>
         /// <param name="lp_customValue">自定义值</param>
-        public static void HD_SetVectorCV(Vector lp_vector, string lp_key, string lp_customValue)
+        public static void HD_SetVectorCV(Vector2D lp_vector, string lp_key, string lp_customValue)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = HD_RegVectorTagAndReturn(lp_vector);
             // Implementation
             DataTableStringSave0(true, ("HD_VectorCV" + lv_str + "_" + lv_tag), lp_customValue);
@@ -13258,14 +13345,14 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储类型，默认值"A"</param>
         /// <returns></returns>
-        public static string HD_ReturnVectorCV(Vector lp_vector, string lp_key)
+        public static string HD_ReturnVectorCV(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_customValue;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = HD_ReturnVectorTag(lp_vector);
             lv_customValue = DataTableStringLoad0(true, ("HD_VectorCV" + lv_str + "_" + lv_tag));
             // Implementation
@@ -13277,7 +13364,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static string HD_ReturnVectorState_Only(Vector lp_vector)
+        public static string HD_ReturnVectorState_Only(Vector2D lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -13294,7 +13381,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static string HD_ReturnVectorCV_Only(Vector lp_vector)
+        public static string HD_ReturnVectorCV_Only(Vector2D lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -13311,7 +13398,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_realNumTag">实数标记</param>
-        public static void HD_SetVectorDouble(Vector lp_vector, double lp_realNumTag)
+        public static void HD_SetVectorDouble(Vector2D lp_vector, double lp_realNumTag)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -13326,7 +13413,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static double HD_ReturnVectorDouble(Vector lp_vector)
+        public static double HD_ReturnVectorDouble(Vector2D lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -13341,7 +13428,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static bool HD_ReturnIfVectorTag(Vector lp_vector)
+        public static bool HD_ReturnIfVectorTag(Vector2D lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -13357,13 +13444,13 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
         /// <returns></returns>
-        public static bool HD_ReturnIfVectorTagKey(Vector lp_vector, string lp_key)
+        public static bool HD_ReturnIfVectorTagKey(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = HD_ReturnVectorTag(lp_vector);
             // Implementation
             return DataTableBoolLoad0(true, ("HD_IfVectorTag" + lv_str + "_" + lv_tag));
@@ -13398,7 +13485,7 @@ namespace MetalMaxSystem
             int autoE_ae;
             const int autoE_ai = 1;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_VectorGroup" + lv_str, true);
             lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
@@ -13409,7 +13496,7 @@ namespace MetalMaxSystem
             for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
             {
                 lv_tag = HD_ReturnVectorTagFromRegNum_Int(lv_a, lp_key);
-                lv_tagValuestr = HD_ReturnVectorCV((Vector)HD_ReturnVectorFromTag(lv_tag), lp_cVStr);
+                lv_tagValuestr = HD_ReturnVectorCV((Vector2D)HD_ReturnVectorFromTag(lv_tag), lp_cVStr);
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
                 if ((lv_intStackOutSize == 0))
@@ -13503,7 +13590,7 @@ namespace MetalMaxSystem
                 //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
                 //lv_tag = DataTableIntLoad1(true, (lp_key + "VectorTag"), lv_a).ToString(); //原始序号元素
                 lv_tag = DataTableIntLoad1(false, "IntStackOutTag", lv_a);
-                lv_tagValuestr = HD_ReturnVectorCV((Vector)HD_ReturnVectorFromTag(lv_tag), lp_cVStr);
+                lv_tagValuestr = HD_ReturnVectorCV((Vector2D)HD_ReturnVectorFromTag(lv_tag), lp_cVStr);
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
                 lv_b = DataTableIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
@@ -13547,7 +13634,7 @@ namespace MetalMaxSystem
             int autoE_ae;
             const int autoE_ai = 1;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_VectorGroup" + lv_str, true);
             lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
@@ -13671,7 +13758,7 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_vectorGroup"></param>
         /// <param name="lp_groupState"></param>
-        public static void HD_SetVectorGState(Vector lp_vector, string lp_vectorGroup, string lp_groupState)
+        public static void HD_SetVectorGState(Vector2D lp_vector, string lp_vectorGroup, string lp_groupState)
         {
             HD_SetVectorState(lp_vector, lp_vectorGroup, lp_groupState);
         }
@@ -13681,7 +13768,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_vectorGroup"></param>
-        public static void HD_ReturnVectorGState(Vector lp_vector, string lp_vectorGroup)
+        public static void HD_ReturnVectorGState(Vector2D lp_vector, string lp_vectorGroup)
         {
             HD_ReturnVectorState(lp_vector, lp_vectorGroup);
         }
@@ -13692,13 +13779,13 @@ namespace MetalMaxSystem
         /// <param name="lp_regNum">注册序号</param>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static Vector HD_ReturnVectorFromVectorGFunc(int lp_regNum, string lp_gs)
+        public static Vector2D HD_ReturnVectorFromVectorGFunc(int lp_regNum, string lp_gs)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_gs + "Vector");
+            lv_str = (lp_gs + "Vector2D");
             lv_tag = DataTableIntLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return DataTableVectorLoad0(true, ("HD_Vector_" + lv_tag));
@@ -13724,7 +13811,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             int lv_a;
             string lv_b;
-            Vector lv_c;
+            Vector2D lv_c;
             int lv_i = 0;
             // Automatic Variable Declarations
             int auto_ae;
@@ -13736,7 +13823,7 @@ namespace MetalMaxSystem
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = (Vector)HD_ReturnVectorFromRegNum(lv_a, lp_gs);
+                lv_c = (Vector2D)HD_ReturnVectorFromRegNum(lv_a, lp_gs);
                 lv_b = HD_ReturnVectorState(lv_c, lp_gs);
                 if ((lv_b == "true"))
                 {
@@ -13756,7 +13843,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             int lv_a;
             string lv_b;
-            Vector lv_c;
+            Vector2D lv_c;
             int lv_i = 0;
             // Automatic Variable Declarations
             int auto_ae;
@@ -13768,7 +13855,7 @@ namespace MetalMaxSystem
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = (Vector)HD_ReturnVectorFromRegNum(lv_a, lp_gs);
+                lv_c = (Vector2D)HD_ReturnVectorFromRegNum(lv_a, lp_gs);
                 lv_b = HD_ReturnVectorState(lv_c, lp_gs);
                 if ((lv_b == "false"))
                 {
@@ -13788,7 +13875,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             int lv_a;
             string lv_b;
-            Vector lv_c;
+            Vector2D lv_c;
             int lv_i = 0;
             // Automatic Variable Declarations
             int auto_ae;
@@ -13800,7 +13887,7 @@ namespace MetalMaxSystem
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = (Vector)HD_ReturnVectorFromRegNum(lv_a, lp_gs);
+                lv_c = (Vector2D)HD_ReturnVectorFromRegNum(lv_a, lp_gs);
                 lv_b = HD_ReturnVectorState(lv_c, lp_gs);
                 if (((lv_b == "false") || (lv_b == "") || (lv_b == null)))
                 {
@@ -13821,7 +13908,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             int lv_a;
             string lv_b;
-            Vector lv_c;
+            Vector2D lv_c;
             int lv_i = 0;
             // Automatic Variable Declarations
             int auto_ae;
@@ -13833,7 +13920,7 @@ namespace MetalMaxSystem
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = (Vector)HD_ReturnVectorFromRegNum(lv_a, lp_gs);
+                lv_c = (Vector2D)HD_ReturnVectorFromRegNum(lv_a, lp_gs);
                 lv_b = HD_ReturnVectorState(lv_c, lp_gs);
                 if ((lv_b == lp_State))
                 {
@@ -13848,7 +13935,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
-        public static void HD_AddVectorToGroup_Simple(Vector lp_vector, string lp_gs)
+        public static void HD_AddVectorToGroup_Simple(Vector2D lp_vector, string lp_gs)
         {
             HD_RegVector_Simple(lp_vector, lp_gs);
         }
@@ -13858,7 +13945,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
-        public static void HD_AddVectorToGroup(Vector lp_vector, string lp_gs)
+        public static void HD_AddVectorToGroup(Vector2D lp_vector, string lp_gs)
         {
             HD_RegVector_Simple(lp_vector, lp_gs);
             if (DataTableStringKeyExists(true, ("HD_VectorState" + lp_gs + "Vector_" + HD_RegVectorTagAndReturn(lp_vector))) == false)
@@ -13873,7 +13960,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
-        public static void HD_ClearVectorFromGroup(Vector lp_vector, string lp_gs)
+        public static void HD_ClearVectorFromGroup(Vector2D lp_vector, string lp_gs)
         {
             HD_RemoveVector(lp_vector, lp_gs);
         }
@@ -13933,15 +14020,15 @@ namespace MetalMaxSystem
             int lv_ae = HD_ReturnVectorNumMax(lv_vs);
             int lv_va = lp_start;
             int lv_ai = lp_increment;
-            Vector lv_vector;
+            Vector2D lv_vector;
             for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
             {
-                DataTableVectorSave0(false, "VectorGFor" + lv_vs + lv_va.ToString(), (Vector)HD_ReturnVectorFromRegNum(lv_va, lv_vs));
+                DataTableVectorSave0(false, "VectorGFor" + lv_vs + lv_va.ToString(), (Vector2D)HD_ReturnVectorFromRegNum(lv_va, lv_vs));
             }
             lv_va = lp_start;
             for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
             {
-                lv_vector = (Vector)DataTableVectorLoad0(false, "VectorGFor" + lv_vs + lv_va.ToString());
+                lv_vector = (Vector2D)DataTableVectorLoad0(false, "VectorGFor" + lv_vs + lv_va.ToString());
                 lp_funcref(lv_vector);//用户填写的所有动作
             }
         }
@@ -13950,20 +14037,20 @@ namespace MetalMaxSystem
         /// 【MM_函数库】互动VG_返回Vector组中随机元素。返回指定Vector组中的随机Vector。Vector组目前不支持赋值其他变量，绝对ID对应绝对Key，可使用"添加Vector组到Vector组"函数来完成赋值需求
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
-        /// <returns>错误时返回new Vector(0,0)</returns>
-        public static Vector HD_ReturnRandomVectorFromVectorGFunc(string lp_gs)
+        /// <returns>错误时返回new Vector2D(0,0)</returns>
+        public static Vector2D HD_ReturnRandomVectorFromVectorGFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_num;
             int lv_a;
-            Vector lv_c = new Vector(0, 0);
+            Vector2D lv_c = new Vector2D(0, 0);
             // Variable Initialization
             lv_num = HD_ReturnVectorNumMax(lp_gs);
             // Implementation
             if ((lv_num >= 1))
             {
                 lv_a = RandomInt(1, lv_num);
-                lv_c = (Vector)HD_ReturnVectorFromRegNum(lv_a, lp_gs);
+                lv_c = (Vector2D)HD_ReturnVectorFromRegNum(lv_a, lp_gs);
             }
             return lv_c;
         }
@@ -13993,10 +14080,10 @@ namespace MetalMaxSystem
             int lv_ae = HD_ReturnVectorNumMax(lv_vsa);
             int lv_va = 1;
             int lv_ai = 1;
-            Vector lv_var;
+            Vector2D lv_var;
             for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
             {
-                lv_var = (Vector)HD_ReturnVectorFromRegNum(lv_va, lv_vsa);
+                lv_var = (Vector2D)HD_ReturnVectorFromRegNum(lv_va, lv_vsa);
                 HD_AddVectorToGroup(lv_var, lv_vsb);
             }
         }
@@ -14025,10 +14112,10 @@ namespace MetalMaxSystem
             int lv_ae = HD_ReturnVectorNumMax(lv_vsa);
             int lv_va = 1;
             int lv_ai = 1;
-            Vector lv_var;
+            Vector2D lv_var;
             for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
             {
-                lv_var = (Vector)HD_ReturnVectorFromRegNum(lv_va, lv_vsa);
+                lv_var = (Vector2D)HD_ReturnVectorFromRegNum(lv_va, lv_vsa);
                 HD_RemoveVector(lv_var, lv_vsb);
             }
         }
@@ -14045,7 +14132,7 @@ namespace MetalMaxSystem
             string lv_tag = "";
             int lv_a;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
             // Implementation
             ThreadWait(lv_str);
@@ -19772,7 +19859,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns>返回一个Vector的已注册标签</returns>
-        private static int DHD_RegVectorTagAndReturn_Int(Vector lp_vector)//内部使用
+        private static int DHD_RegVectorTagAndReturn_Int(Vector2D lp_vector)//内部使用
         {
             // Variable Declarations
             int lv_jBNum;
@@ -19819,7 +19906,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns>返回一个Vector的已注册标签，错误返回0</returns>
-        public static int DHD_ReturnVectorTag_Int(Vector lp_vector)
+        public static int DHD_ReturnVectorTag_Int(Vector2D lp_vector)
         {
             // Variable Declarations
             int lv_jBNum;
@@ -19855,7 +19942,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns>返回一个Vector的已注册标签</returns>
-        private static string DHD_RegVectorTagAndReturn(Vector lp_vector)//内部使用
+        private static string DHD_RegVectorTagAndReturn(Vector2D lp_vector)//内部使用
         {
             // Variable Declarations
             int lv_jBNum;
@@ -19905,7 +19992,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns>返回一个Vector的已注册标签，错误返回""</returns>
-        public static string DHD_ReturnVectorTag(Vector lp_vector)
+        public static string DHD_ReturnVectorTag(Vector2D lp_vector)
         {
             // Variable Declarations
             int lv_jBNum;
@@ -19938,7 +20025,7 @@ namespace MetalMaxSystem
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
         /// <param name="lp_inherentStats">固有状态</param>
         /// <param name="lp_inherentCustomValue">固有自定义值</param>
-        public static void DHD_RegVector(Vector lp_vector, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
+        public static void DHD_RegVector(Vector2D lp_vector, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
         {
             // Variable Declarations
             string lv_str;
@@ -19952,7 +20039,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = (int)DictionaryIntLoad0(true, (lv_str + "Num"));
             lv_jBNum = (int)DictionaryIntLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
@@ -20004,7 +20091,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
-        public static void DHD_RegVector_Simple(Vector lp_vector, string lp_key)
+        public static void DHD_RegVector_Simple(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -20018,7 +20105,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = (int)DictionaryIntLoad0(true, (lv_str + "Num"));
             lv_jBNum = (int)DictionaryIntLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
@@ -20072,7 +20159,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
-        public static void DHD_DestroyVector(Vector lp_vector, string lp_key)
+        public static void DHD_DestroyVector(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -20082,7 +20169,7 @@ namespace MetalMaxSystem
             int lv_b;
             string lv_c;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = (int)DictionaryIntLoad0(true, (lv_str + "Num"));
             lv_tag = DHD_ReturnVectorTag(lp_vector);
             lv_c = "";
@@ -20122,7 +20209,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
-        public static void DHD_RemoveVector(Vector lp_vector, string lp_key)
+        public static void DHD_RemoveVector(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -20132,7 +20219,7 @@ namespace MetalMaxSystem
             int lv_b;
             string lv_c;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = (int)DictionaryIntLoad0(true, (lv_str + "Num"));
             lv_tag = DHD_ReturnVectorTag(lp_vector);
             lv_c = "";
@@ -20174,7 +20261,7 @@ namespace MetalMaxSystem
             string lv_str;
             int lv_num;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = (int)DictionaryIntLoad0(true, (lv_str + "Num"));
             // Implementation
             return lv_num;
@@ -20186,7 +20273,7 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
         /// <returns></returns>
-        public static int DHD_ReturnVectorNum(Vector lp_vector, string lp_key)
+        public static int DHD_ReturnVectorNum(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -20200,7 +20287,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = (int)DictionaryIntLoad0(true, (lv_str + "Num"));
             lv_tag = DHD_ReturnVectorTag(lp_vector);
             lv_torf = -1;
@@ -20243,13 +20330,13 @@ namespace MetalMaxSystem
         /// <param name="lp_regNum"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
         /// <returns></returns>
-        public static Vector DHD_ReturnVectorFromRegNum(int lp_regNum, string lp_key)
+        public static Vector2D DHD_ReturnVectorFromRegNum(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = DictionaryIntLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return DictionaryVectorLoad0(true, ("DHD_Vector_" + lv_tag));
@@ -20260,7 +20347,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_tag">句柄标签</param>
         /// <returns></returns>
-        public static Vector DHD_ReturnVectorFromTag(int lp_tag)
+        public static Vector2D DHD_ReturnVectorFromTag(int lp_tag)
         {
             // Variable Declarations
             string lv_tag;
@@ -20282,7 +20369,7 @@ namespace MetalMaxSystem
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = DictionaryIntLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return lv_tag;
@@ -20300,7 +20387,7 @@ namespace MetalMaxSystem
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = DictionaryIntLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return Convert.ToInt32(lv_tag);
@@ -20312,13 +20399,13 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储类型，默认值"State"</param>
         /// <param name="lp_stats">状态</param>
-        public static void DHD_SetVectorState(Vector lp_vector, string lp_key, string lp_stats)
+        public static void DHD_SetVectorState(Vector2D lp_vector, string lp_key, string lp_stats)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = DHD_RegVectorTagAndReturn(lp_vector);
             // Implementation
             DictionaryStringSave0(true, ("DHD_VectorState" + lv_str + "_" + lv_tag), lp_stats);
@@ -20330,14 +20417,14 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储类型，默认值"State"</param>
         /// <returns></returns>
-        public static string DHD_ReturnVectorState(Vector lp_vector, string lp_key)
+        public static string DHD_ReturnVectorState(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_stats;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = DHD_ReturnVectorTag(lp_vector);
             lv_stats = DictionaryStringLoad0(true, ("DHD_VectorState" + lv_str + "_" + lv_tag));
             // Implementation
@@ -20350,13 +20437,13 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储类型，默认值"A"</param>
         /// <param name="lp_customValue">自定义值</param>
-        public static void DHD_SetVectorCV(Vector lp_vector, string lp_key, string lp_customValue)
+        public static void DHD_SetVectorCV(Vector2D lp_vector, string lp_key, string lp_customValue)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = DHD_RegVectorTagAndReturn(lp_vector);
             // Implementation
             DictionaryStringSave0(true, ("DHD_VectorCV" + lv_str + "_" + lv_tag), lp_customValue);
@@ -20368,14 +20455,14 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储类型，默认值"A"</param>
         /// <returns></returns>
-        public static string DHD_ReturnVectorCV(Vector lp_vector, string lp_key)
+        public static string DHD_ReturnVectorCV(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_customValue;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = DHD_ReturnVectorTag(lp_vector);
             lv_customValue = DictionaryStringLoad0(true, ("DHD_VectorCV" + lv_str + "_" + lv_tag));
             // Implementation
@@ -20387,7 +20474,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static string DHD_ReturnVectorState_Only(Vector lp_vector)
+        public static string DHD_ReturnVectorState_Only(Vector2D lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -20404,7 +20491,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static string DHD_ReturnVectorCV_Only(Vector lp_vector)
+        public static string DHD_ReturnVectorCV_Only(Vector2D lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -20421,7 +20508,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_realNumTag">实数标记</param>
-        public static void DHD_SetVectorDouble(Vector lp_vector, double lp_realNumTag)
+        public static void DHD_SetVectorDouble(Vector2D lp_vector, double lp_realNumTag)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -20436,7 +20523,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static double DHD_ReturnVectorDouble(Vector lp_vector)
+        public static double DHD_ReturnVectorDouble(Vector2D lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -20451,7 +20538,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static bool DHD_ReturnIfVectorTag(Vector lp_vector)
+        public static bool DHD_ReturnIfVectorTag(Vector2D lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -20467,13 +20554,13 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
         /// <returns></returns>
-        public static bool DHD_ReturnIfVectorTagKey(Vector lp_vector, string lp_key)
+        public static bool DHD_ReturnIfVectorTagKey(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = DHD_ReturnVectorTag(lp_vector);
             // Implementation
             return DictionaryBoolLoad0(true, ("DHD_IfVectorTag" + lv_str + "_" + lv_tag));
@@ -20508,7 +20595,7 @@ namespace MetalMaxSystem
             int autoE_ae;
             const int autoE_ai = 1;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_VectorGroup" + lv_str, true);
             lv_num = (int)DictionaryIntLoad0(true, (lv_str + "Num"));
@@ -20519,7 +20606,7 @@ namespace MetalMaxSystem
             for (; ((autoB_ai >= 0 && lv_a <= autoB_ae) || (autoB_ai < 0 && lv_a >= autoB_ae)); lv_a += autoB_ai)
             {
                 lv_tag = DHD_ReturnVectorTagFromRegNum_Int(lv_a, lp_key);
-                lv_tagValuestr = DHD_ReturnVectorCV((Vector)DHD_ReturnVectorFromTag(lv_tag), lp_cVStr);
+                lv_tagValuestr = DHD_ReturnVectorCV((Vector2D)DHD_ReturnVectorFromTag(lv_tag), lp_cVStr);
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("循环" + IntToString(lv_a) +"tag"+IntToString(lv_tag) +"值"+IntToString(lv_tagValue));
                 if ((lv_intStackOutSize == 0))
@@ -20613,7 +20700,7 @@ namespace MetalMaxSystem
                 //从序号里取出元素Tag、自定义值、新老句柄，让元素交换
                 //lv_tag = DictionaryIntLoad1(true, (lp_key + "VectorTag"), lv_a).ToString(); //原始序号元素
                 lv_tag = (int)DictionaryIntLoad1(false, "IntStackOutTag", lv_a);
-                lv_tagValuestr = DHD_ReturnVectorCV((Vector)DHD_ReturnVectorFromTag(lv_tag), lp_cVStr);
+                lv_tagValuestr = DHD_ReturnVectorCV((Vector2D)DHD_ReturnVectorFromTag(lv_tag), lp_cVStr);
                 lv_tagValue = Convert.ToInt32(lv_tagValuestr);
                 //Console.WriteLine("第"+IntToString(lv_a) +"个元素：" + IntToString(lv_tag));
                 lv_b = (int)DictionaryIntLoad1(false, "IntStackOutTagIteraOrig", lv_a); //lv_tag的原序号位置
@@ -20657,7 +20744,7 @@ namespace MetalMaxSystem
             int autoE_ae;
             const int autoE_ai = 1;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             ThreadWait(lv_str);
             ThreadWaitSet(true, "Key_VectorGroup" + lv_str, true);
             lv_num = (int)DictionaryIntLoad0(true, (lv_str + "Num"));
@@ -20781,7 +20868,7 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_vectorGroup"></param>
         /// <param name="lp_groupState"></param>
-        public static void DHD_SetVectorGState(Vector lp_vector, string lp_vectorGroup, string lp_groupState)
+        public static void DHD_SetVectorGState(Vector2D lp_vector, string lp_vectorGroup, string lp_groupState)
         {
             DHD_SetVectorState(lp_vector, lp_vectorGroup, lp_groupState);
         }
@@ -20791,7 +20878,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_vectorGroup"></param>
-        public static void DHD_ReturnVectorGState(Vector lp_vector, string lp_vectorGroup)
+        public static void DHD_ReturnVectorGState(Vector2D lp_vector, string lp_vectorGroup)
         {
             DHD_ReturnVectorState(lp_vector, lp_vectorGroup);
         }
@@ -20802,13 +20889,13 @@ namespace MetalMaxSystem
         /// <param name="lp_regNum">注册序号</param>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static Vector DHD_ReturnVectorFromVectorGFunc(int lp_regNum, string lp_gs)
+        public static Vector2D DHD_ReturnVectorFromVectorGFunc(int lp_regNum, string lp_gs)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_gs + "Vector");
+            lv_str = (lp_gs + "Vector2D");
             lv_tag = DictionaryIntLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return DictionaryVectorLoad0(true, ("DHD_Vector_" + lv_tag));
@@ -20834,7 +20921,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             int lv_a;
             string lv_b;
-            Vector lv_c;
+            Vector2D lv_c;
             int lv_i = 0;
             // Automatic Variable Declarations
             int auto_ae;
@@ -20846,7 +20933,7 @@ namespace MetalMaxSystem
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = (Vector)DHD_ReturnVectorFromRegNum(lv_a, lp_gs);
+                lv_c = (Vector2D)DHD_ReturnVectorFromRegNum(lv_a, lp_gs);
                 lv_b = DHD_ReturnVectorState(lv_c, lp_gs);
                 if ((lv_b == "true"))
                 {
@@ -20866,7 +20953,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             int lv_a;
             string lv_b;
-            Vector lv_c;
+            Vector2D lv_c;
             int lv_i = 0;
             // Automatic Variable Declarations
             int auto_ae;
@@ -20878,7 +20965,7 @@ namespace MetalMaxSystem
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = (Vector)DHD_ReturnVectorFromRegNum(lv_a, lp_gs);
+                lv_c = (Vector2D)DHD_ReturnVectorFromRegNum(lv_a, lp_gs);
                 lv_b = DHD_ReturnVectorState(lv_c, lp_gs);
                 if ((lv_b == "false"))
                 {
@@ -20898,7 +20985,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             int lv_a;
             string lv_b;
-            Vector lv_c;
+            Vector2D lv_c;
             int lv_i = 0;
             // Automatic Variable Declarations
             int auto_ae;
@@ -20910,7 +20997,7 @@ namespace MetalMaxSystem
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = (Vector)DHD_ReturnVectorFromRegNum(lv_a, lp_gs);
+                lv_c = (Vector2D)DHD_ReturnVectorFromRegNum(lv_a, lp_gs);
                 lv_b = DHD_ReturnVectorState(lv_c, lp_gs);
                 if (((lv_b == "false") || (lv_b == "") || (lv_b == null)))
                 {
@@ -20931,7 +21018,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             int lv_a;
             string lv_b;
-            Vector lv_c;
+            Vector2D lv_c;
             int lv_i = 0;
             // Automatic Variable Declarations
             int auto_ae;
@@ -20943,7 +21030,7 @@ namespace MetalMaxSystem
             lv_a = 1;
             for (; ((auto_ai >= 0 && lv_a <= auto_ae) || (auto_ai < 0 && lv_a >= auto_ae)); lv_a += auto_ai)
             {
-                lv_c = (Vector)DHD_ReturnVectorFromRegNum(lv_a, lp_gs);
+                lv_c = (Vector2D)DHD_ReturnVectorFromRegNum(lv_a, lp_gs);
                 lv_b = DHD_ReturnVectorState(lv_c, lp_gs);
                 if ((lv_b == lp_State))
                 {
@@ -20958,7 +21045,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
-        public static void DHD_AddVectorToGroup_Simple(Vector lp_vector, string lp_gs)
+        public static void DHD_AddVectorToGroup_Simple(Vector2D lp_vector, string lp_gs)
         {
             DHD_RegVector_Simple(lp_vector, lp_gs);
         }
@@ -20968,7 +21055,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
-        public static void DHD_AddVectorToGroup(Vector lp_vector, string lp_gs)
+        public static void DHD_AddVectorToGroup(Vector2D lp_vector, string lp_gs)
         {
             DHD_RegVector_Simple(lp_vector, lp_gs);
             if (DictionaryStringKeyExists(true, ("DHD_VectorState" + lp_gs + "Vector_" + DHD_RegVectorTagAndReturn(lp_vector))) == false)
@@ -20983,7 +21070,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
-        public static void DHD_ClearVectorFromGroup(Vector lp_vector, string lp_gs)
+        public static void DHD_ClearVectorFromGroup(Vector2D lp_vector, string lp_gs)
         {
             DHD_RemoveVector(lp_vector, lp_gs);
         }
@@ -21043,15 +21130,15 @@ namespace MetalMaxSystem
             int lv_ae = DHD_ReturnVectorNumMax(lv_vs);
             int lv_va = lp_start;
             int lv_ai = lp_increment;
-            Vector lv_vector;
+            Vector2D lv_vector;
             for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
             {
-                DictionaryVectorSave0(false, "VectorGFor" + lv_vs + lv_va.ToString(), (Vector)DHD_ReturnVectorFromRegNum(lv_va, lv_vs));
+                DictionaryVectorSave0(false, "VectorGFor" + lv_vs + lv_va.ToString(), (Vector2D)DHD_ReturnVectorFromRegNum(lv_va, lv_vs));
             }
             lv_va = lp_start;
             for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
             {
-                lv_vector = (Vector)DictionaryVectorLoad0(false, "VectorGFor" + lv_vs + lv_va.ToString());
+                lv_vector = (Vector2D)DictionaryVectorLoad0(false, "VectorGFor" + lv_vs + lv_va.ToString());
                 lp_funcref(lv_vector);//用户填写的所有动作
             }
         }
@@ -21061,19 +21148,19 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static Vector DHD_ReturnRandomVectorFromVectorGFunc(string lp_gs)
+        public static Vector2D DHD_ReturnRandomVectorFromVectorGFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_num;
             int lv_a;
-            Vector lv_c = new Vector(0, 0);
+            Vector2D lv_c = new Vector2D(0, 0);
             // Variable Initialization
             lv_num = DHD_ReturnVectorNumMax(lp_gs);
             // Implementation
             if ((lv_num >= 1))
             {
                 lv_a = RandomInt(1, lv_num);
-                lv_c = (Vector)DHD_ReturnVectorFromRegNum(lv_a, lp_gs);
+                lv_c = (Vector2D)DHD_ReturnVectorFromRegNum(lv_a, lp_gs);
             }
             return lv_c;
         }
@@ -21103,10 +21190,10 @@ namespace MetalMaxSystem
             int lv_ae = DHD_ReturnVectorNumMax(lv_vsa);
             int lv_va = 1;
             int lv_ai = 1;
-            Vector lv_var;
+            Vector2D lv_var;
             for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
             {
-                lv_var = (Vector)DHD_ReturnVectorFromRegNum(lv_va, lv_vsa);
+                lv_var = (Vector2D)DHD_ReturnVectorFromRegNum(lv_va, lv_vsa);
                 DHD_AddVectorToGroup(lv_var, lv_vsb);
             }
         }
@@ -21135,10 +21222,10 @@ namespace MetalMaxSystem
             int lv_ae = DHD_ReturnVectorNumMax(lv_vsa);
             int lv_va = 1;
             int lv_ai = 1;
-            Vector lv_var;
+            Vector2D lv_var;
             for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
             {
-                lv_var = (Vector)DHD_ReturnVectorFromRegNum(lv_va, lv_vsa);
+                lv_var = (Vector2D)DHD_ReturnVectorFromRegNum(lv_va, lv_vsa);
                 DHD_RemoveVector(lv_var, lv_vsb);
             }
         }
@@ -21155,7 +21242,7 @@ namespace MetalMaxSystem
             string lv_tag = "";
             int lv_a;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = (int)DictionaryIntLoad0(true, (lv_str + "Num"));
             // Implementation
             ThreadWait(lv_str);
@@ -26886,7 +26973,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns>返回一个Vector的已注册标签</returns>
-        private static int HHD_RegVectorTagAndReturn_Int(Vector lp_vector)//内部使用
+        private static int HHD_RegVectorTagAndReturn_Int(Vector2D lp_vector)//内部使用
         {
             // Variable Declarations
             int lv_jBNum;
@@ -26910,7 +26997,7 @@ namespace MetalMaxSystem
                 for (; auto_var <= auto_ae; auto_var += 1)
                 {
                     lv_j = auto_var;
-                    if ((Vector)HashTableLoad0(true, ("HHD_Vector_" + lv_j.ToString())) == lp_vector)
+                    if ((Vector2D)HashTableLoad0(true, ("HHD_Vector_" + lv_j.ToString())) == lp_vector)
                     {
                         break;
                     }
@@ -26933,7 +27020,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns>返回一个Vector的已注册标签，错误返回0</returns>
-        public static int HHD_ReturnVectorTag_Int(Vector lp_vector)
+        public static int HHD_ReturnVectorTag_Int(Vector2D lp_vector)
         {
             // Variable Declarations
             int lv_jBNum;
@@ -26949,7 +27036,7 @@ namespace MetalMaxSystem
             for (; auto_var <= auto_ae; auto_var += 1)
             {
                 lv_j = auto_var;
-                if ((Vector)HashTableLoad0(true, "HHD_Vector_" + lv_j.ToString()) == lp_vector)
+                if ((Vector2D)HashTableLoad0(true, "HHD_Vector_" + lv_j.ToString()) == lp_vector)
                 {
                     break;
                 }
@@ -26969,7 +27056,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns>返回一个Vector的已注册标签</returns>
-        private static string HHD_RegVectorTagAndReturn(Vector lp_vector)//内部使用
+        private static string HHD_RegVectorTagAndReturn(Vector2D lp_vector)//内部使用
         {
             // Variable Declarations
             int lv_jBNum;
@@ -26995,7 +27082,7 @@ namespace MetalMaxSystem
                 for (; auto_var <= auto_ae; auto_var += 1)
                 {
                     lv_j = auto_var;
-                    if ((Vector)HashTableLoad0(true, "HHD_Vector_" + lv_j.ToString()) == lp_vector)
+                    if ((Vector2D)HashTableLoad0(true, "HHD_Vector_" + lv_j.ToString()) == lp_vector)
                     {
                         break;
                     }
@@ -27020,7 +27107,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns>返回一个Vector的已注册标签，错误返回""</returns>
-        public static string HHD_ReturnVectorTag(Vector lp_vector)
+        public static string HHD_ReturnVectorTag(Vector2D lp_vector)
         {
             // Variable Declarations
             int lv_jBNum;
@@ -27037,7 +27124,7 @@ namespace MetalMaxSystem
             for (; auto_var <= auto_ae; auto_var += 1)
             {
                 lv_j = auto_var;
-                if ((Vector)HashTableLoad0(true, "HHD_Vector_" + lv_j.ToString()) == lp_vector)
+                if ((Vector2D)HashTableLoad0(true, "HHD_Vector_" + lv_j.ToString()) == lp_vector)
                 {
                     lv_tag = lv_j.ToString();
                     break;
@@ -27053,7 +27140,7 @@ namespace MetalMaxSystem
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
         /// <param name="lp_inherentStats">固有状态</param>
         /// <param name="lp_inherentCustomValue">固有自定义值</param>
-        public static void HHD_RegVector(Vector lp_vector, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
+        public static void HHD_RegVector(Vector2D lp_vector, string lp_key, string lp_inherentStats, string lp_inherentCustomValue)
         {
             // Variable Declarations
             string lv_str;
@@ -27066,7 +27153,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = (int)HashTableLoad0(true, (lv_str + "Num"));
             lv_jBNum = (int)HashTableLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
@@ -27118,7 +27205,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
-        public static void HHD_RegVector_Simple(Vector lp_vector, string lp_key)
+        public static void HHD_RegVector_Simple(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -27131,7 +27218,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = (int)HashTableLoad0(true, (lv_str + "Num"));
             lv_jBNum = (int)HashTableLoad0(true, (lv_str + "JBNum"));
             lv_tagStr = "";
@@ -27185,7 +27272,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
-        public static void HHD_DestroyVector(Vector lp_vector, string lp_key)
+        public static void HHD_DestroyVector(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -27195,7 +27282,7 @@ namespace MetalMaxSystem
             int lv_b;
             string lv_c;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = (int)HashTableLoad0(true, (lv_str + "Num"));
             lv_tag = HHD_ReturnVectorTag(lp_vector);
             lv_c = "";
@@ -27235,7 +27322,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
-        public static void HHD_RemoveVector(Vector lp_vector, string lp_key)
+        public static void HHD_RemoveVector(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -27245,7 +27332,7 @@ namespace MetalMaxSystem
             int lv_b;
             string lv_c;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = (int)HashTableLoad0(true, (lv_str + "Num"));
             lv_tag = HHD_ReturnVectorTag(lp_vector);
             lv_c = "";
@@ -27287,7 +27374,7 @@ namespace MetalMaxSystem
             string lv_str;
             int lv_num;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = (int)HashTableLoad0(true, (lv_str + "Num"));
             // Implementation
             return lv_num;
@@ -27299,7 +27386,7 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
         /// <returns></returns>
-        public static int HHD_ReturnVectorNum(Vector lp_vector, string lp_key)
+        public static int HHD_ReturnVectorNum(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
@@ -27313,7 +27400,7 @@ namespace MetalMaxSystem
             int auto_ae;
             int auto_var;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = (int)HashTableLoad0(true, (lv_str + "Num"));
             lv_tag = HHD_ReturnVectorTag(lp_vector);
             lv_torf = -1;
@@ -27356,16 +27443,16 @@ namespace MetalMaxSystem
         /// <param name="lp_regNum"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
         /// <returns></returns>
-        public static Vector HHD_ReturnVectorFromRegNum(int lp_regNum, string lp_key)
+        public static Vector2D HHD_ReturnVectorFromRegNum(int lp_regNum, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            Vector lv_vector;
+            Vector2D lv_vector;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = HashTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
-            lv_vector = (Vector)HashTableLoad0(true, ("HHD_Vector_" + lv_tag));
+            lv_vector = (Vector2D)HashTableLoad0(true, ("HHD_Vector_" + lv_tag));
             // Implementation
             return lv_vector;
         }
@@ -27375,14 +27462,14 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_tag">句柄标签</param>
         /// <returns></returns>
-        public static Vector HHD_ReturnVectorFromTag(int lp_tag)
+        public static Vector2D HHD_ReturnVectorFromTag(int lp_tag)
         {
             // Variable Declarations
             string lv_tag = "";
-            Vector lv_vector;
+            Vector2D lv_vector;
             // Variable Initialization
             lv_tag = lp_tag.ToString();
-            lv_vector = (Vector)HashTableLoad0(true, ("HHD_Vector_" + lv_tag));
+            lv_vector = (Vector2D)HashTableLoad0(true, ("HHD_Vector_" + lv_tag));
             // Implementation
             return lv_vector;
         }
@@ -27399,7 +27486,7 @@ namespace MetalMaxSystem
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = HashTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return lv_tag;
@@ -27417,7 +27504,7 @@ namespace MetalMaxSystem
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = HashTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
             // Implementation
             return Convert.ToInt32(lv_tag);
@@ -27429,13 +27516,13 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储类型，默认值"State"</param>
         /// <param name="lp_stats">状态</param>
-        public static void HHD_SetVectorState(Vector lp_vector, string lp_key, string lp_stats)
+        public static void HHD_SetVectorState(Vector2D lp_vector, string lp_key, string lp_stats)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = HHD_RegVectorTagAndReturn(lp_vector);
             // Implementation
             HashTableSave0(true, ("HHD_VectorState" + lv_str + "_" + lv_tag), lp_stats);
@@ -27447,14 +27534,14 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储类型，默认值"State"</param>
         /// <returns></returns>
-        public static string HHD_ReturnVectorState(Vector lp_vector, string lp_key)
+        public static string HHD_ReturnVectorState(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_stats;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = HHD_ReturnVectorTag(lp_vector);
             lv_stats = HashTableLoad0(true, ("HHD_VectorState" + lv_str + "_" + lv_tag)).ToString();
             // Implementation
@@ -27467,13 +27554,13 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储类型，默认值"A"</param>
         /// <param name="lp_customValue">自定义值</param>
-        public static void HHD_SetVectorCV(Vector lp_vector, string lp_key, string lp_customValue)
+        public static void HHD_SetVectorCV(Vector2D lp_vector, string lp_key, string lp_customValue)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = HHD_RegVectorTagAndReturn(lp_vector);
             // Implementation
             HashTableSave0(true, ("HHD_VectorCV" + lv_str + "_" + lv_tag), lp_customValue);
@@ -27485,14 +27572,14 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储类型，默认值"A"</param>
         /// <returns></returns>
-        public static string HHD_ReturnVectorCV(Vector lp_vector, string lp_key)
+        public static string HHD_ReturnVectorCV(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             string lv_customValue;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = HHD_ReturnVectorTag(lp_vector);
             lv_customValue = HashTableLoad0(true, ("HHD_VectorCV" + lv_str + "_" + lv_tag)).ToString();
             // Implementation
@@ -27504,7 +27591,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static string HHD_ReturnVectorState_Only(Vector lp_vector)
+        public static string HHD_ReturnVectorState_Only(Vector2D lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -27521,7 +27608,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static string HHD_ReturnVectorCV_Only(Vector lp_vector)
+        public static string HHD_ReturnVectorCV_Only(Vector2D lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -27538,7 +27625,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_realNumTag">实数标记</param>
-        public static void HHD_SetVectorDouble(Vector lp_vector, double lp_realNumTag)
+        public static void HHD_SetVectorDouble(Vector2D lp_vector, double lp_realNumTag)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -27553,7 +27640,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static double HHD_ReturnVectorDouble(Vector lp_vector)
+        public static double HHD_ReturnVectorDouble(Vector2D lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -27570,7 +27657,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <returns></returns>
-        public static bool HHD_ReturnIfVectorTag(Vector lp_vector)
+        public static bool HHD_ReturnIfVectorTag(Vector2D lp_vector)
         {
             // Variable Declarations
             string lv_tag = "";
@@ -27588,14 +27675,14 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_key">存储键区，默认值"_Vector"</param>
         /// <returns></returns>
-        public static bool HHD_ReturnIfVectorTagKey(Vector lp_vector, string lp_key)
+        public static bool HHD_ReturnIfVectorTagKey(Vector2D lp_vector, string lp_key)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
             bool lv_torf;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_tag = HHD_ReturnVectorTag(lp_vector);
             lv_torf = (bool)HashTableLoad0(true, ("HHD_IfVectorTag" + lv_str + "_" + lv_tag));
             // Implementation
@@ -27633,7 +27720,7 @@ namespace MetalMaxSystem
             int autoE_ae;
             const int autoE_ai = 1;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             ThreadWait(lv_str);
             HashTableSave0(true, "Key_VectorGroup" + lv_str, 1);
             lv_num = (int)HashTableLoad0(true, (lv_str + "Num"));
@@ -27782,7 +27869,7 @@ namespace MetalMaxSystem
             int autoE_ae;
             const int autoE_ai = 1;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             ThreadWait(lv_str);
             HashTableSave0(true, "Key_VectorGroup" + lv_str, 1);
             lv_num = (int)HashTableLoad0(true, (lv_str + "Num"));
@@ -27906,7 +27993,7 @@ namespace MetalMaxSystem
         /// <param name="lp_vector"></param>
         /// <param name="lp_vectorGroup"></param>
         /// <param name="lp_groupState"></param>
-        public static void HHD_SetVectorGState(Vector lp_vector, string lp_vectorGroup, string lp_groupState)
+        public static void HHD_SetVectorGState(Vector2D lp_vector, string lp_vectorGroup, string lp_groupState)
         {
             HHD_SetVectorState(lp_vector, lp_vectorGroup, lp_groupState);
         }
@@ -27916,7 +28003,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_vectorGroup"></param>
-        public static void HHD_ReturnVectorGState(Vector lp_vector, string lp_vectorGroup)
+        public static void HHD_ReturnVectorGState(Vector2D lp_vector, string lp_vectorGroup)
         {
             HHD_ReturnVectorState(lp_vector, lp_vectorGroup);
         }
@@ -27927,16 +28014,16 @@ namespace MetalMaxSystem
         /// <param name="lp_regNum">注册序号</param>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static Vector HHD_ReturnVectorFromVectorGFunc(int lp_regNum, string lp_gs)
+        public static Vector2D HHD_ReturnVectorFromVectorGFunc(int lp_regNum, string lp_gs)
         {
             // Variable Declarations
             string lv_str;
             string lv_tag = "";
-            Vector lv_vector;
+            Vector2D lv_vector;
             // Variable Initialization
-            lv_str = (lp_gs + "Vector");
+            lv_str = (lp_gs + "Vector2D");
             lv_tag = HashTableLoad1(true, (lv_str + "Tag"), lp_regNum).ToString();
-            lv_vector = (Vector)HashTableLoad0(true, ("HHD_Vector_" + lv_tag));
+            lv_vector = (Vector2D)HashTableLoad0(true, ("HHD_Vector_" + lv_tag));
             // Implementation
             return lv_vector;
         }
@@ -27961,7 +28048,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             int lv_a;
             string lv_b;
-            Vector lv_c;
+            Vector2D lv_c;
             int lv_i = 0;
             // Automatic Variable Declarations
             int auto_ae;
@@ -27993,7 +28080,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             int lv_a;
             string lv_b;
-            Vector lv_c;
+            Vector2D lv_c;
             int lv_i = 0;
             // Automatic Variable Declarations
             int auto_ae;
@@ -28025,7 +28112,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             int lv_a;
             string lv_b;
-            Vector lv_c;
+            Vector2D lv_c;
             int lv_i = 0;
             // Automatic Variable Declarations
             int auto_ae;
@@ -28058,7 +28145,7 @@ namespace MetalMaxSystem
             // Variable Declarations
             int lv_a;
             string lv_b;
-            Vector lv_c;
+            Vector2D lv_c;
             int lv_i = 0;
             // Automatic Variable Declarations
             int auto_ae;
@@ -28085,7 +28172,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
-        public static void HHD_AddVectorToGroup_Simple(Vector lp_vector, string lp_gs)
+        public static void HHD_AddVectorToGroup_Simple(Vector2D lp_vector, string lp_gs)
         {
             HHD_RegVector_Simple(lp_vector, lp_gs);
         }
@@ -28095,7 +28182,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
-        public static void HHD_AddVectorToGroup(Vector lp_vector, string lp_gs)
+        public static void HHD_AddVectorToGroup(Vector2D lp_vector, string lp_gs)
         {
             HHD_RegVector_Simple(lp_vector, lp_gs);
             if (HashTableKeyExists(true, ("HHD_VectorState" + lp_gs + "Vector_" + HHD_RegVectorTagAndReturn(lp_vector))) == false)
@@ -28110,7 +28197,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_vector"></param>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
-        public static void HHD_ClearVectorFromGroup(Vector lp_vector, string lp_gs)
+        public static void HHD_ClearVectorFromGroup(Vector2D lp_vector, string lp_gs)
         {
             HHD_RemoveVector(lp_vector, lp_gs);
         }
@@ -28170,7 +28257,7 @@ namespace MetalMaxSystem
             int lv_ae = HHD_ReturnVectorNumMax(lv_vs);
             int lv_va = lp_start;
             int lv_ai = lp_increment;
-            Vector lv_vector;
+            Vector2D lv_vector;
             for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
             {
                 HashTableSave0(false, "VectorGFor" + lv_vs + lv_va.ToString(), HHD_ReturnVectorFromRegNum(lv_va, lv_vs));
@@ -28178,7 +28265,7 @@ namespace MetalMaxSystem
             lv_va = lp_start;
             for (; (lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae); lv_va += lv_ai)
             {
-                lv_vector = (Vector)HashTableLoad0(false, "VectorGFor" + lv_vs + lv_va.ToString());
+                lv_vector = (Vector2D)HashTableLoad0(false, "VectorGFor" + lv_vs + lv_va.ToString());
                 lp_funcref(lv_vector);//用户填写的所有动作
             }
         }
@@ -28188,12 +28275,12 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="lp_gs">元素组的名称，建议与字段、变量名一致，数组使用时字符应写成：组[一维][二维]...以此类推</param>
         /// <returns></returns>
-        public static Vector HHD_ReturnRandomVectorFromVectorGFunc(string lp_gs)
+        public static Vector2D HHD_ReturnRandomVectorFromVectorGFunc(string lp_gs)
         {
             // Variable Declarations
             int lv_num;
             int lv_a;
-            Vector lv_c = new Vector(0, 0);
+            Vector2D lv_c = new Vector2D(0, 0);
             // Variable Initialization
             lv_num = HHD_ReturnVectorNumMax(lp_gs);
             // Implementation
@@ -28230,7 +28317,7 @@ namespace MetalMaxSystem
             int lv_ae = HHD_ReturnVectorNumMax(lv_vsa);
             int lv_va = 1;
             int lv_ai = 1;
-            Vector lv_var;
+            Vector2D lv_var;
             for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
             {
                 lv_var = HHD_ReturnVectorFromRegNum(lv_va, lv_vsa);
@@ -28262,7 +28349,7 @@ namespace MetalMaxSystem
             int lv_ae = HHD_ReturnVectorNumMax(lv_vsa);
             int lv_va = 1;
             int lv_ai = 1;
-            Vector lv_var;
+            Vector2D lv_var;
             for (; ((lv_ai >= 0 && lv_va <= lv_ae) || (lv_ai < 0 && lv_va >= lv_ae)); lv_va += lv_ai)
             {
                 lv_var = HHD_ReturnVectorFromRegNum(lv_va, lv_vsa);
@@ -28282,7 +28369,7 @@ namespace MetalMaxSystem
             string lv_tag = "";
             int lv_a;
             // Variable Initialization
-            lv_str = (lp_key + "Vector");
+            lv_str = (lp_key + "Vector2D");
             lv_num = (int)HashTableLoad0(true, (lv_str + "Num"));
             // Implementation
             ThreadWait(lv_str);
@@ -32760,11 +32847,11 @@ namespace MetalMaxSystem
         /// <param name="lp_mouseVector3D"></param>
         /// <param name="uiX"></param>
         /// <param name="uiY"></param>
-        internal static void MouseMove(int player, Vector3D lp_mouseVector3D, int uiX, int uiY)
+        internal static void MouseMove(int player, System.Windows.Media.Media3D.Vector3D lp_mouseVector3D, int uiX, int uiY)
         {
             if (MMCore.StopKeyMouseEvent[player] == false)
             {
-                Player.MouseVector[player] = new Vector(lp_mouseVector3D.X, lp_mouseVector3D.Y);
+                Player.MouseVector[player] = new Vector2D(lp_mouseVector3D.X, lp_mouseVector3D.Y);
 
                 //↓注意取出来的是该点最高位Unit
                 double unitTerrainHeight = double.Parse(MMCore.HD_ReturnVectorCV(Player.MouseVector[player], "Unit.TerrainHeight"));
@@ -32778,11 +32865,11 @@ namespace MetalMaxSystem
                 Player.MouseUIX[player] = uiX;
                 Player.MouseUIY[player] = uiY;
 
-                Player.MouseVector3DFixed[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, Player.MouseVectorZFixed[player]);
+                Player.MouseVector3DFixed[player] = new System.Windows.Media.Media3D.Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, Player.MouseVectorZFixed[player]);
                 Player.MouseVector3D[player] = lp_mouseVector3D;
                 //下面2个动作应该要从二维点读取单位（可多个），将最高的单位的头顶坐标填入以修正鼠标Z点
-                Player.MouseVector3DUnitTerrain[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight);
-                Player.MouseVector3DTerrain[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight - unitHeight);
+                Player.MouseVector3DUnitTerrain[player] = new System.Windows.Media.Media3D.Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight);
+                Player.MouseVector3DTerrain[player] = new System.Windows.Media.Media3D.Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight - unitHeight);
 
                 //玩家控制单位存在时，计算鼠标距离控制单位的2D角度和3D距离
                 if (Player.UnitControl[player] != null)
@@ -32806,7 +32893,7 @@ namespace MetalMaxSystem
         /// <param name="uiX"></param>
         /// <param name="uiY"></param>
         /// <returns></returns>
-        internal static bool MouseDown(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
+        internal static bool MouseDown(int player, int key, System.Windows.Media.Media3D.Vector3D lp_mouseVector3D, int uiX, int uiY)
         {
             bool torf = !MMCore.StopKeyMouseEvent[player];
             Player.MouseDownState[player, key] = torf;  //当前按键状态值
@@ -32826,7 +32913,7 @@ namespace MetalMaxSystem
 
             if (MMCore.StopKeyMouseEvent[player] == false)
             {
-                Player.MouseVector[player] = new Vector(lp_mouseVector3D.X, lp_mouseVector3D.Y);
+                Player.MouseVector[player] = new Vector2D(lp_mouseVector3D.X, lp_mouseVector3D.Y);
 
                 //↓注意取出来的是该点最高位Unit
                 double unitTerrainHeight = double.Parse(MMCore.HD_ReturnVectorCV(Player.MouseVector[player], "Unit.TerrainHeight"));
@@ -32840,11 +32927,11 @@ namespace MetalMaxSystem
                 Player.MouseUIX[player] = uiX;
                 Player.MouseUIY[player] = uiY;
 
-                Player.MouseVector3DFixed[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, Player.MouseVectorZFixed[player]);
+                Player.MouseVector3DFixed[player] = new System.Windows.Media.Media3D.Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, Player.MouseVectorZFixed[player]);
                 Player.MouseVector3D[player] = lp_mouseVector3D;
                 //下面2个动作应该要从二维点读取单位（可多个），将最高的单位的头顶坐标填入以修正鼠标Z点
-                Player.MouseVector3DUnitTerrain[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight);
-                Player.MouseVector3DTerrain[player] = new Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight - unitHeight);
+                Player.MouseVector3DUnitTerrain[player] = new System.Windows.Media.Media3D.Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight);
+                Player.MouseVector3DTerrain[player] = new System.Windows.Media.Media3D.Vector3D(lp_mouseVector3D.X, lp_mouseVector3D.Y, lp_mouseVector3D.Z - unitTerrainHeight - unitHeight);
 
                 //玩家控制单位存在时，计算鼠标距离控制单位的2D角度和3D距离
                 if (Player.UnitControl[player] != null)
@@ -32898,7 +32985,7 @@ namespace MetalMaxSystem
         /// <param name="uiX"></param>
         /// <param name="uiY"></param>
         /// <returns></returns>
-        internal static bool MouseDownFunc(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
+        internal static bool MouseDownFunc(int player, int key, System.Windows.Media.Media3D.Vector3D lp_mouseVector3D, int uiX, int uiY)
         {
             // Variable Declarations
             bool torf = true;
@@ -32937,7 +33024,7 @@ namespace MetalMaxSystem
         /// <param name="lp_mouseVector3D"></param>
         /// <param name="uiX"></param>
         /// <param name="uiY"></param>
-        internal static bool MouseUp(int player, int key, Vector3D lp_mouseVector3D, int uiX, int uiY)
+        internal static bool MouseUp(int player, int key, System.Windows.Media.Media3D.Vector3D lp_mouseVector3D, int uiX, int uiY)
         {
             bool torf = !MMCore.StopKeyMouseEvent[player];
             Player.MouseDownState[player, key] = false;  //当前按键状态值，本事件始终为false
@@ -33830,7 +33917,7 @@ namespace MetalMaxSystem
         /// <param name="vector"></param>
         /// <param name="unitCreateTag"></param>
         /// <returns>返回根据unitType创建的单位实例</returns>
-        public static Unit UnitCreate(string unitType, UnitCreateTag unitCreateTag, int player, Vector vector)
+        public static Unit UnitCreate(string unitType, UnitCreateTag unitCreateTag, int player, Vector2D vector)
         {
             Unit unit;
             switch (unitType)
@@ -33872,7 +33959,7 @@ namespace MetalMaxSystem
             return new Abilcmd(abilLink, abilIndex);
         }
 
-        public static Order OrderTargetingPoint(Abilcmd inAbilCmd, Vector inPoint)
+        public static Order OrderTargetingPoint(Abilcmd inAbilCmd, Vector2D inPoint)
         {
             Order ord = new Order(inAbilCmd);
             ord.TargetType = 2;
@@ -34733,8 +34820,8 @@ namespace MetalMaxSystem
 
         private int _Tag;
         private string _typeName;
-        private Vector3D _vector3D;
-        private Vector _vector;
+        private System.Windows.Media.Media3D.Vector3D _vector3D;
+        private Vector2D _vector;
         private double _terrainHeight = 0.0;
         private double _height = 1.8;
         private double _radius = 0.5;
@@ -34969,14 +35056,14 @@ namespace MetalMaxSystem
         public string TypeName { get => _typeName; set => _typeName = value; }
 
         /// <summary>
-        /// 单位脚底坐标向量(三维)，Z坐标是根据计算得到（Z=MapHeight+TerrainHeight+Unit.TerrainHeight），平时只要实时更新平面坐标即可根据该二维点高度信息更新3D高度
+        /// 单位脚底坐标向量(三维)，Z坐标是根据计算得到（z=MapHeight+TerrainHeight+Unit.TerrainHeight），平时只要实时更新平面坐标即可根据该二维点高度信息更新3D高度
         /// </summary>
-        public Vector3D Vector3D { get => _vector3D; set => _vector3D = value; }
+        public System.Windows.Media.Media3D.Vector3D Vector3D { get => _vector3D; set => _vector3D = value; }
 
         /// <summary>
         /// 单位脚底坐标向量(二维)
         /// </summary>
-        public Vector Vector { get => _vector; set => _vector = value; }
+        public Vector2D Vector { get => _vector; set => _vector = value; }
 
         /// <summary>
         /// 单位层地形物件高度（区别地图层地形物件），其值使单位浮空或嵌入地面
@@ -35046,7 +35133,7 @@ namespace MetalMaxSystem
         /// 返回单位的世界坐标点（二维）
         /// </summary>
         /// <returns></returns>
-        public Vector GetPosition()
+        public Vector2D GetPosition()
         {
             return Vector;
         }
@@ -35492,8 +35579,8 @@ namespace MetalMaxSystem
         public string Link { get => _link; set => _link = value; }
         private Unit _targetUnit;
         public Unit TargetUnit { get => _targetUnit; set => _targetUnit = value; }
-        private Vector _targetVector;
-        public Vector TargetVector { get => _targetVector; set => _targetVector = value; }
+        private Vector2D _targetVector;
+        public Vector2D TargetVector { get => _targetVector; set => _targetVector = value; }
         private int _targetType;
         /// <summary>
         /// 目标类型：0=无，1=单位，2=二维点，3=物品
@@ -35521,8 +35608,8 @@ namespace MetalMaxSystem
         public string Link { get => _link; set => _link = value; }
         private Unit _targetUnit;
         public Unit TargetUnit { get => _targetUnit; set => _targetUnit = value; }
-        private Vector _targetVector;
-        public Vector TargetVector { get => _targetVector; set => _targetVector = value; }
+        private Vector2D _targetVector;
+        public Vector2D TargetVector { get => _targetVector; set => _targetVector = value; }
         private int _targetType;
         /// <summary>
         /// 目标类型：0=无，1=单位，2=二维点，3=物品
@@ -35664,12 +35751,12 @@ namespace MetalMaxSystem
         private static double[] _mouseToUnitControlAngle = new double[Game.c_maxPlayers + 1];
         private static double[] _mouseToUnitControlRange = new double[Game.c_maxPlayers + 1];
         private static double[] _mouseToUnitControlRange3D = new double[Game.c_maxPlayers + 1];
-        private static Vector3D[] _cameraVector3D = new Vector3D[Game.c_maxPlayers + 1];
-        private static Vector3D[] _mouseVector3DFixed = new Vector3D[Game.c_maxPlayers + 1];
-        private static Vector3D[] _mouseVector3D = new Vector3D[Game.c_maxPlayers + 1];
-        private static Vector3D[] _mouseVector3DUnitTerrain = new Vector3D[Game.c_maxPlayers + 1];
-        private static Vector3D[] _mouseVector3DTerrain = new Vector3D[Game.c_maxPlayers + 1];
-        private static Vector[] _mouseVector = new Vector[Game.c_maxPlayers + 1];
+        private static System.Windows.Media.Media3D.Vector3D[] _cameraVector3D = new System.Windows.Media.Media3D.Vector3D[Game.c_maxPlayers + 1];
+        private static System.Windows.Media.Media3D.Vector3D[] _mouseVector3DFixed = new System.Windows.Media.Media3D.Vector3D[Game.c_maxPlayers + 1];
+        private static System.Windows.Media.Media3D.Vector3D[] _mouseVector3D = new System.Windows.Media.Media3D.Vector3D[Game.c_maxPlayers + 1];
+        private static System.Windows.Media.Media3D.Vector3D[] _mouseVector3DUnitTerrain = new System.Windows.Media.Media3D.Vector3D[Game.c_maxPlayers + 1];
+        private static System.Windows.Media.Media3D.Vector3D[] _mouseVector3DTerrain = new System.Windows.Media.Media3D.Vector3D[Game.c_maxPlayers + 1];
+        private static Vector2D[] _mouseVector = new Vector2D[Game.c_maxPlayers + 1];
 
         private static string[] _type = new string[Game.c_maxPlayers + 1];
         private static string[] _handle = new string[Game.c_maxPlayers + 1];//句柄格式："A1-A1-A1-A0000001"
@@ -35802,27 +35889,27 @@ namespace MetalMaxSystem
         /// <summary>
         /// 相机位置
         /// </summary>
-        public static Vector3D[] CameraVector3D { get => _cameraVector3D; set => _cameraVector3D = value; }
+        public static System.Windows.Media.Media3D.Vector3D[] CameraVector3D { get => _cameraVector3D; set => _cameraVector3D = value; }
         /// <summary>
         /// 鼠标3D点向量坐标，修正了鼠标点高度（扣减了地图高度，所以这是相对地面的高度），mouseVectorZFixed=mouseVectorZ-MapHeight=TerrainHeight+Unit.TerrainHeight+Unit.Height
         /// </summary>
-        public static Vector3D[] MouseVector3DFixed { get => _mouseVector3DFixed; set => _mouseVector3DFixed = value; }
+        public static System.Windows.Media.Media3D.Vector3D[] MouseVector3DFixed { get => _mouseVector3DFixed; set => _mouseVector3DFixed = value; }
         /// <summary>
-        /// 鼠标3D点向量坐标，鼠标Z点在单位高度顶部，Z=MapHeight+TerrainHeight+Unit.TerrainHeight+Unit.Height
+        /// 鼠标3D点向量坐标，鼠标Z点在单位高度顶部，z=MapHeight+TerrainHeight+Unit.TerrainHeight+Unit.Height
         /// </summary>
-        public static Vector3D[] MouseVector3D { get => _mouseVector3D; set => _mouseVector3D = value; }
+        public static System.Windows.Media.Media3D.Vector3D[] MouseVector3D { get => _mouseVector3D; set => _mouseVector3D = value; }
         /// <summary>
-        /// 鼠标3D点向量坐标，鼠标Z点在单位层地形物件高度顶部（单位脚底），Z=MapHeight+TerrainHeight+Unit.TerrainHeight
+        /// 鼠标3D点向量坐标，鼠标Z点在单位层地形物件高度顶部（单位脚底），z=MapHeight+TerrainHeight+Unit.TerrainHeight
         /// </summary>
-        public static Vector3D[] MouseVector3DUnitTerrain { get => _mouseVector3DUnitTerrain; set => _mouseVector3DUnitTerrain = value; }
+        public static System.Windows.Media.Media3D.Vector3D[] MouseVector3DUnitTerrain { get => _mouseVector3DUnitTerrain; set => _mouseVector3DUnitTerrain = value; }
         /// <summary>
-        /// 鼠标3D点向量坐标，鼠标Z点在悬崖、地形物件顶部，Z=MapHeight+TerrainHeight
+        /// 鼠标3D点向量坐标，鼠标Z点在悬崖、地形物件顶部，z=MapHeight+TerrainHeight
         /// </summary>
-        public static Vector3D[] MouseVector3DTerrain { get => _mouseVector3DTerrain; set => _mouseVector3DTerrain = value; }
+        public static System.Windows.Media.Media3D.Vector3D[] MouseVector3DTerrain { get => _mouseVector3DTerrain; set => _mouseVector3DTerrain = value; }
         /// <summary>
         /// 鼠标2D点向量坐标
         /// </summary>
-        public static Vector[] MouseVector { get => _mouseVector; set => _mouseVector = value; }
+        public static Vector2D[] MouseVector { get => _mouseVector; set => _mouseVector = value; }
 
         /// <summary>
         /// 玩家类型（中立Neutral、电脑Ai、用户User、玩家Player、敌人Enemy）
@@ -36067,12 +36154,12 @@ namespace MetalMaxSystem
 
                     //注：到此记录了WParam和X,Y即可，不宜写时间复杂度较高的逻辑，剩下的"按键总控"功能（给按键注册注销更换委托函数，用于蓄力、移动、释放技能、按弹菜单等游戏世界逻辑）通过读取本类信息另外开线程去制作即可
 
-                    //思考：X,Y如何转化为世界坐标？
+                    //思考：x,Y如何转化为世界坐标？
 
-                    //Z从上述（X,Y）的信息中获得
+                    //Z从上述（x,y）的信息中获得
                     Z = Game.MapHeight + Game.TerrainHeight[X, Y] + (double)MMCore.DictionaryDoubleLoad0(true, "Unit.TerrainHeight");
 
-                    MouseMoveEvent?.Invoke(PlayerID, new Vector3D(X, Y, Z), X, Y);//当没给函数注册事件时不运行
+                    MouseMoveEvent?.Invoke(PlayerID, new System.Windows.Media.Media3D.Vector3D(X, Y, Z), X, Y);//当没给函数注册事件时不运行
 
                     break;
                 case WM_LBUTTONDOWN:
@@ -36701,7 +36788,7 @@ namespace MetalMaxSystem
                 string obfuscatedName = GenerateRandomString(8); // 生成8个字符的随机字符串作为替换名称
 
                 Random random = new Random(Guid.NewGuid().GetHashCode());
-                int randomIndex = random.Next(65, 91); // 65-90 为大写字母 A-Z 的 ASCII 码
+                int randomIndex = random.Next(65, 91); // 65-90 为大写字母 A-z 的 ASCII 码
                 char randomLetter = Convert.ToChar(randomIndex);
                 obfuscatedName = randomLetter.ToString() + obfuscatedName;//防止函数名开头是数字，这里加一个随机大写字母
 
