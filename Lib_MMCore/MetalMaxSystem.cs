@@ -1171,7 +1171,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static string ConvertStringToHex(string input) 
+        public static string ConvertStringToHex(string input)
         {
             string result = "";
             foreach (byte b in Encoding.UTF8.GetBytes(input))
@@ -36042,7 +36042,11 @@ namespace MetalMaxSystem
         /// </summary>
         public int X
         {
-            get { return _x; }
+            get
+            {
+                if (_x < 0) { _x = 0; }
+                return _x;
+            }
             set { _x = value; }
         }
 
@@ -36053,7 +36057,11 @@ namespace MetalMaxSystem
         /// </summary>
         public int Y
         {
-            get { return _y; }
+            get
+            {
+                if (_y < 0) { _y = 0; }
+                return _y;
+            }
             set { _y = value; }
         }
 
@@ -36064,7 +36072,11 @@ namespace MetalMaxSystem
         /// </summary>
         public double Z
         {
-            get { return _z; }
+            get
+            {
+                if (_z < 0) { _z = 0; }
+                return _z;
+            }
             set { _z = value; }
         }
 
@@ -36142,7 +36154,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="wParam">鼠标事件状态</param>
         /// <param name="mouseMsg">存储着鼠标信息</param>
-        private void MouseEventHandler(Int32 wParam, MouseHookStruct mouseMsg)
+        private void MouseEventHandler(int wParam, MouseHookStruct mouseMsg)
         {
             this.WParam = wParam;
             switch (wParam)
@@ -36157,7 +36169,19 @@ namespace MetalMaxSystem
                     //思考：x,Y如何转化为世界坐标？
 
                     //Z从上述（x,y）的信息中获得
-                    Z = Game.MapHeight + Game.TerrainHeight[X, Y] + MMCore.DictionaryDoubleLoad0(true, "Unit.TerrainHeight");
+                    try
+                    {
+                        //鼠标的移动会出界导致负数，X和Y在小于0时其属性方法必须纠正为0
+                        Z = Game.MapHeight + Game.TerrainHeight[X, Y] + MMCore.DictionaryDoubleLoad0(true, "Unit.TerrainHeight");
+                    }
+                    catch (Exception ex)
+                    {
+                        // 捕获异常并打印错误信息
+                        Debug.WriteLine("Error:X{0},Y{1}", X, Y);
+
+                        // 抛出异常，将错误信息传递给上层调用者
+                        throw;
+                    }
 
                     MouseMoveEvent?.Invoke(PlayerID, new System.Windows.Media.Media3D.Vector3D(X, Y, Z), X, Y);//当没给函数注册事件时不运行
 
@@ -36216,7 +36240,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="wParam">键盘事件状态</param>
         /// <param name="keyboardHookStruct">存储着虚拟键码</param>
-        private void KeyboardHandler(Int32 wParam, KeyboardHookStruct keyboardHookStruct)
+        private void KeyboardHandler(int wParam, KeyboardHookStruct keyboardHookStruct)
         {
             KeyStatus = wParam;
             KeyValue = keyboardHookStruct.vkCode;
@@ -36329,7 +36353,7 @@ namespace MetalMaxSystem
         /// </summary>
         /// <param name="wParam">按键的状态</param>
         /// <param name="keyboardHookStruct">存储着虚拟键码</param>
-        public delegate void KeyboardHandler(Int32 wParam, KeyboardHookStruct keyboardHookStruct);
+        public delegate void KeyboardHandler(int wParam, KeyboardHookStruct keyboardHookStruct);
         // 键盘回调事件
         private static event KeyboardHandler Handlers;
         // 锁
@@ -36339,7 +36363,7 @@ namespace MetalMaxSystem
         #endregion
 
         #region Win32的Api
-        private delegate int HookProc(int nCode, Int32 wParam, IntPtr lParam);
+        private delegate int HookProc(int nCode, int wParam, IntPtr lParam);
         //安装钩子的函数 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         private static extern int SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hInstance, int threadId);
@@ -36350,7 +36374,7 @@ namespace MetalMaxSystem
 
         //下一个钩挂的函数 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-        private static extern int CallNextHookEx(int idHook, int nCode, Int32 wParam, IntPtr lParam);
+        private static extern int CallNextHookEx(int idHook, int nCode, int wParam, IntPtr lParam);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr GetModuleHandle(string lpModuleName);
@@ -36433,7 +36457,7 @@ namespace MetalMaxSystem
         /// <param name="wParam">鼠标输入通知，代表发生的鼠标的事件，各种虚拟键事件发生后传入此参（WM_）</param>
         /// <param name="lParam">平台特定整数类型（是一个结构体），用于本机资源（存储着互动窗口句柄等相关事件信息）多线程安全使用</param>
         /// <returns></returns>
-        private static int KeyboardHookProc(int nCode, Int32 wParam, IntPtr lParam)
+        private static int KeyboardHookProc(int nCode, int wParam, IntPtr lParam)
         {
             //如果该消息被丢弃（nCode<0）或者没有事件绑定处理程序则不会触发事件
             if ((nCode >= 0) && Handlers != null)
@@ -36493,13 +36517,13 @@ namespace MetalMaxSystem
         /// <param name="wParam">鼠标输入通知，代表发生的鼠标的事件，各种虚拟键事件发生后传入此参（WM_）</param>
         /// <param name="lParam">平台特定整数类型（是一个结构体），用于本机资源（存储着互动窗口句柄等相关事件信息）多线程安全使用</param>
         /// <returns></returns>
-        public delegate int HookProc(int nCode, Int32 wParam, IntPtr lParam);
+        public delegate int HookProc(int nCode, int wParam, IntPtr lParam);
         /// <summary>
         /// 全局鼠标常规函数引用（委托类型）
         /// </summary>
         /// <param name="wParam"> 鼠标输入通知，代表发生的鼠标的事件，各种虚拟键事件发生后传入此参（WM_）</param>
         /// <param name="mouseMsg">鼠标钩子结构体，存储着鼠标位置、互动窗口句柄等相关事件信息</param>
-        public delegate void MyMouseEventHandler(Int32 wParam, MouseHookStruct mouseMsg);
+        public delegate void MyMouseEventHandler(int wParam, MouseHookStruct mouseMsg);
         private event MyMouseEventHandler OnMouseActivity;
         // 声明鼠标钩子事件类型
         private HookProc _mouseHookProcedure;
@@ -36553,7 +36577,7 @@ namespace MetalMaxSystem
 
         // 下一个钩挂的函数
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-        public static extern int CallNextHookEx(int idHook, int nCode, Int32 wParam, IntPtr lParam);
+        public static extern int CallNextHookEx(int idHook, int nCode, int wParam, IntPtr lParam);
         #endregion
 
 
@@ -36657,7 +36681,7 @@ namespace MetalMaxSystem
         /// <summary>
         /// 鼠标钩子回调函数
         /// </summary>
-        private int MouseHookProc(int nCode, Int32 wParam, IntPtr lParam)
+        private int MouseHookProc(int nCode, int wParam, IntPtr lParam)
         {
             // 假设正常执行而且用户要监听鼠标的消息
             if ((nCode >= 0) && (OnMouseActivity != null))
@@ -36777,7 +36801,7 @@ namespace MetalMaxSystem
                     //Debug.WriteLine($"函数名 {originalName} 在排除规则中，将跳过该函数名。");
                     return;
                 }
-                
+
                 // 检查是否已经存在相同的键
                 if (Replacements.ContainsKey(originalName))
                 {
