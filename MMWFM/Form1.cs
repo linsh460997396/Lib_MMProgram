@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Timers;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Forms;
 using MetalMaxSystem;
-using Label = System.Windows.Controls.Label;
+using Vector2F = System.Numerics.Vector2;
 
 namespace MMWFM
 {
@@ -125,19 +122,19 @@ namespace MMWFM
                 autoC_val = lv_p;
                 if (autoC_val == 9)
                 {
-                    Game.UnitCreate("OrbitalCommand", 0, 9, new Vector(10.0, 10.0));
+                    Game.UnitCreate("OrbitalCommand", 0, 9, new Vector2F(10.0f, 10.0f));
                 }
                 else if (autoC_val == 10)
                 {
-                    Game.UnitCreate("OrbitalCommand", 0, 10, new Vector(246.0, 10.0));
+                    Game.UnitCreate("OrbitalCommand", 0, 10, new Vector2F(246.0f, 10.0f));
                 }
                 else if (autoC_val == 11)
                 {
-                    Game.UnitCreate("OrbitalCommand", 0, 11, new Vector(10.0, 246.0));
+                    Game.UnitCreate("OrbitalCommand", 0, 11, new Vector2F(10.0f, 246.0f));
                 }
                 else
                 {
-                    Game.UnitCreate("OrbitalCommand", 0, gv_ID_NY, new Vector(246.0, 246.0));
+                    Game.UnitCreate("OrbitalCommand", 0, gv_ID_NY, new Vector2F(246.0f, 246.0f));
                 }
                 gv_campBase[lv_p] = Game.UnitLastCreated;
                 //if (gv_campBase[lv_p] != null ) 
@@ -199,95 +196,95 @@ namespace MMWFM
                         autoC_val = lv_randomNum;
                         if (autoC_val == 1)
                         {
-                            Game.UnitCreate(gv_Ut0001.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0001.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 2)
                         {
-                            Game.UnitCreate(gv_Ut0002.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0002.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 3)
                         {
-                            Game.UnitCreate(gv_Ut0003.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0003.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 4)
                         {
-                            Game.UnitCreate(gv_Ut0004.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0004.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 5)
                         {
-                            Game.UnitCreate(gv_Ut0005.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0005.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 6)
                         {
-                            Game.UnitCreate(gv_Ut0006.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0006.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 7)
                         {
-                            Game.UnitCreate(gv_Ut0007.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0007.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 8)
                         {
-                            Game.UnitCreate(gv_Ut0008.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0008.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 9)
                         {
-                            Game.UnitCreate(gv_Ut0009.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0009.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 10)
                         {
-                            Game.UnitCreate(gv_Ut0010.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0010.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 11)
                         {
-                            Game.UnitCreate(gv_Ut0011.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0011.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 12)
                         {
-                            Game.UnitCreate(gv_Ut0012.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0012.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 13)
                         {
-                            Game.UnitCreate(gv_Ut0013.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0013.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 14)
                         {
-                            Game.UnitCreate(gv_Ut0014.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0014.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 15)
                         {
-                            Game.UnitCreate(gv_Ut0015.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0015.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 16)
                         {
-                            Game.UnitCreate(gv_Ut0016.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0016.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 17)
                         {
-                            Game.UnitCreate(gv_Ut0017.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0017.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 18)
                         {
-                            Game.UnitCreate(gv_Ut0018.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0018.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 19)
                         {
-                            Game.UnitCreate(gv_Ut0019.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0019.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 20)
                         {
-                            Game.UnitCreate(gv_Ut0020.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0020.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 21)
                         {
-                            Game.UnitCreate(gv_Ut0021.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0021.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 22)
                         {
-                            Game.UnitCreate(gv_Ut0022.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0022.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else if (autoC_val == 23)
                         {
-                            Game.UnitCreate(gv_Ut0023.TypeName, 0, lv_p, lv_base.Vector);
+                            Game.UnitCreate(gv_Ut0023.TypeName, 0, lv_p, lv_base.Vector2F);
                         }
                         else { }
                         gv_armyGroup[lv_p].Add(Game.UnitLastCreated);
@@ -304,14 +301,14 @@ namespace MMWFM
                 lv_targetBase = gv_campBase[lv_randomNum];
                 if ((lv_targetBase.Alive) && (lv_targetBase != lv_base))
                 {
-                    Game.UnitLastCreated.IssueOrder(Game.OrderTargetingPoint(Game.AbilityCommand("attack", 0), lv_targetBase.Vector), (int)OrderQueue.Replace);
+                    Game.UnitLastCreated.IssueOrder(Game.OrderTargetingPoint(Game.AbilityCommand("attack", 0), lv_targetBase.Vector2F), (int)OrderQueue.Replace);
                     autoD_g = UnitGroup.Idle(lv_p, false);
                     autoD_u = autoD_g.Count();
                     for (; ; autoD_u -= 1)
                     {
                         autoD_var = UnitGroup.UnitFromEnd(autoD_g, autoD_u);
                         if (autoD_var == null) { break; }
-                        autoD_var.IssueOrder(Game.OrderTargetingPoint(Game.AbilityCommand("attack", 0), lv_targetBase.Vector), (int)OrderQueue.Replace);
+                        autoD_var.IssueOrder(Game.OrderTargetingPoint(Game.AbilityCommand("attack", 0), lv_targetBase.Vector2F), (int)OrderQueue.Replace);
                     }
                 }
 
