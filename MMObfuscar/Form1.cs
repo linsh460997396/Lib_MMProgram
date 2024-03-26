@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
-using MetalMaxSystem;
 using System.Threading;
 using System.Drawing;
 using System.Diagnostics;
-using Microsoft.CodeAnalysis.Differencing;
 using System.IO;
-//using System.Windows.Controls;
+using MetalMaxSystem;
 
 namespace MMObfuscar
 {

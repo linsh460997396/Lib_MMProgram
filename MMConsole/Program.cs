@@ -1,14 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Text.RegularExpressions;
-using Itinero;
-using MetalMaxSystem;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MMConsole
 {

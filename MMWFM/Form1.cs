@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
-using MetalMaxSystem;
 using Vector2F = System.Numerics.Vector2;
+using MetalMaxSystem;
 
 namespace MMWFM
 {

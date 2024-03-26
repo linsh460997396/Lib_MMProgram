@@ -121,7 +121,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 以字典中自定义的混肴规则，进行代码文本中的函数名混肴
+        /// 以字典（Replacements）中自定义的混肴规则，进行代码文本中的函数名混肴
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>

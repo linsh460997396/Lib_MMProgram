@@ -21,6 +21,13 @@ using Microsoft.Win32;
 using System.Diagnostics;
 using System.Windows;
 
+//使用爬虫功能
+//using HtmlAgilityPack;
+
+//使用控制台调试输出
+//using System.Diagnostics; //使用Debug功能
+//using System.Windows.Controls; //使用Control功能
+
 namespace MetalMaxSystem
 {
     /// <summary>
@@ -1503,7 +1510,8 @@ namespace MetalMaxSystem
         {
             HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
             request.Method = "GET";
-            request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.50";
+            //request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.50";
+            request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.289 Safari/537.36";
             try
             {
                 HttpWebResponse webresponse = request.GetResponse() as HttpWebResponse;
@@ -1540,7 +1548,8 @@ namespace MetalMaxSystem
                 request = WebRequest.Create(url) as HttpWebRequest;
             }
             request.Method = "POST";
-            request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.50";
+            //request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.50";
+            request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.289 Safari/537.36";
             request.ContentType = ContentType;
             //发送POST数据  
             if (!(parameters == null || parameters.Count == 0))
@@ -1588,7 +1597,7 @@ namespace MetalMaxSystem
         /// HtmlNode img = doc.DocumentNode.SelectSingleNode("/html/body/div[3]/div[3]/div[1]/div[1]/div[1]/a/img");
         /// string imgUal = img.Attributes["src"].Value;
         /// MMCore.Download(imgUal, "123.jpg", @"C:\Users\Admin\Desktop\Download\", true);
-        /////Debug.WriteLine("下载完成！");
+        /// Debug.WriteLine("下载完成！");
         /// </summary>
         /// <param name="url">浏览器网址</param>
         /// <param name="filename">自定义文件名</param>
@@ -1651,6 +1660,65 @@ namespace MetalMaxSystem
                 DelDirectoryRecursively(tempPath);
             }
             return true;
+        }
+
+        //src属性通常用于<img>、<script>、<iframe>等标签，用于指定外部资源的URL
+        //如节点是弹幕评论的容器，想获取评论的内容，可直接查找包含评论文本的节点
+        //在HTML结构中，评论文本被包含在一个<span> 标签内，该标签具有class="danmaku-item-right v-middle pointer ts-dot-2 open-menu"。
+        //可以使用HtmlAgilityPack来查找并获取这个评论文本，示例代码如下：
+        //// 假设doc是你已经加载了HTML内容的HtmlDocument实例
+        //HtmlAgilityPack.HtmlNodeCollection danmakuNodes = doc.DocumentNode.SelectNodes("//div[@class='chat-item danmaku-item']");
+        //foreach (HtmlAgilityPack.HtmlNode danmakuNode in danmakuNodes)
+        //{
+        //    // 查找包含评论文本的span节点
+        //    HtmlAgilityPack.HtmlNode commentNode = danmakuNode.SelectSingleNode(".//span[@class='danmaku-item-right v-middle pointer ts-dot-2 open-menu']");
+
+        //    if (commentNode != null)
+        //    {
+        //        // 获取评论文本
+        //        string commentText = commentNode.InnerText.Trim(); // 使用Trim()方法去除可能的前后空格
+        //        Console.WriteLine(commentText); // 输出评论文本
+        //    }
+        //}
+
+        /// <summary>
+        /// 【MM_函数库】获取指定网站的指定节点的字符串内容（二进制数据转为UTF8字符串）
+        /// 使用范例：
+        /// HtmlDocument doc = new();
+        /// doc.LoadHtml(MMCore.CreateGetHttpResponse("https://live.bilibili.com/13467455?session_id=13d83f9d05f01a5431e5706ace65fd30_5B04FF94-34C0-4FC1-9024-C32AC7920617&launch_id=1000000&live_from=71001"));
+        /// HtmlNode str = doc.DocumentNode.SelectSingleNode("/html/body/div[3]/main/div[1]/section/div[3]/div[9]/div[1]/div[1]");
+        /// string strUal = str.Attributes["src"].Value;
+        /// string content =  MMCore.GetWebStr(strUal);
+        /// Debug.WriteLine(content);
+        /// </summary>
+        /// <param name="url">浏览器网址</param>
+        /// <returns></returns>
+        public static string GetWebStr(string url)
+        {
+            string responseData = "";
+            try
+            {
+                // 设置参数
+                HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+                //发送请求并获取相应回应数据
+                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+                //直到request.GetResponse()程序才开始向目标网页发送Post请求
+                Stream responseStream = response.GetResponseStream();
+                byte[] bArr = new byte[1024];
+                int size = responseStream.Read(bArr, 0, (int)bArr.Length);
+                while (size > 0)
+                {
+                    responseData += System.Text.Encoding.UTF8.GetString(bArr, 0, size);
+                    size = responseStream.Read(bArr, 0, (int)bArr.Length);
+                }
+                responseStream.Close();
+                responseStream.Dispose();
+            }
+            catch (Exception ex)
+            {
+                //Debug.Log(string.Format("错误: {0}", ex.Message));
+            }
+            return responseData;
         }
 
         ///<summary>
@@ -1754,33 +1822,47 @@ namespace MetalMaxSystem
         /// <summary>
         /// 【MM_函数库】获取弹幕信息（本函数待改中请勿使用）
         /// </summary>
-        /// <param name="room"></param>
+        /// <param name="postString">要发送的请求</param>
+        /// <param name="url">网址</param>
+        /// <param name="cookie">缓存</param>
+        /// <param name="userAgent">用户代理</param>
         /// <returns></returns>
-        public static string Post(string room)
+        public static string DanMuWithPost(string postString, string url, string cookie, string userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.289 Safari/537.36")
         {
-            string postString = "roomid=" + room + "&token=&csrf_token=我是图中的马赛克";//要发送的数据
-            byte[] postData = Encoding.UTF8.GetBytes(postString);//编码，尤其是汉字，事先要看下抓取网页的编码方式  
-            string url = @"http://api.live.bilibili.com/ajax/msg";//地址  
-
+            byte[] postData = Encoding.UTF8.GetBytes(postString);//编码，尤其是汉字，事先要看下抓取网页的编码方式
             WebClient webClient = new WebClient();
-            webClient.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36");
-            webClient.Headers.Add("Content-Type", "application/x-www-form-urlencoded");//采取POST方式必须加的header，如果改为GET方式的话就去掉这句话即可  
-            webClient.Headers.Add("Cookie",
-                "可耻的马赛克"
-                );
-            byte[] responseData = webClient.UploadData(url, "POST", postData);//得到返回字符流  
-            string srcString = Encoding.UTF8.GetString(responseData);//解码  
+            webClient.Headers.Add("User-Agent", userAgent);
+            //采取POST方式必须加的header，如果改为GET方式的话就去掉这句话即可 
+            webClient.Headers.Add("Content-Type", "application/x-www-form-urlencoded"); 
+            webClient.Headers.Add("Cookie", cookie);
+            byte[] responseData;
+            //得到返回字符流
+            try
+            {
+                responseData = webClient.UploadData(url, "POST", postData);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+            //解码
+            string srcString = Encoding.UTF8.GetString(responseData);
             return srcString;
         }
 
         /// <summary>
         /// 【MM_函数库】处理弹幕信息为中文（本函数待改中请勿使用）
         /// </summary>
-        /// <param name="room"></param>
+        /// <param name="postString">要发送的请求</param>
+        /// <param name="url">网址</param>
+        /// <param name="cookie">缓存</param>
+        /// <param name="userAgent">用户代理</param>
         /// <returns></returns>
-        public static List<string> GetDanMu(string room)
+        public static List<string> GetDanMuWithPost(string postString, string url, string cookie, string userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.289 Safari/537.36")
         {
-            string danmu = Post(room);
+            string danmu = DanMuWithPost(postString, url, cookie, userAgent);
             List<string> list = new List<string>();
             //正则匹配
             foreach (Match item in Regex.Matches(danmu, "text\":\".*?\""))
@@ -1791,6 +1873,30 @@ namespace MetalMaxSystem
             return list;
         }
 
+        public static string DanMuWithGet(string url, string cookie, string userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.289 Safari/537.36", string param = "")
+        {
+            WebClient webClient = new WebClient();
+            webClient.Headers.Add("User-Agent", userAgent);
+            webClient.Headers.Add("Cookie", cookie);
+
+            // 如GET请求需传递参数，可将它们添加到URL中
+            string responseString = webClient.DownloadString(url+ param);
+            return responseString;
+        }
+
+        public static List<string> GetDanMuWithGet(string url, string cookie, string userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.289 Safari/537.36", string param = "")
+        {
+            string danmu = DanMuWithGet(url, cookie, userAgent, param);
+            List<string> list = new List<string>();
+
+            // 假设弹幕数据是以某种 JSON 格式返回的，你需要根据实际情况调整正则表达式
+            foreach (Match item in Regex.Matches(danmu, "\"text\":\"(.*?)\""))
+            {
+                list.Add(item.Groups[1].Value); // 提取匹配到的弹幕文本
+            }
+
+            return list;
+        }
 
         #endregion
 
