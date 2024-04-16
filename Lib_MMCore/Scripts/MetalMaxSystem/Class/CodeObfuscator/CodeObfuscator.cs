@@ -128,7 +128,7 @@ namespace MetalMaxSystem
         public string ObfuscateCode(string code)
         {
             //以分组形式创建正则匹配替换规则：将Replacements字典中所有键里的具有特殊含义的符号通过正则表达式进行转义（使用时不需要加@）
-            string pattern = string.Join("|", (string[])Replacements.Keys.Select(Regex.Escape));
+            string pattern = string.Join("|", Replacements.Keys.Select(Regex.Escape).ToArray());
 
             //创建名为replacementDelegate的委托实例，它接受一个字符串参数（匹配项）
             //在委托内部检查Replacements字典中是否存在该键，如果存在则返回相应的值，如果不存在则输出一条错误消息并将原始匹配项返回
@@ -164,7 +164,7 @@ namespace MetalMaxSystem
         public string ObfuscateCode2(string code)
         {
             //以分组形式创建正则匹配替换规则：将Replacements2字典中所有键里的具有特殊含义的符号通过正则表达式进行转义（使用时不需要加@）
-            string pattern = string.Join("|", (string[])Replacements2.Keys.Select(Regex.Escape));
+            string pattern = string.Join("|", Replacements2.Keys.Select(Regex.Escape).ToArray());
 
             //创建名为replacementDelegate2的委托实例，它接受一个字符串参数（匹配项）
             //在委托内部检查Replacements2字典中是否存在该键，如果存在则返回相应的值，如果不存在则输出一条错误消息并将原始匹配项返回

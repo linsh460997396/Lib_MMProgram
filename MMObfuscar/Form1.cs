@@ -314,14 +314,16 @@ namespace MMObfuscar
 
             //第二遍混肴
             //对代码文本中的字符串进行混肴
-            MatchCollection matches2 = Regex.Matches(obfuscatedCode, @"""(.*?)""");
+            //MatchCollection matches2 = Regex.Matches(obfuscatedCode, @"""(.*?)""");
+            MatchCollection matches2 = Regex.Matches(obfuscatedCode, @"""[^\\""]*""");
             foreach (Match match in matches2)
             {
                 //匹配到的字符串的内容(.*?)放在match.Groups[1].Value，内容非空则进行添加规则
                 if (match.Groups[1].Value != "")
                 {
+                    if (Regex.IsMatch(match.Groups[1].Value, @".*\\.*")) { Debug.WriteLine(match.Groups[1].Value); }
                     //构建正则表达式，带有以下指定字符的字符串会避开混肴
-                    if (!Regex.IsMatch(match.Groups[1].Value, "^(\\|bnet:).*"))
+                    if (!Regex.IsMatch(match.Groups[1].Value, "(\\|bnet:)"))
                     {
                         //添加到混肴规则2（要替换的字符串为键，混肴成8进制或18进制后的字符串为值）
                         temp = MMCore.ConvertStringToHOMixed(match.Groups[1].Value, 0.7); //这里是内容的混肴
@@ -331,7 +333,6 @@ namespace MMObfuscar
                         obfuscator.AddReplacement2(match.Value, temp);
                     }
                 }
-
             }
             obfuscatedCode = obfuscator.ObfuscateCode2(obfuscatedCode);
 

@@ -793,7 +793,8 @@ namespace MetalMaxSystem
                 else
                 {
                     //result += $"\\0{Convert.ToString(b, 8)}";
-                    result += string.Format("\\0{Convert.ToString(b, 8)}", b);
+                    //result += string.Format("\\0{Convert.ToString(b, 8)}", b);
+                    result += string.Format("\\0{0}", Convert.ToString(b, 8));
                 }
             }
             return result;
