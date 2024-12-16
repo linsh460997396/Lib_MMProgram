@@ -1,4 +1,12 @@
-﻿using Vector2F = System.Numerics.Vector2;
+﻿#if UNITY_EDITOR|| UNITY_STANDALONE
+//Unity编辑器、独立应用程序（不包括Web播放器）
+using Vector2F = UnityEngine.Vector2;
+#elif MonoGame
+//使用VS2022的MonoGame插件框架
+using Vector2F = Microsoft.Xna.Framework.Vector2;
+#else
+using Vector2F = System.Numerics.Vector2;
+#endif
 
 namespace MetalMaxSystem
 {

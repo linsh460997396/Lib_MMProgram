@@ -5,7 +5,6 @@ D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\SC2Crawler.runt
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\SC2Crawler.dll
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\SC2Crawler.pdb
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\HtmlAgilityPack.dll
-D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\System.CodeDom.dll
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\System.Management.dll
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\runtimes\win\lib\net8.0\System.Management.dll
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\Lib_MMCore.dll

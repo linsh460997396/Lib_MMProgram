@@ -3,7 +3,7 @@
     //枚举是值类型
 
     /// <summary>
-    /// 【MM_函数库】玩家属性
+    /// 玩家属性
     /// </summary>
     public enum PlayerProp
     {

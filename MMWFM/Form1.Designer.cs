@@ -51,7 +51,6 @@ namespace MMWFM
             button_Run.TabIndex = 2;
             button_Run.Text = "执行";
             button_Run.UseVisualStyleBackColor = true;
-            button_Run.Click += button_Run_Click;
             // 
             // Form1
             // 

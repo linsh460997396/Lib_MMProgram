@@ -3,7 +3,7 @@
     //枚举是值类型
 
     /// <summary>
-    /// 【MM_函数库】单位属性
+    /// 单位属性
     /// </summary>
     public enum UnitProp
     {

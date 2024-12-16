@@ -1,9 +1,17 @@
-﻿using Vector2F = System.Numerics.Vector2;
+﻿#if UNITY_EDITOR|| UNITY_STANDALONE
+//Unity编辑器、独立应用程序（不包括Web播放器）
+using Vector2F = UnityEngine.Vector2;
+#elif MonoGame
+//使用VS2022的MonoGame插件框架
+using Vector2F = Microsoft.Xna.Framework.Vector2;
+#else
+using Vector2F = System.Numerics.Vector2;
+#endif
 
 namespace MetalMaxSystem
 {
     /// <summary>
-    /// 【MM_函数库】存储Game相关信息及方法的类
+    /// 存储Game相关信息及方法的类
     /// </summary>
     public static class Game
     {
@@ -237,12 +245,12 @@ namespace MetalMaxSystem
         private static float[,] _terrainHeight = new float[2560 + 1, 2560 + 1];
 
         /// <summary>
-        /// 【MM_函数库】地图首个纹理图层顶面高度，默认值=8（m），亦称地面高度或地图高度
+        /// 地图首个纹理图层顶面高度，默认值=8（m），亦称地面高度或地图高度
         /// </summary>
         public static float MapHeight { get; set; }
 
         /// <summary>
-        /// 【MM_函数库】地面上附加的悬崖、地形物件的高度，二维坐标数组元素[2560+1,2560+1]（设计精度0.1m，按256m计）
+        /// 地面上附加的悬崖、地形物件的高度，二维坐标数组元素[2560+1,2560+1]（设计精度0.1m，按256m计）
         /// </summary>
         public static float[,] TerrainHeight
         {
@@ -258,7 +266,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 【MM_函数库】土、矿、水、气等空间内每个点的属性类型和数量（密度），数组元素[2560+1,2560+1,2560+1]，设计精度0.1m，小数点左侧表示土的类型，右侧为数值（密度）
+        /// 土、矿、水、气等空间内每个点的属性类型和数量（密度），数组元素[2560+1,2560+1,2560+1]，设计精度0.1m，小数点左侧表示土的类型，右侧为数值（密度）
         /// </summary>
         public static float[,,] TerrainType { get; set; }
 
@@ -267,37 +275,37 @@ namespace MetalMaxSystem
         #region 其他
 
         /// <summary>
-        /// 【MM_函数库】载具类型上限
+        /// 载具类型上限
         /// </summary>
         public const int c_vehicleTypeMax = 200;
 
         /// <summary>
-        /// 【MM_函数库】任意玩家编号（玩家编号从0-15共16个，16是上帝由系统执行，某些函数中也作"任意玩家"参数）
+        /// 任意玩家编号（玩家编号从0-15共16个，16是上帝由系统执行，某些函数中也作"任意玩家"参数）
         /// </summary>
         public const int c_playerAny = 16;
 
         /// <summary>
-        /// 【MM_函数库】玩家编号上限（限制最大玩家数）
+        /// 玩家编号上限（限制最大玩家数）
         /// </summary>
         public const int c_maxPlayers = 16;
 
         /// <summary>
-        /// 【MM_函数库】本地用户玩家的编号
+        /// 本地用户玩家的编号
         /// </summary>
         public static int UID { get; set; }
 
         /// <summary>
-        /// 【MM_函数库】最近一次新建的单位句柄
+        /// 最近一次新建的单位句柄
         /// </summary>
         public static int CurrentUnitHandle { get; set; }
 
         /// <summary>
-        /// 【MM_函数库】最近一次新建的单位
+        /// 最近一次新建的单位
         /// </summary>
         public static Unit UnitLastCreated { get; set; }
 
         /// <summary>
-        /// 【MM_函数库】初始化阶段
+        /// 初始化阶段
         /// </summary>
         public static int Initialization { get; set; }
 
@@ -337,22 +345,13 @@ namespace MetalMaxSystem
         /// 创建单位
         /// </summary>
         /// <param name="player"></param>
-        /// <param name="unitType"></param>
+        /// <param name="unitType">字符串类型名称</param>
         /// <param name="vector"></param>
         /// <param name="unitCreateTag"></param>
         /// <returns>返回根据unitType创建的单位实例</returns>
         public static Unit UnitCreate(string unitType, UnitCreateTag unitCreateTag, int player, Vector2F vector)
         {
-            Unit unit;
-            switch (unitType)
-            {
-                case "Marine":
-                    unit = new Marine();
-                    break;
-                default:
-                    unit = new Unit();
-                    break;
-            }
+            Unit unit = new Unit(unitType);
             unit.Owner = player;
             unit.Vector2F = vector;
             if (unit.Hp <= 0.0) { unit.Hp = 1.0; }

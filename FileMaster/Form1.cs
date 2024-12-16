@@ -1824,14 +1824,14 @@ namespace FileMaster
                             MMCore.WriteLine(workFilePath, "", true);
                         }
                         MMCore.WriteLine(workFilePath, " Directory of " + path, true); //首次输出子文件夹的父目录，表示正在对其检索
-                        if (checkBox_fileStatistics.Checked || checkBox22.Checked)
+                        if (checkBox_fileStatistics.Checked || checkBox_DirCount.Checked)
                         {
                             if (checkBox_fileStatistics.Checked)
                             {
                                 j = Directory.GetFiles(path).Length;
                                 a = "               " + j.ToString() + " File(s)";
                             }
-                            if (checkBox22.Checked)
+                            if (checkBox_DirCount.Checked)
                             {
                                 k = Directory.GetDirectories(path).Length;
                                 b = "             " + k.ToString() + " DIR(s)";
@@ -1915,14 +1915,14 @@ namespace FileMaster
                                         MMCore.WriteLine(workFilePath, "", true);
                                     }
                                     MMCore.WriteLine(workFilePath, " Directory of " + tempStr, true); //首次输出子文件夹的父目录，表示正在对其检索
-                                    if (checkBox_fileStatistics.Checked || checkBox22.Checked)
+                                    if (checkBox_fileStatistics.Checked || checkBox_DirCount.Checked)
                                     {
                                         if (checkBox_fileStatistics.Checked)
                                         {
                                             j = Directory.GetFiles(path).Length;
                                             a = "               " + j.ToString() + " File(s)";
                                         }
-                                        if (checkBox22.Checked)
+                                        if (checkBox_DirCount.Checked)
                                         {
                                             k = Directory.GetDirectories(path).Length;
                                             b = "             " + k.ToString() + " DIR(s)";
@@ -2569,9 +2569,9 @@ namespace FileMaster
             {
                 comboBox_selectFunc.SelectedIndex = 0;
             }
-            if (comboBox3.SelectedIndex == -1)
+            if (comboBox_DirEmptyMode.SelectedIndex == -1)
             {
-                comboBox3.SelectedIndex = 0;
+                comboBox_DirEmptyMode.SelectedIndex = 0;
             }
             if (comboBox_param8.SelectedIndex == -1)
             {

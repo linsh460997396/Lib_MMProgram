@@ -1,4 +1,8 @@
-﻿using Mathf = System.MathF;
+﻿#if UNITY_EDITOR|| UNITY_STANDALONE
+using Mathf = UnityEngine.Mathf;
+#else
+using Mathf = System.MathF;
+#endif
 
 namespace MetalMaxSystem
 {
