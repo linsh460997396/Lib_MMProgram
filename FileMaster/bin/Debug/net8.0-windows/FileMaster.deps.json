@@ -57,7 +57,10 @@
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         },
         "runtime": {
-          "Lib_MMCore.dll": {}
+          "Lib_MMCore.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "0.0.0.0"
+          }
         }
       }
     }
