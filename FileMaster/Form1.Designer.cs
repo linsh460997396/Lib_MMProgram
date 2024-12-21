@@ -31,7 +31,8 @@ namespace FileMaster
         {
             textBox_workPath = new System.Windows.Forms.TextBox();
             panel1 = new System.Windows.Forms.Panel();
-            checkBox_overlayWorkFile = new System.Windows.Forms.CheckBox();
+            checkBox40 = new System.Windows.Forms.CheckBox();
+            checkBox_coverWorkFile = new System.Windows.Forms.CheckBox();
             comboBox_selectFunc = new System.Windows.Forms.ComboBox();
             label_selectFunc = new System.Windows.Forms.Label();
             label_workFile = new System.Windows.Forms.Label();
@@ -49,9 +50,11 @@ namespace FileMaster
             label_param2 = new System.Windows.Forms.Label();
             textBox_param2 = new System.Windows.Forms.TextBox();
             panel4 = new System.Windows.Forms.Panel();
+            label_controlTips = new System.Windows.Forms.Label();
             checkBox_byteCount = new System.Windows.Forms.CheckBox();
             checkBox_specialStr = new System.Windows.Forms.CheckBox();
             checkBox_batMethod = new System.Windows.Forms.CheckBox();
+            checkBox_range = new System.Windows.Forms.CheckBox();
             checkBox_printDirPath = new System.Windows.Forms.CheckBox();
             checkBox_printDiskName = new System.Windows.Forms.CheckBox();
             checkBox_nonEmptySuffixDirIgnore = new System.Windows.Forms.CheckBox();
@@ -83,7 +86,6 @@ namespace FileMaster
             checkBox_nonEmptyDirIgnore = new System.Windows.Forms.CheckBox();
             checkBox_emptyDirIgnore = new System.Windows.Forms.CheckBox();
             label_headTip = new System.Windows.Forms.Label();
-            checkBox_range = new System.Windows.Forms.CheckBox();
             checkBox_protectSuffix = new System.Windows.Forms.CheckBox();
             panel7 = new System.Windows.Forms.Panel();
             label_paramDescription3 = new System.Windows.Forms.Label();
@@ -92,6 +94,7 @@ namespace FileMaster
             checkBox_param3 = new System.Windows.Forms.CheckBox();
             label_dirStatistics = new System.Windows.Forms.Label();
             panel8 = new System.Windows.Forms.Panel();
+            checkBox_RangeReversal = new System.Windows.Forms.CheckBox();
             label_rangeTo = new System.Windows.Forms.Label();
             label_range = new System.Windows.Forms.Label();
             textBox_rangeMax = new System.Windows.Forms.TextBox();
@@ -120,7 +123,6 @@ namespace FileMaster
             checkBox_specialStrIgnoreCase = new System.Windows.Forms.CheckBox();
             label_specialStr = new System.Windows.Forms.Label();
             textBox_specialStr = new System.Windows.Forms.TextBox();
-            checkBox40 = new System.Windows.Forms.CheckBox();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             panel3.SuspendLayout();
@@ -136,15 +138,16 @@ namespace FileMaster
             // 
             // textBox_workPath
             // 
-            textBox_workPath.Location = new System.Drawing.Point(124, 0);
-            textBox_workPath.Margin = new System.Windows.Forms.Padding(4);
+            textBox_workPath.Location = new System.Drawing.Point(100, 0);
+            textBox_workPath.Margin = new System.Windows.Forms.Padding(0);
             textBox_workPath.Name = "textBox_workPath";
-            textBox_workPath.Size = new System.Drawing.Size(641, 23);
+            textBox_workPath.Size = new System.Drawing.Size(680, 23);
             textBox_workPath.TabIndex = 0;
             // 
             // panel1
             // 
-            panel1.Controls.Add(checkBox_overlayWorkFile);
+            panel1.Controls.Add(checkBox40);
+            panel1.Controls.Add(checkBox_coverWorkFile);
             panel1.Controls.Add(comboBox_selectFunc);
             panel1.Controls.Add(label_selectFunc);
             panel1.Controls.Add(label_workFile);
@@ -154,102 +157,116 @@ namespace FileMaster
             panel1.Controls.Add(button_run);
             panel1.Controls.Add(button_selectWorkPath);
             panel1.Controls.Add(textBox_workPath);
-            panel1.Location = new System.Drawing.Point(16, 45);
-            panel1.Margin = new System.Windows.Forms.Padding(4);
+            panel1.Location = new System.Drawing.Point(0, 30);
+            panel1.Margin = new System.Windows.Forms.Padding(0);
             panel1.Name = "panel1";
-            panel1.Size = new System.Drawing.Size(918, 92);
+            panel1.Size = new System.Drawing.Size(940, 90);
             panel1.TabIndex = 1;
             // 
-            // checkBox_overlayWorkFile
+            // checkBox40
             // 
-            checkBox_overlayWorkFile.Checked = true;
-            checkBox_overlayWorkFile.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_overlayWorkFile.Location = new System.Drawing.Point(772, 61);
-            checkBox_overlayWorkFile.Margin = new System.Windows.Forms.Padding(4);
-            checkBox_overlayWorkFile.Name = "checkBox_overlayWorkFile";
-            checkBox_overlayWorkFile.Size = new System.Drawing.Size(117, 30);
-            checkBox_overlayWorkFile.TabIndex = 7;
-            checkBox_overlayWorkFile.Text = "覆盖工作文本";
-            checkBox_overlayWorkFile.UseVisualStyleBackColor = true;
+            checkBox40.Checked = true;
+            checkBox40.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBox40.Font = new System.Drawing.Font("Microsoft YaHei UI", 8F);
+            checkBox40.Location = new System.Drawing.Point(866, 60);
+            checkBox40.Margin = new System.Windows.Forms.Padding(0);
+            checkBox40.Name = "checkBox40";
+            checkBox40.Size = new System.Drawing.Size(74, 30);
+            checkBox40.TabIndex = 2;
+            checkBox40.Text = "统计时耗";
+            checkBox40.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_coverWorkFile
+            // 
+            checkBox_coverWorkFile.Checked = true;
+            checkBox_coverWorkFile.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBox_coverWorkFile.Font = new System.Drawing.Font("Microsoft YaHei UI", 7F);
+            checkBox_coverWorkFile.Location = new System.Drawing.Point(780, 60);
+            checkBox_coverWorkFile.Margin = new System.Windows.Forms.Padding(0);
+            checkBox_coverWorkFile.Name = "checkBox_coverWorkFile";
+            checkBox_coverWorkFile.Size = new System.Drawing.Size(86, 30);
+            checkBox_coverWorkFile.TabIndex = 3;
+            checkBox_coverWorkFile.Text = "覆盖工作文本";
+            checkBox_coverWorkFile.UseVisualStyleBackColor = true;
             // 
             // comboBox_selectFunc
             // 
             comboBox_selectFunc.FormattingEnabled = true;
             comboBox_selectFunc.Items.AddRange(new object[] { "批量将文件（夹）名称打印到工作文件", "批量将文件（夹）名称去除固定位数字符", "批量将文件（夹）名称保留固定位数字符", "批量插入字符到文件（夹）名称固定位数字符前", "批量插入字符到文件（夹）名称固定位数字符后", "批量插入字符到文件（夹）名称最前", "批量插入字符到文件（夹）名称最后", "批量替换文件（夹）名称固定位数字符", "批量替换文件（夹）名称的指定字符", "批量替换文件（夹）名称的后缀字符", "批量删除（移动）指定名称的文件（夹）" });
-            comboBox_selectFunc.Location = new System.Drawing.Point(124, 62);
-            comboBox_selectFunc.Margin = new System.Windows.Forms.Padding(4);
+            comboBox_selectFunc.Location = new System.Drawing.Point(100, 60);
+            comboBox_selectFunc.Margin = new System.Windows.Forms.Padding(0);
             comboBox_selectFunc.Name = "comboBox_selectFunc";
-            comboBox_selectFunc.Size = new System.Drawing.Size(641, 25);
-            comboBox_selectFunc.TabIndex = 7;
+            comboBox_selectFunc.Size = new System.Drawing.Size(680, 25);
+            comboBox_selectFunc.TabIndex = 4;
             comboBox_selectFunc.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
             // 
             // label_selectFunc
             // 
-            label_selectFunc.Location = new System.Drawing.Point(4, 61);
-            label_selectFunc.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label_selectFunc.Location = new System.Drawing.Point(0, 60);
+            label_selectFunc.Margin = new System.Windows.Forms.Padding(0);
             label_selectFunc.Name = "label_selectFunc";
-            label_selectFunc.Size = new System.Drawing.Size(117, 30);
-            label_selectFunc.TabIndex = 7;
+            label_selectFunc.Size = new System.Drawing.Size(100, 30);
+            label_selectFunc.TabIndex = 5;
             label_selectFunc.Text = "选择功能";
             label_selectFunc.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label_workFile
             // 
-            label_workFile.Location = new System.Drawing.Point(4, 31);
-            label_workFile.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label_workFile.Location = new System.Drawing.Point(0, 30);
+            label_workFile.Margin = new System.Windows.Forms.Padding(0);
             label_workFile.Name = "label_workFile";
-            label_workFile.Size = new System.Drawing.Size(117, 30);
-            label_workFile.TabIndex = 5;
+            label_workFile.Size = new System.Drawing.Size(100, 30);
+            label_workFile.TabIndex = 6;
             label_workFile.Text = "工作文本";
             label_workFile.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // button_selectWorkFile
             // 
-            button_selectWorkFile.Location = new System.Drawing.Point(772, 31);
-            button_selectWorkFile.Margin = new System.Windows.Forms.Padding(4);
+            button_selectWorkFile.Location = new System.Drawing.Point(780, 30);
+            button_selectWorkFile.Margin = new System.Windows.Forms.Padding(0);
             button_selectWorkFile.Name = "button_selectWorkFile";
-            button_selectWorkFile.Size = new System.Drawing.Size(63, 30);
-            button_selectWorkFile.TabIndex = 4;
+            button_selectWorkFile.Size = new System.Drawing.Size(70, 30);
+            button_selectWorkFile.TabIndex = 7;
             button_selectWorkFile.Text = "Sclect";
             button_selectWorkFile.UseVisualStyleBackColor = true;
             button_selectWorkFile.Click += button3_Click;
             // 
             // label_workPath
             // 
-            label_workPath.Location = new System.Drawing.Point(4, 1);
-            label_workPath.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label_workPath.Location = new System.Drawing.Point(0, 0);
+            label_workPath.Margin = new System.Windows.Forms.Padding(0);
             label_workPath.Name = "label_workPath";
-            label_workPath.Size = new System.Drawing.Size(117, 30);
-            label_workPath.TabIndex = 4;
+            label_workPath.Size = new System.Drawing.Size(100, 30);
+            label_workPath.TabIndex = 8;
             label_workPath.Text = "工作目录";
             label_workPath.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // textBox_workFilePath
             // 
-            textBox_workFilePath.Location = new System.Drawing.Point(124, 31);
-            textBox_workFilePath.Margin = new System.Windows.Forms.Padding(4);
+            textBox_workFilePath.Location = new System.Drawing.Point(100, 30);
+            textBox_workFilePath.Margin = new System.Windows.Forms.Padding(0);
             textBox_workFilePath.Name = "textBox_workFilePath";
-            textBox_workFilePath.Size = new System.Drawing.Size(641, 23);
-            textBox_workFilePath.TabIndex = 3;
+            textBox_workFilePath.Size = new System.Drawing.Size(680, 23);
+            textBox_workFilePath.TabIndex = 9;
             // 
             // button_run
             // 
-            button_run.Location = new System.Drawing.Point(839, 0);
-            button_run.Margin = new System.Windows.Forms.Padding(4);
+            button_run.Location = new System.Drawing.Point(850, 0);
+            button_run.Margin = new System.Windows.Forms.Padding(0);
             button_run.Name = "button_run";
-            button_run.Size = new System.Drawing.Size(79, 61);
-            button_run.TabIndex = 2;
+            button_run.Size = new System.Drawing.Size(90, 60);
+            button_run.TabIndex = 10;
             button_run.Text = "执行";
             button_run.UseVisualStyleBackColor = true;
             button_run.Click += button2_Click;
             // 
             // button_selectWorkPath
             // 
-            button_selectWorkPath.Location = new System.Drawing.Point(772, 0);
-            button_selectWorkPath.Margin = new System.Windows.Forms.Padding(4);
+            button_selectWorkPath.Location = new System.Drawing.Point(780, 0);
+            button_selectWorkPath.Margin = new System.Windows.Forms.Padding(0);
             button_selectWorkPath.Name = "button_selectWorkPath";
-            button_selectWorkPath.Size = new System.Drawing.Size(63, 30);
-            button_selectWorkPath.TabIndex = 1;
+            button_selectWorkPath.Size = new System.Drawing.Size(70, 30);
+            button_selectWorkPath.TabIndex = 11;
             button_selectWorkPath.Text = "Sclect";
             button_selectWorkPath.UseVisualStyleBackColor = true;
             button_selectWorkPath.Click += button1_Click;
@@ -259,40 +276,40 @@ namespace FileMaster
             panel2.Controls.Add(label__paramDescription1);
             panel2.Controls.Add(label_param1);
             panel2.Controls.Add(textBox_param1);
-            panel2.Location = new System.Drawing.Point(16, 140);
-            panel2.Margin = new System.Windows.Forms.Padding(4);
+            panel2.Location = new System.Drawing.Point(0, 120);
+            panel2.Margin = new System.Windows.Forms.Padding(0);
             panel2.Name = "panel2";
-            panel2.Size = new System.Drawing.Size(234, 33);
-            panel2.TabIndex = 2;
+            panel2.Size = new System.Drawing.Size(240, 30);
+            panel2.TabIndex = 12;
             panel2.Visible = false;
             // 
             // label__paramDescription1
             // 
-            label__paramDescription1.Location = new System.Drawing.Point(117, 1);
-            label__paramDescription1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label__paramDescription1.Location = new System.Drawing.Point(100, 0);
+            label__paramDescription1.Margin = new System.Windows.Forms.Padding(0);
             label__paramDescription1.Name = "label__paramDescription1";
-            label__paramDescription1.Size = new System.Drawing.Size(117, 30);
-            label__paramDescription1.TabIndex = 5;
+            label__paramDescription1.Size = new System.Drawing.Size(140, 30);
+            label__paramDescription1.TabIndex = 13;
             label__paramDescription1.Text = "参数说明1";
             label__paramDescription1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label_param1
             // 
-            label_param1.Location = new System.Drawing.Point(4, 1);
-            label_param1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label_param1.Location = new System.Drawing.Point(0, 0);
+            label_param1.Margin = new System.Windows.Forms.Padding(0);
             label_param1.Name = "label_param1";
-            label_param1.Size = new System.Drawing.Size(41, 30);
-            label_param1.TabIndex = 4;
+            label_param1.Size = new System.Drawing.Size(40, 30);
+            label_param1.TabIndex = 14;
             label_param1.Text = "参数1";
             label_param1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // textBox_param1
             // 
-            textBox_param1.Location = new System.Drawing.Point(51, 1);
-            textBox_param1.Margin = new System.Windows.Forms.Padding(4);
+            textBox_param1.Location = new System.Drawing.Point(40, 0);
+            textBox_param1.Margin = new System.Windows.Forms.Padding(0);
             textBox_param1.Name = "textBox_param1";
-            textBox_param1.Size = new System.Drawing.Size(58, 23);
-            textBox_param1.TabIndex = 0;
+            textBox_param1.Size = new System.Drawing.Size(60, 23);
+            textBox_param1.TabIndex = 15;
             textBox_param1.TextChanged += textBox4_TextChanged;
             // 
             // panel3
@@ -300,47 +317,49 @@ namespace FileMaster
             panel3.Controls.Add(label_paramDescription2);
             panel3.Controls.Add(label_param2);
             panel3.Controls.Add(textBox_param2);
-            panel3.Location = new System.Drawing.Point(257, 140);
-            panel3.Margin = new System.Windows.Forms.Padding(4);
+            panel3.Location = new System.Drawing.Point(240, 120);
+            panel3.Margin = new System.Windows.Forms.Padding(0);
             panel3.Name = "panel3";
-            panel3.Size = new System.Drawing.Size(234, 33);
-            panel3.TabIndex = 6;
+            panel3.Size = new System.Drawing.Size(240, 30);
+            panel3.TabIndex = 16;
             panel3.Visible = false;
             // 
             // label_paramDescription2
             // 
-            label_paramDescription2.Location = new System.Drawing.Point(117, 1);
-            label_paramDescription2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label_paramDescription2.Location = new System.Drawing.Point(100, 0);
+            label_paramDescription2.Margin = new System.Windows.Forms.Padding(0);
             label_paramDescription2.Name = "label_paramDescription2";
-            label_paramDescription2.Size = new System.Drawing.Size(117, 30);
-            label_paramDescription2.TabIndex = 5;
+            label_paramDescription2.Size = new System.Drawing.Size(140, 30);
+            label_paramDescription2.TabIndex = 17;
             label_paramDescription2.Text = "参数说明2";
             label_paramDescription2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label_param2
             // 
-            label_param2.Location = new System.Drawing.Point(4, 1);
-            label_param2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label_param2.Location = new System.Drawing.Point(0, 0);
+            label_param2.Margin = new System.Windows.Forms.Padding(0);
             label_param2.Name = "label_param2";
-            label_param2.Size = new System.Drawing.Size(41, 30);
-            label_param2.TabIndex = 4;
+            label_param2.Size = new System.Drawing.Size(40, 30);
+            label_param2.TabIndex = 18;
             label_param2.Text = "参数2";
             label_param2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // textBox_param2
             // 
-            textBox_param2.Location = new System.Drawing.Point(51, 1);
-            textBox_param2.Margin = new System.Windows.Forms.Padding(4);
+            textBox_param2.Location = new System.Drawing.Point(40, 0);
+            textBox_param2.Margin = new System.Windows.Forms.Padding(0);
             textBox_param2.Name = "textBox_param2";
-            textBox_param2.Size = new System.Drawing.Size(58, 23);
-            textBox_param2.TabIndex = 0;
+            textBox_param2.Size = new System.Drawing.Size(60, 23);
+            textBox_param2.TabIndex = 19;
             textBox_param2.TextChanged += textBox3_TextChanged;
             // 
             // panel4
             // 
+            panel4.Controls.Add(label_controlTips);
             panel4.Controls.Add(checkBox_byteCount);
             panel4.Controls.Add(checkBox_specialStr);
             panel4.Controls.Add(checkBox_batMethod);
+            panel4.Controls.Add(checkBox_range);
             panel4.Controls.Add(checkBox_printDirPath);
             panel4.Controls.Add(checkBox_printDiskName);
             panel4.Controls.Add(checkBox_nonEmptySuffixDirIgnore);
@@ -371,54 +390,75 @@ namespace FileMaster
             panel4.Controls.Add(checkBox_keepHistory);
             panel4.Controls.Add(checkBox_nonEmptyDirIgnore);
             panel4.Controls.Add(checkBox_emptyDirIgnore);
-            panel4.Location = new System.Drawing.Point(593, 140);
-            panel4.Margin = new System.Windows.Forms.Padding(4);
+            panel4.Location = new System.Drawing.Point(600, 120);
+            panel4.Margin = new System.Windows.Forms.Padding(0);
             panel4.Name = "panel4";
-            panel4.Size = new System.Drawing.Size(342, 356);
-            panel4.TabIndex = 7;
+            panel4.Size = new System.Drawing.Size(340, 380);
+            panel4.TabIndex = 20;
+            // 
+            // label_controlTips
+            // 
+            label_controlTips.Location = new System.Drawing.Point(0, 250);
+            label_controlTips.Margin = new System.Windows.Forms.Padding(0);
+            label_controlTips.Name = "label_controlTips";
+            label_controlTips.Size = new System.Drawing.Size(340, 130);
+            label_controlTips.TabIndex = 91;
+            label_controlTips.Text = "功能说明";
+            label_controlTips.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // checkBox_byteCount
             // 
             checkBox_byteCount.Checked = true;
             checkBox_byteCount.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_byteCount.Location = new System.Drawing.Point(226, 329);
-            checkBox_byteCount.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_byteCount.Location = new System.Drawing.Point(210, 205);
+            checkBox_byteCount.Margin = new System.Windows.Forms.Padding(0);
             checkBox_byteCount.Name = "checkBox_byteCount";
-            checkBox_byteCount.Size = new System.Drawing.Size(112, 26);
-            checkBox_byteCount.TabIndex = 41;
+            checkBox_byteCount.Size = new System.Drawing.Size(124, 20);
+            checkBox_byteCount.TabIndex = 21;
             checkBox_byteCount.Tag = "";
-            checkBox_byteCount.Text = "以Byte计大小";
+            checkBox_byteCount.Text = "统计以Byte计大小";
             checkBox_byteCount.UseVisualStyleBackColor = true;
             // 
             // checkBox_specialStr
             // 
-            checkBox_specialStr.Location = new System.Drawing.Point(241, 299);
-            checkBox_specialStr.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_specialStr.Location = new System.Drawing.Point(234, 165);
+            checkBox_specialStr.Margin = new System.Windows.Forms.Padding(0);
             checkBox_specialStr.Name = "checkBox_specialStr";
-            checkBox_specialStr.Size = new System.Drawing.Size(91, 24);
-            checkBox_specialStr.TabIndex = 40;
+            checkBox_specialStr.Size = new System.Drawing.Size(87, 20);
+            checkBox_specialStr.TabIndex = 22;
             checkBox_specialStr.Text = "关键字正则";
             checkBox_specialStr.UseVisualStyleBackColor = true;
             checkBox_specialStr.CheckedChanged += checkBox38_CheckedChanged;
             // 
             // checkBox_batMethod
             // 
-            checkBox_batMethod.Location = new System.Drawing.Point(248, 132);
-            checkBox_batMethod.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_batMethod.Location = new System.Drawing.Point(278, 60);
+            checkBox_batMethod.Margin = new System.Windows.Forms.Padding(0);
             checkBox_batMethod.Name = "checkBox_batMethod";
-            checkBox_batMethod.Size = new System.Drawing.Size(84, 26);
-            checkBox_batMethod.TabIndex = 35;
-            checkBox_batMethod.Text = "BAT方式";
+            checkBox_batMethod.Size = new System.Drawing.Size(50, 20);
+            checkBox_batMethod.TabIndex = 23;
+            checkBox_batMethod.Text = "BAT";
             checkBox_batMethod.UseVisualStyleBackColor = true;
             checkBox_batMethod.Visible = false;
             // 
+            // checkBox_range
+            // 
+            checkBox_range.Location = new System.Drawing.Point(258, 185);
+            checkBox_range.Margin = new System.Windows.Forms.Padding(0);
+            checkBox_range.Name = "checkBox_range";
+            checkBox_range.Size = new System.Drawing.Size(75, 20);
+            checkBox_range.TabIndex = 24;
+            checkBox_range.Text = "范围启用";
+            checkBox_range.UseVisualStyleBackColor = true;
+            checkBox_range.CheckedChanged += checkBox_range_CheckedChanged;
+            // 
             // checkBox_printDirPath
             // 
-            checkBox_printDirPath.Location = new System.Drawing.Point(4, 106);
-            checkBox_printDirPath.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_printDirPath.Location = new System.Drawing.Point(222, 40);
+            checkBox_printDirPath.Margin = new System.Windows.Forms.Padding(0);
             checkBox_printDirPath.Name = "checkBox_printDirPath";
-            checkBox_printDirPath.Size = new System.Drawing.Size(126, 26);
-            checkBox_printDirPath.TabIndex = 18;
+            checkBox_printDirPath.Size = new System.Drawing.Size(111, 20);
+            checkBox_printDirPath.TabIndex = 25;
             checkBox_printDirPath.Text = "输出文件夹路径";
             checkBox_printDirPath.UseVisualStyleBackColor = true;
             // 
@@ -426,32 +466,32 @@ namespace FileMaster
             // 
             checkBox_printDiskName.Checked = true;
             checkBox_printDiskName.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_printDiskName.Location = new System.Drawing.Point(248, 106);
-            checkBox_printDiskName.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_printDiskName.Location = new System.Drawing.Point(210, 80);
+            checkBox_printDiskName.Margin = new System.Windows.Forms.Padding(0);
             checkBox_printDiskName.Name = "checkBox_printDiskName";
-            checkBox_printDiskName.Size = new System.Drawing.Size(84, 26);
-            checkBox_printDiskName.TabIndex = 15;
+            checkBox_printDiskName.Size = new System.Drawing.Size(75, 20);
+            checkBox_printDiskName.TabIndex = 26;
             checkBox_printDiskName.Text = "磁盘名称";
             checkBox_printDiskName.UseVisualStyleBackColor = true;
             // 
             // checkBox_nonEmptySuffixDirIgnore
             // 
-            checkBox_nonEmptySuffixDirIgnore.Location = new System.Drawing.Point(150, 269);
-            checkBox_nonEmptySuffixDirIgnore.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_nonEmptySuffixDirIgnore.Location = new System.Drawing.Point(123, 185);
+            checkBox_nonEmptySuffixDirIgnore.Margin = new System.Windows.Forms.Padding(0);
             checkBox_nonEmptySuffixDirIgnore.Name = "checkBox_nonEmptySuffixDirIgnore";
-            checkBox_nonEmptySuffixDirIgnore.Size = new System.Drawing.Size(158, 26);
-            checkBox_nonEmptySuffixDirIgnore.TabIndex = 28;
+            checkBox_nonEmptySuffixDirIgnore.Size = new System.Drawing.Size(135, 20);
+            checkBox_nonEmptySuffixDirIgnore.TabIndex = 27;
             checkBox_nonEmptySuffixDirIgnore.Tag = "";
             checkBox_nonEmptySuffixDirIgnore.Text = "忽略非空后缀文件夹";
             checkBox_nonEmptySuffixDirIgnore.UseVisualStyleBackColor = true;
             // 
             // checkBox_printFilePath
             // 
-            checkBox_printFilePath.Location = new System.Drawing.Point(136, 106);
-            checkBox_printFilePath.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_printFilePath.Location = new System.Drawing.Point(179, 60);
+            checkBox_printFilePath.Margin = new System.Windows.Forms.Padding(0);
             checkBox_printFilePath.Name = "checkBox_printFilePath";
-            checkBox_printFilePath.Size = new System.Drawing.Size(113, 26);
-            checkBox_printFilePath.TabIndex = 17;
+            checkBox_printFilePath.Size = new System.Drawing.Size(99, 20);
+            checkBox_printFilePath.TabIndex = 28;
             checkBox_printFilePath.Text = "输出文件路径";
             checkBox_printFilePath.UseVisualStyleBackColor = true;
             // 
@@ -460,21 +500,21 @@ namespace FileMaster
             comboBox_SelectWorkFilePath.FormattingEnabled = true;
             comboBox_SelectWorkFilePath.ItemHeight = 17;
             comboBox_SelectWorkFilePath.Items.AddRange(new object[] { "工作文本>用户自定", "工作文本>程序目录", "工作文本>工作目录（外）", "工作文本>工作目录（内）" });
-            comboBox_SelectWorkFilePath.Location = new System.Drawing.Point(4, 327);
-            comboBox_SelectWorkFilePath.Margin = new System.Windows.Forms.Padding(4);
+            comboBox_SelectWorkFilePath.Location = new System.Drawing.Point(0, 225);
+            comboBox_SelectWorkFilePath.Margin = new System.Windows.Forms.Padding(0);
             comboBox_SelectWorkFilePath.Name = "comboBox_SelectWorkFilePath";
-            comboBox_SelectWorkFilePath.Size = new System.Drawing.Size(219, 25);
-            comboBox_SelectWorkFilePath.TabIndex = 27;
+            comboBox_SelectWorkFilePath.Size = new System.Drawing.Size(160, 25);
+            comboBox_SelectWorkFilePath.TabIndex = 29;
             comboBox_SelectWorkFilePath.SelectedIndexChanged += comboBox2_SelectedIndexChanged;
             // 
             // checkBox_dirModification
             // 
-            checkBox_dirModification.Location = new System.Drawing.Point(181, 4);
-            checkBox_dirModification.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_dirModification.Location = new System.Drawing.Point(159, 0);
+            checkBox_dirModification.Margin = new System.Windows.Forms.Padding(0);
             checkBox_dirModification.Name = "checkBox_dirModification";
-            checkBox_dirModification.Size = new System.Drawing.Size(132, 26);
-            checkBox_dirModification.TabIndex = 33;
-            checkBox_dirModification.Text = "文件夹修改允许";
+            checkBox_dirModification.Size = new System.Drawing.Size(111, 20);
+            checkBox_dirModification.TabIndex = 30;
+            checkBox_dirModification.Text = "允许文件夹修改";
             checkBox_dirModification.UseVisualStyleBackColor = true;
             checkBox_dirModification.CheckedChanged += checkBox25_CheckedChanged;
             // 
@@ -482,22 +522,22 @@ namespace FileMaster
             // 
             checkBox_printDirTime.Checked = true;
             checkBox_printDirTime.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_printDirTime.Location = new System.Drawing.Point(121, 298);
-            checkBox_printDirTime.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_printDirTime.Location = new System.Drawing.Point(99, 205);
+            checkBox_printDirTime.Margin = new System.Windows.Forms.Padding(0);
             checkBox_printDirTime.Name = "checkBox_printDirTime";
-            checkBox_printDirTime.Size = new System.Drawing.Size(128, 26);
-            checkBox_printDirTime.TabIndex = 25;
+            checkBox_printDirTime.Size = new System.Drawing.Size(111, 20);
+            checkBox_printDirTime.TabIndex = 31;
             checkBox_printDirTime.Tag = "";
             checkBox_printDirTime.Text = "输出文件夹时间";
             checkBox_printDirTime.UseVisualStyleBackColor = true;
             // 
             // checkBox_nonEmptySuffixFileIgnore
             // 
-            checkBox_nonEmptySuffixFileIgnore.Location = new System.Drawing.Point(150, 245);
-            checkBox_nonEmptySuffixFileIgnore.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_nonEmptySuffixFileIgnore.Location = new System.Drawing.Point(111, 165);
+            checkBox_nonEmptySuffixFileIgnore.Margin = new System.Windows.Forms.Padding(0);
             checkBox_nonEmptySuffixFileIgnore.Name = "checkBox_nonEmptySuffixFileIgnore";
-            checkBox_nonEmptySuffixFileIgnore.Size = new System.Drawing.Size(140, 26);
-            checkBox_nonEmptySuffixFileIgnore.TabIndex = 28;
+            checkBox_nonEmptySuffixFileIgnore.Size = new System.Drawing.Size(123, 20);
+            checkBox_nonEmptySuffixFileIgnore.TabIndex = 32;
             checkBox_nonEmptySuffixFileIgnore.Tag = "";
             checkBox_nonEmptySuffixFileIgnore.Text = "忽略非空后缀文件";
             checkBox_nonEmptySuffixFileIgnore.UseVisualStyleBackColor = true;
@@ -506,11 +546,11 @@ namespace FileMaster
             // 
             checkBox_printFileTime.Checked = true;
             checkBox_printFileTime.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_printFileTime.Location = new System.Drawing.Point(4, 298);
-            checkBox_printFileTime.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_printFileTime.Location = new System.Drawing.Point(0, 205);
+            checkBox_printFileTime.Margin = new System.Windows.Forms.Padding(0);
             checkBox_printFileTime.Name = "checkBox_printFileTime";
-            checkBox_printFileTime.Size = new System.Drawing.Size(112, 26);
-            checkBox_printFileTime.TabIndex = 26;
+            checkBox_printFileTime.Size = new System.Drawing.Size(99, 20);
+            checkBox_printFileTime.TabIndex = 33;
             checkBox_printFileTime.Tag = "";
             checkBox_printFileTime.Text = "输出文件时间";
             checkBox_printFileTime.UseVisualStyleBackColor = true;
@@ -519,21 +559,21 @@ namespace FileMaster
             // 
             checkBox_suffix.Checked = true;
             checkBox_suffix.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_suffix.Location = new System.Drawing.Point(147, 54);
-            checkBox_suffix.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_suffix.Location = new System.Drawing.Point(270, 0);
+            checkBox_suffix.Margin = new System.Windows.Forms.Padding(0);
             checkBox_suffix.Name = "checkBox_suffix";
-            checkBox_suffix.Size = new System.Drawing.Size(56, 26);
-            checkBox_suffix.TabIndex = 23;
+            checkBox_suffix.Size = new System.Drawing.Size(51, 20);
+            checkBox_suffix.TabIndex = 34;
             checkBox_suffix.Text = "后缀";
             checkBox_suffix.UseVisualStyleBackColor = true;
             // 
             // checkBox_printDirSize
             // 
-            checkBox_printDirSize.Location = new System.Drawing.Point(210, 221);
-            checkBox_printDirSize.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_printDirSize.Location = new System.Drawing.Point(162, 145);
+            checkBox_printDirSize.Margin = new System.Windows.Forms.Padding(0);
             checkBox_printDirSize.Name = "checkBox_printDirSize";
-            checkBox_printDirSize.Size = new System.Drawing.Size(126, 26);
-            checkBox_printDirSize.TabIndex = 28;
+            checkBox_printDirSize.Size = new System.Drawing.Size(111, 20);
+            checkBox_printDirSize.TabIndex = 35;
             checkBox_printDirSize.Tag = "";
             checkBox_printDirSize.Text = "输出文件夹大小";
             checkBox_printDirSize.UseVisualStyleBackColor = true;
@@ -541,11 +581,11 @@ namespace FileMaster
             // 
             // checkBox_emptySuffixDirIgnore
             // 
-            checkBox_emptySuffixDirIgnore.Location = new System.Drawing.Point(4, 269);
-            checkBox_emptySuffixDirIgnore.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_emptySuffixDirIgnore.Location = new System.Drawing.Point(0, 185);
+            checkBox_emptySuffixDirIgnore.Margin = new System.Windows.Forms.Padding(0);
             checkBox_emptySuffixDirIgnore.Name = "checkBox_emptySuffixDirIgnore";
-            checkBox_emptySuffixDirIgnore.Size = new System.Drawing.Size(140, 26);
-            checkBox_emptySuffixDirIgnore.TabIndex = 18;
+            checkBox_emptySuffixDirIgnore.Size = new System.Drawing.Size(123, 20);
+            checkBox_emptySuffixDirIgnore.TabIndex = 36;
             checkBox_emptySuffixDirIgnore.Text = "忽略空后缀文件夹";
             checkBox_emptySuffixDirIgnore.UseVisualStyleBackColor = true;
             // 
@@ -553,11 +593,11 @@ namespace FileMaster
             // 
             checkBox_DirCount.Checked = true;
             checkBox_DirCount.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_DirCount.Location = new System.Drawing.Point(102, 221);
-            checkBox_DirCount.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_DirCount.Location = new System.Drawing.Point(75, 145);
+            checkBox_DirCount.Margin = new System.Windows.Forms.Padding(0);
             checkBox_DirCount.Name = "checkBox_DirCount";
-            checkBox_DirCount.Size = new System.Drawing.Size(100, 26);
-            checkBox_DirCount.TabIndex = 29;
+            checkBox_DirCount.Size = new System.Drawing.Size(87, 20);
+            checkBox_DirCount.TabIndex = 37;
             checkBox_DirCount.Text = "文件夹统计";
             checkBox_DirCount.UseVisualStyleBackColor = true;
             // 
@@ -565,56 +605,56 @@ namespace FileMaster
             // 
             checkBox_printDiskSymbol.Checked = true;
             checkBox_printDiskSymbol.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_printDiskSymbol.Location = new System.Drawing.Point(210, 79);
-            checkBox_printDiskSymbol.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_printDiskSymbol.Location = new System.Drawing.Point(273, 20);
+            checkBox_printDiskSymbol.Margin = new System.Windows.Forms.Padding(0);
             checkBox_printDiskSymbol.Name = "checkBox_printDiskSymbol";
-            checkBox_printDiskSymbol.Size = new System.Drawing.Size(103, 26);
-            checkBox_printDiskSymbol.TabIndex = 23;
+            checkBox_printDiskSymbol.Size = new System.Drawing.Size(63, 20);
+            checkBox_printDiskSymbol.TabIndex = 38;
             checkBox_printDiskSymbol.Tag = "";
-            checkBox_printDiskSymbol.Text = "磁盘卷标号";
+            checkBox_printDiskSymbol.Text = "卷标号";
             checkBox_printDiskSymbol.UseVisualStyleBackColor = true;
             // 
             // checkBox_fileModification
             // 
             checkBox_fileModification.Checked = true;
             checkBox_fileModification.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_fileModification.Location = new System.Drawing.Point(210, 197);
-            checkBox_fileModification.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_fileModification.Location = new System.Drawing.Point(186, 125);
+            checkBox_fileModification.Margin = new System.Windows.Forms.Padding(0);
             checkBox_fileModification.Name = "checkBox_fileModification";
-            checkBox_fileModification.Size = new System.Drawing.Size(112, 26);
-            checkBox_fileModification.TabIndex = 34;
-            checkBox_fileModification.Text = "文件修改操作";
+            checkBox_fileModification.Size = new System.Drawing.Size(99, 20);
+            checkBox_fileModification.TabIndex = 39;
+            checkBox_fileModification.Text = "允许文件修改";
             checkBox_fileModification.UseVisualStyleBackColor = true;
             // 
             // checkBox_recursion
             // 
-            checkBox_recursion.Location = new System.Drawing.Point(210, 54);
-            checkBox_recursion.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_recursion.Location = new System.Drawing.Point(123, 40);
+            checkBox_recursion.Margin = new System.Windows.Forms.Padding(0);
             checkBox_recursion.Name = "checkBox_recursion";
-            checkBox_recursion.Size = new System.Drawing.Size(113, 26);
-            checkBox_recursion.TabIndex = 16;
+            checkBox_recursion.Size = new System.Drawing.Size(99, 20);
+            checkBox_recursion.TabIndex = 40;
             checkBox_recursion.Text = "遍历子文件夹";
             checkBox_recursion.UseVisualStyleBackColor = true;
             checkBox_recursion.CheckedChanged += checkBox10_CheckedChanged;
             // 
             // checkBox_nonEmptyFileIgnore
             // 
-            checkBox_nonEmptyFileIgnore.Location = new System.Drawing.Point(102, 197);
-            checkBox_nonEmptyFileIgnore.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_nonEmptyFileIgnore.Location = new System.Drawing.Point(87, 125);
+            checkBox_nonEmptyFileIgnore.Margin = new System.Windows.Forms.Padding(0);
             checkBox_nonEmptyFileIgnore.Name = "checkBox_nonEmptyFileIgnore";
-            checkBox_nonEmptyFileIgnore.Size = new System.Drawing.Size(112, 26);
-            checkBox_nonEmptyFileIgnore.TabIndex = 28;
+            checkBox_nonEmptyFileIgnore.Size = new System.Drawing.Size(99, 20);
+            checkBox_nonEmptyFileIgnore.TabIndex = 41;
             checkBox_nonEmptyFileIgnore.Tag = "";
             checkBox_nonEmptyFileIgnore.Text = "忽略非空文件";
             checkBox_nonEmptyFileIgnore.UseVisualStyleBackColor = true;
             // 
             // checkBox_emptySuffixFileIgnore
             // 
-            checkBox_emptySuffixFileIgnore.Location = new System.Drawing.Point(4, 245);
-            checkBox_emptySuffixFileIgnore.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_emptySuffixFileIgnore.Location = new System.Drawing.Point(0, 165);
+            checkBox_emptySuffixFileIgnore.Margin = new System.Windows.Forms.Padding(0);
             checkBox_emptySuffixFileIgnore.Name = "checkBox_emptySuffixFileIgnore";
-            checkBox_emptySuffixFileIgnore.Size = new System.Drawing.Size(140, 26);
-            checkBox_emptySuffixFileIgnore.TabIndex = 18;
+            checkBox_emptySuffixFileIgnore.Size = new System.Drawing.Size(111, 20);
+            checkBox_emptySuffixFileIgnore.TabIndex = 42;
             checkBox_emptySuffixFileIgnore.Text = "忽略空后缀文件";
             checkBox_emptySuffixFileIgnore.UseVisualStyleBackColor = true;
             // 
@@ -622,11 +662,11 @@ namespace FileMaster
             // 
             checkBox_printFileSize.Checked = true;
             checkBox_printFileSize.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_printFileSize.Location = new System.Drawing.Point(100, 78);
-            checkBox_printFileSize.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_printFileSize.Location = new System.Drawing.Point(80, 60);
+            checkBox_printFileSize.Margin = new System.Windows.Forms.Padding(0);
             checkBox_printFileSize.Name = "checkBox_printFileSize";
-            checkBox_printFileSize.Size = new System.Drawing.Size(113, 26);
-            checkBox_printFileSize.TabIndex = 14;
+            checkBox_printFileSize.Size = new System.Drawing.Size(99, 20);
+            checkBox_printFileSize.TabIndex = 43;
             checkBox_printFileSize.Text = "输出文件大小";
             checkBox_printFileSize.UseVisualStyleBackColor = true;
             // 
@@ -634,21 +674,21 @@ namespace FileMaster
             // 
             checkBox__dirFirst.Checked = true;
             checkBox__dirFirst.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox__dirFirst.Location = new System.Drawing.Point(181, 28);
-            checkBox__dirFirst.Margin = new System.Windows.Forms.Padding(4);
+            checkBox__dirFirst.Location = new System.Drawing.Point(162, 20);
+            checkBox__dirFirst.Margin = new System.Windows.Forms.Padding(0);
             checkBox__dirFirst.Name = "checkBox__dirFirst";
-            checkBox__dirFirst.Size = new System.Drawing.Size(132, 26);
-            checkBox__dirFirst.TabIndex = 12;
-            checkBox__dirFirst.Text = "文件夹优先";
+            checkBox__dirFirst.Size = new System.Drawing.Size(111, 20);
+            checkBox__dirFirst.TabIndex = 44;
+            checkBox__dirFirst.Text = "优先分列文件夹";
             checkBox__dirFirst.UseVisualStyleBackColor = true;
             // 
             // checkBox_DFDividually
             // 
-            checkBox_DFDividually.Location = new System.Drawing.Point(4, 54);
-            checkBox_DFDividually.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_DFDividually.Location = new System.Drawing.Point(0, 40);
+            checkBox_DFDividually.Margin = new System.Windows.Forms.Padding(0);
             checkBox_DFDividually.Name = "checkBox_DFDividually";
-            checkBox_DFDividually.Size = new System.Drawing.Size(140, 26);
-            checkBox_DFDividually.TabIndex = 11;
+            checkBox_DFDividually.Size = new System.Drawing.Size(123, 20);
+            checkBox_DFDividually.TabIndex = 45;
             checkBox_DFDividually.Text = "文件夹与文件分列";
             checkBox_DFDividually.UseVisualStyleBackColor = true;
             // 
@@ -656,11 +696,11 @@ namespace FileMaster
             // 
             checkBox_fileStatistics.Checked = true;
             checkBox_fileStatistics.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_fileStatistics.Location = new System.Drawing.Point(4, 221);
-            checkBox_fileStatistics.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_fileStatistics.Location = new System.Drawing.Point(0, 145);
+            checkBox_fileStatistics.Margin = new System.Windows.Forms.Padding(0);
             checkBox_fileStatistics.Name = "checkBox_fileStatistics";
-            checkBox_fileStatistics.Size = new System.Drawing.Size(88, 26);
-            checkBox_fileStatistics.TabIndex = 18;
+            checkBox_fileStatistics.Size = new System.Drawing.Size(75, 20);
+            checkBox_fileStatistics.TabIndex = 46;
             checkBox_fileStatistics.Text = "文件统计";
             checkBox_fileStatistics.UseVisualStyleBackColor = true;
             // 
@@ -669,21 +709,21 @@ namespace FileMaster
             comboBox_DirEmptyMode.FormattingEnabled = true;
             comboBox_DirEmptyMode.ItemHeight = 17;
             comboBox_DirEmptyMode.Items.AddRange(new object[] { "定义空文件夹>其内文件夹及文件数量为0", "定义空文件夹>目录大小为0", "定义空文件夹>内容数量及大小均为0" });
-            comboBox_DirEmptyMode.Location = new System.Drawing.Point(4, 162);
-            comboBox_DirEmptyMode.Margin = new System.Windows.Forms.Padding(4);
+            comboBox_DirEmptyMode.Location = new System.Drawing.Point(0, 100);
+            comboBox_DirEmptyMode.Margin = new System.Windows.Forms.Padding(0);
             comboBox_DirEmptyMode.Name = "comboBox_DirEmptyMode";
-            comboBox_DirEmptyMode.Size = new System.Drawing.Size(318, 25);
-            comboBox_DirEmptyMode.TabIndex = 28;
+            comboBox_DirEmptyMode.Size = new System.Drawing.Size(245, 25);
+            comboBox_DirEmptyMode.TabIndex = 47;
             // 
             // checkBox_printTXTOnly
             // 
             checkBox_printTXTOnly.Checked = true;
             checkBox_printTXTOnly.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_printTXTOnly.Location = new System.Drawing.Point(4, 78);
-            checkBox_printTXTOnly.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_printTXTOnly.Location = new System.Drawing.Point(0, 60);
+            checkBox_printTXTOnly.Margin = new System.Windows.Forms.Padding(0);
             checkBox_printTXTOnly.Name = "checkBox_printTXTOnly";
-            checkBox_printTXTOnly.Size = new System.Drawing.Size(98, 26);
-            checkBox_printTXTOnly.TabIndex = 13;
+            checkBox_printTXTOnly.Size = new System.Drawing.Size(80, 20);
+            checkBox_printTXTOnly.TabIndex = 48;
             checkBox_printTXTOnly.Tag = "";
             checkBox_printTXTOnly.Text = "仅输出.txt";
             checkBox_printTXTOnly.UseVisualStyleBackColor = true;
@@ -691,11 +731,11 @@ namespace FileMaster
             // 
             // checkBox_emptyFileIgnore
             // 
-            checkBox_emptyFileIgnore.Location = new System.Drawing.Point(4, 197);
-            checkBox_emptyFileIgnore.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_emptyFileIgnore.Location = new System.Drawing.Point(0, 125);
+            checkBox_emptyFileIgnore.Margin = new System.Windows.Forms.Padding(0);
             checkBox_emptyFileIgnore.Name = "checkBox_emptyFileIgnore";
-            checkBox_emptyFileIgnore.Size = new System.Drawing.Size(98, 26);
-            checkBox_emptyFileIgnore.TabIndex = 18;
+            checkBox_emptyFileIgnore.Size = new System.Drawing.Size(87, 20);
+            checkBox_emptyFileIgnore.TabIndex = 49;
             checkBox_emptyFileIgnore.Text = "忽略空文件";
             checkBox_emptyFileIgnore.UseVisualStyleBackColor = true;
             // 
@@ -703,11 +743,11 @@ namespace FileMaster
             // 
             checkBox_dirSearch.Checked = true;
             checkBox_dirSearch.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_dirSearch.Location = new System.Drawing.Point(89, 28);
-            checkBox_dirSearch.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_dirSearch.Location = new System.Drawing.Point(75, 20);
+            checkBox_dirSearch.Margin = new System.Windows.Forms.Padding(0);
             checkBox_dirSearch.Name = "checkBox_dirSearch";
-            checkBox_dirSearch.Size = new System.Drawing.Size(100, 26);
-            checkBox_dirSearch.TabIndex = 10;
+            checkBox_dirSearch.Size = new System.Drawing.Size(87, 20);
+            checkBox_dirSearch.TabIndex = 50;
             checkBox_dirSearch.Text = "检索文件夹";
             checkBox_dirSearch.UseVisualStyleBackColor = true;
             // 
@@ -715,74 +755,63 @@ namespace FileMaster
             // 
             checkBox_fileSearch.Checked = true;
             checkBox_fileSearch.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_fileSearch.Location = new System.Drawing.Point(4, 28);
-            checkBox_fileSearch.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_fileSearch.Location = new System.Drawing.Point(0, 20);
+            checkBox_fileSearch.Margin = new System.Windows.Forms.Padding(0);
             checkBox_fileSearch.Name = "checkBox_fileSearch";
-            checkBox_fileSearch.Size = new System.Drawing.Size(88, 26);
-            checkBox_fileSearch.TabIndex = 9;
+            checkBox_fileSearch.Size = new System.Drawing.Size(75, 20);
+            checkBox_fileSearch.TabIndex = 51;
             checkBox_fileSearch.Text = "检索文件";
             checkBox_fileSearch.UseVisualStyleBackColor = true;
             // 
             // checkBox_keepHistory
             // 
-            checkBox_keepHistory.Location = new System.Drawing.Point(4, 4);
-            checkBox_keepHistory.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_keepHistory.Location = new System.Drawing.Point(0, 0);
+            checkBox_keepHistory.Margin = new System.Windows.Forms.Padding(0);
             checkBox_keepHistory.Name = "checkBox_keepHistory";
-            checkBox_keepHistory.Size = new System.Drawing.Size(186, 26);
-            checkBox_keepHistory.TabIndex = 8;
+            checkBox_keepHistory.Size = new System.Drawing.Size(159, 20);
+            checkBox_keepHistory.TabIndex = 52;
             checkBox_keepHistory.Text = "覆盖工作文本时保留历史";
             checkBox_keepHistory.UseVisualStyleBackColor = true;
             // 
             // checkBox_nonEmptyDirIgnore
             // 
-            checkBox_nonEmptyDirIgnore.Location = new System.Drawing.Point(124, 132);
-            checkBox_nonEmptyDirIgnore.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_nonEmptyDirIgnore.Location = new System.Drawing.Point(99, 80);
+            checkBox_nonEmptyDirIgnore.Margin = new System.Windows.Forms.Padding(0);
             checkBox_nonEmptyDirIgnore.Name = "checkBox_nonEmptyDirIgnore";
-            checkBox_nonEmptyDirIgnore.Size = new System.Drawing.Size(127, 26);
-            checkBox_nonEmptyDirIgnore.TabIndex = 28;
+            checkBox_nonEmptyDirIgnore.Size = new System.Drawing.Size(111, 20);
+            checkBox_nonEmptyDirIgnore.TabIndex = 53;
             checkBox_nonEmptyDirIgnore.Tag = "";
             checkBox_nonEmptyDirIgnore.Text = "忽略非空文件夹";
             checkBox_nonEmptyDirIgnore.UseVisualStyleBackColor = true;
             // 
             // checkBox_emptyDirIgnore
             // 
-            checkBox_emptyDirIgnore.Location = new System.Drawing.Point(4, 132);
-            checkBox_emptyDirIgnore.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_emptyDirIgnore.Location = new System.Drawing.Point(0, 80);
+            checkBox_emptyDirIgnore.Margin = new System.Windows.Forms.Padding(0);
             checkBox_emptyDirIgnore.Name = "checkBox_emptyDirIgnore";
-            checkBox_emptyDirIgnore.Size = new System.Drawing.Size(117, 26);
-            checkBox_emptyDirIgnore.TabIndex = 18;
+            checkBox_emptyDirIgnore.Size = new System.Drawing.Size(99, 20);
+            checkBox_emptyDirIgnore.TabIndex = 54;
             checkBox_emptyDirIgnore.Text = "忽略空文件夹";
             checkBox_emptyDirIgnore.UseVisualStyleBackColor = true;
             // 
             // label_headTip
             // 
-            label_headTip.Location = new System.Drawing.Point(14, 11);
-            label_headTip.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label_headTip.Location = new System.Drawing.Point(0, 0);
+            label_headTip.Margin = new System.Windows.Forms.Padding(0);
             label_headTip.Name = "label_headTip";
-            label_headTip.Size = new System.Drawing.Size(920, 30);
-            label_headTip.TabIndex = 8;
+            label_headTip.Size = new System.Drawing.Size(940, 30);
+            label_headTip.TabIndex = 0;
             label_headTip.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // checkBox_range
-            // 
-            checkBox_range.Location = new System.Drawing.Point(497, 280);
-            checkBox_range.Margin = new System.Windows.Forms.Padding(4);
-            checkBox_range.Name = "checkBox_range";
-            checkBox_range.Size = new System.Drawing.Size(84, 24);
-            checkBox_range.TabIndex = 34;
-            checkBox_range.Text = "范围启用";
-            checkBox_range.UseVisualStyleBackColor = true;
-            checkBox_range.CheckedChanged += checkBox_range_CheckedChanged;
             // 
             // checkBox_protectSuffix
             // 
             checkBox_protectSuffix.Checked = true;
             checkBox_protectSuffix.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_protectSuffix.Location = new System.Drawing.Point(6, 31);
-            checkBox_protectSuffix.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_protectSuffix.Location = new System.Drawing.Point(0, 30);
+            checkBox_protectSuffix.Margin = new System.Windows.Forms.Padding(0);
             checkBox_protectSuffix.Name = "checkBox_protectSuffix";
-            checkBox_protectSuffix.Size = new System.Drawing.Size(457, 26);
-            checkBox_protectSuffix.TabIndex = 21;
+            checkBox_protectSuffix.Size = new System.Drawing.Size(480, 30);
+            checkBox_protectSuffix.TabIndex = 55;
             checkBox_protectSuffix.Text = "保护后缀（参数4格式如.txt可生效，*不指定不保护，留空=全保护）";
             checkBox_protectSuffix.UseVisualStyleBackColor = true;
             checkBox_protectSuffix.CheckedChanged += checkBox13_CheckedChanged;
@@ -793,39 +822,39 @@ namespace FileMaster
             panel7.Controls.Add(label_param3);
             panel7.Controls.Add(textBox_param3);
             panel7.Controls.Add(checkBox_param3);
-            panel7.Location = new System.Drawing.Point(16, 176);
-            panel7.Margin = new System.Windows.Forms.Padding(4);
+            panel7.Location = new System.Drawing.Point(0, 150);
+            panel7.Margin = new System.Windows.Forms.Padding(0);
             panel7.Name = "panel7";
-            panel7.Size = new System.Drawing.Size(475, 33);
-            panel7.TabIndex = 22;
+            panel7.Size = new System.Drawing.Size(480, 30);
+            panel7.TabIndex = 56;
             // 
             // label_paramDescription3
             // 
-            label_paramDescription3.Location = new System.Drawing.Point(117, 1);
-            label_paramDescription3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label_paramDescription3.Location = new System.Drawing.Point(100, 0);
+            label_paramDescription3.Margin = new System.Windows.Forms.Padding(0);
             label_paramDescription3.Name = "label_paramDescription3";
-            label_paramDescription3.Size = new System.Drawing.Size(175, 30);
-            label_paramDescription3.TabIndex = 5;
+            label_paramDescription3.Size = new System.Drawing.Size(262, 30);
+            label_paramDescription3.TabIndex = 57;
             label_paramDescription3.Text = "参数说明3";
             label_paramDescription3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label_param3
             // 
-            label_param3.Location = new System.Drawing.Point(4, 1);
-            label_param3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label_param3.Location = new System.Drawing.Point(0, 0);
+            label_param3.Margin = new System.Windows.Forms.Padding(0);
             label_param3.Name = "label_param3";
-            label_param3.Size = new System.Drawing.Size(41, 30);
-            label_param3.TabIndex = 4;
+            label_param3.Size = new System.Drawing.Size(40, 30);
+            label_param3.TabIndex = 58;
             label_param3.Text = "参数3";
             label_param3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // textBox_param3
             // 
-            textBox_param3.Location = new System.Drawing.Point(51, 1);
-            textBox_param3.Margin = new System.Windows.Forms.Padding(4);
+            textBox_param3.Location = new System.Drawing.Point(40, 0);
+            textBox_param3.Margin = new System.Windows.Forms.Padding(0);
             textBox_param3.Name = "textBox_param3";
-            textBox_param3.Size = new System.Drawing.Size(58, 23);
-            textBox_param3.TabIndex = 0;
+            textBox_param3.Size = new System.Drawing.Size(60, 23);
+            textBox_param3.TabIndex = 59;
             textBox_param3.Text = "*";
             textBox_param3.TextChanged += textBox5_TextChanged;
             // 
@@ -833,72 +862,83 @@ namespace FileMaster
             // 
             checkBox_param3.Checked = true;
             checkBox_param3.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_param3.Location = new System.Drawing.Point(299, 4);
-            checkBox_param3.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_param3.Location = new System.Drawing.Point(362, 0);
+            checkBox_param3.Margin = new System.Windows.Forms.Padding(0);
             checkBox_param3.Name = "checkBox_param3";
-            checkBox_param3.Size = new System.Drawing.Size(134, 26);
-            checkBox_param3.TabIndex = 33;
+            checkBox_param3.Size = new System.Drawing.Size(118, 30);
+            checkBox_param3.TabIndex = 60;
             checkBox_param3.Text = "参数3忽略大小写";
             checkBox_param3.UseVisualStyleBackColor = true;
             // 
             // label_dirStatistics
             // 
-            label_dirStatistics.Location = new System.Drawing.Point(16, 458);
-            label_dirStatistics.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label_dirStatistics.Location = new System.Drawing.Point(0, 390);
+            label_dirStatistics.Margin = new System.Windows.Forms.Padding(0);
             label_dirStatistics.Name = "label_dirStatistics";
-            label_dirStatistics.Size = new System.Drawing.Size(570, 38);
-            label_dirStatistics.TabIndex = 24;
+            label_dirStatistics.Size = new System.Drawing.Size(600, 110);
+            label_dirStatistics.TabIndex = 61;
             label_dirStatistics.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             label_dirStatistics.Click += label11_Click;
             // 
             // panel8
             // 
+            panel8.Controls.Add(checkBox_RangeReversal);
             panel8.Controls.Add(label_rangeTo);
             panel8.Controls.Add(label_range);
             panel8.Controls.Add(textBox_rangeMax);
             panel8.Controls.Add(textBox_rangeMin);
-            panel8.Location = new System.Drawing.Point(16, 276);
-            panel8.Margin = new System.Windows.Forms.Padding(4);
+            panel8.Location = new System.Drawing.Point(0, 240);
+            panel8.Margin = new System.Windows.Forms.Padding(0);
             panel8.Name = "panel8";
-            panel8.Size = new System.Drawing.Size(475, 35);
-            panel8.TabIndex = 28;
+            panel8.Size = new System.Drawing.Size(560, 30);
+            panel8.TabIndex = 62;
+            // 
+            // checkBox_RangeReversal
+            // 
+            checkBox_RangeReversal.Location = new System.Drawing.Point(480, 0);
+            checkBox_RangeReversal.Margin = new System.Windows.Forms.Padding(0);
+            checkBox_RangeReversal.Name = "checkBox_RangeReversal";
+            checkBox_RangeReversal.Size = new System.Drawing.Size(75, 20);
+            checkBox_RangeReversal.TabIndex = 67;
+            checkBox_RangeReversal.Text = "范围反选";
+            checkBox_RangeReversal.UseVisualStyleBackColor = true;
             // 
             // label_rangeTo
             // 
-            label_rangeTo.Location = new System.Drawing.Point(268, 0);
-            label_rangeTo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label_rangeTo.Location = new System.Drawing.Point(261, 0);
+            label_rangeTo.Margin = new System.Windows.Forms.Padding(0);
             label_rangeTo.Name = "label_rangeTo";
-            label_rangeTo.Size = new System.Drawing.Size(23, 30);
-            label_rangeTo.TabIndex = 5;
-            label_rangeTo.Text = "~";
+            label_rangeTo.Size = new System.Drawing.Size(22, 30);
+            label_rangeTo.TabIndex = 63;
+            label_rangeTo.Text = " ~ ";
             label_rangeTo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label_range
             // 
-            label_range.Location = new System.Drawing.Point(4, 1);
-            label_range.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label_range.Location = new System.Drawing.Point(0, 0);
+            label_range.Margin = new System.Windows.Forms.Padding(0);
             label_range.Name = "label_range";
-            label_range.Size = new System.Drawing.Size(78, 30);
-            label_range.TabIndex = 4;
+            label_range.Size = new System.Drawing.Size(64, 30);
+            label_range.TabIndex = 64;
             label_range.Text = "范围 Byte:";
             label_range.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // textBox_rangeMax
             // 
-            textBox_rangeMax.Location = new System.Drawing.Point(299, 1);
-            textBox_rangeMax.Margin = new System.Windows.Forms.Padding(4);
+            textBox_rangeMax.Location = new System.Drawing.Point(283, 0);
+            textBox_rangeMax.Margin = new System.Windows.Forms.Padding(0);
             textBox_rangeMax.Name = "textBox_rangeMax";
-            textBox_rangeMax.Size = new System.Drawing.Size(174, 23);
-            textBox_rangeMax.TabIndex = 0;
+            textBox_rangeMax.Size = new System.Drawing.Size(197, 23);
+            textBox_rangeMax.TabIndex = 65;
             textBox_rangeMax.TextChanged += textBox7_TextChanged;
             // 
             // textBox_rangeMin
             // 
-            textBox_rangeMin.Location = new System.Drawing.Point(86, 1);
-            textBox_rangeMin.Margin = new System.Windows.Forms.Padding(4);
+            textBox_rangeMin.Location = new System.Drawing.Point(64, 0);
+            textBox_rangeMin.Margin = new System.Windows.Forms.Padding(0);
             textBox_rangeMin.Name = "textBox_rangeMin";
-            textBox_rangeMin.Size = new System.Drawing.Size(174, 23);
-            textBox_rangeMin.TabIndex = 0;
+            textBox_rangeMin.Size = new System.Drawing.Size(197, 23);
+            textBox_rangeMin.TabIndex = 66;
             textBox_rangeMin.TextChanged += textBox6_TextChanged;
             // 
             // panel9
@@ -908,52 +948,52 @@ namespace FileMaster
             panel9.Controls.Add(label1_param4);
             panel9.Controls.Add(textBox_param4);
             panel9.Controls.Add(checkBox_protectSuffix);
-            panel9.Location = new System.Drawing.Point(16, 212);
-            panel9.Margin = new System.Windows.Forms.Padding(4);
+            panel9.Location = new System.Drawing.Point(0, 180);
+            panel9.Margin = new System.Windows.Forms.Padding(0);
             panel9.Name = "panel9";
-            panel9.Size = new System.Drawing.Size(475, 60);
-            panel9.TabIndex = 34;
+            panel9.Size = new System.Drawing.Size(480, 60);
+            panel9.TabIndex = 67;
             panel9.Visible = false;
             // 
             // checkBox_param4
             // 
             checkBox_param4.Checked = true;
             checkBox_param4.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox_param4.Location = new System.Drawing.Point(299, 3);
-            checkBox_param4.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_param4.Location = new System.Drawing.Point(362, 0);
+            checkBox_param4.Margin = new System.Windows.Forms.Padding(0);
             checkBox_param4.Name = "checkBox_param4";
-            checkBox_param4.Size = new System.Drawing.Size(134, 26);
-            checkBox_param4.TabIndex = 34;
+            checkBox_param4.Size = new System.Drawing.Size(118, 30);
+            checkBox_param4.TabIndex = 68;
             checkBox_param4.Text = "参数4忽略大小写";
             checkBox_param4.UseVisualStyleBackColor = true;
             // 
             // label1_paramDescription4
             // 
-            label1_paramDescription4.Location = new System.Drawing.Point(117, 1);
-            label1_paramDescription4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1_paramDescription4.Location = new System.Drawing.Point(100, 0);
+            label1_paramDescription4.Margin = new System.Windows.Forms.Padding(0);
             label1_paramDescription4.Name = "label1_paramDescription4";
-            label1_paramDescription4.Size = new System.Drawing.Size(175, 30);
-            label1_paramDescription4.TabIndex = 5;
+            label1_paramDescription4.Size = new System.Drawing.Size(262, 30);
+            label1_paramDescription4.TabIndex = 69;
             label1_paramDescription4.Text = "参数说明4";
             label1_paramDescription4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label1_param4
             // 
-            label1_param4.Location = new System.Drawing.Point(4, 1);
-            label1_param4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1_param4.Location = new System.Drawing.Point(0, 0);
+            label1_param4.Margin = new System.Windows.Forms.Padding(0);
             label1_param4.Name = "label1_param4";
-            label1_param4.Size = new System.Drawing.Size(41, 30);
-            label1_param4.TabIndex = 4;
+            label1_param4.Size = new System.Drawing.Size(40, 30);
+            label1_param4.TabIndex = 70;
             label1_param4.Text = "参数4";
             label1_param4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // textBox_param4
             // 
-            textBox_param4.Location = new System.Drawing.Point(51, 1);
-            textBox_param4.Margin = new System.Windows.Forms.Padding(4);
+            textBox_param4.Location = new System.Drawing.Point(40, 0);
+            textBox_param4.Margin = new System.Windows.Forms.Padding(0);
             textBox_param4.Name = "textBox_param4";
-            textBox_param4.Size = new System.Drawing.Size(58, 23);
-            textBox_param4.TabIndex = 0;
+            textBox_param4.Size = new System.Drawing.Size(60, 23);
+            textBox_param4.TabIndex = 71;
             textBox_param4.Text = "*";
             textBox_param4.TextChanged += textBox8_TextChanged;
             // 
@@ -962,40 +1002,40 @@ namespace FileMaster
             panel5.Controls.Add(label16);
             panel5.Controls.Add(label_param5);
             panel5.Controls.Add(textBox_param5);
-            panel5.Location = new System.Drawing.Point(16, 316);
-            panel5.Margin = new System.Windows.Forms.Padding(4);
+            panel5.Location = new System.Drawing.Point(0, 270);
+            panel5.Margin = new System.Windows.Forms.Padding(0);
             panel5.Name = "panel5";
-            panel5.Size = new System.Drawing.Size(234, 33);
-            panel5.TabIndex = 35;
+            panel5.Size = new System.Drawing.Size(240, 30);
+            panel5.TabIndex = 72;
             panel5.Visible = false;
             // 
             // label16
             // 
-            label16.Location = new System.Drawing.Point(117, 1);
-            label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label16.Location = new System.Drawing.Point(100, 0);
+            label16.Margin = new System.Windows.Forms.Padding(0);
             label16.Name = "label16";
-            label16.Size = new System.Drawing.Size(117, 30);
-            label16.TabIndex = 5;
+            label16.Size = new System.Drawing.Size(140, 30);
+            label16.TabIndex = 73;
             label16.Text = "参数说明5";
             label16.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label_param5
             // 
-            label_param5.Location = new System.Drawing.Point(4, 1);
-            label_param5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label_param5.Location = new System.Drawing.Point(0, 0);
+            label_param5.Margin = new System.Windows.Forms.Padding(0);
             label_param5.Name = "label_param5";
-            label_param5.Size = new System.Drawing.Size(41, 30);
-            label_param5.TabIndex = 4;
+            label_param5.Size = new System.Drawing.Size(40, 30);
+            label_param5.TabIndex = 74;
             label_param5.Text = "参数5";
             label_param5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // textBox_param5
             // 
-            textBox_param5.Location = new System.Drawing.Point(51, 1);
-            textBox_param5.Margin = new System.Windows.Forms.Padding(4);
+            textBox_param5.Location = new System.Drawing.Point(40, 0);
+            textBox_param5.Margin = new System.Windows.Forms.Padding(0);
             textBox_param5.Name = "textBox_param5";
-            textBox_param5.Size = new System.Drawing.Size(58, 23);
-            textBox_param5.TabIndex = 0;
+            textBox_param5.Size = new System.Drawing.Size(60, 23);
+            textBox_param5.TabIndex = 75;
             textBox_param5.TextChanged += textBox9_TextChanged;
             // 
             // panel6
@@ -1003,40 +1043,40 @@ namespace FileMaster
             panel6.Controls.Add(label18);
             panel6.Controls.Add(label_param6);
             panel6.Controls.Add(textBox_param6);
-            panel6.Location = new System.Drawing.Point(257, 316);
-            panel6.Margin = new System.Windows.Forms.Padding(4);
+            panel6.Location = new System.Drawing.Point(240, 270);
+            panel6.Margin = new System.Windows.Forms.Padding(0);
             panel6.Name = "panel6";
-            panel6.Size = new System.Drawing.Size(234, 33);
-            panel6.TabIndex = 36;
+            panel6.Size = new System.Drawing.Size(240, 30);
+            panel6.TabIndex = 76;
             panel6.Visible = false;
             // 
             // label18
             // 
-            label18.Location = new System.Drawing.Point(117, 1);
-            label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label18.Location = new System.Drawing.Point(100, 0);
+            label18.Margin = new System.Windows.Forms.Padding(0);
             label18.Name = "label18";
-            label18.Size = new System.Drawing.Size(117, 30);
-            label18.TabIndex = 5;
+            label18.Size = new System.Drawing.Size(140, 30);
+            label18.TabIndex = 77;
             label18.Text = "参数说明6";
             label18.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label_param6
             // 
-            label_param6.Location = new System.Drawing.Point(4, 1);
-            label_param6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label_param6.Location = new System.Drawing.Point(0, 0);
+            label_param6.Margin = new System.Windows.Forms.Padding(0);
             label_param6.Name = "label_param6";
-            label_param6.Size = new System.Drawing.Size(41, 30);
-            label_param6.TabIndex = 4;
+            label_param6.Size = new System.Drawing.Size(40, 30);
+            label_param6.TabIndex = 78;
             label_param6.Text = "参数6";
             label_param6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // textBox_param6
             // 
-            textBox_param6.Location = new System.Drawing.Point(51, 1);
-            textBox_param6.Margin = new System.Windows.Forms.Padding(4);
+            textBox_param6.Location = new System.Drawing.Point(40, 0);
+            textBox_param6.Margin = new System.Windows.Forms.Padding(0);
             textBox_param6.Name = "textBox_param6";
-            textBox_param6.Size = new System.Drawing.Size(58, 23);
-            textBox_param6.TabIndex = 0;
+            textBox_param6.Size = new System.Drawing.Size(60, 23);
+            textBox_param6.TabIndex = 79;
             textBox_param6.TextChanged += textBox10_TextChanged;
             // 
             // panel10
@@ -1046,20 +1086,20 @@ namespace FileMaster
             panel10.Controls.Add(button_param8);
             panel10.Controls.Add(label_param8);
             panel10.Controls.Add(textBox_param8);
-            panel10.Location = new System.Drawing.Point(16, 356);
-            panel10.Margin = new System.Windows.Forms.Padding(4);
+            panel10.Location = new System.Drawing.Point(0, 300);
+            panel10.Margin = new System.Windows.Forms.Padding(0);
             panel10.Name = "panel10";
-            panel10.Size = new System.Drawing.Size(573, 65);
-            panel10.TabIndex = 37;
+            panel10.Size = new System.Drawing.Size(560, 60);
+            panel10.TabIndex = 80;
             panel10.Visible = false;
             // 
             // checkBox_param8
             // 
-            checkBox_param8.Location = new System.Drawing.Point(357, 37);
-            checkBox_param8.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_param8.Location = new System.Drawing.Point(350, 30);
+            checkBox_param8.Margin = new System.Windows.Forms.Padding(0);
             checkBox_param8.Name = "checkBox_param8";
-            checkBox_param8.Size = new System.Drawing.Size(132, 26);
-            checkBox_param8.TabIndex = 34;
+            checkBox_param8.Size = new System.Drawing.Size(111, 20);
+            checkBox_param8.TabIndex = 81;
             checkBox_param8.Text = "回收站删除提示";
             checkBox_param8.UseVisualStyleBackColor = true;
             // 
@@ -1067,50 +1107,50 @@ namespace FileMaster
             // 
             comboBox_param8.FormattingEnabled = true;
             comboBox_param8.ItemHeight = 17;
-            comboBox_param8.Items.AddRange(new object[] { "将检索到的文件（夹）移动至>用户自定文件夹", "将检索到的文件（夹）回收至>回收站", "将检索到的文件（夹）直接删除" });
-            comboBox_param8.Location = new System.Drawing.Point(6, 35);
-            comboBox_param8.Margin = new System.Windows.Forms.Padding(4);
+            comboBox_param8.Items.AddRange(new object[] { "将检索到的文件（夹）移动至>指定文件夹", "将检索到的文件（夹）移动至>回收站", "将检索到的文件（夹）直接删除" });
+            comboBox_param8.Location = new System.Drawing.Point(0, 30);
+            comboBox_param8.Margin = new System.Windows.Forms.Padding(0);
             comboBox_param8.Name = "comboBox_param8";
-            comboBox_param8.Size = new System.Drawing.Size(344, 25);
-            comboBox_param8.TabIndex = 28;
+            comboBox_param8.Size = new System.Drawing.Size(350, 25);
+            comboBox_param8.TabIndex = 82;
             comboBox_param8.SelectedIndexChanged += comboBox4_SelectedIndexChanged;
             // 
             // button_param8
             // 
-            button_param8.Location = new System.Drawing.Point(481, 1);
-            button_param8.Margin = new System.Windows.Forms.Padding(4);
+            button_param8.Location = new System.Drawing.Point(500, 0);
+            button_param8.Margin = new System.Windows.Forms.Padding(0);
             button_param8.Name = "button_param8";
-            button_param8.Size = new System.Drawing.Size(63, 30);
-            button_param8.TabIndex = 5;
+            button_param8.Size = new System.Drawing.Size(60, 30);
+            button_param8.TabIndex = 83;
             button_param8.Text = "Sclect";
             button_param8.UseVisualStyleBackColor = true;
             button_param8.Click += button4_Click;
             // 
             // label_param8
             // 
-            label_param8.Location = new System.Drawing.Point(4, 1);
-            label_param8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label_param8.Location = new System.Drawing.Point(0, 0);
+            label_param8.Margin = new System.Windows.Forms.Padding(0);
             label_param8.Name = "label_param8";
-            label_param8.Size = new System.Drawing.Size(41, 30);
-            label_param8.TabIndex = 4;
+            label_param8.Size = new System.Drawing.Size(40, 30);
+            label_param8.TabIndex = 84;
             label_param8.Text = "参数8";
             label_param8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // textBox_param8
             // 
-            textBox_param8.Location = new System.Drawing.Point(51, 1);
-            textBox_param8.Margin = new System.Windows.Forms.Padding(4);
+            textBox_param8.Location = new System.Drawing.Point(40, 0);
+            textBox_param8.Margin = new System.Windows.Forms.Padding(0);
             textBox_param8.Name = "textBox_param8";
-            textBox_param8.Size = new System.Drawing.Size(423, 23);
-            textBox_param8.TabIndex = 0;
+            textBox_param8.Size = new System.Drawing.Size(460, 23);
+            textBox_param8.TabIndex = 85;
             // 
             // checkBox_regular
             // 
-            checkBox_regular.Location = new System.Drawing.Point(509, 6);
-            checkBox_regular.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_regular.Location = new System.Drawing.Point(549, 0);
+            checkBox_regular.Margin = new System.Windows.Forms.Padding(0);
             checkBox_regular.Name = "checkBox_regular";
-            checkBox_regular.Size = new System.Drawing.Size(56, 24);
-            checkBox_regular.TabIndex = 38;
+            checkBox_regular.Size = new System.Drawing.Size(51, 20);
+            checkBox_regular.TabIndex = 86;
             checkBox_regular.Text = "正则";
             checkBox_regular.UseVisualStyleBackColor = true;
             checkBox_regular.CheckedChanged += checkBox36_CheckedChanged;
@@ -1121,63 +1161,49 @@ namespace FileMaster
             panel11.Controls.Add(checkBox_regular);
             panel11.Controls.Add(label_specialStr);
             panel11.Controls.Add(textBox_specialStr);
-            panel11.Location = new System.Drawing.Point(16, 422);
-            panel11.Margin = new System.Windows.Forms.Padding(4);
+            panel11.Location = new System.Drawing.Point(0, 360);
+            panel11.Margin = new System.Windows.Forms.Padding(0);
             panel11.Name = "panel11";
-            panel11.Size = new System.Drawing.Size(573, 33);
-            panel11.TabIndex = 39;
+            panel11.Size = new System.Drawing.Size(600, 30);
+            panel11.TabIndex = 87;
             panel11.Visible = false;
             // 
             // checkBox_specialStrIgnoreCase
             // 
-            checkBox_specialStrIgnoreCase.Location = new System.Drawing.Point(401, 6);
-            checkBox_specialStrIgnoreCase.Margin = new System.Windows.Forms.Padding(4);
+            checkBox_specialStrIgnoreCase.Location = new System.Drawing.Point(462, 0);
+            checkBox_specialStrIgnoreCase.Margin = new System.Windows.Forms.Padding(0);
             checkBox_specialStrIgnoreCase.Name = "checkBox_specialStrIgnoreCase";
-            checkBox_specialStrIgnoreCase.Size = new System.Drawing.Size(100, 24);
-            checkBox_specialStrIgnoreCase.TabIndex = 39;
+            checkBox_specialStrIgnoreCase.Size = new System.Drawing.Size(87, 20);
+            checkBox_specialStrIgnoreCase.TabIndex = 88;
             checkBox_specialStrIgnoreCase.Text = "忽略大小写";
             checkBox_specialStrIgnoreCase.UseVisualStyleBackColor = true;
             // 
             // label_specialStr
             // 
-            label_specialStr.Location = new System.Drawing.Point(4, 1);
-            label_specialStr.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label_specialStr.Location = new System.Drawing.Point(0, 0);
+            label_specialStr.Margin = new System.Windows.Forms.Padding(0);
             label_specialStr.Name = "label_specialStr";
-            label_specialStr.Size = new System.Drawing.Size(78, 30);
-            label_specialStr.TabIndex = 4;
+            label_specialStr.Size = new System.Drawing.Size(56, 30);
+            label_specialStr.TabIndex = 89;
             label_specialStr.Text = "关键字：";
             label_specialStr.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // textBox_specialStr
             // 
-            textBox_specialStr.Location = new System.Drawing.Point(86, 1);
-            textBox_specialStr.Margin = new System.Windows.Forms.Padding(4);
+            textBox_specialStr.Location = new System.Drawing.Point(56, 0);
+            textBox_specialStr.Margin = new System.Windows.Forms.Padding(0);
             textBox_specialStr.Name = "textBox_specialStr";
-            textBox_specialStr.Size = new System.Drawing.Size(307, 23);
-            textBox_specialStr.TabIndex = 0;
-            // 
-            // checkBox40
-            // 
-            checkBox40.Checked = true;
-            checkBox40.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox40.Location = new System.Drawing.Point(497, 144);
-            checkBox40.Margin = new System.Windows.Forms.Padding(4);
-            checkBox40.Name = "checkBox40";
-            checkBox40.Size = new System.Drawing.Size(84, 24);
-            checkBox40.TabIndex = 40;
-            checkBox40.Text = "统计时耗";
-            checkBox40.UseVisualStyleBackColor = true;
+            textBox_specialStr.Size = new System.Drawing.Size(406, 23);
+            textBox_specialStr.TabIndex = 90;
             // 
             // Form1
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(948, 507);
-            Controls.Add(checkBox40);
+            ClientSize = new System.Drawing.Size(944, 501);
             Controls.Add(panel11);
             Controls.Add(panel10);
             Controls.Add(panel6);
-            Controls.Add(checkBox_range);
             Controls.Add(panel5);
             Controls.Add(panel9);
             Controls.Add(panel8);
@@ -1190,7 +1216,7 @@ namespace FileMaster
             Controls.Add(panel1);
             Margin = new System.Windows.Forms.Padding(4);
             Name = "Form1";
-            Text = "仓鼠文件处理程序v0.23 测试版";
+            Text = "文件处理程序v0.23 测试版";
             Load += Form1_Load;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
@@ -1236,7 +1262,7 @@ namespace FileMaster
         private System.Windows.Forms.Label label_param2;
         private System.Windows.Forms.TextBox textBox_param2;
         private System.Windows.Forms.ComboBox comboBox_selectFunc;
-        private System.Windows.Forms.CheckBox checkBox_overlayWorkFile;
+        private System.Windows.Forms.CheckBox checkBox_coverWorkFile;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.CheckBox checkBox_dirSearch;
         private System.Windows.Forms.CheckBox checkBox_fileSearch;
@@ -1310,6 +1336,8 @@ namespace FileMaster
         private System.Windows.Forms.CheckBox checkBox_specialStr;
         private System.Windows.Forms.CheckBox checkBox_byteCount;
         private System.Windows.Forms.CheckBox checkBox40;
+        private System.Windows.Forms.Label label_controlTips;
+        private System.Windows.Forms.CheckBox checkBox_RangeReversal;
     }
 
 }

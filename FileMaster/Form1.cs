@@ -293,10 +293,10 @@ namespace FileMaster
                 {
                     diskSymbol = workPath.Substring(0, 1);
                 }
-                //生成指定文本到程序目录的情况：1）工作文本为空；2）工作文本路径已存在且未允许覆盖；3）勾选仅输出.txt但工作文本格式错误，虽不为空但后缀非.txt；4）文件路径非法。
+                //生成指定文本到程序目录的情况：1）工作文本为空；2）工作文本路径已存在但未允许指定工作文本；3）勾选仅输出.txt但工作文本格式错误，虽不为空但后缀非.txt；4）文件路径非法。
                 if (
                     workFilePath == ""
-                    || (File.Exists(workFilePath) && !checkBox_overlayWorkFile.Checked)
+                    || (File.Exists(workFilePath) && !checkBox_coverWorkFile.Checked)
                     || (Regex.IsMatch(workFilePath, @"^(.*)(\.txt)$") && !checkBox_printTXTOnly.Checked)
                     || !MMCore.IsDFPath(workFilePath)
                 )
@@ -1866,18 +1866,19 @@ namespace FileMaster
                             continue;
                         }
                         if (checkBox_specialStr.Checked && textBox_specialStr.Text != "")
-                        {
+                        {//启用了关键字并且关键字不为空时
                             if (checkBox_regular.Checked)
-                            {
+                            {//启用了正则表达式
+                                //从文件路径提取的文件名是否匹配文本框中的正则表达式（textBox_specialStr.Text），如果不匹配则使用 continue 跳过当前循环迭代
                                 if (!Regex.IsMatch(item.Substring(item.LastIndexOf("\\") + 1), textBox_specialStr.Text)) { continue; }
                             }
                             else
                             {
-                                //正则或特征不匹配的话，下一个
+                                //未启用正则情况下
                                 if (checkBox_specialStrIgnoreCase.Checked)
                                 {
                                     //忽略大小写
-                                    //IndexOf 函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
+                                    //IndexOf函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
                                     if (item.Substring(item.LastIndexOf("\\") + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
                                     {
                                         continue;
@@ -1895,9 +1896,14 @@ namespace FileMaster
                         }
 
 
-                        if (checkBox_range.Checked && !ParamIsInRange(item))
-                        {
-                            continue;
+                        if (checkBox_range.Checked)
+                        {//启用范围大小功能时
+                         //若未反选则在范围外的正常被过滤，若反选则范围内的被过滤
+                            if ((checkBox_RangeReversal.Checked && ParamIsInRange(item)) ||
+                                (!checkBox_RangeReversal.Checked && !ParamIsInRange(item)))
+                            {
+                                continue;
+                            }
                         }
                         switch (comboBox_selectFunc.SelectedIndex)
                         {
@@ -2022,11 +2028,11 @@ namespace FileMaster
                                 }
                                 else
                                 {
-                                    //正则或特征不匹配的话，下一个
+                                    //未启用正则情况下
                                     if (checkBox_specialStrIgnoreCase.Checked)
                                     {
                                         //忽略大小写
-                                        //IndexOf 函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
+                                        //IndexOf函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
                                         if (item.Substring(item.LastIndexOf("\\") + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
                                         {
                                             continue;
@@ -2042,9 +2048,14 @@ namespace FileMaster
                                     }
                                 }
                             }
-                            if (checkBox_range.Checked && !ParamIsInRange(item))
-                            {
-                                continue;
+                            if (checkBox_range.Checked)
+                            {//启用范围大小功能时
+                             //若未反选则在范围外的正常被过滤，若反选则范围内的被过滤
+                                if ((checkBox_RangeReversal.Checked && ParamIsInRange(item)) ||
+                                    (!checkBox_RangeReversal.Checked && !ParamIsInRange(item)))
+                                {
+                                    continue;
+                                }
                             }
                             switch (comboBox_selectFunc.SelectedIndex)
                             {
@@ -2119,11 +2130,11 @@ namespace FileMaster
                                 }
                                 else
                                 {
-                                    //正则或特征不匹配的话，下一个
+                                    //未启用正则情况下
                                     if (checkBox_specialStrIgnoreCase.Checked)
                                     {
                                         //忽略大小写
-                                        //IndexOf 函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
+                                        //IndexOf函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
                                         if (fileInfo.Name.Substring(fileInfo.Name.LastIndexOf("\\") + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
                                         {
                                             continue;
@@ -2255,11 +2266,11 @@ namespace FileMaster
                             }
                             else
                             {
-                                //正则或特征不匹配的话，下一个
+                                //未启用正则情况下
                                 if (checkBox_specialStrIgnoreCase.Checked)
                                 {
                                     //忽略大小写
-                                    //IndexOf 函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
+                                    //IndexOf函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
                                     if (item.Substring(item.LastIndexOf("\\") + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
                                     {
                                         continue;
@@ -2275,9 +2286,14 @@ namespace FileMaster
                                 }
                             }
                         }
-                        if (checkBox_range.Checked && !ParamIsInRange(item))
-                        {
-                            continue;
+                        if (checkBox_range.Checked)
+                        {//启用范围大小功能时
+                         //若未反选则在范围外的正常被过滤，若反选则范围内的被过滤
+                            if ((checkBox_RangeReversal.Checked && ParamIsInRange(item)) ||
+                                (!checkBox_RangeReversal.Checked && !ParamIsInRange(item)))
+                            {
+                                continue;
+                            }
                         }
                         switch (comboBox_selectFunc.SelectedIndex)
                         {
@@ -2379,11 +2395,11 @@ namespace FileMaster
                                 }
                                 else
                                 {
-                                    //正则或特征不匹配的话，下一个
+                                    //未启用正则情况下
                                     if (checkBox_specialStrIgnoreCase.Checked)
                                     {
                                         //忽略大小写
-                                        //IndexOf 函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
+                                        //IndexOf函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
                                         if (item.Substring(item.LastIndexOf("\\") + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
                                         {
                                             continue;
@@ -2399,9 +2415,14 @@ namespace FileMaster
                                     }
                                 }
                             }
-                            if (checkBox_range.Checked && !ParamIsInRange(item))
-                            {
-                                continue;
+                            if (checkBox_range.Checked)
+                            {//启用范围大小功能时
+                             //若未反选则在范围外的正常被过滤，若反选则范围内的被过滤
+                                if ((checkBox_RangeReversal.Checked && ParamIsInRange(item)) ||
+                                    (!checkBox_RangeReversal.Checked && !ParamIsInRange(item)))
+                                {
+                                    continue;
+                                }
                             }
                             switch (comboBox_selectFunc.SelectedIndex)
                             {
@@ -2479,11 +2500,11 @@ namespace FileMaster
                                 }
                                 else
                                 {
-                                    //正则或特征不匹配的话，下一个
+                                    //未启用正则情况下
                                     if (checkBox_specialStrIgnoreCase.Checked)
                                     {
                                         //忽略大小写
-                                        //IndexOf 函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
+                                        //IndexOf函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
                                         if (fileInfo.Name.Substring(fileInfo.Name.LastIndexOf("\\") + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
                                         {
                                             continue;
@@ -2564,6 +2585,7 @@ namespace FileMaster
         {
             InitializeComponent();
             label_dirStatistics.ForeColor = Color.Red;
+            label_controlTips.ForeColor = Color.Green;
             label_paramDescription3.Text = "检索后缀（如.txt）";
             if (comboBox_selectFunc.SelectedIndex == -1)
             {
@@ -2577,6 +2599,11 @@ namespace FileMaster
             {
                 comboBox_param8.SelectedIndex = 1;
             }
+            if (comboBox_SelectWorkFilePath.SelectedIndex == -1)
+            {
+                comboBox_SelectWorkFilePath.SelectedIndex = 0;
+            }
+            label_controlTips.Text = string.Empty;
             if (!checkBox_range.Checked) { panel8.Visible = false; }
             else { panel8.Visible = true; }
         }
@@ -2588,10 +2615,12 @@ namespace FileMaster
         /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.ShowDialog();
-            string path = fbd.SelectedPath;
-            textBox_workPath.Text = path;
+            using (FolderBrowserDialog fbd = new FolderBrowserDialog())
+            {
+                fbd.ShowDialog();
+                string path = fbd.SelectedPath;
+                textBox_workPath.Text = path;
+            }
         }
 
         /// <summary>
@@ -2601,10 +2630,22 @@ namespace FileMaster
         /// <param name="e"></param>
         private void button3_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.ShowDialog();
-            string path = ofd.FileName;
-            textBox_workFilePath.Text = path;
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                if (checkBox_printTXTOnly.Checked) { ofd.Filter = "Text files (*.txt)|*.txt"; }
+                else { ofd.Filter = "All Files (*.*)|*.*"; }
+
+                DialogResult result = ofd.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    string path = ofd.FileName;
+                    textBox_workFilePath.Text = path;
+                }
+                else if (result == DialogResult.Cancel)
+                {
+                    //MessageBox.Show("用户取消了文件选择！");
+                }
+            }
         }
 
         /// <summary>
@@ -2622,7 +2663,7 @@ namespace FileMaster
                 }
                 else
                 {
-                    label_dirStatistics.Text = "工作目录错误！（若目录名正确，可反馈至作者邮箱）";
+                    label_dirStatistics.Text = "工作目录错误！";
                     break;
                 }
                 if (button_run.Text == "执行" && WorkStatus == false)
@@ -2664,6 +2705,9 @@ namespace FileMaster
                     panel9.Visible = false;
                     panel6.Visible = false; //参数6面板
                     panel10.Visible = false; //参数8面板
+                    checkBox_dirModification.Visible = false;
+                    checkBox_fileModification.Visible = false;
+                    CheckBoxVisible(true);
                     break;
                 case 1:
                     label_headTip.Text = "批量将文件（夹）名称去除固定位数字符（填写要移除的起始位和字符数，字符起始位从0起算）";
@@ -2675,6 +2719,9 @@ namespace FileMaster
                     panel9.Visible = true;
                     panel6.Visible = false; //参数6面板
                     panel10.Visible = false; //参数8面板
+                    checkBox_dirModification.Visible = true;
+                    checkBox_fileModification.Visible = true;
+                    CheckBoxVisible(false);
                     break;
                 case 2:
                     label_headTip.Text = "批量将文件（夹）名称保留固定位数字符（填写要保留的起始位和字符数，字符起始位从0起算）";
@@ -2686,6 +2733,9 @@ namespace FileMaster
                     panel9.Visible = true;
                     panel6.Visible = false; //参数6面板
                     panel10.Visible = false; //参数8面板
+                    checkBox_dirModification.Visible = true;
+                    checkBox_fileModification.Visible = true;
+                    CheckBoxVisible(false);
                     break;
                 case 3:
                     label_headTip.Text = "批量插入字符到文件（夹）名称固定位数字符前（填写固定字符起始位和字符数，字符起始位从0起算）";
@@ -2699,6 +2749,9 @@ namespace FileMaster
                     label16.Text = "插入字符"; //参数5说明
                     panel6.Visible = false; //参数6面板
                     panel10.Visible = false; //参数8面板
+                    checkBox_dirModification.Visible = true;
+                    checkBox_fileModification.Visible = true;
+                    CheckBoxVisible(false);
                     break;
                 case 4:
                     label_headTip.Text = "批量插入字符到文件（夹）名称固定位数字符后（填写固定字符起始位和字符数，字符起始位从0起算）";
@@ -2712,6 +2765,9 @@ namespace FileMaster
                     label16.Text = "插入字符"; //参数5说明
                     panel6.Visible = false; //参数6面板
                     panel10.Visible = false; //参数8面板
+                    checkBox_dirModification.Visible = true;
+                    checkBox_fileModification.Visible = true;
+                    CheckBoxVisible(false);
                     break;
                 case 5:
                     label_headTip.Text = "批量插入字符到文件（夹）名称最前（勾选保留后缀则只修改前缀名称）";
@@ -2725,6 +2781,9 @@ namespace FileMaster
                     label16.Text = "插入字符"; //参数5说明
                     panel6.Visible = false; //参数6面板
                     panel10.Visible = false; //参数8面板
+                    checkBox_dirModification.Visible = true;
+                    checkBox_fileModification.Visible = true;
+                    CheckBoxVisible(false);
                     break;
                 case 6:
                     label_headTip.Text = "批量插入字符到文件（夹）名称最后（注：保护后缀要将参数4留空）";
@@ -2738,6 +2797,9 @@ namespace FileMaster
                     label16.Text = "插入字符"; //参数5说明
                     panel6.Visible = false; //参数6面板
                     panel10.Visible = false; //参数8面板
+                    checkBox_dirModification.Visible = true;
+                    checkBox_fileModification.Visible = true;
+                    CheckBoxVisible(false);
                     break;
                 case 7:
                     label_headTip.Text = "批量替换文件（夹）名称固定位数字符";
@@ -2751,6 +2813,9 @@ namespace FileMaster
                     label16.Text = "替换后缀"; //参数5说明
                     panel6.Visible = false; //参数6面板
                     panel10.Visible = false; //参数8面板
+                    checkBox_dirModification.Visible = true;
+                    checkBox_fileModification.Visible = true;
+                    CheckBoxVisible(false);
                     break;
                 case 8:
                     label_headTip.Text = "批量替换文件（夹）名称的指定字符";
@@ -2763,6 +2828,9 @@ namespace FileMaster
                     panel6.Visible = true; //参数6面板
                     label18.Text = "替换字符"; //参数6说明
                     panel10.Visible = false; //参数8面板
+                    checkBox_dirModification.Visible = true;
+                    checkBox_fileModification.Visible = true;
+                    CheckBoxVisible(false);
                     break;
                 case 9:
                     label_headTip.Text = "批量替换文件（夹）名称的后缀字符";
@@ -2774,6 +2842,13 @@ namespace FileMaster
                     label16.Text = "替换后缀"; //参数5说明
                     panel6.Visible = false; //参数6面板
                     panel10.Visible = false; //参数8面板
+                    checkBox_dirModification.Visible = true;
+                    checkBox_fileModification.Visible = true;
+                    CheckBoxVisible(false);
+                    if (checkBox_protectSuffix.Checked)
+                    {
+                        checkBox_protectSuffix.Checked = false;
+                    } 
                     break;
                 case 10:
                     label_headTip.Text = "批量删除（移动）指定名称的文件（夹），选此功能时，参数5支持正则表达式";
@@ -2784,9 +2859,12 @@ namespace FileMaster
                     panel9.Visible = true;//保护后缀
                     panel5.Visible = false; //参数5面板
                     panel6.Visible = false; //参数6面板
-                    label_param8.Text = "回收目录"; //参数8说明
+                    label_param8.Text = "移至"; //参数8说明
                     panel10.Visible = true; //参数8面板
                     checkBox_specialStr.Checked = true;//选择文件移动删除功能时默认开启正则
+                    checkBox_dirModification.Visible = true;
+                    checkBox_fileModification.Visible = true;
+                    CheckBoxVisible(false);
                     break;
                 default:
                     label_headTip.Text = "功能未选择！";
@@ -2796,9 +2874,32 @@ namespace FileMaster
                     panel9.Visible = false;
                     panel6.Visible = false; //参数6面板
                     panel10.Visible = false; //参数8面板
+                    checkBox_dirModification.Visible = false;
+                    checkBox_fileModification.Visible = false;
+                    CheckBoxVisible(false);
                     break;
             }
         }
+
+        private void CheckBoxVisible(bool torf)
+        {
+            checkBox_suffix.Visible = torf;
+            checkBox__dirFirst.Visible = torf;
+            checkBox_DFDividually.Visible = torf;
+            checkBox_printDiskSymbol.Visible = torf;
+            checkBox_printDirPath.Visible = torf;
+            checkBox_printFileSize.Visible = torf;
+            checkBox_printFilePath.Visible = torf;
+            checkBox_batMethod.Visible = torf;
+            checkBox_printDiskName.Visible = torf;
+            checkBox_fileStatistics.Visible = torf;
+            checkBox_DirCount.Visible = torf;
+            checkBox_printDirSize.Visible = torf;
+            checkBox_printFileTime.Visible = torf;
+            checkBox_printDirTime.Visible = torf;
+            checkBox_byteCount.Visible = torf;
+        }
+
 
         /// <summary>
         /// 工作文本变化时检查并修正
@@ -2892,6 +2993,7 @@ namespace FileMaster
                     break;
                 case 1: //文本>程序目录
                     textBox_workFilePath.Text = AppDomain.CurrentDomain.BaseDirectory + @"temp.txt";
+                    label_controlTips.Text = "工作文本：" + textBox_workFilePath.Text;
                     break;
                 case 2: //文本>工作目录（外）
                     textBox_workFilePath.Text = textBox_workPath.Text;
@@ -2899,16 +3001,11 @@ namespace FileMaster
                     {
                         textBox_workFilePath.Text = AppDomain.CurrentDomain.BaseDirectory + "temp.txt";
                     }
-                    else if (
-                        checkBox_printTXTOnly.Checked
-                        && (
-                            !textBox_workFilePath.Text.Contains(@".txt")
-                            || !Regex.IsMatch(textBox_workFilePath.Text, @"^(.*)(\.txt)$")
-                        )
-                    )
+                    else if (checkBox_printTXTOnly.Checked && (!textBox_workFilePath.Text.Contains(@".txt") || !Regex.IsMatch(textBox_workFilePath.Text, @"^(.*)(\.txt)$")))
                     {
                         textBox_workFilePath.Text += @".txt";
                     }
+                    label_controlTips.Text = "工作文本：" + textBox_workFilePath.Text;
                     break;
                 case 3: //文本>工作目录（内）
                     textBox_workFilePath.Text = textBox_workPath.Text;
@@ -2916,17 +3013,12 @@ namespace FileMaster
                     {
                         textBox_workFilePath.Text = AppDomain.CurrentDomain.BaseDirectory + "temp.txt";
                     }
-                    else if (
-                        checkBox_printTXTOnly.Checked
-                        && (
-                            !textBox_workFilePath.Text.Contains(@".txt")
-                            || !Regex.IsMatch(textBox_workFilePath.Text, @"^(.*)(\.txt)$")
-                        )
-                    )
+                    else if (checkBox_printTXTOnly.Checked && ( !textBox_workFilePath.Text.Contains(@".txt") || !Regex.IsMatch(textBox_workFilePath.Text, @"^(.*)(\.txt)$") ))
                     {
                         temp = textBox_workFilePath.Text.Substring(textBox_workFilePath.Text.LastIndexOf("\\") + 1);
                         textBox_workFilePath.Text += @"\" + temp + @".txt";
                     }
+                    label_controlTips.Text = "工作文本：" + textBox_workFilePath.Text;
                     break;
                 default:
                     break;
@@ -3106,7 +3198,7 @@ namespace FileMaster
         private void checkBox_range_CheckedChanged(object sender, EventArgs e)
         {
             if (!checkBox_range.Checked) { panel8.Visible = false; }
-            else { panel8.Visible = true; }
+            else { panel8.Visible = true; label_controlTips.Text = "启用文件大小范围过滤来辅助筛选"; }
         }
 
         #endregion

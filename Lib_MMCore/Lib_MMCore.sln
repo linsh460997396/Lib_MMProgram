@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MMConsole", "..\MMConsole\M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecordKeyBoardAndMouse", "..\RecordKeyBoardAndMouse\RecordKeyBoardAndMouse.csproj", "{DD146295-1DB2-41E8-B85A-EC6371559E5F}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "仓鼠文件处理程序", "..\仓鼠文件处理程序\仓鼠文件处理程序.vdproj", "{F7DCEEBC-EDE6-4959-93DE-F90A998D4460}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "文件处理程序", "..\文件处理程序\文件处理程序.vdproj", "{F7DCEEBC-EDE6-4959-93DE-F90A998D4460}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "星海混肴器", "..\星海混肴器\星海混肴器.vdproj", "{1BD84FD9-65F2-4C3E-A4E3-0679DA8679C6}"
 EndProject
