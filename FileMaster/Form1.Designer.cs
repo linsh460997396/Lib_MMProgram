@@ -31,6 +31,7 @@ namespace FileMaster
         {
             textBox_workPath = new System.Windows.Forms.TextBox();
             panel1 = new System.Windows.Forms.Panel();
+            button_simRun = new System.Windows.Forms.Button();
             checkBox40 = new System.Windows.Forms.CheckBox();
             checkBox_coverWorkFile = new System.Windows.Forms.CheckBox();
             comboBox_selectFunc = new System.Windows.Forms.ComboBox();
@@ -50,6 +51,9 @@ namespace FileMaster
             label_param2 = new System.Windows.Forms.Label();
             textBox_param2 = new System.Windows.Forms.TextBox();
             panel4 = new System.Windows.Forms.Panel();
+            checkBox_traversalRecursive = new System.Windows.Forms.CheckBox();
+            comboBox_SamePathHandle = new System.Windows.Forms.ComboBox();
+            checkBox_runValidation = new System.Windows.Forms.CheckBox();
             label_controlTips = new System.Windows.Forms.Label();
             checkBox_byteCount = new System.Windows.Forms.CheckBox();
             checkBox_specialStr = new System.Windows.Forms.CheckBox();
@@ -74,7 +78,7 @@ namespace FileMaster
             checkBox_nonEmptyFileIgnore = new System.Windows.Forms.CheckBox();
             checkBox_emptySuffixFileIgnore = new System.Windows.Forms.CheckBox();
             checkBox_printFileSize = new System.Windows.Forms.CheckBox();
-            checkBox__dirFirst = new System.Windows.Forms.CheckBox();
+            checkBox_dirFirst = new System.Windows.Forms.CheckBox();
             checkBox_DFDividually = new System.Windows.Forms.CheckBox();
             checkBox_fileStatistics = new System.Windows.Forms.CheckBox();
             comboBox_DirEmptyMode = new System.Windows.Forms.ComboBox();
@@ -123,6 +127,7 @@ namespace FileMaster
             checkBox_specialStrIgnoreCase = new System.Windows.Forms.CheckBox();
             label_specialStr = new System.Windows.Forms.Label();
             textBox_specialStr = new System.Windows.Forms.TextBox();
+            button_restore = new System.Windows.Forms.Button();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             panel3.SuspendLayout();
@@ -146,6 +151,7 @@ namespace FileMaster
             // 
             // panel1
             // 
+            panel1.Controls.Add(button_simRun);
             panel1.Controls.Add(checkBox40);
             panel1.Controls.Add(checkBox_coverWorkFile);
             panel1.Controls.Add(comboBox_selectFunc);
@@ -162,6 +168,16 @@ namespace FileMaster
             panel1.Name = "panel1";
             panel1.Size = new System.Drawing.Size(940, 90);
             panel1.TabIndex = 1;
+            // 
+            // button_simRun
+            // 
+            button_simRun.Location = new System.Drawing.Point(850, 30);
+            button_simRun.Margin = new System.Windows.Forms.Padding(0);
+            button_simRun.Name = "button_simRun";
+            button_simRun.Size = new System.Drawing.Size(90, 30);
+            button_simRun.TabIndex = 12;
+            button_simRun.Text = "模拟执行";
+            button_simRun.UseVisualStyleBackColor = true;
             // 
             // checkBox40
             // 
@@ -254,7 +270,7 @@ namespace FileMaster
             button_run.Location = new System.Drawing.Point(850, 0);
             button_run.Margin = new System.Windows.Forms.Padding(0);
             button_run.Name = "button_run";
-            button_run.Size = new System.Drawing.Size(90, 60);
+            button_run.Size = new System.Drawing.Size(90, 30);
             button_run.TabIndex = 10;
             button_run.Text = "执行";
             button_run.UseVisualStyleBackColor = true;
@@ -355,6 +371,9 @@ namespace FileMaster
             // 
             // panel4
             // 
+            panel4.Controls.Add(checkBox_traversalRecursive);
+            panel4.Controls.Add(comboBox_SamePathHandle);
+            panel4.Controls.Add(checkBox_runValidation);
             panel4.Controls.Add(label_controlTips);
             panel4.Controls.Add(checkBox_byteCount);
             panel4.Controls.Add(checkBox_specialStr);
@@ -379,7 +398,7 @@ namespace FileMaster
             panel4.Controls.Add(checkBox_nonEmptyFileIgnore);
             panel4.Controls.Add(checkBox_emptySuffixFileIgnore);
             panel4.Controls.Add(checkBox_printFileSize);
-            panel4.Controls.Add(checkBox__dirFirst);
+            panel4.Controls.Add(checkBox_dirFirst);
             panel4.Controls.Add(checkBox_DFDividually);
             panel4.Controls.Add(checkBox_fileStatistics);
             panel4.Controls.Add(comboBox_DirEmptyMode);
@@ -395,6 +414,40 @@ namespace FileMaster
             panel4.Name = "panel4";
             panel4.Size = new System.Drawing.Size(340, 380);
             panel4.TabIndex = 20;
+            // 
+            // checkBox_traversalRecursive
+            // 
+            checkBox_traversalRecursive.Location = new System.Drawing.Point(249, 145);
+            checkBox_traversalRecursive.Margin = new System.Windows.Forms.Padding(0);
+            checkBox_traversalRecursive.Name = "checkBox_traversalRecursive";
+            checkBox_traversalRecursive.Size = new System.Drawing.Size(75, 20);
+            checkBox_traversalRecursive.TabIndex = 94;
+            checkBox_traversalRecursive.Text = "递归遍历";
+            checkBox_traversalRecursive.UseVisualStyleBackColor = true;
+            checkBox_traversalRecursive.CheckedChanged += checkBox_traversalRecursive_CheckedChanged;
+            // 
+            // comboBox_SamePathHandle
+            // 
+            comboBox_SamePathHandle.FormattingEnabled = true;
+            comboBox_SamePathHandle.ItemHeight = 17;
+            comboBox_SamePathHandle.Items.AddRange(new object[] { "重名处理>不处理", "重名处理>添加8位随机字符" });
+            comboBox_SamePathHandle.Location = new System.Drawing.Point(160, 225);
+            comboBox_SamePathHandle.Margin = new System.Windows.Forms.Padding(0);
+            comboBox_SamePathHandle.Name = "comboBox_SamePathHandle";
+            comboBox_SamePathHandle.Size = new System.Drawing.Size(180, 25);
+            comboBox_SamePathHandle.TabIndex = 93;
+            // 
+            // checkBox_runValidation
+            // 
+            checkBox_runValidation.Checked = true;
+            checkBox_runValidation.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBox_runValidation.Location = new System.Drawing.Point(250, 100);
+            checkBox_runValidation.Margin = new System.Windows.Forms.Padding(0);
+            checkBox_runValidation.Name = "checkBox_runValidation";
+            checkBox_runValidation.Size = new System.Drawing.Size(87, 20);
+            checkBox_runValidation.TabIndex = 92;
+            checkBox_runValidation.Text = "执行前确认";
+            checkBox_runValidation.UseVisualStyleBackColor = true;
             // 
             // label_controlTips
             // 
@@ -459,7 +512,7 @@ namespace FileMaster
             checkBox_printDirPath.Name = "checkBox_printDirPath";
             checkBox_printDirPath.Size = new System.Drawing.Size(111, 20);
             checkBox_printDirPath.TabIndex = 25;
-            checkBox_printDirPath.Text = "输出文件夹路径";
+            checkBox_printDirPath.Text = "输出目录路径";
             checkBox_printDirPath.UseVisualStyleBackColor = true;
             // 
             // checkBox_printDiskName
@@ -482,7 +535,7 @@ namespace FileMaster
             checkBox_nonEmptySuffixDirIgnore.Size = new System.Drawing.Size(135, 20);
             checkBox_nonEmptySuffixDirIgnore.TabIndex = 27;
             checkBox_nonEmptySuffixDirIgnore.Tag = "";
-            checkBox_nonEmptySuffixDirIgnore.Text = "忽略非空后缀文件夹";
+            checkBox_nonEmptySuffixDirIgnore.Text = "忽略非空后缀目录";
             checkBox_nonEmptySuffixDirIgnore.UseVisualStyleBackColor = true;
             // 
             // checkBox_printFilePath
@@ -514,7 +567,7 @@ namespace FileMaster
             checkBox_dirModification.Name = "checkBox_dirModification";
             checkBox_dirModification.Size = new System.Drawing.Size(111, 20);
             checkBox_dirModification.TabIndex = 30;
-            checkBox_dirModification.Text = "允许文件夹修改";
+            checkBox_dirModification.Text = "允许目录修改";
             checkBox_dirModification.UseVisualStyleBackColor = true;
             checkBox_dirModification.CheckedChanged += checkBox25_CheckedChanged;
             // 
@@ -528,7 +581,7 @@ namespace FileMaster
             checkBox_printDirTime.Size = new System.Drawing.Size(111, 20);
             checkBox_printDirTime.TabIndex = 31;
             checkBox_printDirTime.Tag = "";
-            checkBox_printDirTime.Text = "输出文件夹时间";
+            checkBox_printDirTime.Text = "输出目录时间";
             checkBox_printDirTime.UseVisualStyleBackColor = true;
             // 
             // checkBox_nonEmptySuffixFileIgnore
@@ -569,13 +622,13 @@ namespace FileMaster
             // 
             // checkBox_printDirSize
             // 
-            checkBox_printDirSize.Location = new System.Drawing.Point(162, 145);
+            checkBox_printDirSize.Location = new System.Drawing.Point(150, 145);
             checkBox_printDirSize.Margin = new System.Windows.Forms.Padding(0);
             checkBox_printDirSize.Name = "checkBox_printDirSize";
-            checkBox_printDirSize.Size = new System.Drawing.Size(111, 20);
+            checkBox_printDirSize.Size = new System.Drawing.Size(99, 20);
             checkBox_printDirSize.TabIndex = 35;
             checkBox_printDirSize.Tag = "";
-            checkBox_printDirSize.Text = "输出文件夹大小";
+            checkBox_printDirSize.Text = "输出目录大小";
             checkBox_printDirSize.UseVisualStyleBackColor = true;
             checkBox_printDirSize.CheckedChanged += checkBox20_CheckedChanged;
             // 
@@ -586,7 +639,7 @@ namespace FileMaster
             checkBox_emptySuffixDirIgnore.Name = "checkBox_emptySuffixDirIgnore";
             checkBox_emptySuffixDirIgnore.Size = new System.Drawing.Size(123, 20);
             checkBox_emptySuffixDirIgnore.TabIndex = 36;
-            checkBox_emptySuffixDirIgnore.Text = "忽略空后缀文件夹";
+            checkBox_emptySuffixDirIgnore.Text = "忽略空后缀目录";
             checkBox_emptySuffixDirIgnore.UseVisualStyleBackColor = true;
             // 
             // checkBox_DirCount
@@ -596,9 +649,9 @@ namespace FileMaster
             checkBox_DirCount.Location = new System.Drawing.Point(75, 145);
             checkBox_DirCount.Margin = new System.Windows.Forms.Padding(0);
             checkBox_DirCount.Name = "checkBox_DirCount";
-            checkBox_DirCount.Size = new System.Drawing.Size(87, 20);
+            checkBox_DirCount.Size = new System.Drawing.Size(75, 20);
             checkBox_DirCount.TabIndex = 37;
-            checkBox_DirCount.Text = "文件夹统计";
+            checkBox_DirCount.Text = "目录统计";
             checkBox_DirCount.UseVisualStyleBackColor = true;
             // 
             // checkBox_printDiskSymbol
@@ -633,7 +686,7 @@ namespace FileMaster
             checkBox_recursion.Name = "checkBox_recursion";
             checkBox_recursion.Size = new System.Drawing.Size(99, 20);
             checkBox_recursion.TabIndex = 40;
-            checkBox_recursion.Text = "遍历子文件夹";
+            checkBox_recursion.Text = "遍历子目录";
             checkBox_recursion.UseVisualStyleBackColor = true;
             checkBox_recursion.CheckedChanged += checkBox10_CheckedChanged;
             // 
@@ -670,17 +723,17 @@ namespace FileMaster
             checkBox_printFileSize.Text = "输出文件大小";
             checkBox_printFileSize.UseVisualStyleBackColor = true;
             // 
-            // checkBox__dirFirst
+            // checkBox_dirFirst
             // 
-            checkBox__dirFirst.Checked = true;
-            checkBox__dirFirst.CheckState = System.Windows.Forms.CheckState.Checked;
-            checkBox__dirFirst.Location = new System.Drawing.Point(162, 20);
-            checkBox__dirFirst.Margin = new System.Windows.Forms.Padding(0);
-            checkBox__dirFirst.Name = "checkBox__dirFirst";
-            checkBox__dirFirst.Size = new System.Drawing.Size(111, 20);
-            checkBox__dirFirst.TabIndex = 44;
-            checkBox__dirFirst.Text = "优先分列文件夹";
-            checkBox__dirFirst.UseVisualStyleBackColor = true;
+            checkBox_dirFirst.Checked = true;
+            checkBox_dirFirst.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkBox_dirFirst.Location = new System.Drawing.Point(162, 20);
+            checkBox_dirFirst.Margin = new System.Windows.Forms.Padding(0);
+            checkBox_dirFirst.Name = "checkBox_dirFirst";
+            checkBox_dirFirst.Size = new System.Drawing.Size(111, 20);
+            checkBox_dirFirst.TabIndex = 44;
+            checkBox_dirFirst.Text = "优先检索目录";
+            checkBox_dirFirst.UseVisualStyleBackColor = true;
             // 
             // checkBox_DFDividually
             // 
@@ -689,7 +742,7 @@ namespace FileMaster
             checkBox_DFDividually.Name = "checkBox_DFDividually";
             checkBox_DFDividually.Size = new System.Drawing.Size(123, 20);
             checkBox_DFDividually.TabIndex = 45;
-            checkBox_DFDividually.Text = "文件夹与文件分列";
+            checkBox_DFDividually.Text = "目录与文件分列";
             checkBox_DFDividually.UseVisualStyleBackColor = true;
             // 
             // checkBox_fileStatistics
@@ -708,7 +761,7 @@ namespace FileMaster
             // 
             comboBox_DirEmptyMode.FormattingEnabled = true;
             comboBox_DirEmptyMode.ItemHeight = 17;
-            comboBox_DirEmptyMode.Items.AddRange(new object[] { "定义空文件夹>其内文件夹及文件数量为0", "定义空文件夹>目录大小为0", "定义空文件夹>内容数量及大小均为0" });
+            comboBox_DirEmptyMode.Items.AddRange(new object[] { "定义空目录>其内目录及文件数量为0", "定义空目录>目录大小为0", "定义空目录>内容数量及大小均为0" });
             comboBox_DirEmptyMode.Location = new System.Drawing.Point(0, 100);
             comboBox_DirEmptyMode.Margin = new System.Windows.Forms.Padding(0);
             comboBox_DirEmptyMode.Name = "comboBox_DirEmptyMode";
@@ -748,7 +801,7 @@ namespace FileMaster
             checkBox_dirSearch.Name = "checkBox_dirSearch";
             checkBox_dirSearch.Size = new System.Drawing.Size(87, 20);
             checkBox_dirSearch.TabIndex = 50;
-            checkBox_dirSearch.Text = "检索文件夹";
+            checkBox_dirSearch.Text = "检索目录";
             checkBox_dirSearch.UseVisualStyleBackColor = true;
             // 
             // checkBox_fileSearch
@@ -781,7 +834,7 @@ namespace FileMaster
             checkBox_nonEmptyDirIgnore.Size = new System.Drawing.Size(111, 20);
             checkBox_nonEmptyDirIgnore.TabIndex = 53;
             checkBox_nonEmptyDirIgnore.Tag = "";
-            checkBox_nonEmptyDirIgnore.Text = "忽略非空文件夹";
+            checkBox_nonEmptyDirIgnore.Text = "忽略非空目录";
             checkBox_nonEmptyDirIgnore.UseVisualStyleBackColor = true;
             // 
             // checkBox_emptyDirIgnore
@@ -791,7 +844,7 @@ namespace FileMaster
             checkBox_emptyDirIgnore.Name = "checkBox_emptyDirIgnore";
             checkBox_emptyDirIgnore.Size = new System.Drawing.Size(99, 20);
             checkBox_emptyDirIgnore.TabIndex = 54;
-            checkBox_emptyDirIgnore.Text = "忽略空文件夹";
+            checkBox_emptyDirIgnore.Text = "忽略空目录";
             checkBox_emptyDirIgnore.UseVisualStyleBackColor = true;
             // 
             // label_headTip
@@ -1107,7 +1160,7 @@ namespace FileMaster
             // 
             comboBox_param8.FormattingEnabled = true;
             comboBox_param8.ItemHeight = 17;
-            comboBox_param8.Items.AddRange(new object[] { "将检索到的文件（夹）移动至>指定文件夹", "将检索到的文件（夹）移动至>回收站", "将检索到的文件（夹）直接删除" });
+            comboBox_param8.Items.AddRange(new object[] { "将检索到的文件（夹）移动至>指定目录", "将检索到的文件（夹）移动至>回收站", "将检索到的文件（夹）直接删除" });
             comboBox_param8.Location = new System.Drawing.Point(0, 30);
             comboBox_param8.Margin = new System.Windows.Forms.Padding(0);
             comboBox_param8.Name = "comboBox_param8";
@@ -1196,11 +1249,22 @@ namespace FileMaster
             textBox_specialStr.Size = new System.Drawing.Size(406, 23);
             textBox_specialStr.TabIndex = 90;
             // 
+            // button_restore
+            // 
+            button_restore.Location = new System.Drawing.Point(510, 120);
+            button_restore.Margin = new System.Windows.Forms.Padding(0);
+            button_restore.Name = "button_restore";
+            button_restore.Size = new System.Drawing.Size(90, 30);
+            button_restore.TabIndex = 88;
+            button_restore.Text = "恢复上次修改";
+            button_restore.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(944, 501);
+            Controls.Add(button_restore);
             Controls.Add(panel11);
             Controls.Add(panel10);
             Controls.Add(panel6);
@@ -1216,7 +1280,7 @@ namespace FileMaster
             Controls.Add(panel1);
             Margin = new System.Windows.Forms.Padding(4);
             Name = "Form1";
-            Text = "文件处理程序v0.23 测试版";
+            Text = "文件处理程序v1.0 测试版";
             Load += Form1_Load;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
@@ -1268,7 +1332,7 @@ namespace FileMaster
         private System.Windows.Forms.CheckBox checkBox_fileSearch;
         private System.Windows.Forms.CheckBox checkBox_keepHistory;
         private System.Windows.Forms.Label label_headTip;
-        private System.Windows.Forms.CheckBox checkBox__dirFirst;
+        private System.Windows.Forms.CheckBox checkBox_dirFirst;
         private System.Windows.Forms.CheckBox checkBox_DFDividually;
         private System.Windows.Forms.CheckBox checkBox_printDiskName;
         private System.Windows.Forms.CheckBox checkBox_printFileSize;
@@ -1338,6 +1402,11 @@ namespace FileMaster
         private System.Windows.Forms.CheckBox checkBox40;
         private System.Windows.Forms.Label label_controlTips;
         private System.Windows.Forms.CheckBox checkBox_RangeReversal;
+        private System.Windows.Forms.CheckBox checkBox_runValidation;
+        private System.Windows.Forms.Button button_simRun;
+        private System.Windows.Forms.Button button_restore;
+        private System.Windows.Forms.ComboBox comboBox_SamePathHandle;
+        private System.Windows.Forms.CheckBox checkBox_traversalRecursive;
     }
 
 }

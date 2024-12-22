@@ -114,7 +114,7 @@ namespace MetalMaxSystem
         /*************************************************************************/
 
         /// <summary>
-        /// 读取Application.dataPath/Plugins/下的dll。注意Application.dataPath打包前是Assets文件夹下的路径，打包后是识别exe程序名称_Data文件夹下的路径
+        /// 读取Application.dataPath/Plugins/下的dll。注意Application.dataPath打包前是Assets目录下的路径，打包后是识别exe程序名称_Data目录下的路径
         /// </summary>
         /// <param name="type">填写typeof(Dll)即可</param>
         /// <param name="fileName">dllName.dll</param>

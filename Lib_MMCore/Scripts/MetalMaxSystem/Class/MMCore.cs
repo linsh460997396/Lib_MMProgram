@@ -562,7 +562,7 @@ namespace MetalMaxSystem
 
         private static int _directoryEmptyUserDefIndex = 0;
         /// <summary>
-        /// 用户定义的空文件夹形式，以供内部判断：0是子文件（夹）数量为0，1是文件夹大小为0，2是前两者必须都符合，如果用户输入错误，本属性方法将纠正为默认值0
+        /// 用户定义的空目录形式，以供内部判断：0是子文件（夹）数量为0，1是目录大小为0，2是前两者必须都符合，如果用户输入错误，本属性方法将纠正为默认值0
         /// </summary>
         public static int DirectoryEmptyUserDefIndex
         {
@@ -1117,28 +1117,28 @@ namespace MetalMaxSystem
         #endregion
 
         /// <summary>
-        /// 递归方式强制删除文件夹（进最里层删除文件使文件夹为空后删除这个空文件夹，层层递出时重复动作），删除前会去掉文件（夹）的Archive、ReadOnly、Hidden属性以确保删除
+        /// 递归方式强制删除目录（进最里层删除文件使目录为空后删除这个空目录，层层递出时重复动作），删除前会去掉文件（夹）的Archive、ReadOnly、Hidden属性以确保删除
         /// </summary>
         /// <param name="dirInfo"></param>
         public static void DelDirectoryRecursively(DirectoryInfo dirInfo)
         {
             foreach (DirectoryInfo newInfo in dirInfo.GetDirectories())
             {
-                DelDirectoryRecursively(newInfo);//递归遍历子文件夹
+                DelDirectoryRecursively(newInfo);//递归遍历子目录
             }
             foreach (FileInfo newInfo in dirInfo.GetFiles())
             {
-                //处理每个文件夹内部的文件（从里层开始删除）
+                //处理每个目录内部的文件（从里层开始删除）
                 newInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);
                 newInfo.Delete();
             }
-            //对每个文件夹处理（从里层开始删除）
+            //对每个目录处理（从里层开始删除）
             dirInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);
             dirInfo.Delete(true);
         }
 
         /// <summary>
-        /// 递归方式强制删除文件夹（进最里层删除文件使文件夹为空后删除这个空文件夹，层层递出时重复动作），删除前会去掉文件（夹）的Archive、ReadOnly、Hidden属性以确保删除
+        /// 递归方式强制删除目录（进最里层删除文件使目录为空后删除这个空目录，层层递出时重复动作），删除前会去掉文件（夹）的Archive、ReadOnly、Hidden属性以确保删除
         /// </summary>
         /// <param name="dirPath"></param>
         public static void DelDirectoryRecursively(string dirPath)
@@ -1149,7 +1149,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 删除文件夹
+        /// 删除目录
         /// </summary>
         /// <param name="dirInfo"></param>
         /// <returns>删除成功返回真，否则返回假</returns>
@@ -1165,7 +1165,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 删除文件夹
+        /// 删除目录
         /// </summary>
         /// <param name="dirPath"></param>
         /// <returns>删除返回真，否则返回假</returns>
@@ -1259,7 +1259,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 删除文件夹到回收站
+        /// 删除目录到回收站
         /// </summary>
         /// <param name="dirPath"></param>
         /// <param name="torf">回收站删除提示</param>
@@ -1423,9 +1423,9 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 递归方法获取文件夹大小
+        /// 递归方法获取目录大小
         /// </summary>
-        /// <param name="dirPath">文件夹完整路径</param>
+        /// <param name="dirPath">目录完整路径</param>
         /// <returns></returns>
         public static long GetDirectoryLength(string dirPath)
         {
@@ -1442,7 +1442,7 @@ namespace MetalMaxSystem
             {
                 len += fi.Length;
             }
-            //获取di中所有的文件夹,并存到一个新的对象数组中,以进行递归
+            //获取di中所有的目录,并存到一个新的对象数组中,以进行递归
             DirectoryInfo[] dis = di.GetDirectories();
             if (dis.Length > 0)
             {
@@ -1521,9 +1521,9 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 判断目标属性是否为真实文件夹
+        /// 判断目标属性是否为真实目录
         /// </summary>
-        /// <param name="path">文件夹路径全名</param>
+        /// <param name="path">目录路径全名</param>
         /// <returns></returns>
         public static bool IsDirAttributes(string path)
         {
@@ -1551,9 +1551,9 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 验证字符串路径的文件夹是否真实存在
+        /// 验证字符串路径的目录是否真实存在
         /// </summary>
-        /// <param name="path">文件夹路径全名</param>
+        /// <param name="path">目录路径全名</param>
         /// <returns></returns>
         public static bool IsDir(string path)
         {
@@ -1598,26 +1598,26 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 验证路径是否为用户定义的空文件夹，通过MMCore.DirectoryEmptyUserDefIndex属性可定义空文件夹形式
+        /// 验证路径是否为用户定义的空目录，通过MMCore.DirectoryEmptyUserDefIndex属性可定义空目录形式
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
         public static bool IsDirectoryEmptyUserDef(string path)
         {
             bool torf = false;
-            switch (DirectoryEmptyUserDefIndex) //定义空文件夹形式
+            switch (DirectoryEmptyUserDefIndex) //定义空目录形式
             {
                 case 0:
                     if (IsDirectoryEmpty(path))
                     {
                         torf = true;
-                    } //里面的子文件夹和文件数量均为0
+                    } //里面的子目录和文件数量均为0
                     break;
                 case 1:
                     if (GetDirectoryLength(path) == 0)
                     {
                         torf = true;
-                    } //文件夹大小为0
+                    } //目录大小为0
                     break;
                 case 2:
                     if (IsDirectoryEmpty(path) && GetDirectoryLength(path) == 0)
@@ -1629,7 +1629,7 @@ namespace MetalMaxSystem
                     if (IsDirectoryEmpty(path))
                     {
                         torf = true;
-                    } //里面的子文件夹和文件数量均为0
+                    } //里面的子目录和文件数量均为0
                     break;
             }
             return torf;
@@ -1818,7 +1818,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 下载指定网站的指定节点内容到指定文件夹并保存为自定义文件名
+        /// 下载指定网站的指定节点内容到指定目录并保存为自定义文件名
         /// 使用范例：
         /// HtmlDocument doc = new();
         /// doc.LoadHtml(MMCore.CreateGetHttpResponse("https://ac.qq.com/Comic/ComicInfo/id/542330"));
@@ -1834,9 +1834,9 @@ namespace MetalMaxSystem
         /// <returns></returns>
         public static bool Download(string url, string filename, string path, bool cover)
         {
-            string tempPath = Path.Combine(Path.GetDirectoryName(path), "temp");//确定临时文件夹全名路径
+            string tempPath = Path.Combine(Path.GetDirectoryName(path), "temp");//确定临时目录全名路径
             string filepath = Path.Combine(path, filename);//确定最终下载文件全名路径
-            Directory.CreateDirectory(tempPath);  //创建临时文件夹
+            Directory.CreateDirectory(tempPath);  //创建临时目录
             string tempFile = tempPath + "\\" + filename + ".temp"; //确定临时下载文件全名路径
             if (File.Exists(tempFile))
             {
@@ -1922,7 +1922,7 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 创建文件夹，若已存在则什么也不干
+        /// 创建目录，若已存在则什么也不干
         /// </summary>
         /// <param name="path"></param>
         public static void CreatDirectory(string path)
@@ -2048,7 +2048,7 @@ namespace MetalMaxSystem
         /// 用WinRAR解压带密码的压缩包
         /// </summary>
         /// <param name="zipFilePath">压缩包路径</param>
-        /// <param name="unZipPath">解压后文件夹的路径</param>
+        /// <param name="unZipPath">解压后目录的路径</param>
         /// <param name="password">压缩包密码</param>
         /// <returns></returns>
         //public static bool UnZip(string zipFilePath, string unZipPath, string password)
