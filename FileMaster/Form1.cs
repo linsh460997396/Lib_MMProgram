@@ -14,8 +14,8 @@ namespace FileMaster
     public partial class Form1 : Form
     {
         #region 字段及其属性方法
-
-        private static bool _workStatus = false;
+        private static bool simRunState = false;
+        private static bool _workState = false;
         private static bool _workStop = false;
         private static int _workErrCount = 0;
         private static int _startIndex;
@@ -29,7 +29,7 @@ namespace FileMaster
         /// <summary>
         /// 工作状态
         /// </summary>
-        public static bool WorkStatus { get => _workStatus; set => _workStatus = value; }
+        public static bool WorkStatus { get => _workState; set => _workState = value; }
         /// <summary>
         /// 打断工作用的状态变量
         /// </summary>
@@ -191,15 +191,6 @@ namespace FileMaster
         /// <param name="diskSymbol">工作目录盘符</param>
         private void FirstWrite(string workFilePath, string diskSymbol)
         {
-            bool torf;
-            if (checkBox_keepHistory.Checked)
-            {
-                torf = true;
-            }
-            else
-            {
-                torf = false;
-            }
             DriveInfo drive = new DriveInfo(diskSymbol);
             if (drive.Name == $"{diskSymbol}" + @":\")
             {
@@ -208,7 +199,7 @@ namespace FileMaster
                     MMCore.WriteLine(
                         workFilePath,
                         " Volume in drive " + diskSymbol + " is " + drive.VolumeLabel,
-                        torf
+                        true
                     );
                 }
 
@@ -259,7 +250,7 @@ namespace FileMaster
                         }
                         if (c.GetType().Name.Equals("Button"))
                         {
-                            if (!c.Name.Equals("button2"))
+                            if (!c.Name.Equals("button_run"))
                             {
                                 c.Enabled = torf;//禁用除运行按钮外的其他按钮
                             }
@@ -504,7 +495,7 @@ namespace FileMaster
                                 {
                                     if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
                                     {
-                                        fileInfo.MoveTo(newFilePath);
+                                        if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                     }
                                     else
                                     {
@@ -519,7 +510,7 @@ namespace FileMaster
                                                 string directoryPath = Path.GetDirectoryName(newFilePath);
                                                 newFilePath = Path.Combine(directoryPath, $"{Path.GetFileNameWithoutExtension(fileName)}_{randomValue}{Path.GetExtension(fileName)}");
                                             }
-                                            fileInfo.MoveTo(newFilePath);
+                                            if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                         }
                                         else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                         {
@@ -559,7 +550,7 @@ namespace FileMaster
                                 {
                                     if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
                                     {
-                                        directoryInfo.MoveTo(newFilePath);
+                                        if (simRunState == false) directoryInfo.MoveTo(newFilePath);
                                     }
                                     else
                                     {
@@ -574,7 +565,7 @@ namespace FileMaster
                                                 string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
                                                 newFilePath = Path.Combine(parentDirectoryPath, $"{directoryName}_{randomValue}");
                                             }
-                                            directoryInfo.MoveTo(newFilePath);
+                                            if (simRunState == false) directoryInfo.MoveTo(newFilePath);
                                         }
                                         else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                         {
@@ -764,7 +755,7 @@ namespace FileMaster
                                 {
                                     if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
                                     {
-                                        fileInfo.MoveTo(newFilePath);
+                                        if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                     }
                                     else
                                     {
@@ -779,7 +770,7 @@ namespace FileMaster
                                                 string directoryPath = Path.GetDirectoryName(newFilePath);
                                                 newFilePath = Path.Combine(directoryPath, $"{Path.GetFileNameWithoutExtension(fileName)}_{randomValue}{Path.GetExtension(fileName)}");
                                             }
-                                            fileInfo.MoveTo(newFilePath);
+                                            if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                         }
                                         else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                         {
@@ -819,7 +810,7 @@ namespace FileMaster
                                 {
                                     if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
                                     {
-                                        directoryInfo.MoveTo(newFilePath);
+                                        if (simRunState == false) directoryInfo.MoveTo(newFilePath);
                                     }
                                     else
                                     {
@@ -834,7 +825,7 @@ namespace FileMaster
                                                 string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
                                                 newFilePath = Path.Combine(parentDirectoryPath, $"{directoryName}_{randomValue}");
                                             }
-                                            directoryInfo.MoveTo(newFilePath);
+                                            if (simRunState == false) directoryInfo.MoveTo(newFilePath);
                                         }
                                         else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                         {
@@ -1138,7 +1129,7 @@ namespace FileMaster
                                 {
                                     if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
                                     {
-                                        fileInfo.MoveTo(newFilePath);
+                                        if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                     }
                                     else
                                     {
@@ -1153,7 +1144,7 @@ namespace FileMaster
                                                 string directoryPath = Path.GetDirectoryName(newFilePath);
                                                 newFilePath = Path.Combine(directoryPath, $"{Path.GetFileNameWithoutExtension(fileName)}_{randomValue}{Path.GetExtension(fileName)}");
                                             }
-                                            fileInfo.MoveTo(newFilePath);
+                                            if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                         }
                                         else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                         {
@@ -1193,7 +1184,7 @@ namespace FileMaster
                                 {
                                     if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
                                     {
-                                        directoryInfo.MoveTo(newFilePath);
+                                        if (simRunState == false) directoryInfo.MoveTo(newFilePath);
                                     }
                                     else
                                     {
@@ -1208,7 +1199,7 @@ namespace FileMaster
                                                 string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
                                                 newFilePath = Path.Combine(parentDirectoryPath, $"{directoryName}_{randomValue}");
                                             }
-                                            directoryInfo.MoveTo(newFilePath);
+                                            if (simRunState == false) directoryInfo.MoveTo(newFilePath);
                                         }
                                         else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                         {
@@ -1451,7 +1442,7 @@ namespace FileMaster
                                 {
                                     if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
                                     {
-                                        fileInfo.MoveTo(newFilePath);
+                                        if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                     }
                                     else
                                     {
@@ -1466,7 +1457,7 @@ namespace FileMaster
                                                 string directoryPath = Path.GetDirectoryName(newFilePath);
                                                 newFilePath = Path.Combine(directoryPath, $"{Path.GetFileNameWithoutExtension(fileName)}_{randomValue}{Path.GetExtension(fileName)}");
                                             }
-                                            fileInfo.MoveTo(newFilePath);
+                                            if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                         }
                                         else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                         {
@@ -1506,7 +1497,7 @@ namespace FileMaster
                                 {
                                     if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
                                     {
-                                        directoryInfo.MoveTo(newFilePath);
+                                        if (simRunState == false) directoryInfo.MoveTo(newFilePath);
                                     }
                                     else
                                     {
@@ -1521,7 +1512,7 @@ namespace FileMaster
                                                 string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
                                                 newFilePath = Path.Combine(parentDirectoryPath, $"{directoryName}_{randomValue}");
                                             }
-                                            directoryInfo.MoveTo(newFilePath);
+                                            if (simRunState == false) directoryInfo.MoveTo(newFilePath);
                                         }
                                         else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                         {
@@ -1739,7 +1730,7 @@ namespace FileMaster
                             {
                                 if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
                                 {
-                                    fileInfo.MoveTo(newFilePath);
+                                    if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                 }
                                 else
                                 {
@@ -1754,7 +1745,7 @@ namespace FileMaster
                                             string directoryPath = Path.GetDirectoryName(newFilePath);
                                             newFilePath = Path.Combine(directoryPath, $"{Path.GetFileNameWithoutExtension(fileName)}_{randomValue}{Path.GetExtension(fileName)}");
                                         }
-                                        fileInfo.MoveTo(newFilePath);
+                                        if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                     }
                                     else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                     {
@@ -1794,7 +1785,7 @@ namespace FileMaster
                             {
                                 if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
                                 {
-                                    directoryInfo.MoveTo(newFilePath);
+                                    if (simRunState == false) directoryInfo.MoveTo(newFilePath);
                                 }
                                 else
                                 {
@@ -1809,7 +1800,7 @@ namespace FileMaster
                                             string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
                                             newFilePath = Path.Combine(parentDirectoryPath, $"{directoryName}_{randomValue}");
                                         }
-                                        directoryInfo.MoveTo(newFilePath);
+                                        if (simRunState == false) directoryInfo.MoveTo(newFilePath);
                                     }
                                     else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                     {
@@ -2027,7 +2018,7 @@ namespace FileMaster
                             {
                                 if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
                                 {
-                                    fileInfo.MoveTo(newFilePath);
+                                    if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                 }
                                 else
                                 {
@@ -2042,7 +2033,7 @@ namespace FileMaster
                                             string directoryPath = Path.GetDirectoryName(newFilePath);
                                             newFilePath = Path.Combine(directoryPath, $"{Path.GetFileNameWithoutExtension(fileName)}_{randomValue}{Path.GetExtension(fileName)}");
                                         }
-                                        fileInfo.MoveTo(newFilePath);
+                                        if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                     }
                                     else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                     {
@@ -2082,7 +2073,7 @@ namespace FileMaster
                             {
                                 if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
                                 {
-                                    directoryInfo.MoveTo(newFilePath);
+                                    if (simRunState == false) directoryInfo.MoveTo(newFilePath);
                                 }
                                 else
                                 {
@@ -2097,7 +2088,7 @@ namespace FileMaster
                                             string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
                                             newFilePath = Path.Combine(parentDirectoryPath, $"{directoryName}_{randomValue}");
                                         }
-                                        directoryInfo.MoveTo(newFilePath);
+                                        if (simRunState == false) directoryInfo.MoveTo(newFilePath);
                                     }
                                     else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                     {
@@ -2279,7 +2270,7 @@ namespace FileMaster
                             {
                                 //新路径文件必须不存在，才可以移入
                                 fileInfo = new FileInfo(item);
-                                fileInfo.MoveTo(newFilePath);
+                                if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                 MMCore.WriteLine(workFilePath, "【处理完成】" + item + " => " + newFilePath, true);
                             }
                             else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
@@ -2293,11 +2284,12 @@ namespace FileMaster
                             }
                             break;
                         case 1:
-                            MMCore.DelFileToRecycleBin(item, checkBox_param8.Checked);
+                            if (simRunState == false) MMCore.DelFileToRecycleBin(item, checkBox_param8.Checked);
                             break;
                         case 2:
                             fileInfo = new FileInfo(item);
-                            fileInfo.Delete();//不能删除只读文件
+                            fileInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
+                            if (simRunState == false) fileInfo.Delete();
                             break;
                         default:
                             break;
@@ -2312,7 +2304,8 @@ namespace FileMaster
                             {
                                 //新路径目录必须不存在，才可以移入
                                 fileInfo = new FileInfo(item);
-                                fileInfo.MoveTo(newFilePath);
+                                fileInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
+                                if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                 MMCore.WriteLine(workFilePath, "【处理完成】" + item + " => " + newFilePath, true);
                             }
                             else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
@@ -2326,11 +2319,11 @@ namespace FileMaster
                             }
                             break;
                         case 1:
-                            MMCore.DelDirectoryToRecycleBin(item, checkBox_param8.Checked);
+                            if (simRunState == false) MMCore.DelDirectoryToRecycleBin(item, checkBox_param8.Checked);
                             break;
                         case 2:
                             directoryInfo = new DirectoryInfo(item);
-                            MMCore.DelDirectoryRecursively(directoryInfo);
+                            if (simRunState == false) MMCore.DelDirectoryRecursively(directoryInfo);
                             break;
                         default:
                             break;
@@ -2410,7 +2403,16 @@ namespace FileMaster
                     DFRecursively(workPath, workFilePath, false);
 
                 }
-                MMCore.WriteLine(workFilePath, "████████████████████████████████████████████" + "\r\n" + "", true);//尾行留空
+                bool torf;
+                if (checkBox_keepHistory.Checked)
+                {
+                    torf = true;
+                }
+                else
+                {
+                    torf = false;
+                }
+                MMCore.WriteLine(workFilePath, "████████████████████████████████████████████" + "\r\n" + "", true, true, torf);//尾行留空
 
                 #region 测试
                 //string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位的随机字符串
@@ -3257,6 +3259,9 @@ namespace FileMaster
             else { panel8.Visible = true; }
             checkBox_batMethod.Visible = false;
             checkBox_traversalRecursive.Visible = false;
+            button_simRun.Text = "模拟=OFF";
+            button_simRun.ForeColor = Color.Red;
+            button_simRun.Visible = false;
             //↓功能未完成暂先隐藏
             button_restore.Visible = false;
             checkBox_runValidation.Visible = false;
@@ -3268,7 +3273,7 @@ namespace FileMaster
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button1_Click(object sender, EventArgs e)
+        private void button_selectWorkPath_Click(object sender, EventArgs e)
         {
             using (FolderBrowserDialog fbd = new FolderBrowserDialog())
             {
@@ -3283,7 +3288,7 @@ namespace FileMaster
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button3_Click(object sender, EventArgs e)
+        private void button_selectWorkFile_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
@@ -3308,7 +3313,7 @@ namespace FileMaster
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button2_Click(object sender, EventArgs e)
+        private void button_run_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < 1; i++)
             {
@@ -3332,6 +3337,27 @@ namespace FileMaster
                 {
                     WorkStop = true;
                 }
+            }
+        }
+
+        /// <summary>
+        /// 点击模拟执行
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button_simRun_Click(object sender, EventArgs e)
+        {
+            if (simRunState)
+            {
+                simRunState = false;
+                button_simRun.Text = "模拟=OFF";
+                button_simRun.ForeColor = Color.Red;
+            }
+            else
+            {
+                simRunState = true;
+                button_simRun.Text = "模拟=ON";
+                button_simRun.ForeColor = Color.Green;
             }
         }
 
@@ -3531,16 +3557,28 @@ namespace FileMaster
                     panel10.Visible = false; //参数8面板
                     checkBox_dirModification.Visible = false;
                     checkBox_fileModification.Visible = false;
-                    CheckBoxVisible(false);
+                    button_simRun.Visible = false;
+                    checkBox_suffix.Visible = false;
+                    checkBox_printDiskSymbol.Visible = false;
+                    checkBox_printDirPath.Visible = false;
+                    checkBox_printFileSize.Visible = false;
+                    checkBox_printFilePath.Visible = false;
+                    checkBox_batMethod.Visible = false;
+                    checkBox_printDiskName.Visible = false;
+                    checkBox_fileStatistics.Visible = false;
+                    checkBox_DirCount.Visible = false;
+                    checkBox_printDirSize.Visible = false;
+                    checkBox_printFileTime.Visible = false;
+                    checkBox_printDirTime.Visible = false;
+                    checkBox_byteCount.Visible = false;
                     break;
             }
         }
 
         private void CheckBoxVisible(bool torf)
         {
+            button_simRun.Visible = !torf;
             checkBox_suffix.Visible = torf;
-            //checkBox_dirFirst.Visible = true;
-            //checkBox_DFDividually.Visible = true;
             checkBox_printDiskSymbol.Visible = torf;
             checkBox_printDirPath.Visible = torf;
             checkBox_printFileSize.Visible = torf;

@@ -11,7 +11,7 @@ using Vector3F = System.Numerics.Vector3;
 
 namespace MetalMaxSystem
 {
-    #region 公用委托类型
+    #region 公用委托类型（未嵌套的顶级类型）
 
     //委托是引用类型
 

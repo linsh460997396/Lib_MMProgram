@@ -23,6 +23,7 @@ using Mathf = System.Math;
 #else
 using Mathf = System.MathF;
 #endif
+//↓可使用.Net中的Debug.WriteLine
 using Debug = System.Diagnostics.Debug;
 #if WINDOWS 
 using System.Management;
@@ -202,6 +203,8 @@ namespace MetalMaxSystem
         //静态局部变量在函数结束时不参与垃圾回收，以便相同函数重复访问
         //静态数据是从模板形成的内存中唯一的可修改副本（不同类同名也不一样，要考虑命名空间和类名路径，无需担心重复）
         //数组元素数量上限均+1是习惯问题，防止某些循环以数组判断时最后退出还+1导致超限
+
+        public static FileWriter fileWriter;
 
         /// <summary>
         /// 键盘按键已注册数量（每个数组元素算1个，即使它们+=多个委托函数）
@@ -1636,14 +1639,106 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 写文本每行（默认UTF-8），文件若不存在则自动新建，StreamWriter默认缓冲区大小为8192个字节（8KB），满时自动写入文件，本函数使用using代码块，StreamWriter对象被关闭时，缓冲区中的数据也会被写入文件。
+        /// 使用FileWriter写文本每行。写入内容暂存在MMCore.fileWriter的StringBuilder类型的Buffer缓冲区
+        /// </summary>
+        /// <param name="value">要写入的字符内容</param>
+        /// <param name="bufferAppend">false覆盖缓冲区（即写入前清理StringBuilder）,true向缓冲区追加文本</param>
+        public static void WriteLine(string value, bool bufferAppend = true)
+        {
+            if (fileWriter == null) { fileWriter = new FileWriter(); }
+            fileWriter.WriteLine(value, !bufferAppend);
+        }
+        /// <summary>
+        /// 使用FileWriter写文本每行（默认UTF-8）。写入内容暂存在MMCore.fileWriter的StringBuilder类型的Buffer缓冲区（直到参数end=true时写入文件，文件若不存在则自动新建）
+        /// </summary>
+        /// <param name="path">要写入的文件路径</param>
+        /// <param name="value">要写入的字符内容</param>
+        /// <param name="bufferAppend">false覆盖缓冲区（即写入前清理StringBuilder）,true向缓冲区追加文本</param>
+        /// <param name="end">立即写入文件并清理StringBuilder缓冲区</param>
+        /// <param name="fileAppend">false覆盖文件，true向文件末尾追加文本</param>
+        public static void WriteLine(string path, string value, bool bufferAppend = true, bool end = false, bool fileAppend = false)
+        {
+            if (fileWriter == null) { fileWriter = new FileWriter(); }
+            fileWriter.WriteLine(value, !bufferAppend);
+            if (end)
+            {
+                fileWriter.Close(path, fileAppend, Encoding.UTF8);
+            }
+        }
+        /// <summary>
+        /// 使用FileWriter写文本每行。写入内容暂存在MMCore.fileWriter的StringBuilder类型的Buffer缓冲区（直到参数end=true时写入文件，文件若不存在则自动新建）
+        /// </summary>
+        /// <param name="path">要写入的文件路径</param>
+        /// <param name="value">要写入的字符内容</param>
+        /// <param name="bufferAppend">false覆盖缓冲区（即写入前清理StringBuilder）,true向缓冲区追加文本</param>
+        /// <param name="encoding">编码</param>
+        /// <param name="end">立即写入文件并清理StringBuilder缓冲区</param>
+        /// <param name="fileAppend">false覆盖文件，true向文件末尾追加文本</param>
+        public static void WriteLine(string path, string value, bool bufferAppend, Encoding encoding, bool end = false, bool fileAppend = false)
+        {
+            if (fileWriter == null) { fileWriter = new FileWriter(); }
+            fileWriter.WriteLine(value, !bufferAppend);
+            if (end)
+            {
+                fileWriter.Close(path, fileAppend, encoding);
+            }
+        }
+
+        /// <summary>
+        /// 使用FileWriter写文本。写入内容暂存在MMCore.fileWriter的StringBuilder类型的Buffer缓冲区
+        /// </summary>
+        /// <param name="value">要写入的字符内容</param>
+        /// <param name="bufferAppend">false覆盖缓冲区（即写入前清理StringBuilder）,true向缓冲区追加文本</param>
+        public static void Write(string value, bool bufferAppend = true)
+        {
+            if (fileWriter == null) { fileWriter = new FileWriter(); }
+            fileWriter.Write(value, !bufferAppend);
+        }
+        /// <summary>
+        /// 使用FileWriter写文本（默认UTF-8）。写入内容暂存在MMCore.fileWriter的StringBuilder类型的Buffer缓冲区（直到参数end=true时写入文件，文件若不存在则自动新建）
+        /// </summary>
+        /// <param name="path">要写入的文件路径</param>
+        /// <param name="value">要写入的字符内容</param>
+        /// <param name="bufferAppend">false覆盖缓冲区（即写入前清理StringBuilder）,true向缓冲区追加文本</param>
+        /// <param name="end">立即写入文件并清理StringBuilder缓冲区</param>
+        /// <param name="fileAppend">false覆盖文件，true向文件末尾追加文本</param>
+        public static void Write(string path, string value, bool bufferAppend = true, bool end = false, bool fileAppend = false)
+        {
+            if (fileWriter == null) { fileWriter = new FileWriter(); }
+            fileWriter.Write(value, !bufferAppend);
+            if (end)
+            {
+                fileWriter.Close(path, fileAppend, Encoding.UTF8);
+            }
+        }
+        /// <summary>
+        /// 使用FileWriter写文本。写入内容暂存在MMCore.fileWriter的StringBuilder类型的Buffer缓冲区（直到参数end=true时写入文件，文件若不存在则自动新建）
+        /// </summary>
+        /// <param name="path">要写入的文件路径</param>
+        /// <param name="value">要写入的字符内容</param>
+        /// <param name="bufferAppend">false覆盖缓冲区（即写入前清理StringBuilder）,true向缓冲区追加文本</param>
+        /// <param name="encoding">编码</param>
+        /// <param name="end">立即写入文件并清理StringBuilder缓冲区</param>
+        /// <param name="fileAppend">false覆盖文件，true向文件末尾追加文本</param>
+        public static void Write(string path, string value, bool bufferAppend, Encoding encoding, bool end = false, bool fileAppend = false)
+        {
+            if (fileWriter == null) { fileWriter = new FileWriter(); }
+            fileWriter.Write(value, !bufferAppend);
+            if (end)
+            {
+                fileWriter.Close(path, fileAppend, encoding);
+            }
+        }
+
+        /// <summary>
+        /// 立即写文本每行（默认UTF-8），文件若不存在则自动新建，StreamWriter默认缓冲区大小为8192个字节（8KB），满时自动写入文件，本函数使用using代码块，StreamWriter对象被关闭时，缓冲区中的数据也会被写入文件。
         /// </summary>
         /// <param name="path"></param>
         /// <param name="value"></param>
-        /// <param name="torf">false是覆盖，true是追加文本</param>
-        public static void WriteLine(string path, string value, bool torf)
+        /// <param name="append">false是覆盖，true是追加文本</param>
+        public static void WriteLineNow(string path, string value, bool append, int bufferSize = 8192)
         {
-            using (StreamWriter sw = new StreamWriter(path, torf, Encoding.UTF8))
+            using (StreamWriter sw = new StreamWriter(path, append, Encoding.UTF8, bufferSize))
             {
                 sw.WriteLine(value);
                 //sw.Flush(); 不等待sw.Close()即刻写入，对于遍历大量写入来说并不效率，故此时不写
@@ -1652,15 +1747,15 @@ namespace MetalMaxSystem
 
         }
         /// <summary>
-        /// 写文本每行，文件若不存在则自动新建，StreamWriter默认缓冲区大小为8192个字节（8KB），满时自动写入文件，本函数使用using代码块，StreamWriter对象被关闭时，缓冲区中的数据也会被写入文件。
+        /// 立即写文本每行，文件若不存在则自动新建，StreamWriter默认缓冲区大小为8192个字节（8KB），满时自动写入文件，本函数使用using代码块，StreamWriter对象被关闭时，缓冲区中的数据也会被写入文件。
         /// </summary>
         /// <param name="path"></param>
         /// <param name="value"></param>
-        /// <param name="torf"></param>
+        /// <param name="append">false是覆盖，true是追加文本</param>
         /// <param name="encoding"></param>
-        public static void WriteLine(string path, string value, bool torf, Encoding encoding)
+        public static void WriteLineNow(string path, string value, bool append, Encoding encoding, int bufferSize = 8192)
         {
-            using (StreamWriter sw = new StreamWriter(path, torf, encoding))
+            using (StreamWriter sw = new StreamWriter(path, append, encoding, bufferSize))
             {
                 sw.WriteLine(value);
                 //sw.Flush(); 不等待sw.Close()即刻写入，对于遍历大量写入来说并不效率，故此时不写
@@ -1670,14 +1765,14 @@ namespace MetalMaxSystem
         }
 
         /// <summary>
-        /// 写文本（默认UTF-8），文件若不存在则自动新建，StreamWriter默认缓冲区大小为8192个字节（8KB），满时自动写入文件，本函数使用using代码块，StreamWriter对象被关闭时，缓冲区中的数据也会被写入文件。
+        /// 立即写文本（默认UTF-8），文件若不存在则自动新建，StreamWriter默认缓冲区大小为8192个字节（8KB），满时自动写入文件，本函数使用using代码块，StreamWriter对象被关闭时，缓冲区中的数据也会被写入文件。
         /// </summary>
         /// <param name="path"></param>
         /// <param name="value"></param>
-        /// <param name="torf">false是覆盖，true是追加文本</param>
-        public static void Write(string path, string value, bool torf)
+        /// <param name="append">false是覆盖，true是追加文本</param>
+        public static void WriteNow(string path, string value, bool append, int bufferSize = 8192)
         {
-            using (StreamWriter sw = new StreamWriter(path, torf, Encoding.UTF8))
+            using (StreamWriter sw = new StreamWriter(path, append, Encoding.UTF8, bufferSize))
             {
                 sw.Write(value);
                 //sw.Flush(); 不等待sw.Close()即刻写入，对于遍历大量写入来说并不效率，故此时不写
@@ -1685,15 +1780,15 @@ namespace MetalMaxSystem
             //using代码块结束，StreamWriter对象被关闭，缓冲区中的数据被写入文件
         }
         /// <summary>
-        /// 写文本（默认UTF-8），文件若不存在则自动新建，StreamWriter默认缓冲区大小为8192个字节（8KB），满时自动写入文件，本函数使用using代码块，StreamWriter对象被关闭时，缓冲区中的数据也会被写入文件。
+        /// 立即写文本，文件若不存在则自动新建，StreamWriter默认缓冲区大小为8192个字节（8KB），满时自动写入文件，本函数使用using代码块，StreamWriter对象被关闭时，缓冲区中的数据也会被写入文件。
         /// </summary>
         /// <param name="path"></param>
         /// <param name="value"></param>
-        /// <param name="torf"></param>
+        /// <param name="append">false是覆盖，true是追加文本</param>
         /// <param name="encoding"></param>
-        public static void Write(string path, string value, bool torf, Encoding encoding)
+        public static void WriteNow(string path, string value, bool append, Encoding encoding, int bufferSize = 8192)
         {
-            using (StreamWriter sw = new StreamWriter(path, torf, encoding))
+            using (StreamWriter sw = new StreamWriter(path, append, encoding, bufferSize))
             {
                 sw.Write(value);
                 //sw.Flush(); 不等待sw.Close()即刻写入，对于遍历大量写入来说并不效率，故此时不写
@@ -1830,7 +1925,7 @@ namespace MetalMaxSystem
         /// <param name="url">浏览器网址</param>
         /// <param name="filename">自定义文件名</param>
         /// <param name="path">下载路径，如 @"C:\Users\Admin\Desktop\Download\"</param>
-        /// <param name="cover">发生文件重复时覆盖</param>
+        /// <param name="bufferAppend">发生文件重复时覆盖</param>
         /// <returns></returns>
         public static bool Download(string url, string filename, string path, bool cover)
         {
@@ -18497,3 +18592,43 @@ namespace MetalMaxSystem
 
     }
 }
+
+#region 小记
+//C#中实例方法与静态方法在内存都只存储一份，实例方法可使用this等指向实例，若明确不依赖实例则写静态方法为宜（减少以下性能开销）
+//1.每次调用实例方法时都需要在调用栈上分配一定的空间来保存方法的局部变量和参数
+//2.调用实例方法时会隐式地传递一个this引用指向调用该方法的对象实例（该引用在方法内部可用来访问对象的字段和方法）
+
+//常量（const关键字修饰的字段）不会每次创建类的实例而重新分配内存，编译时就已确定其值并在程序整个生命周期都不会改变
+//委托类型是顶级类型，故不支持Static修饰，用其声明的委托变量可被正常修饰
+
+//对于类中字段，显式指定访问修饰符为宜，因为对于顶级类型（非嵌套），编译器并不会为它们设定默认的访问级别
+//在结构体中，若未指定字段的访问修饰符，则这些字段会默认为public，其余一般会默认为private，对于顶级类型（非嵌套）一般会默认同类
+
+// C#默认修饰符
+// 类、结构体的默认修饰符是internal
+// 类、结构体中所有成员默认修饰符是private
+// 接口默认修饰符是internal
+// 接口成员默认修饰符是public
+// 枚举类型及成员默认修饰符是public，并且不允许显式指定其他访问修饰符（因为枚举的设计初衷就是为了提供一组可访问的常量集，如果允许设置其他访问修饰符将违背这一初衷）
+// 委托的默认修饰符是internal
+// 允许不同程序集访问的只有protected、protected internal和public，但前2者仅可访问不同程序集内的派生类
+// protected可前插private（提高private访问权限，仅允许访问相同程序集内的派生类，不可跨程序集）
+// protected可后跟internal（提高internal访问权限，允许访问不同程序集内的派生类）
+// 静态构造函数不允许访问修饰符且不能带有任何参数（默认访问级别是私有的）
+
+//‌Finalize方法：虽然C#允许定义Finalize方法来执行对象销毁前的清理工作，但这种方法通常不推荐使用
+//因为它会增加垃圾回收的复杂性和开销，而且无法保证在何时被调用
+//在现代C#编程中更推荐使用IDisposable接口和using语句来管理资源
+
+//当类的实例被某个活动对象或静态字段引用，它就不会被垃圾回收，反之引用不存在时进行类的回收（逐步清理）
+//‌逐步清理‌：垃圾回收器会递归地检查每个对象的引用情况，并回收整个不可达对象图（所有不再被程序中任何活动对象或静态字段引用的对象组成的集合）所占用的内存
+//如果X类实例引用了其他对象，而这些对象又引用了其他对象，那么整个引用链上的对象都会被逐步清理掉
+//所以C#中的自定义类哪怕没有制作Dispose方法，只需将引用=null即可，但写代码过程依然要尽量避免产生大量GC而降低性能
+//当编写的类使用了非托管资源如文件流、数据库连接、图形对象等，应手动实现IDisposable接口并提供Dispose方法
+//非托管资源是由操作系统直接管理的资源，不是.NET运行时的一部分，因此.NET垃圾回收器无法自动回收
+//StringBuilder是托管类型，但Stream文件流对象（如StreamWriter）使用了非托管资源（如文件句柄）需要手动调用其Dispose或使用using块
+//using块：动作末尾当Stream文件流对象被销毁时，Dispose会检查是否已调用Flush，如果没有它会自动调用Flush确保所有缓冲数据都被写入到文件或其他Stream文件流中
+
+//静态类的成员（如字段、方法）必须是静态的，但静态字段可被赋值为实例对象的引用，静态方法内部也可创建类的实例
+//静态字段在默认情况下会被初始化为它们的默认值（没赋值直接获取则返回该默认值），对于引用类型默认值是null
+#endregion

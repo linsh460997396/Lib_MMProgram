@@ -176,8 +176,9 @@ namespace FileMaster
             button_simRun.Name = "button_simRun";
             button_simRun.Size = new System.Drawing.Size(90, 30);
             button_simRun.TabIndex = 12;
-            button_simRun.Text = "模拟执行";
+            button_simRun.Text = "模拟=OFF";
             button_simRun.UseVisualStyleBackColor = true;
+            button_simRun.Click += button_simRun_Click;
             // 
             // checkBox40
             // 
@@ -245,7 +246,7 @@ namespace FileMaster
             button_selectWorkFile.TabIndex = 7;
             button_selectWorkFile.Text = "Sclect";
             button_selectWorkFile.UseVisualStyleBackColor = true;
-            button_selectWorkFile.Click += button3_Click;
+            button_selectWorkFile.Click += button_selectWorkFile_Click;
             // 
             // label_workPath
             // 
@@ -274,7 +275,7 @@ namespace FileMaster
             button_run.TabIndex = 10;
             button_run.Text = "执行";
             button_run.UseVisualStyleBackColor = true;
-            button_run.Click += button2_Click;
+            button_run.Click += button_run_Click;
             // 
             // button_selectWorkPath
             // 
@@ -285,7 +286,7 @@ namespace FileMaster
             button_selectWorkPath.TabIndex = 11;
             button_selectWorkPath.Text = "Sclect";
             button_selectWorkPath.UseVisualStyleBackColor = true;
-            button_selectWorkPath.Click += button1_Click;
+            button_selectWorkPath.Click += button_selectWorkPath_Click;
             // 
             // panel2
             // 
@@ -1280,7 +1281,7 @@ namespace FileMaster
             Controls.Add(panel1);
             Margin = new System.Windows.Forms.Padding(4);
             Name = "Form1";
-            Text = "文件处理程序v1.0 测试版";
+            Text = "文件处理程序v0.26 测试版";
             Load += Form1_Load;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();

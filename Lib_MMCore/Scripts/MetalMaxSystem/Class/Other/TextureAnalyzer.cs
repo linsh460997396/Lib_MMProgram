@@ -1,4 +1,4 @@
-#if UNITY_EDITOR|| UNITY_STANDALONE
+#if UNITY_EDITOR || UNITY_STANDALONE
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -25,7 +25,7 @@ namespace MetalMaxSystem.Unity
         const int MAX_TEXTURE_SIZE = 8192;
 
         /// <summary>
-        /// 协程处理量计数上限
+        /// 合并精灵时的协程处理量计数上限，达到后在控制台通知
         /// </summary>
         static int iCountMax = 10000;
 
