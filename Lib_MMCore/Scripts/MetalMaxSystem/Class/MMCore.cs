@@ -1,4 +1,4 @@
-﻿//#define NETFRAMEWORK
+//#define NETFRAMEWORK
 //#define MonoGame
 
 using System;

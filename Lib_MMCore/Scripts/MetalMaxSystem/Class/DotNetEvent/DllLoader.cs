@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using System;
 #if UNITY_EDITOR|| UNITY_STANDALONE
 //WIN上的Unity编辑器、独立应用程序

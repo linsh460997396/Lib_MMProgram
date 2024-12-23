@@ -209,7 +209,7 @@ namespace FileMaster
             // comboBox_selectFunc
             // 
             comboBox_selectFunc.FormattingEnabled = true;
-            comboBox_selectFunc.Items.AddRange(new object[] { "批量将文件（夹）名称打印到工作文件", "批量将文件（夹）名称去除固定位数字符", "批量将文件（夹）名称保留固定位数字符", "批量插入字符到文件（夹）名称固定位数字符前", "批量插入字符到文件（夹）名称固定位数字符后", "批量插入字符到文件（夹）名称最前", "批量插入字符到文件（夹）名称最后", "批量替换文件（夹）名称固定位数字符", "批量替换文件（夹）名称的指定字符", "批量替换文件（夹）名称的后缀字符", "批量删除（移动）指定名称的文件（夹）" });
+            comboBox_selectFunc.Items.AddRange(new object[] { "批量将文件（夹）名称打印到工作文本", "批量将文件（夹）名称去除固定位数字符", "批量将文件（夹）名称保留固定位数字符", "批量插入字符到文件（夹）名称固定位数字符前", "批量插入字符到文件（夹）名称固定位数字符后", "批量插入字符到文件（夹）名称最前", "批量插入字符到文件（夹）名称最后", "批量替换文件（夹）名称固定位数字符", "批量替换文件（夹）名称的指定字符", "批量替换文件（夹）名称的后缀字符", "批量删除（移动）指定名称的文件（夹）" });
             comboBox_selectFunc.Location = new System.Drawing.Point(100, 60);
             comboBox_selectFunc.Margin = new System.Windows.Forms.Padding(0);
             comboBox_selectFunc.Name = "comboBox_selectFunc";

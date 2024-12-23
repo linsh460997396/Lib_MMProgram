@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -6,8 +6,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Diagnostics;
 using MetalMaxSystem;
-using Microsoft.VisualBasic.ApplicationServices;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace FileMaster
 {

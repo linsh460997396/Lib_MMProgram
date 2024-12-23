@@ -1,10 +1,5 @@
-using System;
-using System.ComponentModel;
 using System.IO;
-using System.Reflection.Metadata;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Windows.Shapes;
 
 namespace MetalMaxSystem
 {
