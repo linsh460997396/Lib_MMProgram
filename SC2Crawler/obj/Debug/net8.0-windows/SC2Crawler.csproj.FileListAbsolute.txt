@@ -1,3 +1,6 @@
+D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\selenium-manager\linux\selenium-manager
+D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\selenium-manager\macos\selenium-manager
+D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\selenium-manager\windows\selenium-manager.exe
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\SC2Crawler.exe
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\SC2Crawler.dll.config
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\SC2Crawler.deps.json
@@ -5,6 +8,8 @@ D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\SC2Crawler.runt
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\SC2Crawler.dll
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\SC2Crawler.pdb
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\HtmlAgilityPack.dll
+D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\Newtonsoft.Json.dll
+D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\WebDriver.dll
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\System.Management.dll
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\runtimes\win\lib\net8.0\System.Management.dll
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\Lib_MMCore.dll
@@ -22,8 +27,3 @@ D:\VSWork\2022\Lib_MMProgram\SC2Crawler\obj\Debug\net8.0-windows\refint\SC2Crawl
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\obj\Debug\net8.0-windows\SC2Crawler.pdb
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\obj\Debug\net8.0-windows\SC2Crawler.genruntimeconfig.cache
 D:\VSWork\2022\Lib_MMProgram\SC2Crawler\obj\Debug\net8.0-windows\ref\SC2Crawler.dll
-D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\selenium-manager\linux\selenium-manager
-D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\selenium-manager\macos\selenium-manager
-D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\selenium-manager\windows\selenium-manager.exe
-D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\Newtonsoft.Json.dll
-D:\VSWork\2022\Lib_MMProgram\SC2Crawler\bin\Debug\net8.0-windows\WebDriver.dll

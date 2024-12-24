@@ -1,9 +1,3 @@
-D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\RecordKeyBoardAndMouse.csproj.AssemblyReference.cache
-D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\styles\DicMainWindow.baml
-D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\MainWindow.g.cs
-D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\App.g.cs
-D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\RecordKeyBoardAndMouse_MarkupCompile.cache
-D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\RecordKeyBoardAndMouse_MarkupCompile.lref
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\bin\Debug\net8.0-windows\RecordKeyBoardAndMouse.exe
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\bin\Debug\net8.0-windows\RecordKeyBoardAndMouse.dll.config
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\bin\Debug\net8.0-windows\RecordKeyBoardAndMouse.deps.json
@@ -16,6 +10,12 @@ D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\bin\Debug\net8.0-windows\run
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\bin\Debug\net8.0-windows\Lib_MMCore.dll
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\bin\Debug\net8.0-windows\Lib_MMCore.pdb
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\bin\Debug\net8.0-windows\Lib_MMCore.dll.config
+D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\RecordKeyBoardAndMouse.csproj.AssemblyReference.cache
+D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\styles\DicMainWindow.baml
+D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\MainWindow.g.cs
+D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\App.g.cs
+D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\RecordKeyBoardAndMouse_MarkupCompile.cache
+D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\RecordKeyBoardAndMouse_MarkupCompile.lref
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\MainWindow.baml
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\RecordKeyBoardAndMouse.g.resources
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\RecordKeyBoardAndMouse.Properties.Resources.resources
