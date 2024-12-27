@@ -56,7 +56,7 @@ namespace MMObfuscar
 
         private void SetCodeToMainThread(string code)
         {
-            // 调用 Invoke 方法将操作发送到主线程
+            //调用 Invoke 方法将操作发送到主线程
             Invoke((MethodInvoker)delegate ()
             {
                 richTextBox_Code.Text = code;
@@ -89,7 +89,7 @@ namespace MMObfuscar
 
         private void SetTipsToMainThread(string tips)
         {
-            // 调用 Invoke 方法将操作发送到主线程
+            //调用 Invoke 方法将操作发送到主线程
             Invoke((MethodInvoker)delegate ()
             {
                 label_Tips.Text = tips;
@@ -122,7 +122,7 @@ namespace MMObfuscar
 
         private void SetExclusionRulesPathToMainThread(string path)
         {
-            // 调用 Invoke 方法将操作发送到主线程
+            //调用 Invoke 方法将操作发送到主线程
             Invoke((MethodInvoker)delegate ()
             {
                 textBox_ExclusionRulesPath.Text = path;
@@ -131,7 +131,7 @@ namespace MMObfuscar
 
         private void SetStatisticsToMainThread(string text)
         {
-            // 调用 Invoke 方法将操作发送到主线程
+            //调用 Invoke 方法将操作发送到主线程
             Invoke((MethodInvoker)delegate ()
             {
                 label_Statistics.Text = text;
@@ -140,7 +140,7 @@ namespace MMObfuscar
 
         private void SetBtnRunTextToMainThread(string text)
         {
-            // 调用 Invoke 方法将操作发送到主线程
+            //调用 Invoke 方法将操作发送到主线程
             Invoke((MethodInvoker)delegate ()
             {
                 button_Run.Text = text;
@@ -149,7 +149,7 @@ namespace MMObfuscar
 
         private void SetPanelBackColorToMainThread(Panel p, Color c)
         {
-            // 调用 Invoke 方法将操作发送到主线程
+            //调用 Invoke 方法将操作发送到主线程
             Invoke((MethodInvoker)delegate ()
             {
                 p.BackColor = c;
@@ -158,7 +158,7 @@ namespace MMObfuscar
 
         private void SetControlEnableToMainThread(Control c, bool torf)
         {
-            // 调用 Invoke 方法将操作发送到主线程
+            //调用 Invoke 方法将操作发送到主线程
             Invoke((MethodInvoker)delegate ()
             {
                 c.Enabled = torf;
@@ -168,13 +168,13 @@ namespace MMObfuscar
         private Type GetControlTypeFromMainThread(Control control)
         {
             Type type = null;
-            if (control.InvokeRequired) // 判断当前线程是否为UI主线程
+            if (control.InvokeRequired) //判断当前线程是否为UI主线程
             {
-                control.BeginInvoke((MethodInvoker)(() => GetControlTypeFromMainThread(control))); // 将操作放入UI主线程的消息队列中
+                control.BeginInvoke((MethodInvoker)(() => GetControlTypeFromMainThread(control))); //将操作放入UI主线程的消息队列中
             }
             else
             {
-                type = control.GetType(); // 获取控件的类型信息
+                type = control.GetType(); //获取控件的类型信息
             }
             return type;
         }
@@ -202,7 +202,7 @@ namespace MMObfuscar
                         break;
                 }
                 stopwatch.Stop();
-                //Debug.WriteLine(stopwatch.Elapsed.ToString());
+                //MMCore.Tell(stopwatch.Elapsed.ToString());
                 SetStatisticsToMainThread(" 时耗：" + stopwatch.Elapsed.ToString());
             }
             //放弃了线程注销做法，程序将始终运行至此，可以知道是用户中断还是正常运行结束
@@ -211,7 +211,7 @@ namespace MMObfuscar
             WorkStop = false;//重置_workStop状态，如果是用户取消的，打印告知
             UserOpEnableChange(true);//重置用户操作状态
             SetBtnRunTextToMainThread("执行");
-            //Debug.WriteLine("子线程已经完成！");
+            //MMCore.Tell("子线程已经完成！");
             //线程清除（如果不放心，Abort方法能在目标线程中抛出一个ThreadAbortException异常从而导致目标线程的终止）
             //WorkThread.Abort();
         }
@@ -239,7 +239,7 @@ namespace MMObfuscar
                         //创建后台线程实例来运行复杂任务
                         WorkThread = new Thread(ButtonRun) { IsBackground = true };
                         WorkThread.Start();
-                        // 等待子线程完成↓
+                        //等待子线程完成↓
                         //WorkThread.Join();
                     }
                     else if (button_Run.Text == "取消" && WorkStatus == true)
@@ -271,7 +271,7 @@ namespace MMObfuscar
             }
             //去除代码里的注释
             string mainCode = MMCore.RemoveEmptyLines(MMCore.RemoveComments(GetCodeFromMainThread()));
-            // 定义正则表达式模式，匹配函数名
+            //定义正则表达式模式，匹配函数名
             string pattern = @"(?<=^|[^a-zA-Z_])[a-zA-Z_][\w]*(?=\s*\([^\)]*\)(\s+|\n|$))";
             MatchCollection matches = Regex.Matches(mainCode, pattern);
             CodeObfuscator obfuscator = new CodeObfuscator();
@@ -280,7 +280,7 @@ namespace MMObfuscar
             //遍历全部函数名
             foreach (Match match in matches)
             {
-                //Debug.WriteLine("Function Name: " + match.Value);
+                //MMCore.Tell("Function Name: " + match.Value);
                 //构建正则表达式，除了"排除规则文本"指定的函数名，让Lib、GAx3开头的函数名也避开混肴
                 if (!Regex.IsMatch(match.Value, "^(Lib|lib|GAx3).*"))
                 {
@@ -321,13 +321,13 @@ namespace MMObfuscar
                 //匹配到的字符串的内容(.*?)放在match.Groups[1].Value，内容非空则进行添加规则
                 if (match.Groups[1].Value != "")
                 {
-                    if (Regex.IsMatch(match.Groups[1].Value, @".*\\.*")) { Debug.WriteLine(match.Groups[1].Value); }
+                    if (Regex.IsMatch(match.Groups[1].Value, @".*\\.*")) { MMCore.Tell(match.Groups[1].Value); }
                     //构建正则表达式，带有以下指定字符的字符串会避开混肴
                     if (!Regex.IsMatch(match.Groups[1].Value, "(\\|bnet:)"))
                     {
                         //添加到混肴规则2（要替换的字符串为键，混肴成8进制或18进制后的字符串为值）
                         temp = MMCore.ConvertStringToHOMixed(match.Groups[1].Value, 0.7); //这里是内容的混肴
-                        //Debug.WriteLine($"Found string: {match.Groups[1].Value}, Value: {temp}");
+                        //MMCore.Tell($"Found string: {match.Groups[1].Value}, Value: {temp}");
                         temp = "\"" + temp + "\""; //重新套上引号
                         //注意此处第二项规则的键要带""不能光内容字符作为键
                         obfuscator.AddReplacement2(match.Value, temp);
@@ -344,11 +344,11 @@ namespace MMObfuscar
             //MatchCollection matches3 = Regex.Matches(obfuscatedCode, pattern, options);
             //foreach (Match match in matches3)
             //{
-            //    if (match.Groups[1].Value != "")
-            //    {
-            //        temp = match.Groups[1].Value;
-            //        Debug.WriteLine(temp);
-            //    }
+            //   if (match.Groups[1].Value != "")
+            //   {
+            //       temp = match.Groups[1].Value;
+            //       MMCore.Tell(temp);
+            //   }
             //}
             //obfuscatedCode = Regex.Replace(obfuscatedCode, pattern, string.Empty, options);
 
@@ -372,7 +372,7 @@ namespace MMObfuscar
                     Panel p = a as Panel;  //取出Panel
                     if (!torf)
                     {
-                        // 改变Panel的颜色，执行时是灰色
+                        //改变Panel的颜色，执行时是灰色
                         SetPanelBackColorToMainThread(p, Color.Gray);
                     }
                     else
@@ -383,7 +383,7 @@ namespace MMObfuscar
 
                     foreach (Control c in p.Controls) //遍历面板中的每一个控件
                     {
-                        //Debug.WriteLine(c.GetType().Name);
+                        //MMCore.Tell(c.GetType().Name);
                         if (c.GetType().Name.Equals("TextBox"))
                         {
                             //禁用文本框

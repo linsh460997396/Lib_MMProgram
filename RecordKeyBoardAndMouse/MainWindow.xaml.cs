@@ -18,9 +18,9 @@ namespace RecordKeyBoardAndMouse
         public MainWindow()
         {
             InitializeComponent();
-            // 初始化
+            //初始化
             recordService = new RecordService();
-            // 初始化Grid
+            //初始化Grid
             for (int i = 0; i < 10; i++)
             {
                 int row = i != 0 ? i - 1 : 9;
@@ -31,16 +31,16 @@ namespace RecordKeyBoardAndMouse
                 MyGrid.Children.Add(labels[i]);
             }
 
-            // 循环任务
+            //循环任务
             System.Timers.Timer aTimer = new System.Timers.Timer();
             aTimer.Elapsed += new ElapsedEventHandler((source, e1) =>
             {
                 Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                 {
-                    // 记录成员变量
+                    //记录成员变量
                     this.label.Content = "wParam:" + recordService.WParam + ",x:" + recordService.X + ",y:" + recordService.Y;
                     this.label2.Content = "keyStatus:" + recordService.KeyStatus + ",keyValue:" + recordService.KeyValue;
-                    // 查询是否按下按钮
+                    //查询是否按下按钮
                     int result = recordService.IsPressTarget();
                     if (result != -1)
                     {

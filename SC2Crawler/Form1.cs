@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using HtmlAgilityPack;
+using MetalMaxSystem;
 
 namespace SC2Crawler
 {
@@ -24,20 +25,20 @@ namespace SC2Crawler
             //List<string> list = MMCore.GetDanMuWithGet(url, cookie, userAgent);
             //foreach (string item in list)
             //{
-            //    Debug.WriteLine(item);
+            //   MMCore.Tell(item);
             //}
 
             //无法获取JS动态内容
             //HtmlAgilityPack.HtmlDocument doc = new();
             //doc.LoadHtml(MMCore.CreateGetHttpResponse(url));
             //HtmlNode str = doc.DocumentNode.SelectSingleNode("//div[contains(@class,\"product_main\")]/p[@class=\"price_color\"]");
-            //Debug.WriteLine(str.InnerText);
+            //MMCore.Tell(str.InnerText);
             //string strUal = str.Attributes["class"].Value;
             //string content = MMCore.GetWebStr(strUal);
-            //Debug.WriteLine(content);
+            //MMCore.Tell(content);
 
 
-            // 用url替换为实际的网址
+            //用url替换为实际的网址
             //HtmlWeb web = new HtmlWeb();
             //web.OverrideEncoding = System.Text.Encoding.UTF8;
             //HtmlAgilityPack.HtmlDocument doc = web.Load(url);
@@ -45,42 +46,42 @@ namespace SC2Crawler
             //HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes(xpath);
             //foreach (var node in nodes)
             //{
-            //    Debug.WriteLine(node.InnerText);
+            //   MMCore.Tell(node.InnerText);
             //}
             //HtmlNode node = doc.DocumentNode.SelectSingleNode(xpath);
-            //Debug.WriteLine(node.InnerText);
+            //MMCore.Tell(node.InnerText);
 
             //try
             //{
-            //    IWebDriver webDriver = new ChromeDriver();
-            //    webDriver.Url = url;
-            //    var pageSource = webDriver.PageSource;
-            //    var doc = new HtmlAgilityPack.HtmlDocument();
-            //    doc.LoadHtml(pageSource);
-            //    HtmlNodeCollection linkNodes = doc.DocumentNode.SelectNodes("//html");
-            //    foreach (var link in linkNodes)
-            //    {
-            //        string name = link.GetAttributeValue("class", string.Empty);
-            //        Debug.WriteLine(name);
-            //        Debug.WriteLine(link.InnerText);
-            //    }
+            //   IWebDriver webDriver = new ChromeDriver();
+            //   webDriver.Url = url;
+            //   var pageSource = webDriver.PageSource;
+            //   var doc = new HtmlAgilityPack.HtmlDocument();
+            //   doc.LoadHtml(pageSource);
+            //   HtmlNodeCollection linkNodes = doc.DocumentNode.SelectNodes("//html");
+            //   foreach (var link in linkNodes)
+            //   {
+            //       string name = link.GetAttributeValue("class", string.Empty);
+            //       MMCore.Tell(name);
+            //       MMCore.Tell(link.InnerText);
+            //   }
 
             //}
             //catch (Exception ex)
             //{
-            //    Debug.WriteLine(ex.Message);
+            //   MMCore.Tell(ex.Message);
             //}
 
             try
             {
-                IWebDriver webDriver = new ChromeDriver();
+                ChromeDriver webDriver = new ChromeDriver();
                 webDriver.Url = url;
                 var pageSource = webDriver.PageSource;
-                Debug.WriteLine("Found {0} links", GetDanMuLinksA(pageSource).Count);
+                MMCore.Tell("Found {0} links", GetDanMuLinksA(pageSource).Count);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                MMCore.Tell(ex.Message);
             }
 
 
@@ -89,14 +90,14 @@ namespace SC2Crawler
             //HtmlNode img = doc.DocumentNode.SelectSingleNode("/html/body/div[3]/div[3]/div[1]/div[1]/div[1]/a/img");
             //string imgUal = img.Attributes["src"].Value;
             //MMCore.Download(imgUal, "123.jpg", @"C:\Users\linsh\Desktop\Download\", true);
-            //Debug.WriteLine("下载完成！");
+            //MMCore.Tell("下载完成！");
 
             //var bookLinks = GetBookLinks("http://books.toscrape.com/catalogue/category/books/mystery_3/index.html");
-            //Debug.WriteLine("Found {0} links", bookLinks.Count);
+            //MMCore.Tell("Found {0} links", bookLinks.Count);
             //var books = GetBookDetails(bookLinks);
 
             //string url = "https://live.bilibili.com/213?broadcast_type=0&is_room_feed=1&spm_id_from=333.999.to_liveroom.0.click&live_from=86002";
-            //Debug.WriteLine("Found {0} links", GetDanMuLinks(url).Count);
+            //MMCore.Tell("Found {0} links", GetDanMuLinks(url).Count);
             //var danMus = GetDanMuDetails(url);
 
         }
@@ -110,8 +111,8 @@ namespace SC2Crawler
             foreach (var link in linkNodes)
             {
                 string name = link.GetAttributeValue("class", string.Empty);
-                Debug.WriteLine(name);
-                Debug.WriteLine(link.InnerText);
+                MMCore.Tell(name);
+                MMCore.Tell(link.InnerText);
                 ProcessChildNodes(link, danMuLinks);
             }
             return danMuLinks;
@@ -125,8 +126,8 @@ namespace SC2Crawler
             foreach (var link in linkNodes)
             {
                 string name = link.GetAttributeValue("class", string.Empty);
-                Debug.WriteLine(name);
-                Debug.WriteLine(link.InnerText);
+                MMCore.Tell(name);
+                MMCore.Tell(link.InnerText);
                 ProcessChildNodes(link, danMuLinks);
             }
             return danMuLinks;
@@ -140,8 +141,8 @@ namespace SC2Crawler
             foreach (var link in linkNodes)
             {
                 string name = link.GetAttributeValue("class", string.Empty);
-                Debug.WriteLine(name);
-                Debug.WriteLine(link.InnerText);
+                MMCore.Tell(name);
+                MMCore.Tell(link.InnerText);
                 ProcessChildNodes(link, danMuLinks);
             }
             return danMuLinks;
@@ -152,13 +153,13 @@ namespace SC2Crawler
             foreach (var childNode in node.ChildNodes)
             {
                 string childName = childNode.Name;
-                Debug.WriteLine("childName => " + childName);
-                Debug.WriteLine(childNode.InnerText);
+                MMCore.Tell("childName => " + childName);
+                MMCore.Tell(childNode.InnerText);
 
-                // 如果需要收集特定类型的节点，可以在这里添加逻辑
-                // 例如，如果childNode是一个<a>标签，并且其属性包含特定的值，您可以将其添加到danMuLinks列表中
+                //如果需要收集特定类型的节点，可以在这里添加逻辑
+                //例如，如果childNode是一个<a>标签，并且其属性包含特定的值，您可以将其添加到danMuLinks列表中
 
-                // 继续递归处理子节点的子节点
+                //继续递归处理子节点的子节点
                 if (childNode.HasChildNodes)
                 {
                     ProcessChildNodes(childNode, danMuLinks);
@@ -176,8 +177,8 @@ namespace SC2Crawler
             var danMu = new DanMu();
             danMu.Name = document.DocumentNode.SelectSingleNode(nameXPath).InnerText;
             danMu.Content = document.DocumentNode.SelectSingleNode(contentXPath).InnerText;
-            Debug.WriteLine(danMu.Name);
-            Debug.WriteLine(danMu.Content);
+            MMCore.Tell(danMu.Name);
+            MMCore.Tell(danMu.Content);
             danMus.Add(danMu);
 
             return danMus;
@@ -208,14 +209,14 @@ namespace SC2Crawler
                 var book = new Book();
                 book.Title = document.DocumentNode.SelectSingleNode(titleXPath).InnerText;
                 book.Price = document.DocumentNode.SelectSingleNode(priceXPath).InnerText;
-                Debug.WriteLine(book.Title);
-                Debug.WriteLine(book.Price);
+                MMCore.Tell(book.Title);
+                MMCore.Tell(book.Price);
                 books.Add(book);
             }
             return books;
         }
 
-        // Parses the URL and returns HtmlDocument object                         
+        //Parses the URL and returns HtmlDocument object                         
         static HtmlAgilityPack.HtmlDocument GetDocument(string url)
         {
             HtmlWeb web = new HtmlWeb();

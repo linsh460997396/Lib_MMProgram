@@ -32,18 +32,18 @@ namespace MMWFM
             richTextBox_Code = new System.Windows.Forms.RichTextBox();
             button_Run = new System.Windows.Forms.Button();
             SuspendLayout();
-            // 
-            // richTextBox_Code
-            // 
+            //
+            //richTextBox_Code
+            //
             richTextBox_Code.Location = new System.Drawing.Point(7, 154);
             richTextBox_Code.Margin = new System.Windows.Forms.Padding(4);
             richTextBox_Code.Name = "richTextBox_Code";
             richTextBox_Code.Size = new System.Drawing.Size(918, 470);
             richTextBox_Code.TabIndex = 7;
             richTextBox_Code.Text = "";
-            // 
-            // button_Run
-            // 
+            //
+            //button_Run
+            //
             button_Run.Location = new System.Drawing.Point(841, 85);
             button_Run.Margin = new System.Windows.Forms.Padding(4);
             button_Run.Name = "button_Run";
@@ -51,9 +51,9 @@ namespace MMWFM
             button_Run.TabIndex = 2;
             button_Run.Text = "执行";
             button_Run.UseVisualStyleBackColor = true;
-            // 
-            // Form1
-            // 
+            //
+            //Form1
+            //
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(933, 638);

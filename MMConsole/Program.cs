@@ -13,20 +13,20 @@ namespace MMConsole
             //A.Period = 500;//周期间隔
             //A.TriggerStart(false);//触发器执行
 
-            //int number = 10; // 示例数字
-            //string expression = ConvertToBitwiseExpression(number); // 获取位运算表达式
-            //Debug.WriteLine(expression); // 输出表达式
-            //                               // 计算表达式的值
+            //int number = 10; //示例数字
+            //string expression = ConvertToBitwiseExpression(number); //获取位运算表达式
+            //MMCore.Tell(expression); //输出表达式
+            //                              //计算表达式的值
             //int result = 0;
             //for (int i = expression.Length - 1; i >= 0; i--)
             //{
-            //    if (expression[i] == '1') result += (int)Math.Pow(2, expression.Length - i - 1);
+            //   if (expression[i] == '1') result += (int)Math.Pow(2, expression.Length - i - 1);
             //}
-            //Debug.WriteLine("Result: " + result); // 输出结果
+            //MMCore.Tell("Result: " + result); //输出结果
 
-            //Debug.WriteLine(MMCore.ConvertStringToHex("TriggerLibs/NativeLib"));
-            //Debug.WriteLine("\x54\x72\x69\x67\x67\x65\x72\x4C\x69\x62\x73\x2F\x4E\x61\x74\x69\x76\x65\x4C\x69\x62");
-            //Debug.WriteLine(MMCore.ConvertStringToHOMixed("TriggerLibs/NativeLib", 0.7)); //"\0124\0114"的十进制是84和76，Galaxy脚本中识别为TL
+            //MMCore.Tell(MMCore.ConvertStringToHex("TriggerLibs/NativeLib"));
+            //MMCore.Tell("\x54\x72\x69\x67\x67\x65\x72\x4C\x69\x62\x73\x2F\x4E\x61\x74\x69\x76\x65\x4C\x69\x62");
+            //MMCore.Tell(MMCore.ConvertStringToHOMixed("TriggerLibs/NativeLib", 0.7)); //"\0124\0114"的十进制是84和76，Galaxy脚本中识别为TL
 
         }
         public static int Confuse(int input)

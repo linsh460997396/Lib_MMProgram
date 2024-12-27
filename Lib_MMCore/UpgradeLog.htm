@@ -164,8 +164,8 @@
                     }
                  </style><script type="text/javascript" language="javascript"> 
           
-            // Startup 
-            // Hook up the the loaded event for the document/window, to linkify the document content
+            //Startup 
+            //Hook up the the loaded event for the document/window, to linkify the document content
             var startupFunction = function() { linkifyElement("messages"); };
             
             if(window.attachEvent)
@@ -181,7 +181,7 @@
               document.addEventListener('load', startupFunction, false);
             } 
             
-            // Toggles the visibility of table rows with the specified name 
+            //Toggles the visibility of table rows with the specified name 
             function toggleTableRowsByName(name)
             {
                var allRows = document.getElementsByTagName('tr');
@@ -213,7 +213,7 @@
                return false;
             }
             
-            // Linkifies the specified text content, replaces candidate links with html links 
+            //Linkifies the specified text content, replaces candidate links with html links 
             function linkify(text)
             {
                  if(!text || 0 === text.length)
@@ -221,13 +221,13 @@
                      return text; 
                  }
 
-                 // Find http, https and ftp links and replace them with hyper links 
+                 //Find http, https and ftp links and replace them with hyper links 
                  var urlLink = /(http|https|ftp)\:\/\/[a-zA-Z0-9\-\.]+(:[a-zA-Z0-9]*)?\/?([a-zA-Z0-9\-\._\?\,\/\\\+&%\$#\=~;\{\}])*/gi;
                  
                  return text.replace(urlLink, '<a href="$&">$&</a>') ;
             }
             
-            // Linkifies the specified element by ID
+            //Linkifies the specified element by ID
             function linkifyElement(id)
             {
                 var element = document.getElementById(id);
@@ -256,10 +256,10 @@
                 return; 
               }
               
-              // First try the 'Show messages' row
+              //First try the 'Show messages' row
               if(!scrollToFirstVisibleRow('MessageRowHeaderShow' + projectName))
               {
-                // Failed to find a visible row for 'Show messages', try an actual message row 
+                //Failed to find a visible row for 'Show messages', try an actual message row 
                 scrollToFirstVisibleRow('MessageRowClass' + projectName); 
               }
             }

@@ -1,4 +1,4 @@
-using MetalMaxSystem;
+﻿using MetalMaxSystem;
 using System;
 
 #if UNITY_EDITOR || UNITY_STANDALONE
@@ -62,14 +62,14 @@ namespace BattleTest
         /// </summary>
         public static void GameInit()
         {
-            // Variable Declarations
+            //Variable Declarations
             int lv_p; //代表阵营玩家
 
-            // Automatic Variable Declarations
+            //Automatic Variable Declarations
             const int autoA_ae = 12;
             int autoA_var;
 
-            // Implementation
+            //Implementation
             autoA_var = 9;
             for (; autoA_var <= autoA_ae; autoA_var += 1)
             {
@@ -120,11 +120,11 @@ namespace BattleTest
         /// </summary>
         public static void BattleAI(object sender, EventArgs e)
         {
-            // Variable Declarations
+            //Variable Declarations
             Unit lv_base, lv_targetBase;
             int lv_randomNum, lv_p;
 
-            // Automatic Variable Declarations
+            //Automatic Variable Declarations
             const int autoA_ae = 12;
             int autoA_var;
             int autoB_val;
@@ -133,7 +133,7 @@ namespace BattleTest
             int autoD_u;
             Unit autoD_var;
 
-            // Conditions
+            //Conditions
             if (!(Game.Initialization == 1))
             {
                 return;

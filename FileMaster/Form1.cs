@@ -224,7 +224,7 @@ namespace FileMaster
                     Panel p = a as Panel;  //取出Panel
                     if (!torf)
                     {
-                        // 改变Panel的颜色，执行时是灰色
+                        //改变Panel的颜色，执行时是灰色
                         p.BackColor = Color.Gray;
                     }
                     else
@@ -417,8 +417,8 @@ namespace FileMaster
             bool isDir = false;
             for (int i = 0; i < 1; i++)
             {
-                dirName = item.Substring(0, item.LastIndexOf("\\"));
-                itemName = item.Substring(item.LastIndexOf("\\") + 1);
+                dirName = item.Substring(0, item.LastIndexOf('\\'));
+                itemName = item.Substring(item.LastIndexOf('\\') + 1);
                 if (MMCore.IsDir(item))
                 {
                     //itemFrontName = Path.GetDirectoryName(item);//返回的是上一级目录名称
@@ -441,7 +441,7 @@ namespace FileMaster
                     if (checkBox_nonEmptySuffixDirIgnore.Checked && isDir) { break; }//忽略非空后缀目录
                 }
                 reportPath =
-                    workFilePath.Substring(0, workFilePath.LastIndexOf("\\"))
+                    workFilePath.Substring(0, workFilePath.LastIndexOf('\\'))
                     + @"\"
                     + Path.GetFileNameWithoutExtension(workFilePath)
                     + @"_Report.txt";
@@ -499,7 +499,7 @@ namespace FileMaster
                                     {
                                         if (comboBox_SamePathHandle.SelectedIndex == 1)
                                         {
-                                            // 检查目标路径是否存在
+                                            //检查目标路径是否存在
                                             while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                             {
                                                 //如果存在，为路径添加一个随机值
@@ -524,19 +524,19 @@ namespace FileMaster
                                 catch (IOException ioEx)
                                 {
                                     MMCore.WriteLine(reportPath, $"无法移动文件：{ioEx.Message}", false);
-                                    Debug.WriteLine($"无法移动文件：{ioEx.Message}");
+                                    MMCore.Tell($"无法移动文件：{ioEx.Message}");
                                     MessageBox.Show($"无法移动文件：{ioEx.Message}");
                                 }
                                 catch (UnauthorizedAccessException uaEx)
                                 {
                                     MMCore.WriteLine(reportPath, $"无法访问文件，因为没有足够的权限：{uaEx.Message}", false);
-                                    Debug.WriteLine($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
+                                    MMCore.Tell($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                     MessageBox.Show($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                 }
                                 catch (Exception ex)
                                 {
                                     MMCore.WriteLine(reportPath, $"移动文件时发生错误：{ex.Message}", false);
-                                    Debug.WriteLine($"移动文件时发生错误：{ex.Message}");
+                                    MMCore.Tell($"移动文件时发生错误：{ex.Message}");
                                     MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                                 }
                             }
@@ -554,10 +554,10 @@ namespace FileMaster
                                     {
                                         if (comboBox_SamePathHandle.SelectedIndex == 1)
                                         {
-                                            // 检查目标路径是否存在
+                                            //检查目标路径是否存在
                                             while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                             {
-                                                // 如果存在，为路径添加一个随机值
+                                                //如果存在，为路径添加一个随机值
                                                 string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位的随机字符串
                                                 string directoryName = Path.GetFileName(newFilePath);
                                                 string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
@@ -579,19 +579,19 @@ namespace FileMaster
                                 catch (IOException ioEx)
                                 {
                                     MMCore.WriteLine(reportPath, $"无法移动文件：{ioEx.Message}", false);
-                                    Debug.WriteLine($"无法移动文件：{ioEx.Message}");
+                                    MMCore.Tell($"无法移动文件：{ioEx.Message}");
                                     MessageBox.Show($"无法移动文件：{ioEx.Message}");
                                 }
                                 catch (UnauthorizedAccessException uaEx)
                                 {
                                     MMCore.WriteLine(reportPath, $"无法访问文件，因为没有足够的权限：{uaEx.Message}", false);
-                                    Debug.WriteLine($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
+                                    MMCore.Tell($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                     MessageBox.Show($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                 }
                                 catch (Exception ex)
                                 {
                                     MMCore.WriteLine(reportPath, $"移动文件时发生错误：{ex.Message}", false);
-                                    Debug.WriteLine($"移动文件时发生错误：{ex.Message}");
+                                    MMCore.Tell($"移动文件时发生错误：{ex.Message}");
                                     MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                                 }
                             }
@@ -650,8 +650,8 @@ namespace FileMaster
             bool isDir = false;
             for (int i = 0; i < 1; i++)
             {
-                dirName = item.Substring(0, item.LastIndexOf("\\"));
-                itemName = item.Substring(item.LastIndexOf("\\") + 1);
+                dirName = item.Substring(0, item.LastIndexOf('\\'));
+                itemName = item.Substring(item.LastIndexOf('\\') + 1);
                 if (MMCore.IsDir(item))
                 {
                     //itemFrontName = Path.GetDirectoryName(item);
@@ -674,7 +674,7 @@ namespace FileMaster
                     if (checkBox_nonEmptySuffixDirIgnore.Checked && isDir) { break; }//忽略非空后缀目录
                 }
                 reportPath =
-                    workFilePath.Substring(0, workFilePath.LastIndexOf("\\"))
+                    workFilePath.Substring(0, workFilePath.LastIndexOf('\\'))
                     + @"\"
                     + Path.GetFileNameWithoutExtension(workFilePath)
                     + @"_Report.txt";
@@ -759,7 +759,7 @@ namespace FileMaster
                                     {
                                         if (comboBox_SamePathHandle.SelectedIndex == 1)
                                         {
-                                            // 检查目标路径是否存在
+                                            //检查目标路径是否存在
                                             while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                             {
                                                 //如果存在，为路径添加一个随机值
@@ -784,19 +784,19 @@ namespace FileMaster
                                 catch (IOException ioEx)
                                 {
                                     MMCore.WriteLine(reportPath, $"无法移动文件：{ioEx.Message}", false);
-                                    Debug.WriteLine($"无法移动文件：{ioEx.Message}");
+                                    MMCore.Tell($"无法移动文件：{ioEx.Message}");
                                     MessageBox.Show($"无法移动文件：{ioEx.Message}");
                                 }
                                 catch (UnauthorizedAccessException uaEx)
                                 {
                                     MMCore.WriteLine(reportPath, $"无法访问文件，因为没有足够的权限：{uaEx.Message}", false);
-                                    Debug.WriteLine($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
+                                    MMCore.Tell($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                     MessageBox.Show($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                 }
                                 catch (Exception ex)
                                 {
                                     MMCore.WriteLine(reportPath, $"移动文件时发生错误：{ex.Message}", false);
-                                    Debug.WriteLine($"移动文件时发生错误：{ex.Message}");
+                                    MMCore.Tell($"移动文件时发生错误：{ex.Message}");
                                     MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                                 }
                             }
@@ -814,10 +814,10 @@ namespace FileMaster
                                     {
                                         if (comboBox_SamePathHandle.SelectedIndex == 1)
                                         {
-                                            // 检查目标路径是否存在
+                                            //检查目标路径是否存在
                                             while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                             {
-                                                // 如果存在，为路径添加一个随机值
+                                                //如果存在，为路径添加一个随机值
                                                 string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位的随机字符串
                                                 string directoryName = Path.GetFileName(newFilePath);
                                                 string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
@@ -839,19 +839,19 @@ namespace FileMaster
                                 catch (IOException ioEx)
                                 {
                                     MMCore.WriteLine(reportPath, $"无法移动文件：{ioEx.Message}", false);
-                                    Debug.WriteLine($"无法移动文件：{ioEx.Message}");
+                                    MMCore.Tell($"无法移动文件：{ioEx.Message}");
                                     MessageBox.Show($"无法移动文件：{ioEx.Message}");
                                 }
                                 catch (UnauthorizedAccessException uaEx)
                                 {
                                     MMCore.WriteLine(reportPath, $"无法访问文件，因为没有足够的权限：{uaEx.Message}", false);
-                                    Debug.WriteLine($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
+                                    MMCore.Tell($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                     MessageBox.Show($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                 }
                                 catch (Exception ex)
                                 {
                                     MMCore.WriteLine(reportPath, $"移动文件时发生错误：{ex.Message}", false);
-                                    Debug.WriteLine($"移动文件时发生错误：{ex.Message}");
+                                    MMCore.Tell($"移动文件时发生错误：{ex.Message}");
                                     MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                                 }
                             }
@@ -931,8 +931,8 @@ namespace FileMaster
 
             for (int i = 0; i < 1; i++)
             {
-                dirName = item.Substring(0, item.LastIndexOf("\\"));
-                itemName = item.Substring(item.LastIndexOf("\\") + 1);
+                dirName = item.Substring(0, item.LastIndexOf('\\'));
+                itemName = item.Substring(item.LastIndexOf('\\') + 1);
                 if (MMCore.IsDir(item))
                 {
                     //itemFrontName = Path.GetDirectoryName(item); //返回的是上一级目录名称
@@ -955,7 +955,7 @@ namespace FileMaster
                     if (checkBox_nonEmptySuffixDirIgnore.Checked && isDir) { break; }//忽略非空后缀目录
                 }
                 reportPath =
-                    workFilePath.Substring(0, workFilePath.LastIndexOf("\\"))
+                    workFilePath.Substring(0, workFilePath.LastIndexOf('\\'))
                     + @"\"
                     + Path.GetFileNameWithoutExtension(workFilePath)
                     + @"_Report.txt";
@@ -1133,7 +1133,7 @@ namespace FileMaster
                                     {
                                         if (comboBox_SamePathHandle.SelectedIndex == 1)
                                         {
-                                            // 检查目标路径是否存在
+                                            //检查目标路径是否存在
                                             while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                             {
                                                 //如果存在，为路径添加一个随机值
@@ -1158,19 +1158,19 @@ namespace FileMaster
                                 catch (IOException ioEx)
                                 {
                                     MMCore.WriteLine(reportPath, $"无法移动文件：{ioEx.Message}", false);
-                                    Debug.WriteLine($"无法移动文件：{ioEx.Message}");
+                                    MMCore.Tell($"无法移动文件：{ioEx.Message}");
                                     MessageBox.Show($"无法移动文件：{ioEx.Message}");
                                 }
                                 catch (UnauthorizedAccessException uaEx)
                                 {
                                     MMCore.WriteLine(reportPath, $"无法访问文件，因为没有足够的权限：{uaEx.Message}", false);
-                                    Debug.WriteLine($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
+                                    MMCore.Tell($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                     MessageBox.Show($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                 }
                                 catch (Exception ex)
                                 {
                                     MMCore.WriteLine(reportPath, $"移动文件时发生错误：{ex.Message}", false);
-                                    Debug.WriteLine($"移动文件时发生错误：{ex.Message}");
+                                    MMCore.Tell($"移动文件时发生错误：{ex.Message}");
                                     MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                                 }
                             }
@@ -1188,10 +1188,10 @@ namespace FileMaster
                                     {
                                         if (comboBox_SamePathHandle.SelectedIndex == 1)
                                         {
-                                            // 检查目标路径是否存在
+                                            //检查目标路径是否存在
                                             while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                             {
-                                                // 如果存在，为路径添加一个随机值
+                                                //如果存在，为路径添加一个随机值
                                                 string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位的随机字符串
                                                 string directoryName = Path.GetFileName(newFilePath);
                                                 string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
@@ -1213,19 +1213,19 @@ namespace FileMaster
                                 catch (IOException ioEx)
                                 {
                                     MMCore.WriteLine(reportPath, $"无法移动文件：{ioEx.Message}", false);
-                                    Debug.WriteLine($"无法移动文件：{ioEx.Message}");
+                                    MMCore.Tell($"无法移动文件：{ioEx.Message}");
                                     MessageBox.Show($"无法移动文件：{ioEx.Message}");
                                 }
                                 catch (UnauthorizedAccessException uaEx)
                                 {
                                     MMCore.WriteLine(reportPath, $"无法访问文件，因为没有足够的权限：{uaEx.Message}", false);
-                                    Debug.WriteLine($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
+                                    MMCore.Tell($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                     MessageBox.Show($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                 }
                                 catch (Exception ex)
                                 {
                                     MMCore.WriteLine(reportPath, $"移动文件时发生错误：{ex.Message}", false);
-                                    Debug.WriteLine($"移动文件时发生错误：{ex.Message}");
+                                    MMCore.Tell($"移动文件时发生错误：{ex.Message}");
                                     MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                                 }
                             }
@@ -1291,8 +1291,8 @@ namespace FileMaster
             bool isDir = false;
             for (int i = 0; i < 1; i++)
             {
-                dirName = item.Substring(0, item.LastIndexOf("\\"));
-                itemName = item.Substring(item.LastIndexOf("\\") + 1);
+                dirName = item.Substring(0, item.LastIndexOf('\\'));
+                itemName = item.Substring(item.LastIndexOf('\\') + 1);
                 if (MMCore.IsDir(item))
                 {
                     //itemFrontName = Path.GetDirectoryName(item); //返回的是上一级目录名称
@@ -1315,7 +1315,7 @@ namespace FileMaster
                     if (checkBox_nonEmptySuffixDirIgnore.Checked && isDir) { break; }//忽略非空后缀目录
                 }
                 reportPath =
-                    workFilePath.Substring(0, workFilePath.LastIndexOf("\\"))
+                    workFilePath.Substring(0, workFilePath.LastIndexOf('\\'))
                     + @"\"
                     + Path.GetFileNameWithoutExtension(workFilePath)
                     + @"_Report.txt";
@@ -1446,7 +1446,7 @@ namespace FileMaster
                                     {
                                         if (comboBox_SamePathHandle.SelectedIndex == 1)
                                         {
-                                            // 检查目标路径是否存在
+                                            //检查目标路径是否存在
                                             while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                             {
                                                 //如果存在，为路径添加一个随机值
@@ -1471,19 +1471,19 @@ namespace FileMaster
                                 catch (IOException ioEx)
                                 {
                                     MMCore.WriteLine(reportPath, $"无法移动文件：{ioEx.Message}", false);
-                                    Debug.WriteLine($"无法移动文件：{ioEx.Message}");
+                                    MMCore.Tell($"无法移动文件：{ioEx.Message}");
                                     MessageBox.Show($"无法移动文件：{ioEx.Message}");
                                 }
                                 catch (UnauthorizedAccessException uaEx)
                                 {
                                     MMCore.WriteLine(reportPath, $"无法访问文件，因为没有足够的权限：{uaEx.Message}", false);
-                                    Debug.WriteLine($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
+                                    MMCore.Tell($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                     MessageBox.Show($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                 }
                                 catch (Exception ex)
                                 {
                                     MMCore.WriteLine(reportPath, $"移动文件时发生错误：{ex.Message}", false);
-                                    Debug.WriteLine($"移动文件时发生错误：{ex.Message}");
+                                    MMCore.Tell($"移动文件时发生错误：{ex.Message}");
                                     MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                                 }
                             }
@@ -1501,10 +1501,10 @@ namespace FileMaster
                                     {
                                         if (comboBox_SamePathHandle.SelectedIndex == 1)
                                         {
-                                            // 检查目标路径是否存在
+                                            //检查目标路径是否存在
                                             while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                             {
-                                                // 如果存在，为路径添加一个随机值
+                                                //如果存在，为路径添加一个随机值
                                                 string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位的随机字符串
                                                 string directoryName = Path.GetFileName(newFilePath);
                                                 string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
@@ -1526,19 +1526,19 @@ namespace FileMaster
                                 catch (IOException ioEx)
                                 {
                                     MMCore.WriteLine(reportPath, $"无法移动文件：{ioEx.Message}", false);
-                                    Debug.WriteLine($"无法移动文件：{ioEx.Message}");
+                                    MMCore.Tell($"无法移动文件：{ioEx.Message}");
                                     MessageBox.Show($"无法移动文件：{ioEx.Message}");
                                 }
                                 catch (UnauthorizedAccessException uaEx)
                                 {
                                     MMCore.WriteLine(reportPath, $"无法访问文件，因为没有足够的权限：{uaEx.Message}", false);
-                                    Debug.WriteLine($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
+                                    MMCore.Tell($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                     MessageBox.Show($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                 }
                                 catch (Exception ex)
                                 {
                                     MMCore.WriteLine(reportPath, $"移动文件时发生错误：{ex.Message}", false);
-                                    Debug.WriteLine($"移动文件时发生错误：{ex.Message}");
+                                    MMCore.Tell($"移动文件时发生错误：{ex.Message}");
                                     MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                                 }
                             }
@@ -1608,8 +1608,8 @@ namespace FileMaster
 
             for (int i = 0; i < 1; i++)
             {
-                dirName = item.Substring(0, item.LastIndexOf("\\"));
-                itemName = item.Substring(item.LastIndexOf("\\") + 1);
+                dirName = item.Substring(0, item.LastIndexOf('\\'));
+                itemName = item.Substring(item.LastIndexOf('\\') + 1);
                 if (MMCore.IsDir(item))
                 {
                     //itemFrontName = Path.GetDirectoryName(item); //返回的是上一级目录名称
@@ -1634,7 +1634,7 @@ namespace FileMaster
                 }
 
                 reportPath =
-                    workFilePath.Substring(0, workFilePath.LastIndexOf("\\"))
+                    workFilePath.Substring(0, workFilePath.LastIndexOf('\\'))
                     + @"\"
                     + Path.GetFileNameWithoutExtension(workFilePath)
                     + @"_Report.txt";
@@ -1666,31 +1666,31 @@ namespace FileMaster
                             {
                                 //if (_startIndex == 0)
                                 //{
-                                //    tempFrontName = "";
-                                //    tempMidName = itemFrontName.Substring(0, _strCount);
-                                //    if (itemFrontName.Length == _strCount)
-                                //    {
-                                //        tempEndName = "";
-                                //    }
-                                //    else
-                                //    {
-                                //        tempEndName = itemFrontName.Substring(_strCount);
-                                //    }
+                                //   tempFrontName = "";
+                                //   tempMidName = itemFrontName.Substring(0, _strCount);
+                                //   if (itemFrontName.Length == _strCount)
+                                //   {
+                                //       tempEndName = "";
+                                //   }
+                                //   else
+                                //   {
+                                //       tempEndName = itemFrontName.Substring(_strCount);
+                                //   }
                                 //}
                                 //else
                                 //{
-                                //    tempFrontName = itemFrontName.Substring(0, _startIndex);
-                                //    tempMidName = itemFrontName.Substring(_startIndex, _strCount);
-                                //    if (itemFrontName.Length > (_strCount + _startIndex))
-                                //    {
-                                //        //字符数有余，如8>(1+6)的情况
-                                //        tempEndName = itemFrontName.Substring(_strCount + 1);
-                                //    }
-                                //    else
-                                //    {
-                                //        //字符数正好，如8=(1+7)的情况
-                                //        tempEndName = "";
-                                //    }
+                                //   tempFrontName = itemFrontName.Substring(0, _startIndex);
+                                //   tempMidName = itemFrontName.Substring(_startIndex, _strCount);
+                                //   if (itemFrontName.Length > (_strCount + _startIndex))
+                                //   {
+                                //       //字符数有余，如8>(1+6)的情况
+                                //       tempEndName = itemFrontName.Substring(_strCount + 1);
+                                //   }
+                                //   else
+                                //   {
+                                //       //字符数正好，如8=(1+7)的情况
+                                //       tempEndName = "";
+                                //   }
                                 //}
                                 newFileName = itemFrontName.Replace(textBox_param5.Text, textBox_param6.Text) + itemExtension;
                                 newFilePath = Path.Combine(dirName + @"\", newFileName);
@@ -1734,7 +1734,7 @@ namespace FileMaster
                                 {
                                     if (comboBox_SamePathHandle.SelectedIndex == 1)
                                     {
-                                        // 检查目标路径是否存在
+                                        //检查目标路径是否存在
                                         while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                         {
                                             //如果存在，为路径添加一个随机值
@@ -1759,19 +1759,19 @@ namespace FileMaster
                             catch (IOException ioEx)
                             {
                                 MMCore.WriteLine(reportPath, $"无法移动文件：{ioEx.Message}", false);
-                                Debug.WriteLine($"无法移动文件：{ioEx.Message}");
+                                MMCore.Tell($"无法移动文件：{ioEx.Message}");
                                 MessageBox.Show($"无法移动文件：{ioEx.Message}");
                             }
                             catch (UnauthorizedAccessException uaEx)
                             {
                                 MMCore.WriteLine(reportPath, $"无法访问文件，因为没有足够的权限：{uaEx.Message}", false);
-                                Debug.WriteLine($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
+                                MMCore.Tell($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                 MessageBox.Show($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                             }
                             catch (Exception ex)
                             {
                                 MMCore.WriteLine(reportPath, $"移动文件时发生错误：{ex.Message}", false);
-                                Debug.WriteLine($"移动文件时发生错误：{ex.Message}");
+                                MMCore.Tell($"移动文件时发生错误：{ex.Message}");
                                 MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                             }
                         }
@@ -1789,10 +1789,10 @@ namespace FileMaster
                                 {
                                     if (comboBox_SamePathHandle.SelectedIndex == 1)
                                     {
-                                        // 检查目标路径是否存在
+                                        //检查目标路径是否存在
                                         while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                         {
-                                            // 如果存在，为路径添加一个随机值
+                                            //如果存在，为路径添加一个随机值
                                             string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位的随机字符串
                                             string directoryName = Path.GetFileName(newFilePath);
                                             string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
@@ -1814,19 +1814,19 @@ namespace FileMaster
                             catch (IOException ioEx)
                             {
                                 MMCore.WriteLine(reportPath, $"无法移动文件：{ioEx.Message}", false);
-                                Debug.WriteLine($"无法移动文件：{ioEx.Message}");
+                                MMCore.Tell($"无法移动文件：{ioEx.Message}");
                                 MessageBox.Show($"无法移动文件：{ioEx.Message}");
                             }
                             catch (UnauthorizedAccessException uaEx)
                             {
                                 MMCore.WriteLine(reportPath, $"无法访问文件，因为没有足够的权限：{uaEx.Message}", false);
-                                Debug.WriteLine($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
+                                MMCore.Tell($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                 MessageBox.Show($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                             }
                             catch (Exception ex)
                             {
                                 MMCore.WriteLine(reportPath, $"移动文件时发生错误：{ex.Message}", false);
-                                Debug.WriteLine($"移动文件时发生错误：{ex.Message}");
+                                MMCore.Tell($"移动文件时发生错误：{ex.Message}");
                                 MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                             }
                         }
@@ -1895,8 +1895,8 @@ namespace FileMaster
 
             for (int i = 0; i < 1; i++)
             {
-                dirName = item.Substring(0, item.LastIndexOf("\\"));
-                itemName = item.Substring(item.LastIndexOf("\\") + 1);
+                dirName = item.Substring(0, item.LastIndexOf('\\'));
+                itemName = item.Substring(item.LastIndexOf('\\') + 1);
                 if (MMCore.IsDir(item))
                 {
                     //itemFrontName = Path.GetDirectoryName(item); //返回的是上一级目录名称
@@ -1921,7 +1921,7 @@ namespace FileMaster
                 }
 
                 reportPath =
-                    workFilePath.Substring(0, workFilePath.LastIndexOf("\\"))
+                    workFilePath.Substring(0, workFilePath.LastIndexOf('\\'))
                     + @"\"
                     + Path.GetFileNameWithoutExtension(workFilePath)
                     + @"_Report.txt";
@@ -2022,7 +2022,7 @@ namespace FileMaster
                                 {
                                     if (comboBox_SamePathHandle.SelectedIndex == 1)
                                     {
-                                        // 检查目标路径是否存在
+                                        //检查目标路径是否存在
                                         while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                         {
                                             //如果存在，为路径添加一个随机值
@@ -2047,19 +2047,19 @@ namespace FileMaster
                             catch (IOException ioEx)
                             {
                                 MMCore.WriteLine(reportPath, $"无法移动文件：{ioEx.Message}", false);
-                                Debug.WriteLine($"无法移动文件：{ioEx.Message}");
+                                MMCore.Tell($"无法移动文件：{ioEx.Message}");
                                 MessageBox.Show($"无法移动文件：{ioEx.Message}");
                             }
                             catch (UnauthorizedAccessException uaEx)
                             {
                                 MMCore.WriteLine(reportPath, $"无法访问文件，因为没有足够的权限：{uaEx.Message}", false);
-                                Debug.WriteLine($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
+                                MMCore.Tell($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                 MessageBox.Show($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                             }
                             catch (Exception ex)
                             {
                                 MMCore.WriteLine(reportPath, $"移动文件时发生错误：{ex.Message}", false);
-                                Debug.WriteLine($"移动文件时发生错误：{ex.Message}");
+                                MMCore.Tell($"移动文件时发生错误：{ex.Message}");
                                 MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                             }
                         }
@@ -2077,10 +2077,10 @@ namespace FileMaster
                                 {
                                     if (comboBox_SamePathHandle.SelectedIndex == 1)
                                     {
-                                        // 检查目标路径是否存在
+                                        //检查目标路径是否存在
                                         while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                         {
-                                            // 如果存在，为路径添加一个随机值
+                                            //如果存在，为路径添加一个随机值
                                             string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位的随机字符串
                                             string directoryName = Path.GetFileName(newFilePath);
                                             string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
@@ -2102,19 +2102,19 @@ namespace FileMaster
                             catch (IOException ioEx)
                             {
                                 MMCore.WriteLine(reportPath, $"无法移动文件：{ioEx.Message}", false);
-                                Debug.WriteLine($"无法移动文件：{ioEx.Message}");
+                                MMCore.Tell($"无法移动文件：{ioEx.Message}");
                                 MessageBox.Show($"无法移动文件：{ioEx.Message}");
                             }
                             catch (UnauthorizedAccessException uaEx)
                             {
                                 MMCore.WriteLine(reportPath, $"无法访问文件，因为没有足够的权限：{uaEx.Message}", false);
-                                Debug.WriteLine($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
+                                MMCore.Tell($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                                 MessageBox.Show($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
                             }
                             catch (Exception ex)
                             {
                                 MMCore.WriteLine(reportPath, $"移动文件时发生错误：{ex.Message}", false);
-                                Debug.WriteLine($"移动文件时发生错误：{ex.Message}");
+                                MMCore.Tell($"移动文件时发生错误：{ex.Message}");
                                 MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                             }
                         }
@@ -2178,8 +2178,8 @@ namespace FileMaster
 
             for (int i = 0; i < 1; i++)
             {
-                //dirName = item.Substring(0, item.LastIndexOf("\\"));
-                itemName = item.Substring(item.LastIndexOf("\\") + 1);
+                //dirName = item.Substring(0, item.LastIndexOf('\\'));
+                itemName = item.Substring(item.LastIndexOf('\\') + 1);
                 if (MMCore.IsDir(item))
                 {
                     //itemFrontName = Path.GetDirectoryName(item); //返回的是上一级目录名称
@@ -2204,7 +2204,7 @@ namespace FileMaster
                 }
 
                 reportPath =
-                    workFilePath.Substring(0, workFilePath.LastIndexOf("\\"))
+                    workFilePath.Substring(0, workFilePath.LastIndexOf('\\'))
                     + @"\"
                     + Path.GetFileNameWithoutExtension(workFilePath)
                     + @"_Report.txt";
@@ -2252,7 +2252,7 @@ namespace FileMaster
                     else
                     {
                         //无效时，按默认输出
-                        dirName = workFilePath.Substring(0, workFilePath.LastIndexOf("\\")) + @"\" + Path.GetFileNameWithoutExtension(workFilePath) + @"_Delete";
+                        dirName = workFilePath.Substring(0, workFilePath.LastIndexOf('\\')) + @"\" + Path.GetFileNameWithoutExtension(workFilePath) + @"_Delete";
                         textBox_param8.Text = dirName;
                     }
                     newFilePath = Path.Combine(dirName + @"\", newFileName);
@@ -2417,14 +2417,14 @@ namespace FileMaster
                 //string directoryName = Path.GetFileName(workPath);
                 //string parentDirectoryPath = Path.GetDirectoryName(workPath);
                 //string newWorkPath = Path.Combine(parentDirectoryPath, $"{directoryName}_{randomValue}");
-                //Debug.WriteLine(string.Format("randomValue={0} directoryName={1} parentDirectoryPath={2} newWorkPath={3}", randomValue, directoryName, parentDirectoryPath, newWorkPath));
+                //MMCore.Tell(string.Format("randomValue={0} directoryName={1} parentDirectoryPath={2} newWorkPath={3}", randomValue, directoryName, parentDirectoryPath, newWorkPath));
                 ////randomValue = cfcff240 directoryName = Dir parentDirectoryPath = C:\Users\linsh\Desktop newWorkPath = C:\Users\linsh\Desktop\Dir_cfcff240
 
                 //randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位随机字符串
                 //string fileName = Path.GetFileName(workFilePath);
                 //string directoryPath = Path.GetDirectoryName(workFilePath);
                 //string newWorkFilePath = Path.Combine(directoryPath, $"{Path.GetFileNameWithoutExtension(fileName)}_{randomValue}{Path.GetExtension(fileName)}");
-                //Debug.WriteLine(string.Format("randomValue={0} fileName={1} directoryPath={2} newWorkFilePath={3}", randomValue, fileName, directoryPath, newWorkFilePath));
+                //MMCore.Tell(string.Format("randomValue={0} fileName={1} directoryPath={2} newWorkFilePath={3}", randomValue, fileName, directoryPath, newWorkFilePath));
                 ////randomValue = 5fc90e46 fileName = test.txt directoryPath = C:\Users\linsh\Desktop newWorkFilePath = C:\Users\linsh\Desktop\test_5fc90e46.txt
                 #endregion
             }
@@ -2533,7 +2533,7 @@ namespace FileMaster
                             if (checkBox_regular.Checked)
                             {//启用了正则表达式
                                 //从文件路径提取的文件名是否匹配文本框中的正则表达式（textBox_specialStr.Text），如果不匹配则使用 continue 跳过当前循环迭代
-                                if (!Regex.IsMatch(item.Substring(item.LastIndexOf("\\") + 1), textBox_specialStr.Text)) { continue; }
+                                if (!Regex.IsMatch(item.Substring(item.LastIndexOf('\\') + 1), textBox_specialStr.Text)) { continue; }
                             }
                             else
                             {
@@ -2542,7 +2542,7 @@ namespace FileMaster
                                 {
                                     //忽略大小写
                                     //IndexOf函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
-                                    if (item.Substring(item.LastIndexOf("\\") + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
+                                    if (item.Substring(item.LastIndexOf('\\') + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
                                     {
                                         continue;
                                     }
@@ -2550,7 +2550,7 @@ namespace FileMaster
                                 else
                                 {
                                     //String.Contains对大小写敏感，适用于区分大小写的判断
-                                    if (!item.Substring(item.LastIndexOf("\\") + 1).Contains(textBox_specialStr.Text))
+                                    if (!item.Substring(item.LastIndexOf('\\') + 1).Contains(textBox_specialStr.Text))
                                     {
                                         continue;
                                     }
@@ -2571,10 +2571,10 @@ namespace FileMaster
                         {
                             case 0:
                                 //如果是打印功能
-                                //MMCore.WriteLine(workFilePath, "目录：" + item.Substring(0, item.LastIndexOf("\\"))+" =>上回："+ tempStr, true);
-                                if (item.Substring(0, item.LastIndexOf("\\")) != tempStr) //内部循环若不是遍历到同一个子目录（目前必然通过）
+                                //MMCore.WriteLine(workFilePath, "目录：" + item.Substring(0, item.LastIndexOf('\\'))+" =>上回："+ tempStr, true);
+                                if (item.Substring(0, item.LastIndexOf('\\')) != tempStr) //内部循环若不是遍历到同一个子目录（目前必然通过）
                                 {
-                                    tempStr = item.Substring(0, item.LastIndexOf("\\"));
+                                    tempStr = item.Substring(0, item.LastIndexOf('\\'));
                                     if (DirCount == 0)
                                     {
                                         //无效动作
@@ -2609,7 +2609,7 @@ namespace FileMaster
                                 }
                                 else
                                 {//仅输出名称
-                                    dirName = item.Substring(item.LastIndexOf("\\") + 1);
+                                    dirName = item.Substring(item.LastIndexOf('\\') + 1);
                                 }
                                 directoryInfo = new DirectoryInfo(item); //根据子目录字符元素建立其目录信息实例
                                 if (checkBox_printDirSize.Checked)
@@ -2681,7 +2681,7 @@ namespace FileMaster
                             {
                                 if (checkBox_regular.Checked)
                                 {
-                                    if (!Regex.IsMatch(item.Substring(item.LastIndexOf("\\") + 1), textBox_specialStr.Text)) { continue; }
+                                    if (!Regex.IsMatch(item.Substring(item.LastIndexOf('\\') + 1), textBox_specialStr.Text)) { continue; }
                                 }
                                 else
                                 {
@@ -2690,7 +2690,7 @@ namespace FileMaster
                                     {
                                         //忽略大小写
                                         //IndexOf函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
-                                        if (item.Substring(item.LastIndexOf("\\") + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
+                                        if (item.Substring(item.LastIndexOf('\\') + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
                                         {
                                             continue;
                                         }
@@ -2698,7 +2698,7 @@ namespace FileMaster
                                     else
                                     {
                                         //String.Contains对大小写敏感，适用于区分大小写的判断
-                                        if (!item.Substring(item.LastIndexOf("\\") + 1).Contains(textBox_specialStr.Text))
+                                        if (!item.Substring(item.LastIndexOf('\\') + 1).Contains(textBox_specialStr.Text))
                                         {
                                             continue;
                                         }
@@ -2723,7 +2723,7 @@ namespace FileMaster
                                     }
                                     else
                                     {
-                                        fileName = item.Substring(item.LastIndexOf("\\") + 1);
+                                        fileName = item.Substring(item.LastIndexOf('\\') + 1);
                                     }
                                     FileInfo fileInfo = new FileInfo(item);
                                     if (checkBox_printFileSize.Checked)
@@ -2783,7 +2783,7 @@ namespace FileMaster
                             {
                                 if (checkBox_regular.Checked)
                                 {
-                                    if (!Regex.IsMatch(fileInfo.Name.Substring(fileInfo.Name.LastIndexOf("\\") + 1), textBox_specialStr.Text)) { continue; }
+                                    if (!Regex.IsMatch(fileInfo.Name.Substring(fileInfo.Name.LastIndexOf('\\') + 1), textBox_specialStr.Text)) { continue; }
                                 }
                                 else
                                 {
@@ -2792,7 +2792,7 @@ namespace FileMaster
                                     {
                                         //忽略大小写
                                         //IndexOf函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
-                                        if (fileInfo.Name.Substring(fileInfo.Name.LastIndexOf("\\") + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
+                                        if (fileInfo.Name.Substring(fileInfo.Name.LastIndexOf('\\') + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
                                         {
                                             continue;
                                         }
@@ -2800,7 +2800,7 @@ namespace FileMaster
                                     else
                                     {
                                         //String.Contains对大小写敏感，适用于区分大小写的判断
-                                        if (!fileInfo.Name.Substring(fileInfo.Name.LastIndexOf("\\") + 1).Contains(textBox_specialStr.Text))
+                                        if (!fileInfo.Name.Substring(fileInfo.Name.LastIndexOf('\\') + 1).Contains(textBox_specialStr.Text))
                                         {
                                             continue;
                                         }
@@ -2906,7 +2906,7 @@ namespace FileMaster
                         {
                             if (checkBox_regular.Checked)
                             {
-                                if (!Regex.IsMatch(item.Substring(item.LastIndexOf("\\") + 1), textBox_specialStr.Text)) { continue; }
+                                if (!Regex.IsMatch(item.Substring(item.LastIndexOf('\\') + 1), textBox_specialStr.Text)) { continue; }
                             }
                             else
                             {
@@ -2915,7 +2915,7 @@ namespace FileMaster
                                 {
                                     //忽略大小写
                                     //IndexOf函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
-                                    if (item.Substring(item.LastIndexOf("\\") + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
+                                    if (item.Substring(item.LastIndexOf('\\') + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
                                     {
                                         continue;
                                     }
@@ -2923,7 +2923,7 @@ namespace FileMaster
                                 else
                                 {
                                     //String.Contains对大小写敏感，适用于区分大小写的判断
-                                    if (!item.Substring(item.LastIndexOf("\\") + 1).Contains(textBox_specialStr.Text))
+                                    if (!item.Substring(item.LastIndexOf('\\') + 1).Contains(textBox_specialStr.Text))
                                     {
                                         continue;
                                     }
@@ -2949,7 +2949,7 @@ namespace FileMaster
                                 }
                                 else
                                 {
-                                    dirName = item.Substring(item.LastIndexOf("\\") + 1);
+                                    dirName = item.Substring(item.LastIndexOf('\\') + 1);
                                 }
                                 if (checkBox_printDirSize.Checked)
                                 {
@@ -3035,7 +3035,7 @@ namespace FileMaster
                             {
                                 if (checkBox_regular.Checked)
                                 {
-                                    if (!Regex.IsMatch(item.Substring(item.LastIndexOf("\\") + 1), textBox_specialStr.Text)) { continue; }
+                                    if (!Regex.IsMatch(item.Substring(item.LastIndexOf('\\') + 1), textBox_specialStr.Text)) { continue; }
                                 }
                                 else
                                 {
@@ -3044,7 +3044,7 @@ namespace FileMaster
                                     {
                                         //忽略大小写
                                         //IndexOf函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
-                                        if (item.Substring(item.LastIndexOf("\\") + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
+                                        if (item.Substring(item.LastIndexOf('\\') + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
                                         {
                                             continue;
                                         }
@@ -3052,7 +3052,7 @@ namespace FileMaster
                                     else
                                     {
                                         //String.Contains对大小写敏感，适用于区分大小写的判断
-                                        if (!item.Substring(item.LastIndexOf("\\") + 1).Contains(textBox_specialStr.Text))
+                                        if (!item.Substring(item.LastIndexOf('\\') + 1).Contains(textBox_specialStr.Text))
                                         {
                                             continue;
                                         }
@@ -3078,7 +3078,7 @@ namespace FileMaster
                                     }
                                     else
                                     {
-                                        fileName = item.Substring(item.LastIndexOf("\\") + 1);
+                                        fileName = item.Substring(item.LastIndexOf('\\') + 1);
                                     }
 
                                     if (checkBox_printFileSize.Checked)
@@ -3140,7 +3140,12 @@ namespace FileMaster
                             {
                                 if (checkBox_regular.Checked)
                                 {
-                                    if (!Regex.IsMatch(fileInfo.Name.Substring(fileInfo.Name.LastIndexOf("\\") + 1), textBox_specialStr.Text)) { continue; }
+                                    if (!Regex.IsMatch(fileInfo.Name.Substring(fileInfo.Name.LastIndexOf('\\') + 1), textBox_specialStr.Text)) { continue; }
+                                    //↓可用AsSpan替代Substring来提升性能
+                                    //if (!Regex.IsMatch(fileInfo.Name.AsSpan().Slice(fileInfo.Name.LastIndexOf('\\') + 1).ToString(), textBox_specialStr.Text))
+                                    //{
+                                    //    continue;
+                                    //}
                                 }
                                 else
                                 {
@@ -3149,7 +3154,7 @@ namespace FileMaster
                                     {
                                         //忽略大小写
                                         //IndexOf函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
-                                        if (fileInfo.Name.Substring(fileInfo.Name.LastIndexOf("\\") + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
+                                        if (fileInfo.Name.Substring(fileInfo.Name.LastIndexOf('\\') + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
                                         {
                                             continue;
                                         }
@@ -3157,7 +3162,7 @@ namespace FileMaster
                                     else
                                     {
                                         //String.Contains对大小写敏感，适用于区分大小写的判断
-                                        if (!fileInfo.Name.Substring(fileInfo.Name.LastIndexOf("\\") + 1).Contains(textBox_specialStr.Text))
+                                        if (!fileInfo.Name.Substring(fileInfo.Name.LastIndexOf('\\') + 1).Contains(textBox_specialStr.Text))
                                         {
                                             continue;
                                         }
@@ -3705,7 +3710,7 @@ namespace FileMaster
                     }
                     else if (checkBox_printTXTOnly.Checked && (!textBox_workFilePath.Text.Contains(@".txt") || !Regex.IsMatch(textBox_workFilePath.Text, @"^(.*)(\.txt)$")))
                     {
-                        temp = textBox_workFilePath.Text.Substring(textBox_workFilePath.Text.LastIndexOf("\\") + 1);
+                        temp = textBox_workFilePath.Text.Substring(textBox_workFilePath.Text.LastIndexOf('\\') + 1);
                         textBox_workFilePath.Text += @"\" + temp + @".txt";
                     }
                     label_controlTips.Text = "工作文本：" + textBox_workFilePath.Text;
@@ -3739,7 +3744,7 @@ namespace FileMaster
         /// <param name="e"></param>
         private void Form1_Load(object sender, EventArgs e)
         {
-            // 取消线程间的安全访问（最简单省事，但最不负责）
+            //取消线程间的安全访问（最简单省事，但最不负责）
             CheckForIllegalCrossThreadCalls = false;
         }
 
@@ -3922,7 +3927,7 @@ namespace FileMaster
                 }
                 //if (checkBox_dirModification.Checked)
                 //{
-                //    checkBox_dirModification.Checked = false;
+                //   checkBox_dirModification.Checked = false;
                 //}
                 if (!checkBox_DFDividually.Visible) { checkBox_DFDividually.Visible = true; }
                 if (!checkBox_dirFirst.Visible) { checkBox_dirFirst.Visible = true; }

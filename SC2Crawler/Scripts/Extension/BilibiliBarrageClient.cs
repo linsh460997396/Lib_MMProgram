@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MetalMaxSystem;
+using System;
 using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Threading;
@@ -33,7 +34,7 @@ namespace SC2Crawler
                 {
                     result = await _webSocket.ReceiveAsync(segment, cancellationToken);
                     var message = System.Text.Encoding.UTF8.GetString(buffer, 0, result.Count);
-                    // 处理接收到的弹幕数据
+                    //处理接收到的弹幕数据
                     HandleMessage(message);
                 }
                 while (!result.EndOfMessage);
@@ -42,8 +43,8 @@ namespace SC2Crawler
 
         private void HandleMessage(string message)
         {
-            // 解析弹幕数据并进行处理
-            Debug.WriteLine(message);
+            //解析弹幕数据并进行处理
+            MMCore.Tell(message);
         }
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace SC2Crawler
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                MMCore.Tell(ex.Message);
             }
         }
 
@@ -90,15 +91,15 @@ namespace SC2Crawler
                 }
                 catch (WebSocketException ex)
                 {
-                    Debug.WriteLine($"WebSocketException: {ex.Message}");
-                    // 在这里添加重连逻辑
-                    await Task.Delay(TimeSpan.FromSeconds(5)); // 等待一段时间后尝试重新连接
+                    MMCore.Tell($"WebSocketException: {ex.Message}");
+                    //在这里添加重连逻辑
+                    await Task.Delay(TimeSpan.FromSeconds(5)); //等待一段时间后尝试重新连接
                     await ConnectAsync(cancellationToken);
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine(ex.Message);
-                    break; // 其他异常导致退出循环
+                    MMCore.Tell(ex.Message);
+                    break; //其他异常导致退出循环
                 }
             }
         }

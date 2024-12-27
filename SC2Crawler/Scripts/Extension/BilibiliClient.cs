@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Diagnostics;
+using MetalMaxSystem;
 
 namespace SC2Crawler
 {
@@ -29,7 +30,7 @@ namespace SC2Crawler
 
         public async Task ConnectServer()
         {
-            Debug.WriteLine("正在进入房间。。。。。");
+            MMCore.Tell("正在进入房间。。。。。");
             HttpClient httpClient = new HttpClient();
             string html = await httpClient.GetStringAsync("http://live.bilibili.com/" + _roomId);
             Match m = Regex.Match(html, @"ROOMID\s=\s(\d+)");
@@ -43,12 +44,12 @@ namespace SC2Crawler
 
             _client = new TcpClient(_ChatHost, _ChatPort);
             _stream = _client.GetStream();
-            Debug.WriteLine("链接弹幕中。。。。。");
+            MMCore.Tell("链接弹幕中。。。。。");
             if (await SendJoinChannel(_roomId))
             {
                 connected = true;
-                Debug.WriteLine("进入房间成功。。。。。");
-                Debug.WriteLine("链接弹幕成功。。。。。");
+                MMCore.Tell("进入房间成功。。。。。");
+                MMCore.Tell("链接弹幕成功。。。。。");
                 await ReceiveMessageLoop();
             }
         }
@@ -111,7 +112,7 @@ namespace SC2Crawler
                     {
                         await _stream.ReadAsync(tmp, 0, 4);
                         int num3 = BitConverter.ToInt32(tmp, 0);
-                        Debug.WriteLine("房间人数为 " + num3);
+                        MMCore.Tell("房间人数为 " + num3);
                         _UserCount = num3;
                         continue;
                     }
@@ -145,7 +146,7 @@ namespace SC2Crawler
 
         private void parseDanMu(string messages)
         {
-            // Your parsing logic here
+            //Your parsing logic here
         }
     }
 }

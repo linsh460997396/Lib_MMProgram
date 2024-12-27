@@ -21,6 +21,11 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "星海混肴器", "..\星�
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SC2Crawler", "..\SC2Crawler\SC2Crawler.csproj", "{86441788-78A3-4FE0-A24A-9B45FCCB5434}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextureMaster", "..\TextureMaster\TextureMaster.csproj", "{4A86C00A-D039-4C12-A9F2-1F12C343A346}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4238C5DF-3860-4DEB-B81A-C6AC20690E60} = {4238C5DF-3860-4DEB-B81A-C6AC20690E60}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +68,10 @@ Global
 		{86441788-78A3-4FE0-A24A-9B45FCCB5434}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86441788-78A3-4FE0-A24A-9B45FCCB5434}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86441788-78A3-4FE0-A24A-9B45FCCB5434}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A86C00A-D039-4C12-A9F2-1F12C343A346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A86C00A-D039-4C12-A9F2-1F12C343A346}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A86C00A-D039-4C12-A9F2-1F12C343A346}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A86C00A-D039-4C12-A9F2-1F12C343A346}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

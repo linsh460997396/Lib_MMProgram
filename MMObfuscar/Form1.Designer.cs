@@ -42,9 +42,9 @@ namespace MMObfuscar
             richTextBox_Code = new System.Windows.Forms.RichTextBox();
             panel_Top.SuspendLayout();
             SuspendLayout();
-            // 
-            // panel_Top
-            // 
+            //
+            //panel_Top
+            //
             panel_Top.Controls.Add(label_Statistics);
             panel_Top.Controls.Add(label_Tips);
             panel_Top.Controls.Add(checkBox_LC4);
@@ -59,27 +59,27 @@ namespace MMObfuscar
             panel_Top.Name = "panel_Top";
             panel_Top.Size = new System.Drawing.Size(918, 96);
             panel_Top.TabIndex = 4;
-            // 
-            // label_Statistics
-            // 
+            //
+            //label_Statistics
+            //
             label_Statistics.Location = new System.Drawing.Point(650, 1);
             label_Statistics.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label_Statistics.Name = "label_Statistics";
             label_Statistics.Size = new System.Drawing.Size(264, 30);
             label_Statistics.TabIndex = 11;
             label_Statistics.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label_Tips
-            // 
+            //
+            //label_Tips
+            //
             label_Tips.Location = new System.Drawing.Point(4, 1);
             label_Tips.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label_Tips.Name = "label_Tips";
             label_Tips.Size = new System.Drawing.Size(638, 30);
             label_Tips.TabIndex = 10;
             label_Tips.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // checkBox_LC4
-            // 
+            //
+            //checkBox_LC4
+            //
             checkBox_LC4.Enabled = false;
             checkBox_LC4.Location = new System.Drawing.Point(772, 61);
             checkBox_LC4.Margin = new System.Windows.Forms.Padding(4);
@@ -88,9 +88,9 @@ namespace MMObfuscar
             checkBox_LC4.TabIndex = 7;
             checkBox_LC4.Text = "LC4";
             checkBox_LC4.UseVisualStyleBackColor = true;
-            // 
-            // comboBox_SelectFunc
-            // 
+            //
+            //comboBox_SelectFunc
+            //
             comboBox_SelectFunc.AccessibleRole = System.Windows.Forms.AccessibleRole.IpAddress;
             comboBox_SelectFunc.FormattingEnabled = true;
             comboBox_SelectFunc.Location = new System.Drawing.Point(124, 62);
@@ -99,9 +99,9 @@ namespace MMObfuscar
             comboBox_SelectFunc.Size = new System.Drawing.Size(641, 25);
             comboBox_SelectFunc.TabIndex = 7;
             comboBox_SelectFunc.SelectedIndexChanged += comboBox_SelectFunc_SelectedIndexChanged;
-            // 
-            // label_SelectFunc
-            // 
+            //
+            //label_SelectFunc
+            //
             label_SelectFunc.Location = new System.Drawing.Point(4, 61);
             label_SelectFunc.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label_SelectFunc.Name = "label_SelectFunc";
@@ -109,9 +109,9 @@ namespace MMObfuscar
             label_SelectFunc.TabIndex = 7;
             label_SelectFunc.Text = "选择功能";
             label_SelectFunc.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label_ExclusionRulesFile
-            // 
+            //
+            //label_ExclusionRulesFile
+            //
             label_ExclusionRulesFile.Location = new System.Drawing.Point(4, 31);
             label_ExclusionRulesFile.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label_ExclusionRulesFile.Name = "label_ExclusionRulesFile";
@@ -119,9 +119,9 @@ namespace MMObfuscar
             label_ExclusionRulesFile.TabIndex = 5;
             label_ExclusionRulesFile.Text = "排除规则文件";
             label_ExclusionRulesFile.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // button_SelectExclusionRulesFile
-            // 
+            //
+            //button_SelectExclusionRulesFile
+            //
             button_SelectExclusionRulesFile.Location = new System.Drawing.Point(772, 31);
             button_SelectExclusionRulesFile.Margin = new System.Windows.Forms.Padding(4);
             button_SelectExclusionRulesFile.Name = "button_SelectExclusionRulesFile";
@@ -130,17 +130,17 @@ namespace MMObfuscar
             button_SelectExclusionRulesFile.Text = "Sclect";
             button_SelectExclusionRulesFile.UseVisualStyleBackColor = true;
             button_SelectExclusionRulesFile.Click += button_SelectExclusionRulesFile_Click;
-            // 
-            // textBox_ExclusionRulesPath
-            // 
+            //
+            //textBox_ExclusionRulesPath
+            //
             textBox_ExclusionRulesPath.Location = new System.Drawing.Point(124, 31);
             textBox_ExclusionRulesPath.Margin = new System.Windows.Forms.Padding(4);
             textBox_ExclusionRulesPath.Name = "textBox_ExclusionRulesPath";
             textBox_ExclusionRulesPath.Size = new System.Drawing.Size(641, 23);
             textBox_ExclusionRulesPath.TabIndex = 3;
-            // 
-            // button_Run
-            // 
+            //
+            //button_Run
+            //
             button_Run.Location = new System.Drawing.Point(835, 31);
             button_Run.Margin = new System.Windows.Forms.Padding(4);
             button_Run.Name = "button_Run";
@@ -149,18 +149,18 @@ namespace MMObfuscar
             button_Run.Text = "执行";
             button_Run.UseVisualStyleBackColor = true;
             button_Run.Click += button_Run_Click;
-            // 
-            // richTextBox_Code
-            // 
+            //
+            //richTextBox_Code
+            //
             richTextBox_Code.Location = new System.Drawing.Point(7, 122);
             richTextBox_Code.Margin = new System.Windows.Forms.Padding(4);
             richTextBox_Code.Name = "richTextBox_Code";
             richTextBox_Code.Size = new System.Drawing.Size(917, 610);
             richTextBox_Code.TabIndex = 6;
             richTextBox_Code.Text = "";
-            // 
-            // Form1
-            // 
+            //
+            //Form1
+            //
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(933, 740);
