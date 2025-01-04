@@ -1,12 +1,15 @@
+InitMap
+funcref
+arrayref
 return
 if
 else
 elseif
 for
 while
-InitMap
 switch
 foreach
+break
 Loop
 LoopCurrent
 GalaxyNativeInvalid
