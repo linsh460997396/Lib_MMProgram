@@ -20,6 +20,9 @@ namespace SC2Crawler
         {
             //获取一个包的信息（只需修改包的cookie）
             string url = "http://live.bilibili.com/213";
+
+            #region
+
             //string cookie = "buvid3=0DFEE112-51F6-F856-76B1-FB921343F2E495271infoc; _uuid=D8AC11EE-1D17-81065-DCED-D7DE5553873894300infoc; buvid_fp=0DFEE112-51F6-F856-76B1-FB921343F2E495271infoc; CURRENT_FNVAL=2000; blackside_state=1; rpdid=|(k|~umkuRR)0J'uYJ))lkm~m; PVID=1; b_lsid=D4C984EF_17D947274C1; sid=aox54cdj";
             //string userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.289 Safari/537.36";
             //List<string> list = MMCore.GetDanMuWithGet(url, cookie, userAgent);
@@ -71,6 +74,8 @@ namespace SC2Crawler
             //{
             //   MMCore.Tell(ex.Message);
             //}
+
+            #endregion
 
             try
             {

@@ -3,20 +3,7 @@
   "WorkspaceRootPath": "D:\\VSWork\\2022\\Lib_MMProgram\\Lib_MMCore\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4A86C00A-D039-4C12-A9F2-1F12C343A346}|..\\TextureMaster\\TextureMaster.csproj|d:\\vswork\\2022\\lib_mmprogram\\texturemaster\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4A86C00A-D039-4C12-A9F2-1F12C343A346}|..\\TextureMaster\\TextureMaster.csproj|d:\\vswork\\2022\\lib_mmprogram\\texturemaster\\form1.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4A86C00A-D039-4C12-A9F2-1F12C343A346}|..\\TextureMaster\\TextureMaster.csproj|d:\\vswork\\2022\\lib_mmprogram\\texturemaster\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4238C5DF-3860-4DEB-B81A-C6AC20690E60}|Lib_MMCore.csproj|d:\\vswork\\2022\\lib_mmprogram\\lib_mmcore\\scripts\\metalmaxsystem\\class\\mmcore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4238C5DF-3860-4DEB-B81A-C6AC20690E60}|Lib_MMCore.csproj|solutionrelative:scripts\\metalmaxsystem\\class\\mmcore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4A86C00A-D039-4C12-A9F2-1F12C343A346}|..\\TextureMaster\\TextureMaster.csproj|d:\\vswork\\2022\\lib_mmprogram\\texturemaster\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{02D1E782-A9D0-4162-9DFF-6A3C82A360E2}|..\\FileMaster\\FileMaster.csproj|d:\\vswork\\2022\\lib_mmprogram\\filemaster\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,71 +13,28 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:7:0:{57d563b6-44a5-47df-85be-f4199ad6b651}"
             },
             {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{7f40df72-066b-4810-a08b-c0fbed76c948}"
+            },
+            {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Form1.cs",
-              "DocumentMoniker": "D:\\VSWork\\2022\\Lib_MMProgram\\TextureMaster\\Form1.cs",
-              "RelativeDocumentMoniker": "..\\TextureMaster\\Form1.cs",
-              "ToolTip": "D:\\VSWork\\2022\\Lib_MMProgram\\TextureMaster\\Form1.cs",
-              "RelativeToolTip": "..\\TextureMaster\\Form1.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGgAAAA0AAAAAAAAAA==",
+              "DocumentMoniker": "D:\\VSWork\\2022\\Lib_MMProgram\\FileMaster\\Form1.cs",
+              "RelativeDocumentMoniker": "..\\FileMaster\\Form1.cs",
+              "ToolTip": "D:\\VSWork\\2022\\Lib_MMProgram\\FileMaster\\Form1.cs",
+              "RelativeToolTip": "..\\FileMaster\\Form1.cs",
+              "ViewState": "AgIAAEoHAAAAAAAAAAAowE0HAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-24T06:40:22.956Z",
+              "WhenOpened": "2025-09-10T05:00:31.482Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\VSWork\\2022\\Lib_MMProgram\\TextureMaster\\Program.cs",
-              "RelativeDocumentMoniker": "..\\TextureMaster\\Program.cs",
-              "ToolTip": "D:\\VSWork\\2022\\Lib_MMProgram\\TextureMaster\\Program.cs",
-              "RelativeToolTip": "..\\TextureMaster\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAlAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-24T06:34:57.204Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Form1.Designer.cs",
-              "DocumentMoniker": "D:\\VSWork\\2022\\Lib_MMProgram\\TextureMaster\\Form1.Designer.cs",
-              "RelativeDocumentMoniker": "..\\TextureMaster\\Form1.Designer.cs",
-              "ToolTip": "D:\\VSWork\\2022\\Lib_MMProgram\\TextureMaster\\Form1.Designer.cs",
-              "RelativeToolTip": "..\\TextureMaster\\Form1.Designer.cs",
-              "ViewState": "AgIAAGoAAAAAAAAAAAAAAHoAAAAyAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-24T06:33:23.76Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "MMCore.cs",
-              "DocumentMoniker": "D:\\VSWork\\2022\\Lib_MMProgram\\Lib_MMCore\\Scripts\\MetalMaxSystem\\Class\\MMCore.cs",
-              "RelativeDocumentMoniker": "Scripts\\MetalMaxSystem\\Class\\MMCore.cs",
-              "ToolTip": "D:\\VSWork\\2022\\Lib_MMProgram\\Lib_MMCore\\Scripts\\MetalMaxSystem\\Class\\MMCore.cs",
-              "RelativeToolTip": "Scripts\\MetalMaxSystem\\Class\\MMCore.cs",
-              "ViewState": "AgIAADYAAAAAAAAAAAD4vzsAAAAYAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-27T11:47:46.543Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Form1.cs [\u8BBE\u8BA1]",
-              "DocumentMoniker": "D:\\VSWork\\2022\\Lib_MMProgram\\TextureMaster\\Form1.cs",
-              "RelativeDocumentMoniker": "..\\TextureMaster\\Form1.cs",
-              "ToolTip": "D:\\VSWork\\2022\\Lib_MMProgram\\TextureMaster\\Form1.cs [\u8BBE\u8BA1]",
-              "RelativeToolTip": "..\\TextureMaster\\Form1.cs [\u8BBE\u8BA1]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-24T06:31:37.171Z"
             }
           ]
         }

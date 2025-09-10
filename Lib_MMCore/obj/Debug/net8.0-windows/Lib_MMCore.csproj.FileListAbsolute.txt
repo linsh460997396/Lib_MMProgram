@@ -1,0 +1,11 @@
+D:\VSWork\2022\Lib_MMProgram\Lib_MMCore\bin\Debug\net8.0-windows\Lib_MMCore.dll.config
+D:\VSWork\2022\Lib_MMProgram\Lib_MMCore\bin\Debug\net8.0-windows\Lib_MMCore.deps.json
+D:\VSWork\2022\Lib_MMProgram\Lib_MMCore\bin\Debug\net8.0-windows\Lib_MMCore.dll
+D:\VSWork\2022\Lib_MMProgram\Lib_MMCore\bin\Debug\net8.0-windows\Lib_MMCore.pdb
+D:\VSWork\2022\Lib_MMProgram\Lib_MMCore\obj\Debug\net8.0-windows\Lib_MMCore.csproj.AssemblyReference.cache
+D:\VSWork\2022\Lib_MMProgram\Lib_MMCore\obj\Debug\net8.0-windows\Lib_MMCore.GeneratedMSBuildEditorConfig.editorconfig
+D:\VSWork\2022\Lib_MMProgram\Lib_MMCore\obj\Debug\net8.0-windows\Lib_MMCore.csproj.CoreCompileInputs.cache
+D:\VSWork\2022\Lib_MMProgram\Lib_MMCore\obj\Debug\net8.0-windows\Lib_MMCore.dll
+D:\VSWork\2022\Lib_MMProgram\Lib_MMCore\obj\Debug\net8.0-windows\refint\Lib_MMCore.dll
+D:\VSWork\2022\Lib_MMProgram\Lib_MMCore\obj\Debug\net8.0-windows\Lib_MMCore.pdb
+D:\VSWork\2022\Lib_MMProgram\Lib_MMCore\obj\Debug\net8.0-windows\ref\Lib_MMCore.dll

@@ -1,11 +1,13 @@
-﻿using System;
+﻿using MetalMaxSystem;
+using System;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Drawing;
 using System.IO;
-using System.Windows.Forms;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Diagnostics;
-using MetalMaxSystem;
+using System.Windows.Forms;
 
 namespace FileMaster
 {
@@ -306,7 +308,7 @@ namespace FileMaster
                         label_headTip.Text = "批量替换文件（夹）名称的后缀字符";
                         break;
                     case 10:
-                        label_headTip.Text = "批量删除（移动）指定名称的文件（夹）";
+                        label_headTip.Text = "批量删除（移动/复制）指定名称的文件（夹）";
                         break;
                     default:
                         label_headTip.Text = "功能未选择！";
@@ -415,6 +417,7 @@ namespace FileMaster
             string newFilePath = "";
             string reportPath;
             bool isDir = false;
+            int counter;
             for (int i = 0; i < 1; i++)
             {
                 dirName = item.Substring(0, item.LastIndexOf('\\'));
@@ -485,7 +488,7 @@ namespace FileMaster
                         )
                         {
                             //对非空newFilePath且不会发生覆盖的文件，执行重命名
-                            if (!MMCore.IsDir(item))
+                            if (!isDir)
                             {
                                 FileInfo fileInfo = new FileInfo(item);
                                 fileInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
@@ -502,15 +505,23 @@ namespace FileMaster
                                             //检查目标路径是否存在
                                             while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                             {
-                                                //如果存在，为路径添加一个随机值
-                                                string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位随机字符串
-                                                string fileName = Path.GetFileName(newFilePath);
-                                                string directoryPath = Path.GetDirectoryName(newFilePath);
-                                                newFilePath = Path.Combine(directoryPath, $"{Path.GetFileNameWithoutExtension(fileName)}_{randomValue}{Path.GetExtension(fileName)}");
+                                                //如果存在为路径添加随机值
+                                                newFilePath = Path.Combine(Path.GetDirectoryName(newFilePath), $"{Path.GetFileNameWithoutExtension(newFilePath)}_{Guid.NewGuid().ToString().Substring(0, 8)}{Path.GetExtension(newFilePath)}");
                                             }
                                             if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                         }
-                                        else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                        else if (comboBox_SamePathHandle.SelectedIndex == 2)
+                                        {
+                                            counter = 2;
+                                            while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                            {
+                                                //这个@"\"加不加都无所谓
+                                                newFilePath = Path.Combine(Path.GetDirectoryName(newFilePath) + @"\", $"{Path.GetFileNameWithoutExtension(newFilePath)}({counter}){Path.GetExtension(newFilePath)}");
+                                                counter++;
+                                            }
+                                            if (simRunState == false) fileInfo.MoveTo(newFilePath);
+                                        }
+                                        else
                                         {
                                             if (WorkErrCount == 0)
                                             {
@@ -540,7 +551,7 @@ namespace FileMaster
                                     MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                                 }
                             }
-                            else
+                            else if (checkBox_dirModification.Checked)
                             {
                                 DirectoryInfo directoryInfo = new DirectoryInfo(item);
                                 directoryInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
@@ -558,14 +569,22 @@ namespace FileMaster
                                             while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                             {
                                                 //如果存在，为路径添加一个随机值
-                                                string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位的随机字符串
-                                                string directoryName = Path.GetFileName(newFilePath);
-                                                string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
-                                                newFilePath = Path.Combine(parentDirectoryPath, $"{directoryName}_{randomValue}");
+                                                newFilePath = Path.Combine(Path.GetDirectoryName(newFilePath), $"{Path.GetFileNameWithoutExtension(newFilePath)}_{Guid.NewGuid().ToString().Substring(0, 8)}{Path.GetExtension(newFilePath)}");
                                             }
                                             if (simRunState == false) directoryInfo.MoveTo(newFilePath);
                                         }
-                                        else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                        else if (comboBox_SamePathHandle.SelectedIndex == 2)
+                                        {
+                                            counter = 2;
+                                            while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                            {
+                                                //这个@"\"加不加都无所谓
+                                                newFilePath = Path.Combine(Path.GetDirectoryName(newFilePath) + @"\", $"{Path.GetFileNameWithoutExtension(newFilePath)}({counter}){Path.GetExtension(newFilePath)}");
+                                                counter++;
+                                            }
+                                            if (simRunState == false) directoryInfo.MoveTo(newFilePath);
+                                        }
+                                        else
                                         {
                                             if (WorkErrCount == 0)
                                             {
@@ -648,6 +667,7 @@ namespace FileMaster
             string newFilePath = "";
             string reportPath;
             bool isDir = false;
+            int counter;
             for (int i = 0; i < 1; i++)
             {
                 dirName = item.Substring(0, item.LastIndexOf('\\'));
@@ -745,7 +765,7 @@ namespace FileMaster
                         )
                         {
                             //对非空newFilePath且不会发生覆盖的文件，执行重命名
-                            if (!MMCore.IsDir(item))
+                            if (!isDir)
                             {
                                 FileInfo fileInfo = new FileInfo(item);
                                 fileInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
@@ -763,14 +783,22 @@ namespace FileMaster
                                             while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                             {
                                                 //如果存在，为路径添加一个随机值
-                                                string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位随机字符串
-                                                string fileName = Path.GetFileName(newFilePath);
-                                                string directoryPath = Path.GetDirectoryName(newFilePath);
-                                                newFilePath = Path.Combine(directoryPath, $"{Path.GetFileNameWithoutExtension(fileName)}_{randomValue}{Path.GetExtension(fileName)}");
+                                                newFilePath = Path.Combine(Path.GetDirectoryName(newFilePath), $"{Path.GetFileNameWithoutExtension(newFilePath)}_{Guid.NewGuid().ToString().Substring(0, 8)}{Path.GetExtension(newFilePath)}");
                                             }
                                             if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                         }
-                                        else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                        else if (comboBox_SamePathHandle.SelectedIndex == 2)
+                                        {
+                                            counter = 2;
+                                            while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                            {
+                                                //这个@"\"加不加都无所谓
+                                                newFilePath = Path.Combine(Path.GetDirectoryName(newFilePath) + @"\", $"{Path.GetFileNameWithoutExtension(newFilePath)}({counter}){Path.GetExtension(newFilePath)}");
+                                                counter++;
+                                            }
+                                            if (simRunState == false) fileInfo.MoveTo(newFilePath);
+                                        }
+                                        else
                                         {
                                             if (WorkErrCount == 0)
                                             {
@@ -800,7 +828,7 @@ namespace FileMaster
                                     MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                                 }
                             }
-                            else
+                            else if(checkBox_dirModification.Checked)
                             {
                                 DirectoryInfo directoryInfo = new DirectoryInfo(item);
                                 directoryInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
@@ -818,14 +846,22 @@ namespace FileMaster
                                             while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                             {
                                                 //如果存在，为路径添加一个随机值
-                                                string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位的随机字符串
-                                                string directoryName = Path.GetFileName(newFilePath);
-                                                string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
-                                                newFilePath = Path.Combine(parentDirectoryPath, $"{directoryName}_{randomValue}");
+                                                newFilePath = Path.Combine(Path.GetDirectoryName(newFilePath), $"{Path.GetFileNameWithoutExtension(newFilePath)}_{Guid.NewGuid().ToString().Substring(0, 8)}{Path.GetExtension(newFilePath)}");
                                             }
                                             if (simRunState == false) directoryInfo.MoveTo(newFilePath);
                                         }
-                                        else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                        else if (comboBox_SamePathHandle.SelectedIndex == 2)
+                                        {
+                                            counter = 2;
+                                            while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                            {
+                                                //这个@"\"加不加都无所谓
+                                                newFilePath = Path.Combine(Path.GetDirectoryName(newFilePath) + @"\", $"{Path.GetFileNameWithoutExtension(newFilePath)}({counter}){Path.GetExtension(newFilePath)}");
+                                                counter++;
+                                            }
+                                            if (simRunState == false) directoryInfo.MoveTo(newFilePath);
+                                        }
+                                        else
                                         {
                                             if (WorkErrCount == 0)
                                             {
@@ -912,6 +948,7 @@ namespace FileMaster
             string tempEndName;
             bool torf = false;
             bool isDir = false;
+            int counter;
             //固定功能5和6的参数
             switch (comboBox_selectFunc.SelectedIndex)
             {
@@ -1136,15 +1173,30 @@ namespace FileMaster
                                             //检查目标路径是否存在
                                             while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                             {
-                                                //如果存在，为路径添加一个随机值
-                                                string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位随机字符串
-                                                string fileName = Path.GetFileName(newFilePath);
-                                                string directoryPath = Path.GetDirectoryName(newFilePath);
-                                                newFilePath = Path.Combine(directoryPath, $"{Path.GetFileNameWithoutExtension(fileName)}_{randomValue}{Path.GetExtension(fileName)}");
+                                                //如果存在为路径添加随机值
+                                                newFilePath = Path.Combine(
+                                                    Path.GetDirectoryName(newFilePath),
+                                                    $"{Path.GetFileNameWithoutExtension(newFilePath)}_{Guid.NewGuid().ToString().Substring(0, 8)}{Path.GetExtension(newFilePath)}"
+                                                );
                                             }
-                                            if (simRunState == false) fileInfo.MoveTo(newFilePath);
+                                            if (simRunState == false)
+                                                fileInfo.MoveTo(newFilePath);
                                         }
-                                        else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                        else if (comboBox_SamePathHandle.SelectedIndex == 2)
+                                        {
+                                            counter = 2;
+                                            while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                            {
+                                                newFilePath = Path.Combine(
+                                                    Path.GetDirectoryName(newFilePath) + @"\",
+                                                    $"{Path.GetFileNameWithoutExtension(newFilePath)}({counter}){Path.GetExtension(newFilePath)}"
+                                                );
+                                                counter++;
+                                            }
+                                            if (simRunState == false)
+                                                fileInfo.MoveTo(newFilePath);
+                                        }
+                                        else
                                         {
                                             if (WorkErrCount == 0)
                                             {
@@ -1174,7 +1226,7 @@ namespace FileMaster
                                     MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                                 }
                             }
-                            else
+                            else if (checkBox_dirModification.Checked)
                             {
                                 DirectoryInfo directoryInfo = new DirectoryInfo(item);
                                 directoryInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
@@ -1191,15 +1243,30 @@ namespace FileMaster
                                             //检查目标路径是否存在
                                             while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                             {
-                                                //如果存在，为路径添加一个随机值
-                                                string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位的随机字符串
-                                                string directoryName = Path.GetFileName(newFilePath);
-                                                string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
-                                                newFilePath = Path.Combine(parentDirectoryPath, $"{directoryName}_{randomValue}");
+                                                //如果存在为路径添加随机值
+                                                newFilePath = Path.Combine(
+                                                    Path.GetDirectoryName(newFilePath),
+                                                    $"{Path.GetFileNameWithoutExtension(newFilePath)}_{Guid.NewGuid().ToString().Substring(0, 8)}{Path.GetExtension(newFilePath)}"
+                                                );
                                             }
-                                            if (simRunState == false) directoryInfo.MoveTo(newFilePath);
+                                            if (simRunState == false)
+                                                directoryInfo.MoveTo(newFilePath);
                                         }
-                                        else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                        else if (comboBox_SamePathHandle.SelectedIndex == 2)
+                                        {
+                                            counter = 2;
+                                            while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                            {
+                                                newFilePath = Path.Combine(
+                                                    Path.GetDirectoryName(newFilePath) + @"\",
+                                                    $"{Path.GetFileNameWithoutExtension(newFilePath)}({counter}){Path.GetExtension(newFilePath)}"
+                                                );
+                                                counter++;
+                                            }
+                                            if (simRunState == false)
+                                                directoryInfo.MoveTo(newFilePath);
+                                        }
+                                        else
                                         {
                                             if (WorkErrCount == 0)
                                             {
@@ -1289,6 +1356,7 @@ namespace FileMaster
             string tempEndName;
             bool torf = false;
             bool isDir = false;
+            int counter;
             for (int i = 0; i < 1; i++)
             {
                 dirName = item.Substring(0, item.LastIndexOf('\\'));
@@ -1449,15 +1517,30 @@ namespace FileMaster
                                             //检查目标路径是否存在
                                             while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                             {
-                                                //如果存在，为路径添加一个随机值
-                                                string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位随机字符串
-                                                string fileName = Path.GetFileName(newFilePath);
-                                                string directoryPath = Path.GetDirectoryName(newFilePath);
-                                                newFilePath = Path.Combine(directoryPath, $"{Path.GetFileNameWithoutExtension(fileName)}_{randomValue}{Path.GetExtension(fileName)}");
+                                                //如果存在为路径添加随机值
+                                                newFilePath = Path.Combine(
+                                                    Path.GetDirectoryName(newFilePath),
+                                                    $"{Path.GetFileNameWithoutExtension(newFilePath)}_{Guid.NewGuid().ToString().Substring(0, 8)}{Path.GetExtension(newFilePath)}"
+                                                );
                                             }
-                                            if (simRunState == false) fileInfo.MoveTo(newFilePath);
+                                            if (simRunState == false)
+                                                fileInfo.MoveTo(newFilePath);
                                         }
-                                        else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                        else if (comboBox_SamePathHandle.SelectedIndex == 2)
+                                        {
+                                            counter = 2;
+                                            while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                            {
+                                                newFilePath = Path.Combine(
+                                                    Path.GetDirectoryName(newFilePath) + @"\",
+                                                    $"{Path.GetFileNameWithoutExtension(newFilePath)}({counter}){Path.GetExtension(newFilePath)}"
+                                                );
+                                                counter++;
+                                            }
+                                            if (simRunState == false)
+                                                fileInfo.MoveTo(newFilePath);
+                                        }
+                                        else
                                         {
                                             if (WorkErrCount == 0)
                                             {
@@ -1487,7 +1570,7 @@ namespace FileMaster
                                     MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                                 }
                             }
-                            else
+                            else if (checkBox_dirModification.Checked)
                             {
                                 DirectoryInfo directoryInfo = new DirectoryInfo(item);
                                 directoryInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
@@ -1504,15 +1587,30 @@ namespace FileMaster
                                             //检查目标路径是否存在
                                             while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                             {
-                                                //如果存在，为路径添加一个随机值
-                                                string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位的随机字符串
-                                                string directoryName = Path.GetFileName(newFilePath);
-                                                string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
-                                                newFilePath = Path.Combine(parentDirectoryPath, $"{directoryName}_{randomValue}");
+                                                //如果存在为路径添加随机值
+                                                newFilePath = Path.Combine(
+                                                    Path.GetDirectoryName(newFilePath),
+                                                    $"{Path.GetFileNameWithoutExtension(newFilePath)}_{Guid.NewGuid().ToString().Substring(0, 8)}{Path.GetExtension(newFilePath)}"
+                                                );
                                             }
-                                            if (simRunState == false) directoryInfo.MoveTo(newFilePath);
+                                            if (simRunState == false)
+                                                directoryInfo.MoveTo(newFilePath);
                                         }
-                                        else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                        else if (comboBox_SamePathHandle.SelectedIndex == 2)
+                                        {
+                                            counter = 2;
+                                            while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                            {
+                                                newFilePath = Path.Combine(
+                                                    Path.GetDirectoryName(newFilePath) + @"\",
+                                                    $"{Path.GetFileNameWithoutExtension(newFilePath)}({counter}){Path.GetExtension(newFilePath)}"
+                                                );
+                                                counter++;
+                                            }
+                                            if (simRunState == false)
+                                                directoryInfo.MoveTo(newFilePath);
+                                        }
+                                        else
                                         {
                                             if (WorkErrCount == 0)
                                             {
@@ -1602,6 +1700,7 @@ namespace FileMaster
             //string tempEndName;
             bool torf = false;
             bool isDir = false;
+            int counter;
             //固定功能5和6的参数
             StartIndex = 0;
             StrCount = 1;
@@ -1737,15 +1836,30 @@ namespace FileMaster
                                         //检查目标路径是否存在
                                         while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                         {
-                                            //如果存在，为路径添加一个随机值
-                                            string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位随机字符串
-                                            string fileName = Path.GetFileName(newFilePath);
-                                            string directoryPath = Path.GetDirectoryName(newFilePath);
-                                            newFilePath = Path.Combine(directoryPath, $"{Path.GetFileNameWithoutExtension(fileName)}_{randomValue}{Path.GetExtension(fileName)}");
+                                            //如果存在为路径添加随机值
+                                            newFilePath = Path.Combine(
+                                                Path.GetDirectoryName(newFilePath),
+                                                $"{Path.GetFileNameWithoutExtension(newFilePath)}_{Guid.NewGuid().ToString().Substring(0, 8)}{Path.GetExtension(newFilePath)}"
+                                            );
                                         }
-                                        if (simRunState == false) fileInfo.MoveTo(newFilePath);
+                                        if (simRunState == false)
+                                            fileInfo.MoveTo(newFilePath);
                                     }
-                                    else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                    else if (comboBox_SamePathHandle.SelectedIndex == 2)
+                                    {
+                                        counter = 2;
+                                        while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                        {
+                                            newFilePath = Path.Combine(
+                                                Path.GetDirectoryName(newFilePath) + @"\",
+                                                $"{Path.GetFileNameWithoutExtension(newFilePath)}({counter}){Path.GetExtension(newFilePath)}"
+                                            );
+                                            counter++;
+                                        }
+                                        if (simRunState == false)
+                                            fileInfo.MoveTo(newFilePath);
+                                    }
+                                    else
                                     {
                                         if (WorkErrCount == 0)
                                         {
@@ -1775,7 +1889,7 @@ namespace FileMaster
                                 MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                             }
                         }
-                        else
+                        else if (checkBox_dirModification.Checked)
                         {
                             DirectoryInfo directoryInfo = new DirectoryInfo(item);
                             directoryInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
@@ -1792,15 +1906,30 @@ namespace FileMaster
                                         //检查目标路径是否存在
                                         while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                         {
-                                            //如果存在，为路径添加一个随机值
-                                            string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位的随机字符串
-                                            string directoryName = Path.GetFileName(newFilePath);
-                                            string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
-                                            newFilePath = Path.Combine(parentDirectoryPath, $"{directoryName}_{randomValue}");
+                                            //如果存在为路径添加随机值
+                                            newFilePath = Path.Combine(
+                                                Path.GetDirectoryName(newFilePath),
+                                                $"{Path.GetFileNameWithoutExtension(newFilePath)}_{Guid.NewGuid().ToString().Substring(0, 8)}{Path.GetExtension(newFilePath)}"
+                                            );
                                         }
-                                        if (simRunState == false) directoryInfo.MoveTo(newFilePath);
+                                        if (simRunState == false)
+                                            directoryInfo.MoveTo(newFilePath);
                                     }
-                                    else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                    else if (comboBox_SamePathHandle.SelectedIndex == 2)
+                                    {
+                                        counter = 2;
+                                        while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                        {
+                                            newFilePath = Path.Combine(
+                                                Path.GetDirectoryName(newFilePath) + @"\",
+                                                $"{Path.GetFileNameWithoutExtension(newFilePath)}({counter}){Path.GetExtension(newFilePath)}"
+                                            );
+                                            counter++;
+                                        }
+                                        if (simRunState == false)
+                                            directoryInfo.MoveTo(newFilePath);
+                                    }
+                                    else
                                     {
                                         if (WorkErrCount == 0)
                                         {
@@ -1889,6 +2018,7 @@ namespace FileMaster
             string tempEndName;
             bool torf = false;
             bool isDir = false;
+            int counter;
             //固定功能5和6的参数
             StartIndex = 0;
             StrCount = 1;
@@ -2025,15 +2155,30 @@ namespace FileMaster
                                         //检查目标路径是否存在
                                         while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                         {
-                                            //如果存在，为路径添加一个随机值
-                                            string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位随机字符串
-                                            string fileName = Path.GetFileName(newFilePath);
-                                            string directoryPath = Path.GetDirectoryName(newFilePath);
-                                            newFilePath = Path.Combine(directoryPath, $"{Path.GetFileNameWithoutExtension(fileName)}_{randomValue}{Path.GetExtension(fileName)}");
+                                            //如果存在为路径添加随机值
+                                            newFilePath = Path.Combine(
+                                                Path.GetDirectoryName(newFilePath),
+                                                $"{Path.GetFileNameWithoutExtension(newFilePath)}_{Guid.NewGuid().ToString().Substring(0, 8)}{Path.GetExtension(newFilePath)}"
+                                            );
                                         }
-                                        if (simRunState == false) fileInfo.MoveTo(newFilePath);
+                                        if (simRunState == false)
+                                            fileInfo.MoveTo(newFilePath);
                                     }
-                                    else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                    else if (comboBox_SamePathHandle.SelectedIndex == 2)
+                                    {
+                                        counter = 2;
+                                        while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                        {
+                                            newFilePath = Path.Combine(
+                                                Path.GetDirectoryName(newFilePath) + @"\",
+                                                $"{Path.GetFileNameWithoutExtension(newFilePath)}({counter}){Path.GetExtension(newFilePath)}"
+                                            );
+                                            counter++;
+                                        }
+                                        if (simRunState == false)
+                                            fileInfo.MoveTo(newFilePath);
+                                    }
+                                    else
                                     {
                                         if (WorkErrCount == 0)
                                         {
@@ -2063,7 +2208,7 @@ namespace FileMaster
                                 MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                             }
                         }
-                        else
+                        else if (checkBox_dirModification.Checked)
                         {
                             DirectoryInfo directoryInfo = new DirectoryInfo(item);
                             directoryInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
@@ -2080,15 +2225,30 @@ namespace FileMaster
                                         //检查目标路径是否存在
                                         while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
                                         {
-                                            //如果存在，为路径添加一个随机值
-                                            string randomValue = Guid.NewGuid().ToString().Substring(0, 8); //生成一个8位的随机字符串
-                                            string directoryName = Path.GetFileName(newFilePath);
-                                            string parentDirectoryPath = Path.GetDirectoryName(newFilePath);
-                                            newFilePath = Path.Combine(parentDirectoryPath, $"{directoryName}_{randomValue}");
+                                            //如果存在为路径添加随机值
+                                            newFilePath = Path.Combine(
+                                                Path.GetDirectoryName(newFilePath),
+                                                $"{Path.GetFileNameWithoutExtension(newFilePath)}_{Guid.NewGuid().ToString().Substring(0, 8)}{Path.GetExtension(newFilePath)}"
+                                            );
                                         }
-                                        if (simRunState == false) directoryInfo.MoveTo(newFilePath);
+                                        if (simRunState == false)
+                                            directoryInfo.MoveTo(newFilePath);
                                     }
-                                    else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                    else if (comboBox_SamePathHandle.SelectedIndex == 2)
+                                    {
+                                        counter = 2;
+                                        while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                        {
+                                            newFilePath = Path.Combine(
+                                                Path.GetDirectoryName(newFilePath) + @"\",
+                                                $"{Path.GetFileNameWithoutExtension(newFilePath)}({counter}){Path.GetExtension(newFilePath)}"
+                                            );
+                                            counter++;
+                                        }
+                                        if (simRunState == false)
+                                            directoryInfo.MoveTo(newFilePath);
+                                    }
+                                    else
                                     {
                                         if (WorkErrCount == 0)
                                         {
@@ -2159,7 +2319,7 @@ namespace FileMaster
         }
 
         /// <summary>
-        /// 功能编号10，批量删除（移动）指定名称的文件（夹）
+        /// 功能编号10，批量删除（移动/复制）指定名称的文件（夹）
         /// </summary>
         /// <param name="workFilePath"></param>
         /// <param name="item"></param>
@@ -2174,12 +2334,14 @@ namespace FileMaster
             string reportPath;
             bool isDir = false;
             FileInfo fileInfo;
-            DirectoryInfo directoryInfo;
+            DirectoryInfo dirInfo;
+            string baseName; string extension; string tempFileName; string tempdirName; int counter; string randomValue;
+
 
             for (int i = 0; i < 1; i++)
             {
                 //dirName = item.Substring(0, item.LastIndexOf('\\'));
-                itemName = item.Substring(item.LastIndexOf('\\') + 1);
+                itemName = item.Substring(item.LastIndexOf('\\') + 1); //最后一个\之后的全部字符
                 if (MMCore.IsDir(item))
                 {
                     //itemFrontName = Path.GetDirectoryName(item); //返回的是上一级目录名称
@@ -2259,32 +2421,124 @@ namespace FileMaster
                     if (!Directory.Exists(dirName)) { Directory.CreateDirectory(dirName); }
                 }
 
-                if (!MMCore.IsDir(item))
-                {
+                if (!isDir)
+                {//处理对象是文件
                     switch (comboBox_param8.SelectedIndex)
                     {
                         case 0:
                             if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
                             {
-                                //新路径文件必须不存在，才可以移入
+                                //新路径必须不存在才可以移入
                                 fileInfo = new FileInfo(item);
+                                fileInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
+                                if (simRunState == false) fileInfo.CopyTo(newFilePath);
+                                MMCore.WriteLine(workFilePath, "【处理完成】" + item + " => " + newFilePath, true);
+                            }
+                            else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                            {//已有同名文件或目录则进行处理
+                                if (comboBox_SamePathHandle.SelectedIndex == 1)
+                                {
+                                    //为路径添加一个随机值
+                                    baseName = Path.GetFileNameWithoutExtension(newFilePath);
+                                    extension = Path.GetExtension(newFilePath);
+                                    tempdirName = Path.GetDirectoryName(newFilePath);
+                                    while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                    {
+                                        tempFileName = $"{baseName}_{Guid.NewGuid().ToString().Substring(0, 8)}{extension}";
+                                        newFilePath = Path.Combine(tempdirName + @"\", tempFileName);
+                                    }
+                                    fileInfo = new FileInfo(item);
+                                    fileInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
+                                    if (simRunState == false) fileInfo.CopyTo(newFilePath);
+                                    MMCore.WriteLine(workFilePath, "【处理完成】" + item + " => " + newFilePath, true);
+                                }
+                                else if (comboBox_SamePathHandle.SelectedIndex == 2)
+                                {
+                                    baseName = Path.GetFileNameWithoutExtension(newFilePath);
+                                    extension = Path.GetExtension(newFilePath);
+                                    tempdirName = Path.GetDirectoryName(newFilePath);
+                                    counter = 2;
+                                    while (File.Exists(newFilePath))
+                                    {
+                                        tempFileName = $"{baseName}({counter}){extension}";
+                                        newFilePath = Path.Combine(tempdirName + @"\", tempFileName);
+                                        counter++;
+                                    }
+                                    fileInfo = new FileInfo(item);
+                                    fileInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
+                                    if (simRunState == false) fileInfo.CopyTo(newFilePath);
+                                    MMCore.WriteLine(workFilePath, "【处理完成】" + item + " => " + newFilePath, true);
+                                }
+                                else
+                                {
+                                    if (WorkErrCount == 0)
+                                    {
+                                        MMCore.WriteLine(reportPath, "↓未处理文件如下↓", false);
+                                    }
+                                    WorkErrCount += 1;
+                                    MMCore.WriteLine(reportPath, "预判到路径会重叠文件:" + item, true);
+                                }
+                            }
+                            break;
+                        case 1:
+                            if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
+                            {
+                                //新路径必须不存在才可以移入
+                                fileInfo = new FileInfo(item);
+                                fileInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
                                 if (simRunState == false) fileInfo.MoveTo(newFilePath);
                                 MMCore.WriteLine(workFilePath, "【处理完成】" + item + " => " + newFilePath, true);
                             }
                             else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
-                            {
-                                if (WorkErrCount == 0)
+                            {//已有同名文件或目录则进行处理
+                                if (comboBox_SamePathHandle.SelectedIndex == 1)
                                 {
-                                    MMCore.WriteLine(reportPath, "↓未处理文件如下↓", false);
+                                    //为路径添加一个随机值
+                                    baseName = Path.GetFileNameWithoutExtension(newFilePath);
+                                    extension = Path.GetExtension(newFilePath);
+                                    tempdirName = Path.GetDirectoryName(newFilePath);
+                                    while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                    {
+                                        tempFileName = $"{baseName}_{Guid.NewGuid().ToString().Substring(0, 8)}{extension}";
+                                        newFilePath = Path.Combine(tempdirName + @"\", tempFileName);
+                                    }
+                                    fileInfo = new FileInfo(item);
+                                    fileInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
+                                    if (simRunState == false) fileInfo.MoveTo(newFilePath);
+                                    MMCore.WriteLine(workFilePath, "【处理完成】" + item + " => " + newFilePath, true);
                                 }
-                                WorkErrCount += 1;
-                                MMCore.WriteLine(reportPath, "预判到路径会重叠文件:" + item, true);
+                                else if (comboBox_SamePathHandle.SelectedIndex == 2)
+                                {
+                                    baseName = Path.GetFileNameWithoutExtension(newFilePath);
+                                    extension = Path.GetExtension(newFilePath);
+                                    tempdirName = Path.GetDirectoryName(newFilePath);
+                                    counter = 2;
+                                    while (File.Exists(newFilePath))
+                                    {
+                                        tempFileName = $"{baseName}({counter}){extension}";
+                                        newFilePath = Path.Combine(tempdirName + @"\", tempFileName);
+                                        counter++;
+                                    }
+                                    fileInfo = new FileInfo(item);
+                                    fileInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
+                                    if (simRunState == false) fileInfo.MoveTo(newFilePath);
+                                    MMCore.WriteLine(workFilePath, "【处理完成】" + item + " => " + newFilePath, true);
+                                }
+                                else
+                                {
+                                    if (WorkErrCount == 0)
+                                    {
+                                        MMCore.WriteLine(reportPath, "↓未处理文件如下↓", false);
+                                    }
+                                    WorkErrCount += 1;
+                                    MMCore.WriteLine(reportPath, "预判到路径会重叠文件:" + item, true);
+                                }
                             }
                             break;
-                        case 1:
+                        case 2:
                             if (simRunState == false) MMCore.DelFileToRecycleBin(item, checkBox_param8.Checked);
                             break;
-                        case 2:
+                        case 3:
                             fileInfo = new FileInfo(item);
                             fileInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
                             if (simRunState == false) fileInfo.Delete();
@@ -2293,35 +2547,162 @@ namespace FileMaster
                             break;
                     }
                 }
-                else
-                {
+                else if (checkBox_dirModification.Checked)
+                {//处理对象是目录
                     switch (comboBox_param8.SelectedIndex)
                     {
                         case 0:
-                            if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
+                            dirInfo = new DirectoryInfo(item);
+                            dirInfo.Attributes &= ~(
+                                FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden
+                            ); //解除占用
+                            try
                             {
-                                //新路径目录必须不存在，才可以移入
-                                fileInfo = new FileInfo(item);
-                                fileInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
-                                if (simRunState == false) fileInfo.MoveTo(newFilePath);
-                                MMCore.WriteLine(workFilePath, "【处理完成】" + item + " => " + newFilePath, true);
-                            }
-                            else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
-                            {
-                                if (WorkErrCount == 0)
+                                if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
                                 {
-                                    MMCore.WriteLine(reportPath, "↓未处理文件如下↓", false);
+                                    if (simRunState == false)
+                                        MMCore.CopyDirectory(item, newFilePath);
                                 }
-                                WorkErrCount += 1;
-                                MMCore.WriteLine(reportPath, "预判到路径会重叠目录:" + item, true);
+                                else
+                                {
+                                    if (comboBox_SamePathHandle.SelectedIndex == 1)
+                                    {
+                                        //检查目标路径是否存在
+                                        while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                        {
+                                            //如果存在，为路径添加一个随机值
+                                            newFilePath = Path.Combine(
+                                                Path.GetDirectoryName(newFilePath),
+                                                $"{Path.GetFileNameWithoutExtension(newFilePath)}_{Guid.NewGuid().ToString().Substring(0, 8)}{Path.GetExtension(newFilePath)}"
+                                            );
+                                        }
+                                        if (simRunState == false)
+                                            MMCore.CopyDirectory(item, newFilePath);
+                                    }
+                                    else if (comboBox_SamePathHandle.SelectedIndex == 2)
+                                    {
+                                        counter = 2;
+                                        while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                        {
+                                            //这个@"\"加不加都无所谓
+                                            newFilePath = Path.Combine(
+                                                Path.GetDirectoryName(newFilePath) + @"\",
+                                                $"{Path.GetFileNameWithoutExtension(newFilePath)}({counter}){Path.GetExtension(newFilePath)}"
+                                            );
+                                            counter++;
+                                        }
+                                        if (simRunState == false)
+                                            MMCore.CopyDirectory(item, newFilePath);
+                                    }
+                                    else
+                                    {
+                                        if (WorkErrCount == 0)
+                                        {
+                                            MMCore.WriteLine(reportPath, "↓未处理文件夹如下↓", false);
+                                        }
+                                        WorkErrCount += 1;
+                                        MMCore.WriteLine(reportPath, "预判到路径会重叠文件夹:" + item, true);
+                                    }
+                                }
+                            }
+                            catch (IOException ioEx)
+                            {
+                                MMCore.WriteLine(reportPath, $"无法复制文件：{ioEx.Message}", false);
+                                MMCore.Tell($"无法复制文件：{ioEx.Message}");
+                                MessageBox.Show($"无法复制文件：{ioEx.Message}");
+                            }
+                            catch (UnauthorizedAccessException uaEx)
+                            {
+                                MMCore.WriteLine(reportPath, $"无法访问文件，因为没有足够的权限：{uaEx.Message}", false);
+                                MMCore.Tell($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
+                                MessageBox.Show($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
+                            }
+                            catch (Exception ex)
+                            {
+                                MMCore.WriteLine(reportPath, $"复制文件时发生错误：{ex.Message}", false);
+                                MMCore.Tell($"复制文件时发生错误：{ex.Message}");
+                                MessageBox.Show($"复制文件时发生错误：{ex.Message}");
                             }
                             break;
                         case 1:
-                            if (simRunState == false) MMCore.DelDirectoryToRecycleBin(item, checkBox_param8.Checked);
+                            dirInfo = new DirectoryInfo(item);
+                            dirInfo.Attributes &= ~(
+                                FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden
+                            ); //解除占用
+                            try
+                            {
+                                if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
+                                {
+                                    if (simRunState == false)
+                                        dirInfo.MoveTo(newFilePath);
+                                }
+                                else
+                                {
+                                    if (comboBox_SamePathHandle.SelectedIndex == 1)
+                                    {
+                                        //检查目标路径是否存在
+                                        while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                        {
+                                            //如果存在，为路径添加一个随机值
+                                            newFilePath = Path.Combine(
+                                                Path.GetDirectoryName(newFilePath),
+                                                $"{Path.GetFileNameWithoutExtension(newFilePath)}_{Guid.NewGuid().ToString().Substring(0, 8)}{Path.GetExtension(newFilePath)}"
+                                            );
+                                        }
+                                        if (simRunState == false)
+                                            dirInfo.MoveTo(newFilePath);
+                                    }
+                                    else if (comboBox_SamePathHandle.SelectedIndex == 2)
+                                    {
+                                        counter = 2;
+                                        while (File.Exists(newFilePath) || Directory.Exists(newFilePath))
+                                        {
+                                            //这个@"\"加不加都无所谓
+                                            newFilePath = Path.Combine(
+                                                Path.GetDirectoryName(newFilePath) + @"\",
+                                                $"{Path.GetFileNameWithoutExtension(newFilePath)}({counter}){Path.GetExtension(newFilePath)}"
+                                            );
+                                            counter++;
+                                        }
+                                        if (simRunState == false)
+                                            dirInfo.MoveTo(newFilePath);
+                                    }
+                                    else
+                                    {
+                                        if (WorkErrCount == 0)
+                                        {
+                                            MMCore.WriteLine(reportPath, "↓未处理文件夹如下↓", false);
+                                        }
+                                        WorkErrCount += 1;
+                                        MMCore.WriteLine(reportPath, "预判到路径会重叠文件夹:" + item, true);
+                                    }
+                                }
+                            }
+                            catch (IOException ioEx)
+                            {
+                                MMCore.WriteLine(reportPath, $"无法移动文件：{ioEx.Message}", false);
+                                MMCore.Tell($"无法移动文件：{ioEx.Message}");
+                                MessageBox.Show($"无法移动文件：{ioEx.Message}");
+                            }
+                            catch (UnauthorizedAccessException uaEx)
+                            {
+                                MMCore.WriteLine(reportPath, $"无法访问文件，因为没有足够的权限：{uaEx.Message}", false);
+                                MMCore.Tell($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
+                                MessageBox.Show($"无法访问文件，因为没有足够的权限：{uaEx.Message}");
+                            }
+                            catch (Exception ex)
+                            {
+                                MMCore.WriteLine(reportPath, $"移动文件时发生错误：{ex.Message}", false);
+                                MMCore.Tell($"移动文件时发生错误：{ex.Message}");
+                                MessageBox.Show($"移动文件时发生错误：{ex.Message}");
+                            }
                             break;
                         case 2:
-                            directoryInfo = new DirectoryInfo(item);
-                            if (simRunState == false) MMCore.DelDirectoryRecursively(directoryInfo);
+                            if (simRunState == false) MMCore.DelDirectoryToRecycleBin(item, checkBox_param8.Checked);
+                            break;
+                        case 3:
+                            dirInfo = new DirectoryInfo(item);
+                            if (simRunState == false) MMCore.DelDirectoryRecursively(dirInfo);
                             break;
                         default:
                             break;
@@ -3247,7 +3628,7 @@ namespace FileMaster
             }
             if (comboBox_param8.SelectedIndex == -1)
             {
-                comboBox_param8.SelectedIndex = 1;
+                comboBox_param8.SelectedIndex = 2;
             }
             if (comboBox_SelectWorkFilePath.SelectedIndex == -1)
             {
@@ -3255,7 +3636,7 @@ namespace FileMaster
             }
             if (comboBox_SamePathHandle.SelectedIndex == -1)
             {
-                comboBox_SamePathHandle.SelectedIndex = 0;
+                comboBox_SamePathHandle.SelectedIndex = 2;
             }
             label_controlTips.Text = string.Empty;
             if (!checkBox_range.Checked) { panel8.Visible = false; }
@@ -3535,8 +3916,8 @@ namespace FileMaster
                     }
                     break;
                 case 10:
-                    label_headTip.Text = "批量删除（移动）指定名称的文件（夹），选此功能时，参数5支持正则表达式";
-                    label1_paramDescription4.Text = "保护该后缀文件不被删";
+                    label_headTip.Text = "批量删除（移动/复制）指定名称的文件（夹），选此功能时，参数5支持正则表达式";
+                    label1_paramDescription4.Text = "保护该后缀文件不被删或修改";
                     checkBox_protectSuffix.Checked = false;
                     panel2.Visible = false;
                     panel3.Visible = false;
@@ -3801,9 +4182,9 @@ namespace FileMaster
         private void checkBox25_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox_dirModification.Checked)
-            {
+            {//允许目录修改
                 if (!checkBox_traversalRecursive.Checked)
-                {
+                {//没有勾选递归遍历时执行安全检查
                     checkBox_recursion.Checked = false;
                     label_dirStatistics.Text = "[安全操作]未勾选递归遍历，修改文件夹时不支持目录遍历！";
                 }
@@ -3887,10 +4268,14 @@ namespace FileMaster
                     button_param8.Enabled = true;
                     break;
                 case 1:
+                    textBox_param8.Enabled = true;
+                    button_param8.Enabled = true;
+                    break;
+                case 2:
                     textBox_param8.Enabled = false;
                     button_param8.Enabled = false;
                     break;
-                case 2:
+                case 3:
                     textBox_param8.Enabled = false;
                     button_param8.Enabled = false;
                     break;
