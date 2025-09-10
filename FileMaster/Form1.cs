@@ -83,16 +83,19 @@ namespace FileMaster
             bool isOuterDir = isOuter;
             foreach (DirectoryInfo newInfo in dirInfo.GetDirectories())
             {
+                if (WorkStop) { return; }
                 DFRecursively(newInfo, workFilePath, true, false);//递归遍历子目录，对子目录来说最外层即它自己，是需要修改的（不填则默认torf = true）
             }
             foreach (FileInfo newInfo in dirInfo.GetFiles())
             {
+                if (WorkStop) { return; }
                 //处理每个目录内部的文件（从里层文件开始修改）
                 //newInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);
                 DAction(workFilePath, newInfo.FullName);
             }
             if (!isOuterDir || (isOuterDir && torf))
             {//如果不是最外层目录
+                if (WorkStop) { return; }
                 //对每个目录处理（从里层目录开始修改）
                 //dirInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);
                 DAction(workFilePath, dirInfo.FullName);
@@ -365,8 +368,97 @@ namespace FileMaster
         /// <param name="item"></param>
         private void DAction(string workFilePath, string item)
         {
+            string fileName = "";
+            string fileSize = "";
+            string fileTime = "";
+            if ((checkBox_traversalRecursive.Checked && checkBox_recursion.Checked))
+            {//递归遍历时单独预过滤每个item
+                if (checkBox_emptyFileIgnore.Checked && MMCore.CountSize(MMCore.GetFileLength(item), checkBox_byteCount.Checked) == "0 Byte")
+                {
+                    return; //勾选了忽略空文件，遇空文件时跳过
+                }
+                if (checkBox_nonEmptyFileIgnore.Checked && !(MMCore.CountSize(MMCore.GetFileLength(item), checkBox_byteCount.Checked) == "0 Byte"))
+                {
+                    return; //勾选了忽略非空文件，遇非空文件时跳过
+                }
+                //通配符错误时跳过
+                if (textBox_param3.Text == "*") { }
+                else if (
+                    string.Compare(
+                        Path.GetExtension(item),
+                        textBox_param3.Text,
+                        checkBox_param3.Checked
+                    ) != 0
+                )
+                {
+                    return;
+                }
+                //开启关键字过滤时
+                if (checkBox_specialStr.Checked && textBox_specialStr.Text != "")
+                {
+                    if (checkBox_regular.Checked)
+                    {
+                        //正则未通过
+                        if (!Regex.IsMatch(item.Substring(item.LastIndexOf('\\') + 1), textBox_specialStr.Text)) { return; }
+                    }
+                    else
+                    {
+                        //未启用正则情况下
+                        if (checkBox_specialStrIgnoreCase.Checked)
+                        {
+                            //忽略大小写
+                            //IndexOf函数对大小写不敏感，适用于不区分大小写的判断，返回值为int型（在sring中的索引值）
+                            if (item.Substring(item.LastIndexOf('\\') + 1).IndexOf(textBox_specialStr.Text, StringComparison.OrdinalIgnoreCase) == -1)
+                            {
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            //String.Contains对大小写敏感，适用于区分大小写的判断
+                            if (!item.Substring(item.LastIndexOf('\\') + 1).Contains(textBox_specialStr.Text))
+                            {
+                                return;
+                            }
+                        }
+                    }
+                }
+                if (checkBox_range.Checked)
+                {//启用范围大小功能时
+                 //若未反选则在范围外的正常被过滤，若反选则范围内的被过滤
+                    if ((checkBox_RangeReversal.Checked && ParamIsInRange(item)) ||
+                        (!checkBox_RangeReversal.Checked && !ParamIsInRange(item)))
+                    {
+                        return;
+                    }
+                }
+            }
             switch (comboBox_selectFunc.SelectedIndex)
             {
+                case 0:
+                    //递归遍历下的打印方式
+                    if (checkBox_printFilePath.Checked)
+                    {
+                        //勾选允许文件全路径
+                        fileName = item;
+                    }
+                    else
+                    {
+                        fileName = item.Substring(item.LastIndexOf('\\') + 1);
+                    }
+
+                    if (checkBox_printFileSize.Checked)
+                    {
+                        fileSize = MMCore.CountSize(MMCore.GetFileLength(item), checkBox_byteCount.Checked);
+                    }
+                    if (checkBox_printFileTime.Checked)
+                    {
+                        FileInfo fileInfo = new FileInfo(item);
+                        fileTime = fileInfo.LastWriteTime.ToString();
+                    }
+                    fileName = fileTime + " " + fileSize + " " + fileName;
+                    MMCore.WriteLine(workFilePath, fileName, true);
+                    break;
                 case 1:
                     DAction_f1(workFilePath, item);
                     break;
@@ -828,7 +920,7 @@ namespace FileMaster
                                     MessageBox.Show($"移动文件时发生错误：{ex.Message}");
                                 }
                             }
-                            else if(checkBox_dirModification.Checked)
+                            else if (checkBox_dirModification.Checked)
                             {
                                 DirectoryInfo directoryInfo = new DirectoryInfo(item);
                                 directoryInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
@@ -1748,9 +1840,9 @@ namespace FileMaster
                 }
                 if (torf) //文件名（带后缀）长度足以支撑修改
                 {
+                    //注意:通配符等其他一系列验证在函数调用前已经做了,下面只是补充
                     if (checkBox_protectSuffix.Checked && textBox_param4.Text != "*") //指定后缀且勾选后缀保护
                     {
-                        //如填了空格全保护或指定.txt后遇到.txt情况则不操作
                         //若指定.txt后遇到.PNG情况，进行操作
                         if (
                             string.Compare(
@@ -1804,6 +1896,10 @@ namespace FileMaster
                                 WorkErrCount += 1;
                                 MMCore.WriteLine(reportPath, "固定字符数超过前缀字符数:" + item, true);
                             }
+                        }
+                        else 
+                        {
+                            //填了空格全保护或指定.txt后遇到.txt情况则不操作,newFilePath=""
                         }
                     }
                     else
@@ -2018,6 +2114,7 @@ namespace FileMaster
             string tempEndName;
             bool torf = false;
             bool isDir = false;
+            bool isProtected = false;
             int counter;
             //固定功能5和6的参数
             StartIndex = 0;
@@ -2066,6 +2163,7 @@ namespace FileMaster
                 }
                 if (torf) //文件名（带后缀）长度足以支撑修改
                 {
+                    //注意:通配符等其他一系列验证在函数调用前已经做了,下面只是补充
                     if (checkBox_protectSuffix.Checked && textBox_param4.Text != "*") //指定后缀且勾选后缀保护
                     {
                         //如填了空格全保护或指定.txt后遇到.txt情况则不操作
@@ -2124,6 +2222,10 @@ namespace FileMaster
                                 MMCore.WriteLine(reportPath, "固定字符数超过前缀字符数:" + item, true);
                             }
                         }
+                        else
+                        {
+                            //填了空格全保护或指定.txt后遇到.txt情况则不操作,newFilePath=""
+                        }
                     }
                     else
                     {
@@ -2131,6 +2233,7 @@ namespace FileMaster
                         newFileName = itemFrontName + textBox_param5.Text;
                         newFilePath = Path.Combine(dirName + @"\", newFileName);
                     }
+
                     if (
                         newFilePath != ""
                         && !File.Exists(newFilePath)
@@ -2333,10 +2436,10 @@ namespace FileMaster
             string newFilePath = "";
             string reportPath;
             bool isDir = false;
+            bool isProtected = false;
             FileInfo fileInfo;
             DirectoryInfo dirInfo;
             string baseName; string extension; string tempFileName; string tempdirName; int counter; string randomValue;
-
 
             for (int i = 0; i < 1; i++)
             {
@@ -2371,39 +2474,34 @@ namespace FileMaster
                     + Path.GetFileNameWithoutExtension(workFilePath)
                     + @"_Report.txt";
 
-
-
-                if (checkBox_protectSuffix.Checked && textBox_param4.Text != "*") //指定后缀且勾选后缀保护
+                if (string.Compare(Path.GetExtension(item), textBox_param3.Text, checkBox_param3.Checked) == 0)
                 {
-                    //如填了空格全保护或指定.txt后遇到.txt情况则不操作
-                    //若指定.txt后遇到.PNG情况，进行操作
-                    if (
-                        string.Compare(
-                            Path.GetExtension(item),
-                            textBox_param4.Text,
-                            checkBox_param4.Checked
-                        ) != 0
-                    )
+                    //忽略后缀大小写后匹配一致,进一步检查item是否为用户保护文件
+                    if (checkBox_protectSuffix.Checked && textBox_param4.Text != "*") //勾选后缀保护并格式正确时进行保护
                     {
-                        newFileName = itemName;
-                    }
-                    else
-                    {
-                        //如指定.txt后遇到.txt情况，输出空，然后报告过滤情况，此时newFilePath=""
-                        if (WorkErrCount == 0)
+                        if (string.Compare(Path.GetExtension(item), textBox_param4.Text, checkBox_param4.Checked) != 0)
                         {
-                            MMCore.WriteLine(reportPath, "↓未处理文件如下↓", false);
+                            //不匹配,验证是否留空表示全保护
+                            if (textBox_param4.Text == "")
+                            {
+                                //全保护
+                                isProtected = true; //设置保护标志,允许复制但不允许删改
+                            }
                         }
-                        WorkErrCount += 1;
-                        MMCore.WriteLine(reportPath, "用户保护:" + item, true);
-                        break;
+                        else
+                        {
+                            //匹配则设置保护标志,允许复制但不允许删改
+                            isProtected = true;
+                        }
                     }
+                    newFileName = itemName;
                 }
                 else
                 {
-                    //不保护后缀（或参数4默认填了*）
-                    newFileName = itemName;
+                    //不匹配则直接不处理
+                    break;
                 }
+
                 //用户自定目录的验证和替换
                 if (comboBox_param8.SelectedIndex == 0)
                 {
@@ -2486,7 +2584,10 @@ namespace FileMaster
                                 //新路径必须不存在才可以移入
                                 fileInfo = new FileInfo(item);
                                 fileInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
-                                if (simRunState == false) fileInfo.MoveTo(newFilePath);
+                                if (simRunState == false)
+                                {
+                                    if (isProtected == false) { fileInfo.MoveTo(newFilePath); }
+                                }
                                 MMCore.WriteLine(workFilePath, "【处理完成】" + item + " => " + newFilePath, true);
                             }
                             else if (File.Exists(newFilePath) || Directory.Exists(newFilePath))
@@ -2504,7 +2605,10 @@ namespace FileMaster
                                     }
                                     fileInfo = new FileInfo(item);
                                     fileInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
-                                    if (simRunState == false) fileInfo.MoveTo(newFilePath);
+                                    if (simRunState == false)
+                                    {
+                                        if (isProtected == false) { fileInfo.MoveTo(newFilePath); }
+                                    }
                                     MMCore.WriteLine(workFilePath, "【处理完成】" + item + " => " + newFilePath, true);
                                 }
                                 else if (comboBox_SamePathHandle.SelectedIndex == 2)
@@ -2521,7 +2625,10 @@ namespace FileMaster
                                     }
                                     fileInfo = new FileInfo(item);
                                     fileInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
-                                    if (simRunState == false) fileInfo.MoveTo(newFilePath);
+                                    if (simRunState == false)
+                                    {
+                                        if (isProtected == false) { fileInfo.MoveTo(newFilePath); }
+                                    }
                                     MMCore.WriteLine(workFilePath, "【处理完成】" + item + " => " + newFilePath, true);
                                 }
                                 else
@@ -2536,12 +2643,18 @@ namespace FileMaster
                             }
                             break;
                         case 2:
-                            if (simRunState == false) MMCore.DelFileToRecycleBin(item, checkBox_param8.Checked);
+                            if (simRunState == false)
+                            {
+                                if (isProtected == false) { MMCore.DelFileToRecycleBin(item, checkBox_param8.Checked); }
+                            }
                             break;
                         case 3:
                             fileInfo = new FileInfo(item);
                             fileInfo.Attributes &= ~(FileAttributes.Archive | FileAttributes.ReadOnly | FileAttributes.Hidden);//解除占用
-                            if (simRunState == false) fileInfo.Delete();
+                            if (simRunState == false)
+                            {
+                                if (isProtected == false) { fileInfo.Delete(); }
+                            }
                             break;
                         default:
                             break;
@@ -2634,7 +2747,9 @@ namespace FileMaster
                                 if (!File.Exists(newFilePath) && !Directory.Exists(newFilePath))
                                 {
                                     if (simRunState == false)
-                                        dirInfo.MoveTo(newFilePath);
+                                    {
+                                        if (isProtected == false) { dirInfo.MoveTo(newFilePath); }
+                                    }
                                 }
                                 else
                                 {
@@ -2650,7 +2765,9 @@ namespace FileMaster
                                             );
                                         }
                                         if (simRunState == false)
-                                            dirInfo.MoveTo(newFilePath);
+                                        {
+                                            if (isProtected == false) { dirInfo.MoveTo(newFilePath); }
+                                        }
                                     }
                                     else if (comboBox_SamePathHandle.SelectedIndex == 2)
                                     {
@@ -2665,7 +2782,9 @@ namespace FileMaster
                                             counter++;
                                         }
                                         if (simRunState == false)
-                                            dirInfo.MoveTo(newFilePath);
+                                        {
+                                            if (isProtected == false) { dirInfo.MoveTo(newFilePath); }
+                                        }
                                     }
                                     else
                                     {
@@ -2698,11 +2817,17 @@ namespace FileMaster
                             }
                             break;
                         case 2:
-                            if (simRunState == false) MMCore.DelDirectoryToRecycleBin(item, checkBox_param8.Checked);
+                            if (simRunState == false)
+                            {
+                                if (isProtected == false) { MMCore.DelDirectoryToRecycleBin(item, checkBox_param8.Checked); }
+                            }
                             break;
                         case 3:
                             dirInfo = new DirectoryInfo(item);
-                            if (simRunState == false) MMCore.DelDirectoryRecursively(dirInfo);
+                            if (simRunState == false)
+                            {
+                                if (isProtected == false) { MMCore.DelDirectoryRecursively(dirInfo); }
+                            }
                             break;
                         default:
                             break;
