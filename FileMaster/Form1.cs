@@ -2502,8 +2502,8 @@ namespace FileMaster
                     break;
                 }
 
-                //用户自定目录的验证和替换
-                if (comboBox_param8.SelectedIndex == 0)
+                //复制和移动时新目录的验证和Debug
+                if (comboBox_param8.SelectedIndex == 0 || comboBox_param8.SelectedIndex == 1)
                 {
                     if (MMCore.IsDFPath(textBox_param8.Text) && MMCore.IsDir(textBox_param8.Text))
                     {
@@ -2511,7 +2511,7 @@ namespace FileMaster
                     }
                     else
                     {
-                        //无效时，按默认输出
+                        //无效时按默认目录输出
                         dirName = workFilePath.Substring(0, workFilePath.LastIndexOf('\\')) + @"\" + Path.GetFileNameWithoutExtension(workFilePath) + @"_Delete";
                         textBox_param8.Text = dirName;
                     }

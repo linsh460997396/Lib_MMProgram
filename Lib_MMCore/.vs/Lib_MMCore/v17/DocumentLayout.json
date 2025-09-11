@@ -4,6 +4,9 @@
   "Documents": [
     {
       "AbsoluteMoniker": "D:0:0:{02D1E782-A9D0-4162-9DFF-6A3C82A360E2}|..\\FileMaster\\FileMaster.csproj|d:\\vswork\\2022\\lib_mmprogram\\filemaster\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{02D1E782-A9D0-4162-9DFF-6A3C82A360E2}|..\\FileMaster\\FileMaster.csproj|d:\\vswork\\2022\\lib_mmprogram\\filemaster\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
   ],
   "DocumentGroupContainers": [
@@ -31,10 +34,22 @@
               "RelativeDocumentMoniker": "..\\FileMaster\\Form1.cs",
               "ToolTip": "D:\\VSWork\\2022\\Lib_MMProgram\\FileMaster\\Form1.cs",
               "RelativeToolTip": "..\\FileMaster\\Form1.cs",
-              "ViewState": "AgIAAEsAAAAAAAAAAAAAABgAAAAoAAAAAAAAAA==",
+              "ViewState": "AgIAAMYJAAAAAAAAAAD4v84JAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T05:00:31.482Z",
+              "WhenOpened": "2025-09-11T12:58:22.256Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Form1.cs [\u8BBE\u8BA1]",
+              "DocumentMoniker": "D:\\VSWork\\2022\\Lib_MMProgram\\FileMaster\\Form1.cs",
+              "RelativeDocumentMoniker": "..\\FileMaster\\Form1.cs",
+              "ToolTip": "D:\\VSWork\\2022\\Lib_MMProgram\\FileMaster\\Form1.cs [\u8BBE\u8BA1]",
+              "RelativeToolTip": "..\\FileMaster\\Form1.cs [\u8BBE\u8BA1]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-11T13:06:55.632Z",
+              "EditorCaption": " [\u8BBE\u8BA1]"
             }
           ]
         }
