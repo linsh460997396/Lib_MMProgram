@@ -44,7 +44,6 @@ namespace MetalMaxSystem.Unity
         }
     }
 }
-#endif
 
 //示范操作由主线程获取当前游戏对象上的MainThreadDispatcher组件，并进行所需动作
 //private void TodoOnMainThread(Bitmap sprite)
@@ -97,3 +96,5 @@ namespace MetalMaxSystem.Unity
 // TrimExcess(): 设置队列的容量为其当前大小，释放多余的存储空间。
 // TryDequeue(out T result): 尝试移除并返回队列的第一个元素，如果队列为空，则返回 false 并将 result 设置为默认值。
 // TryPeek(out T result): 尝试返回队列的第一个元素但不移除它，如果队列为空，则返回 false 并将 result 设置为默认值。
+
+#endif

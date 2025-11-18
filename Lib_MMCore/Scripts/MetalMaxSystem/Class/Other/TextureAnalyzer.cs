@@ -1134,7 +1134,6 @@ namespace MetalMaxSystem.Unity
         #endregion
     }
 }
-#endif
 
 //错误的示范：提取当前精灵的像素数据
 //StartCoroutine(GetPixelsOnMainThread(sprites[i], i));
@@ -1172,3 +1171,5 @@ namespace MetalMaxSystem.Unity
 //     var a = i
 //     lambda ()=>{  print  a }
 // 这样才正确
+
+#endif
