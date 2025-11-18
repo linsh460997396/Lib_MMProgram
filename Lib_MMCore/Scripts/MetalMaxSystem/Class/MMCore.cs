@@ -551,10 +551,10 @@ namespace MetalMaxSystem
         //字段及其属性方法（避免不安全读写，private保护和隐藏字段，设计成只允许通过public修饰的属性方法间接去安全读写）
         //本库前缀单个_开头字段表示其拥有属性方法（若有双_开头表示自定义类型如委托）
 
-        private static bool isDataTableTypeSet = false;
+        //private static bool isDataTableTypeSet = false;
         private static bool _dataTableType = false;
         /// <summary>
-        /// 数据表类型，为true时全局切换为哈希表（跨线程安全），其他情况默认采用字典（勿跨线程），可通过切换DataTableType来对比读写效率（只允许被改变一次，请在入口或使用数据表前进行设置）
+        /// 数据表类型,为true时全局切换为哈希表(跨线程读取安全),默认采用字典(勿跨线程),可通过切换DataTableType来对比读写效率.
         /// </summary>
         public static bool DataTableType
         {
@@ -564,17 +564,20 @@ namespace MetalMaxSystem
             }
             set
             {
-                if (!isDataTableTypeSet)
-                {
-                    _dataTableType = value;
-                    isDataTableTypeSet = true;
-                }
-                else
-                {
-                    throw new InvalidOperationException("DataTableType can only be set once.");
-                }
+                _dataTableType = value;
+
+                //if (!isDataTableTypeSet)
+                //{
+                //    _dataTableType = value;
+                //    isDataTableTypeSet = true;
+                //}
+                //else
+                //{
+                //    throw new InvalidOperationException("DataTableType can only be set once."); //只允许被改变一次,请在入口或使用数据表前进行设置
+                //}
             }
         }
+
         /// <summary>
         /// 存储区容错处理当表键值存在时执行线程默认等待的间隔。常用于多线程触发器频繁写值，如大量注册注销动作使存储区数据重排序的，因表正在使用需排队等待完成才给执行下一个。执行原理：将调用该函数的当前线程反复挂起period毫秒，直到动作要写入的存储区闲置
         /// </summary>
@@ -3447,56 +3450,56 @@ namespace MetalMaxSystem
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static string DataTableStringLoad0(bool place, string key)
+        public static string? DataTableStringLoad0(bool place, string key)
         {
             switch (DataTableType)
             {
                 case true:
-                    return HashTableLoad0(place, key).ToString();
+                    return HashTableLoad0(place, key)?.ToString();
                 default:
                     return DictionaryStringLoad0(place, key);
             }
         }
 
         /// <summary>
-        /// 读取数据表键值对，模拟1维数组
+        /// 读取数据表键值对,模拟1维数组
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <returns></returns>
-        public static string DataTableStringLoad1(bool place, string key, int lp_1)
+        public static string? DataTableStringLoad1(bool place, string key, int lp_1)
         {
             switch (DataTableType)
             {
                 case true:
-                    return HashTableLoad1(place, key, lp_1).ToString();
+                    return HashTableLoad1(place, key, lp_1)?.ToString();
                 default:
                     return DictionaryStringLoad1(place, key, lp_1);
             }
         }
 
         /// <summary>
-        /// 读取数据表键值对，模拟2维数组
+        /// 读取数据表键值对,模拟2维数组
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
         /// <param name="lp_1"></param>
         /// <param name="lp_2"></param>
         /// <returns></returns>
-        public static string DataTableStringLoad2(bool place, string key, int lp_1, int lp_2)
+        public static string? DataTableStringLoad2(bool place, string key, int lp_1, int lp_2)
         {
             switch (DataTableType)
             {
                 case true:
-                    return HashTableLoad2(place, key, lp_1, lp_2).ToString();
+                    return HashTableLoad2(place, key, lp_1, lp_2)?.ToString();
                 default:
                     return DictionaryStringLoad2(place, key, lp_1, lp_2);
             }
         }
 
         /// <summary>
-        /// 读取数据表键值对，模拟3维数组
+        /// 读取数据表键值对,模拟3维数组
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -3504,19 +3507,19 @@ namespace MetalMaxSystem
         /// <param name="lp_2"></param>
         /// <param name="lp_3"></param>
         /// <returns></returns>
-        public static string DataTableStringLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
+        public static string? DataTableStringLoad3(bool place, string key, int lp_1, int lp_2, int lp_3)
         {
             switch (DataTableType)
             {
                 case true:
-                    return HashTableLoad3(place, key, lp_1, lp_2, lp_3).ToString();
+                    return HashTableLoad3(place, key, lp_1, lp_2, lp_3)?.ToString();
                 default:
                     return DictionaryStringLoad3(place, key, lp_1, lp_2, lp_3);
             }
         }
 
         /// <summary>
-        /// 读取数据表键值对，模拟4维数组
+        /// 读取数据表键值对,模拟4维数组
         /// </summary>
         /// <param name="place"></param>
         /// <param name="key"></param>
@@ -3525,12 +3528,12 @@ namespace MetalMaxSystem
         /// <param name="lp_3"></param>
         /// <param name="lp_4"></param>
         /// <returns></returns>
-        public static string DataTableStringLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
+        public static string? DataTableStringLoad4(bool place, string key, int lp_1, int lp_2, int lp_3, int lp_4)
         {
             switch (DataTableType)
             {
                 case true:
-                    return HashTableLoad4(place, key, lp_1, lp_2, lp_3, lp_4).ToString();
+                    return HashTableLoad4(place, key, lp_1, lp_2, lp_3, lp_4)?.ToString();
                 default:
                     return DictionaryStringLoad4(place, key, lp_1, lp_2, lp_3, lp_4);
             }
