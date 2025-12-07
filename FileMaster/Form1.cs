@@ -105,7 +105,7 @@ namespace FileMaster
         /// <summary>
         /// 递归方式强制修改目录（进最里层修改文件后修改这些文件的父级目录，层层递出时重复动作），修改前会去掉文件（夹）的Archive、ReadOnly、Hidden属性
         /// </summary>
-        /// <param name="dirInfo"></param>
+        /// <param name="dirPath"></param>
         /// <param name="workFilePath">工作文本全名路径</param>
         /// <param name="torf">最外层目录是否参与修改，默认true</param>
         /// <param name="isOuter">是否最外层目录，默认true</param>
