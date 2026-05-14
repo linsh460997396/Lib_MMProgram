@@ -18,7 +18,7 @@ namespace BattleTest
     {
         #region 字段
 
-        //玩家=1~8,备用=9~11，触发器（上帝）=16
+        //玩家=1~8,备用=9~11,触发器（上帝）=16
 
         /// <summary>
         /// 中立阵营
@@ -42,7 +42,7 @@ namespace BattleTest
         public static int gv_ID_NY = 15;
 
         /// <summary>
-        /// 阵营主基地（死亡后自动寻找分支基地或其他球作为主基地，亦可手动选择）
+        /// 阵营主基地（死亡后自动寻找分支基地或其他球作为主基地,亦可手动选择）
         /// </summary>
         public static Unit[] gv_campBase = new Unit[Game.c_maxPlayers + 1];
         /// <summary>
@@ -76,14 +76,14 @@ namespace BattleTest
 
                 if (autoA_var == 12)
                 {
-                    //挑选到12时，玩家ID切换到异形阵营
+                    //挑选到12时,玩家ID切换到异形阵营
                     lv_p = gv_ID_YX;
                 }
                 else
                 {
                     lv_p = autoA_var;
                 }
-                //简单注册玩家ID，之后固有状态激活为true，表示阵营活体
+                //简单注册玩家ID,之后固有状态激活为true,表示阵营活体
                 MMCore.HD_RegInt_Simple(lv_p, "Nation");
 
                 if (autoA_var == 9)
@@ -102,7 +102,7 @@ namespace BattleTest
                 {
                     Game.UnitCreate("OrbitalCommand", 0, lv_p, new Vector2F(246.0f, 246.0f));
                 }
-                //把上面创建的4个阵营主基地存入到gv_campBase，势力玩家开局默认只能有1个主基地（可发展为超大球），后期考虑添加分支基地亦可以发展为超大球
+                //把上面创建的4个阵营主基地存入到gv_campBase,势力玩家开局默认只能有1个主基地（可发展为超大球）,后期考虑添加分支基地亦可以发展为超大球
                 gv_campBase[lv_p] = Game.UnitLastCreated;
                 //设置主基地血量、玩家补给等属性
                 Game.UnitLastCreated.SetProperty(UnitProp.LifeMax, 20000.0);
@@ -116,7 +116,7 @@ namespace BattleTest
         }
 
         /// <summary>
-        /// 主基地随机产兵AI，出生后赋予一次巡防、探索、建造、战斗等指令
+        /// 主基地随机产兵AI,出生后赋予一次巡防、探索、建造、战斗等指令
         /// </summary>
         public static void BattleAI(object sender, EventArgs e)
         {
@@ -139,13 +139,13 @@ namespace BattleTest
                 return;
             }
 
-            autoA_var = 9;//4个开局AI阵营，在周围随机产兵
+            autoA_var = 9;//4个开局AI阵营,在周围随机产兵
             for (; autoA_var <= autoA_ae; autoA_var += 1)
             {
                 autoB_val = autoA_var;
                 if (autoB_val == 12)
                 {
-                    //挑选到12时，玩家ID切换到异形阵营
+                    //挑选到12时,玩家ID切换到异形阵营
                     lv_p = gv_ID_YX;
                 }
                 else
@@ -154,7 +154,7 @@ namespace BattleTest
                 }
                 //当前的玩家主基地
                 lv_base = gv_campBase[lv_p];
-                if (lv_base.Alive) //单位刚创建时Alive默认为true，这里主基地没死亡且玩家军队计数小于阀值时产兵
+                if (lv_base.Alive) //单位刚创建时Alive默认为true,这里主基地没死亡且玩家军队计数小于阀值时产兵
                 {
                     lv_randomNum = MMCore.RandomInt(1, 50);
                     if (lv_randomNum >= 1 && lv_randomNum <= 25 && gv_armyGroup[lv_p].Count() < gv_campForceLimit[lv_p])
@@ -195,10 +195,10 @@ namespace BattleTest
                 //目标基地存活且非己方基地时
                 if (lv_targetBase.Alive && lv_targetBase != lv_base)
                 {
-                    //对最后创建的单位发布命令，如进攻目标基地点
-                    Game.UnitLastCreated.IssueOrder(Game.OrderTargetingPoint(Game.AbilityCommand("attack", 0), lv_targetBase.Vector2F), (int)OrderQueue.Replace);//立即覆盖当前指令（序号0的指令是当前的，1~29为队列的）
+                    //对最后创建的单位发布命令,如进攻目标基地点
+                    Game.UnitLastCreated.IssueOrder(Game.OrderTargetingPoint(Game.AbilityCommand("attack", 0), lv_targetBase.Vector2F), (int)OrderQueue.Replace);//立即覆盖当前指令（序号0的指令是当前的,1~29为队列的）
                     autoD_g = UnitGroup.Idle(lv_p, false);//玩家闲置（没有指令）的单位组
-                    autoD_u = autoD_g.Count();//单位组内元素计数（如果有10个，那么数组元素的序号为1~10）
+                    autoD_u = autoD_g.Count();//单位组内元素计数（如果有10个,那么数组元素的序号为1~10）
                     for (; ; autoD_u -= 1)
                     {
                         autoD_var = UnitGroup.UnitFromEnd(autoD_g, autoD_u);//返回元素序号对应的单位

@@ -68,7 +68,7 @@
                 <ColumnDefinition ></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <!--定义Grid的行，定义3行-->
+                <!--定义Grid的行,定义3行-->
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
@@ -122,6 +122,6 @@
                 />
 
         <Button Content="全部结束录制" HorizontalAlignment="Left" Margin="131,10,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_5" Style="{StaticResource BtnStyle}"/>
-        <Label Content="按全部开始录制后，按以下热键可以记录鼠标位置" HorizontalAlignment="Left" Margin="25,128,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.465,0.484" Height="23" Width="336"/>
+        <Label Content="按全部开始录制后,按以下热键可以记录鼠标位置" HorizontalAlignment="Left" Margin="25,128,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.465,0.484" Height="23" Width="336"/>
     </Grid>
 </Window>

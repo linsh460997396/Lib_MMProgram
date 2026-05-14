@@ -31,7 +31,7 @@ namespace MMObfuscar
 
         private static Thread _workThread;
         /// <summary>
-        /// 工作专用后台子线程，防止工作时UI主线程界面卡住无法点击等问题
+        /// 工作专用后台子线程,防止工作时UI主线程界面卡住无法点击等问题
         /// </summary>
         public static Thread WorkThread { get => _workThread; set => _workThread = value; }
 
@@ -180,7 +180,7 @@ namespace MMObfuscar
         }
 
         /// <summary>
-        /// 按钮点击后处理主要内容，本函数交由后台线程运行
+        /// 按钮点击后处理主要内容,本函数交由后台线程运行
         /// </summary>
         private void ButtonRun()
         {
@@ -205,20 +205,20 @@ namespace MMObfuscar
                 //MMCore.Tell(stopwatch.Elapsed.ToString());
                 SetStatisticsToMainThread(" 时耗：" + stopwatch.Elapsed.ToString());
             }
-            //放弃了线程注销做法，程序将始终运行至此，可以知道是用户中断还是正常运行结束
+            //放弃了线程注销做法,程序将始终运行至此,可以知道是用户中断还是正常运行结束
             WorkStatus = false;//重置工作状态
             if (WorkStop) { SetStatisticsToMainThread("用户取消！"); }
-            WorkStop = false;//重置_workStop状态，如果是用户取消的，打印告知
+            WorkStop = false;//重置_workStop状态,如果是用户取消的,打印告知
             UserOpEnableChange(true);//重置用户操作状态
             SetBtnRunTextToMainThread("执行");
             //MMCore.Tell("子线程已经完成！");
-            //线程清除（如果不放心，Abort方法能在目标线程中抛出一个ThreadAbortException异常从而导致目标线程的终止）
+            //线程清除（如果不放心,Abort方法能在目标线程中抛出一个ThreadAbortException异常从而导致目标线程的终止）
             //WorkThread.Abort();
         }
 
         /// <summary>
         /// The Button of Run.
-        /// 点击执行按钮后应创建一个后台线程进行复杂任务处理，防止对UI所在的主线程造成卡顿。
+        /// 点击执行按钮后应创建一个后台线程进行复杂任务处理,防止对UI所在的主线程造成卡顿.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -229,7 +229,7 @@ namespace MMObfuscar
             {
                 for (int i = 0; i < 1; i++)
                 {
-                    //开始工作，大部分界面置灰（用户不可操作）
+                    //开始工作,大部分界面置灰（用户不可操作）
                     UserOpEnableChange(false);
 
                     if (button_Run.Text == "执行" && WorkStatus == false)
@@ -257,39 +257,39 @@ namespace MMObfuscar
         /// <param name="exclusionRulesPath"></param>
         private void SelectedFunc_0(string exclusionRulesPath)
         {
-            //排除规则文件使用系统默认的情况：1）文件路径为空；2）文件路径虽不为空但后缀非.txt；3）文件路径非法。
+            //排除规则文件使用系统默认的情况：1）文件路径为空；2）文件路径虽不为空但后缀非.txt；3）文件路径非法.
             if (
                 exclusionRulesPath == ""
                 || !(Regex.IsMatch(exclusionRulesPath, @"^(.*)(\.txt)$"))
                 || !MMCore.IsDFPath(exclusionRulesPath)
             )
             {
-                //文本路径错误，重置为系统默认
+                //文本路径错误,重置为系统默认
                 exclusionRulesPath = AppDomain.CurrentDomain.BaseDirectory + @"exclusion_rules.txt";
                 SetExclusionRulesPathToMainThread(exclusionRulesPath);
-                //SetTipsToMainThread("排除规则文件路径错误，重置为系统默认！");
+                //SetTipsToMainThread("排除规则文件路径错误,重置为系统默认！");
             }
             //去除代码里的注释
             string mainCode = MMCore.RemoveEmptyLines(MMCore.RemoveComments(GetCodeFromMainThread()));
-            //定义正则表达式模式，匹配函数名
+            //定义正则表达式模式,匹配函数名
             string pattern = @"(?<=^|[^a-zA-Z_])[a-zA-Z_][\w]*(?=\s*\([^\)]*\)(\s+|\n|$))";
             MatchCollection matches = Regex.Matches(mainCode, pattern);
             CodeObfuscator obfuscator = new CodeObfuscator();
-            //读取排除规则文本，添加混肴规则时会防止它们参与混肴（格式：每行一个函数名）
+            //读取排除规则文本,添加混肴规则时会防止它们参与混肴（格式：每行一个函数名）
             obfuscator.LoadExclusionRules(exclusionRulesPath);
             //遍历全部函数名
             foreach (Match match in matches)
             {
                 //MMCore.Tell("Function Name: " + match.Value);
-                //构建正则表达式，除了"排除规则文本"指定的函数名，让Lib、GAx3开头的函数名也避开混肴
+                //构建正则表达式,除了"排除规则文本"指定的函数名,让Lib、GAx3开头的函数名也避开混肴
                 if (!Regex.IsMatch(match.Value, "^(Lib|lib|GAx3).*"))
                 {
-                    //添加函数名及混肴后名称到混肴规则（这过程会自动去重，也不会生成相同混肴名称）
+                    //添加函数名及混肴后名称到混肴规则（这过程会自动去重,也不会生成相同混肴名称）
                     obfuscator.AddReplacement(match.Value);
                 }
 
             }
-            //要解决：Lib_gf_A和gf_A，如后者加到混肴规则，前者也会被替换一部分，所以混肴前得检查函数名并对混肴规则修改：如第一遍混肴规则里的键名是按库名匹配的函数名的一部分则剔除该键
+            //要解决：Lib_gf_A和gf_A,如后者加到混肴规则,前者也会被替换一部分,所以混肴前得检查函数名并对混肴规则修改：如第一遍混肴规则里的键名是按库名匹配的函数名的一部分则剔除该键
             foreach (Match match in matches)
             {
                 if (Regex.IsMatch(match.Value, "^(Lib|lib|GAx3).*"))
@@ -300,7 +300,7 @@ namespace MMObfuscar
                     {
                         if (match.Value.Contains(key))
                         {
-                            //如果match.Value包含字典中的键，则从字典中删除该键
+                            //如果match.Value包含字典中的键,则从字典中删除该键
                             obfuscator.Replacements.Remove(key);
                         }
                     }
@@ -318,14 +318,14 @@ namespace MMObfuscar
             MatchCollection matches2 = Regex.Matches(obfuscatedCode, @"""[^\\""]*""");
             foreach (Match match in matches2)
             {
-                //匹配到的字符串的内容(.*?)放在match.Groups[1].Value，内容非空则进行添加规则
+                //匹配到的字符串的内容(.*?)放在match.Groups[1].Value,内容非空则进行添加规则
                 if (match.Groups[1].Value != "")
                 {
                     if (Regex.IsMatch(match.Groups[1].Value, @".*\\.*")) { MMCore.Tell(match.Groups[1].Value); }
-                    //构建正则表达式，带有以下指定字符的字符串会避开混肴
+                    //构建正则表达式,带有以下指定字符的字符串会避开混肴
                     if (!Regex.IsMatch(match.Groups[1].Value, "(\\|bnet:)"))
                     {
-                        //添加到混肴规则2（要替换的字符串为键，混肴成8进制或18进制后的字符串为值）
+                        //添加到混肴规则2（要替换的字符串为键,混肴成8进制或18进制后的字符串为值）
                         temp = MMCore.ConvertStringToHOMixed(match.Groups[1].Value, 0.7); //这里是内容的混肴
                         //MMCore.Tell($"Found string: {match.Groups[1].Value}, Value: {temp}");
                         temp = "\"" + temp + "\""; //重新套上引号
@@ -339,7 +339,7 @@ namespace MMObfuscar
             //第三遍
             //正则表达式匹配void InitMap () { 到 }的内容
             //pattern = @"void\s*InitMap\s*\(\)\s*\{(.*\S)*\}";
-            ////使用 RegexOptions.Multiline 选项来指定模式应在多个行上进行匹配，并使用 RegexOptions.Singleline 选项来指定模式应在单个连续字符串上进行匹配
+            ////使用 RegexOptions.Multiline 选项来指定模式应在多个行上进行匹配,并使用 RegexOptions.Singleline 选项来指定模式应在单个连续字符串上进行匹配
             //RegexOptions options = RegexOptions.Multiline | RegexOptions.Singleline;
             //MatchCollection matches3 = Regex.Matches(obfuscatedCode, pattern, options);
             //foreach (Match match in matches3)
@@ -364,7 +364,7 @@ namespace MMObfuscar
         private void UserOpEnableChange(bool torf)
         {
             UserOpEnable = torf;
-            //遍历全控件并获取类型（可跨线程不用回调），控件属性读写操作仍需要回调
+            //遍历全控件并获取类型（可跨线程不用回调）,控件属性读写操作仍需要回调
             foreach (Control a in Controls)
             {
                 if (a is Panel)
@@ -372,7 +372,7 @@ namespace MMObfuscar
                     Panel p = a as Panel;  //取出Panel
                     if (!torf)
                     {
-                        //改变Panel的颜色，执行时是灰色
+                        //改变Panel的颜色,执行时是灰色
                         SetPanelBackColorToMainThread(p, Color.Gray);
                     }
                     else
@@ -416,7 +416,7 @@ namespace MMObfuscar
                     }
                 }
             }
-            //上面Controls未读到富格式文本框，单独设置
+            //上面Controls未读到富格式文本框,单独设置
             SetControlEnableToMainThread(richTextBox_Code, torf);
         }
 

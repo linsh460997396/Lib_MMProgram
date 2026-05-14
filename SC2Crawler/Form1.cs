@@ -161,8 +161,8 @@ namespace SC2Crawler
                 MMCore.Tell("childName => " + childName);
                 MMCore.Tell(childNode.InnerText);
 
-                //如果需要收集特定类型的节点，可以在这里添加逻辑
-                //例如，如果childNode是一个<a>标签，并且其属性包含特定的值，您可以将其添加到danMuLinks列表中
+                //如果需要收集特定类型的节点,可以在这里添加逻辑
+                //例如,如果childNode是一个<a>标签,并且其属性包含特定的值,您可以将其添加到danMuLinks列表中
 
                 //继续递归处理子节点的子节点
                 if (childNode.HasChildNodes)

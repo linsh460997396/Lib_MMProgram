@@ -1,93 +1,184 @@
-﻿using System;
+﻿using MetalMaxSystem;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace MMConsole
 {
     public class MyConsole
     {
+        private static int _playerId = 1;
+
+        private static void OnKeySpacePressed(bool isKeyDown, int player)
+        {
+            Console.WriteLine($"玩家{player} 空格键 {(isKeyDown ? "按下" : "释放")}");
+        }
+
+        private static void OnKeyWPressed(bool isKeyDown, int player)
+        {
+            Console.WriteLine($"玩家{player} W键 {(isKeyDown ? "按下" : "释放")}");
+        }
+
+        private static void OnKeyEscapePressed(bool isKeyDown, int player)
+        {
+            Console.WriteLine($"玩家{player} ESC键 {(isKeyDown ? "按下" : "释放")}");
+            if (isKeyDown)
+            {
+                Console.WriteLine("检测到ESC按下，准备退出测试...");
+                Environment.Exit(0);
+            }
+        }
+
+        private static void OnKeyCharge(int player, int key, float chargeValue)
+        {
+            string keyName = GetKeyName(key);
+            Console.WriteLine($"【蓄力事件】玩家{player} 按键[{keyName}] 蓄力值: {chargeValue:F2}");
+        }
+
+        private static void OnKeyDoubleClick(int player, int key, float timeDiff)
+        {
+            string keyName = GetKeyName(key);
+            Console.WriteLine($"【双击事件】玩家{player} 按键[{keyName}] 双击成功！间隔: {timeDiff:F3}秒");
+        }
+
+        private static string GetKeyName(int key)
+        {
+            switch (key)
+            {
+                case 39: return "空格键";
+                case 35: return "W键";
+                case 31: return "S键";
+                case 36: return "X键";
+                case 66: return "ESC键";
+                default: return $"按键码{key}";
+            }
+        }
 
         public static void Main(string[] args)
         {
-            //TimerUpdate A = new TimerUpdate();
-            //A.Awake += AwakeTest;
-            //A.Update += UpdateTest;
-            //A.Period = 500;//周期间隔
-            //A.TriggerStart(false);//触发器执行
+            Console.WriteLine("=== MMCore 按键事件功能测试（含蓄力和双击）===");
+            Console.WriteLine("操作说明：");
+            Console.WriteLine("  - 按空格键/W键测试普通按键");
+            Console.WriteLine("  - 按住X键测试蓄力（按住越久蓄力值越高）");
+            Console.WriteLine("  - 快速按两次S键测试双击");
+            Console.WriteLine("  - 按ESC退出\n");
 
-            //int number = 10; //示例数字
-            //string expression = ConvertToBitwiseExpression(number); //获取位运算表达式
-            //MMCore.Tell(expression); //输出表达式
-            //                              //计算表达式的值
-            //int result = 0;
-            //for (int i = expression.Length - 1; i >= 0; i--)
-            //{
-            //   if (expression[i] == '1') result += (int)Math.Pow(2, expression.Length - i - 1);
-            //}
-            //MMCore.Tell("Result: " + result); //输出结果
+            // 注册普通按键事件
+            Console.WriteLine("1. 注册普通按键事件委托...");
+            MMCore.RegistKeyEventFuncref(MMCore.c_keySpace, OnKeySpacePressed);
+            MMCore.RegistKeyEventFuncref(MMCore.c_keyW, OnKeyWPressed);
+            MMCore.RegistKeyEventFuncref(MMCore.c_keyEscape, OnKeyEscapePressed);
 
-            //MMCore.Tell(MMCore.ConvertStringToHex("TriggerLibs/NativeLib"));
-            //MMCore.Tell("\x54\x72\x69\x67\x67\x65\x72\x4C\x69\x62\x73\x2F\x4E\x61\x74\x69\x76\x65\x4C\x69\x62");
-            //MMCore.Tell(MMCore.ConvertStringToHOMixed("TriggerLibs/NativeLib", 0.7)); //"\0124\0114"的十进制是84和76，Galaxy脚本中识别为TL
+            // 启用蓄力和双击管理
+            Console.WriteLine("2. 启用蓄力和双击管理...");
+            MMCore.StartXuLiGuanLi(true);
+            MMCore.StartShuangJiGuanLi(true);
 
-        }
-        public static int Confuse(int input)
-        {
-            int gv_inlineprevent = 0;
-            int I1l = 123456789;
-            int llll = 987654321;
-            gv_inlineprevent += ((~0x117C3C1E ^ I1l) ^ (1 << (~6 + llll)));
-            return gv_inlineprevent;
-        }
+            // 订阅蓄力和双击事件
+            Console.WriteLine("3. 订阅蓄力和双击事件...");
+            MMCore.KeyChargeEvent += OnKeyCharge;
+            MMCore.KeyDoubleClickEvent += OnKeyDoubleClick;
 
-        public static int Confuse2(int input)
-        {
-            int gv_inlineprevent = 0;
-            int I1l = 123456789;
-            int llll = 987654321;
-            int confusedValue = ((~0x117C3C1E ^ I1l) ^ (1 << (~6 + llll)));
-            gv_inlineprevent += confusedValue;
-            int deconfusedValue = ((~confusedValue ^ I1l) ^ (1 << (~6 + llll)));
-            gv_inlineprevent -= deconfusedValue;
-            return gv_inlineprevent;
-        }
+            Console.WriteLine("\n4. 进入实时按键监听循环...");
+            Console.WriteLine("按任意键测试（按ESC退出）\n");
 
-        /// <summary>
-        /// 转二进制表达式
-        /// </summary>
-        /// <param name="number"></param>
-        /// <returns></returns>
-        public static string ConvertToBitwiseExpression(int number)
-        {
-            if (number == 0) return "0";
-            string expression = "";
-            while (number > 0)
+            // 创建一个后台线程来处理蓄力和双击的更新循环
+            Thread updateThread = new Thread(UpdateLoop);
+            updateThread.IsBackground = true;
+            updateThread.Start();
+
+            // 主循环：监听键盘输入
+            while (true)
             {
-                if (number % 2 == 1)
+                if (Console.KeyAvailable)
                 {
-                    expression = "1" + expression;
+                    ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+                    int keyCode = ConvertConsoleKeyToMMCoreKey(keyInfo.Key);
+
+                    if (keyCode != -1)
+                    {
+                        // 触发普通按键事件
+                        MMCore.KeyDownGlobalEvent(keyCode, true, _playerId);
+
+                        // 处理蓄力和双击（按键按下）
+                        MMCore.OnKeyDown(_playerId, keyCode);
+
+                        // 模拟按键释放（测试蓄力需要手动释放）
+                        if (keyInfo.Key == ConsoleKey.X)
+                        {
+                            // 对于X键，等待一会儿再释放以模拟蓄力
+                            Console.WriteLine("按住X键蓄力中...(按任意键释放)");
+                            Console.ReadKey(true);
+                            MMCore.OnKeyUp(_playerId, keyCode);
+                            MMCore.KeyDownGlobalEvent(keyCode, false, _playerId);
+                        }
+                        else if (keyInfo.Key == ConsoleKey.S)
+                        {
+                            // 对于S键，快速双击测试
+                            Thread.Sleep(100);
+                        }
+                        else
+                        {
+                            // 其他按键立即释放
+                            Thread.Sleep(50);
+                            MMCore.OnKeyUp(_playerId, keyCode);
+                            MMCore.KeyDownGlobalEvent(keyCode, false, _playerId);
+                        }
+                    }
+
+                    if (keyInfo.Key == ConsoleKey.Escape)
+                    {
+                        break;
+                    }
                 }
-                else
-                {
-                    expression = "0" + expression;
-                }
-                number /= 2;
+                Thread.Sleep(50);
             }
-            return expression;
+
+            // 清理
+            Console.WriteLine("\n5. 清理资源...");
+            MMCore.KeyChargeEvent -= OnKeyCharge;
+            MMCore.KeyDoubleClickEvent -= OnKeyDoubleClick;
+            MMCore.RemoveKeyEventFuncref(MMCore.c_keySpace, OnKeySpacePressed);
+            MMCore.RemoveKeyEventFuncref(MMCore.c_keyW, OnKeyWPressed);
+            MMCore.RemoveKeyEventFuncref(MMCore.c_keyEscape, OnKeyEscapePressed);
+            MMCore.StartXuLiGuanLi(false);
+            MMCore.StartShuangJiGuanLi(false);
+
+            Console.WriteLine("测试完成！");
         }
 
-        public static void AwakeTest(object sender, EventArgs e)
+        private static void UpdateLoop()
         {
-            //要执行的动作
+            while (true)
+            {
+                // 更新蓄力值（每帧调用）
+                MMCore.UpdateXuLi(_playerId);
+                // 更新双击计时器（每帧调用）
+                MMCore.UpdateShuangJi(_playerId);
+                Thread.Sleep(16); // 约60fps
+            }
         }
 
-        public static void UpdateTest(object sender, EventArgs e)
+        private static int ConvertConsoleKeyToMMCoreKey(ConsoleKey consoleKey)
         {
-            //要周期执行的动作
+            switch (consoleKey)
+            {
+                case ConsoleKey.Spacebar: return MMCore.c_keySpace;
+                case ConsoleKey.W: return MMCore.c_keyW;
+                case ConsoleKey.A: return MMCore.c_keyA;
+                case ConsoleKey.S: return MMCore.c_keyS;
+                case ConsoleKey.D: return MMCore.c_keyD;
+                case ConsoleKey.X: return MMCore.c_keyX;
+                case ConsoleKey.Escape: return MMCore.c_keyEscape;
+                case ConsoleKey.Enter: return MMCore.c_keyEnter;
+                case ConsoleKey.Backspace: return MMCore.c_keyBackSpace;
+                case ConsoleKey.Tab: return MMCore.c_keyTab;
+                case ConsoleKey.LeftArrow: return MMCore.c_keyLeft;
+                case ConsoleKey.RightArrow: return MMCore.c_keyRight;
+                case ConsoleKey.UpArrow: return MMCore.c_keyUp;
+                case ConsoleKey.DownArrow: return MMCore.c_keyDown;
+                default: return -1;
+            }
         }
-
-        public static void TestA(params object[] e)
-        {
-            //测试多参任意类型
-        }
-
     }
 }
