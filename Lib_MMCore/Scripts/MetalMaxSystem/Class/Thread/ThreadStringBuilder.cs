@@ -96,27 +96,65 @@ namespace MetalMaxSystem
         //按需追加重载↓
 
         /// <summary>
-        /// 组合string + int + char + int.
+        /// 组合string + int + string + int + string[].
         /// </summary>
-        public static string Concat(string str, int val1, char sep1, int val2)
-        {
-            var sb = Get();
-            sb.Append(str);
-            sb.Append(val1);
-            sb.Append(sep1);
-            sb.Append(val2);
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// 组合string + int + string.
-        /// </summary>
-        public static string Concat(string str1, int val1, string str2)
+        public static string Concat(string str1, int val1, string str2, int val2, params string[] strs)
         {
             var sb = Get();
             sb.Append(str1);
             sb.Append(val1);
             sb.Append(str2);
+            sb.Append(val2);
+            foreach (var s in strs)
+            {
+                sb.Append(s);
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 组合string + string + int[].
+        /// </summary>
+        public static string Concat(string str1, string str2, params int[] vals)
+        {
+            var sb = Get();
+            sb.Append(str1);
+            sb.Append(str2);
+            foreach (var v in vals)
+            {
+                sb.Append(v);
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 组合string + int + char + int[].
+        /// </summary>
+        public static string Concat(string str, int val1, char sep1, params int[] vals)
+        {
+            var sb = Get();
+            sb.Append(str);
+            sb.Append(val1);
+            sb.Append(sep1);
+            foreach (var v in vals)
+            {
+                sb.Append(v);
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 组合string + int + string[].
+        /// </summary>
+        public static string Concat(string str1, int val1, params string[] strs)
+        {
+            var sb = Get();
+            sb.Append(str1);
+            sb.Append(val1);
+            foreach (var s in strs)
+            {
+                sb.Append(s);
+            }
             return sb.ToString();
         }
 
@@ -133,7 +171,6 @@ namespace MetalMaxSystem
             }
             return sb.ToString();
         }
-
     }
 }
 

@@ -1,720 +1,659 @@
-﻿using System.Collections.Generic;
+﻿#region 预处理指令(须靠最前)
+//↓制作UnityMOD环境下手动启用(如BepInEx)
+//#define UNITY_STANDALONE
+
+//#define MONOGAME //MonoGame插件下启用(包括XNA框架)
+
+#if !(UNITY_EDITOR || UNITY_STANDALONE || NET5_0_OR_GREATER)
+↓仅针对MMCore.cs:非Unity、NET5+则启用NETFRAMEWORK(否则即便Unity的Framework也不启用)
+#define NETFRAMEWORK
+#endif
+
+#endregion
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
+using System.Runtime.InteropServices;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Collections.Concurrent;
+using System.Globalization;//判断英文字符用到
+using System.Linq;//混肴处理字符串转义时用到
+//↓防止与System.Windows.Forms.Timer混淆
+using Timer = System.Threading.Timer;
+
+#region 环境适配
+#if UNITY_EDITOR || UNITY_STANDALONE
+//Unity环境:编辑器、独立应用程序(不包括Web播放器)
+using Mathf = UnityEngine.Mathf;
+using Debug = UnityEngine.Debug;
+using Vector2F = UnityEngine.Vector2;
+using Vector3F = UnityEngine.Vector3;
+#else
+//其他.Net环境,如纯VS2022下C#环境Framwork4.8、Net5+及加载插件MonoGame、XNA的情况
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+//↓可使用.Net中的Debug.WriteLine
+using Debug = System.Diagnostics.Debug;
+#if WINDOWS || NET5_0_OR_GREATER || NETFRAMEWORK
+//↓支持WINDOWS框架下识别硬件标识等(若依然是灰色,请手动添加或安装程序集)
+using System.Management;
+using Microsoft.Win32;
+using System.Windows;
+#endif
+#if NETFRAMEWORK
+//使用VS2022的NETFRAMEWORK4.8框架时校准Mathf
+using Mathf = System.Math;
+#else
+using Mathf = System.MathF;
+#endif
+#if MONOGAME
+//使用VS2022的MonoGame插件框架时,校准2F3F向量
+using Vector2F = Microsoft.Xna.Framework.Vector2;
+using Vector3F = Microsoft.Xna.Framework.Vector3;
+#else
+using Vector2F = System.Numerics.Vector2;
+using Vector3F = System.Numerics.Vector3;
+#endif
+#endif
+#endregion
 
 namespace MetalMaxSystem
 {
     public partial class MMCore
     {
-        #region 常量定义
-        private static float c_xuLiZengLiang = 1.0f;
-        private static float c_shuangJiZengLiang = 0.0625f;
-        private static float c_shuangJiShiXian = 0.25f;
-        #endregion
+        public static bool chargeDebug = true;
+        public static bool doubleClickDebug = true;
 
-        #region 状态变量
-        private static bool _xuLiGuanLi = false;
-        private static bool _shuangJiGuanLi = false;
-        #endregion
+        public static float chargeDeltaValue = 1.0f; //蓄力增量
+        public static float doubleClickDeltaValue = 0.0625f; //双击增量
+        public static float doubleClickTimeLimit = 0.25f; //双击时间限制(单位秒)
 
-        #region 委托定义
         public delegate void KeyDoubleClickFuncref(int player, int key, float timeDiff);
         public delegate void MouseDoubleClickFuncref(int player, int mouseButton, float timeDiff);
-        public delegate void KeyChargeFuncref(int player, int key, float chargeValue);
-        #endregion
-
-        #region 事件定义
         public static event KeyDoubleClickFuncref KeyDoubleClickEvent;
         public static event MouseDoubleClickFuncref MouseDoubleClickEvent;
-        public static event KeyChargeFuncref KeyChargeEvent;
-        #endregion
 
-        #region DataTable存储键名
-        private const string c_tableKey_XuLiNum = "HD_CDXuLiNum";
-        private const string c_tableKey_XuLiTag = "HD_CDXuLiTag";
-        private const string c_tableKey_XuLiFixed = "HD_CDFixed_XuLi";
-        private const string c_tableKey_SJNum = "HD_CDSJNum";
-        private const string c_tableKey_SJTag = "HD_CDSJTag";
-        private const string c_tableKey_SJFixed = "HD_CDFixed_SJ";
-        private const string c_tableKey_KeyDownState = "KeyDownState";
-        private const string c_tableKey_MouseDownState = "MouseDownState";
-        private const string c_tableKey_IfKTag = "HD_IfKTag";
-        private const string c_tableKey_IfSTag = "HD_IfSTag";
-        #endregion
+        #region 方法
 
-        #region 蓄力值功能
-        /// <summary>
-        /// 返回蓄力按键的DataTable分组键名,格式为"IntGroup_XuLi" + player,用于区分不同玩家的蓄力按键注册信息
-        /// </summary>
-        /// <param name="player"></param>
-        /// <returns></returns>
-        private static string GetXuLiGroupKey(int player)
+        public static void ChargeManager()
         {
-            return ThreadStringBuilder.Concat("IntGroup_XuLi", player);
-        }
-        /// <summary>
-        /// 返回蓄力按键注册总数的DataTable键名,格式为"IntGroup_XuLi" + player + "Num",用于保存玩家注册的蓄力按键数量
-        /// </summary>
-        /// <param name="player"></param>
-        /// <returns></returns>
-        private static string GetXuLiNumKey(int player)
-        {
-            return ThreadStringBuilder.Concat(c_tableKey_XuLiNum, player);
-        }
-        /// <summary>
-        /// 返回蓄力按键注册信息的DataTable键名,格式为"IntGroup_XuLi" + player + "Tag" + index,用于保存玩家注册的每个蓄力按键对应的按键值
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        private static string GetXuLiTagKey(int player, int index)
-        {
-            return ThreadStringBuilder.Concat(c_tableKey_XuLiTag, player, '_', index);
-        }
-        /// <summary>
-        /// 返回蓄力按键对应的蓄力值的DataTable键名,格式为"HD_CDFixed_XuLi" + player + "_" + key,用于保存玩家每个蓄力按键当前的蓄力值
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        private static string GetXuLiFixedKey(int player, int key)
-        {
-            return ThreadStringBuilder.Concat(c_tableKey_XuLiFixed, player, '_', key);
-        }
-        /// <summary>
-        /// 返回按键是否注册为蓄力按键的DataTable键名,格式为"HD_IfKTag" + player + "_" + key,用于快速判断某个按键是否在玩家的蓄力按键列表中注册过（存在即为true,不存在或已移除即为false）
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        private static string GetIfKTagKey(int player, int key)
-        {
-            return ThreadStringBuilder.Concat(c_tableKey_IfKTag, player, '_', key);
-        }
-        /// <summary>
-        /// 返回按键注册总数（蓄力专用）
-        /// </summary>
-        /// <param name="player"></param>
-        /// <returns></returns>
-        private static int GetXuLiNumMax(int player)
-        {
-            string groupKey = GetXuLiGroupKey(player);
-            string numKey = groupKey + "Num";
-            if (DataTableIntKeyExists(true, numKey))
+            int lv_key;
+            int lv_p;
+            float KXL;
+            PlayerGroup PG;
+
+            string auto88703A65_vs;
+            int auto88703A65_ae;
+            int auto88703A65_va;
+            const int auto88703A65_ai = 1;
+            PG = CurrentUserGroup();
+            lv_p = -1;
+            while (true)
             {
-                return DataTableIntLoad0(true, numKey);
+                lv_p = PlayerGroupNextPlayer(PG, lv_p);
+                if (lv_p < 0) { break; }
+                auto88703A65_vs = ThreadStringBuilder.Concat("IntGroup_Charge", lv_p);
+                auto88703A65_ae = HD_ReturnKXLNumMax(auto88703A65_vs);
+                auto88703A65_va = 1;
+                for (; ((auto88703A65_ai >= 0 && auto88703A65_va <= auto88703A65_ae) || (auto88703A65_ai < 0 && auto88703A65_va >= auto88703A65_ae)); auto88703A65_va += auto88703A65_ai)
+                {
+                    lv_key = HD_ReturnKXLTagFromRegNum(auto88703A65_va, auto88703A65_vs);
+                    if (lv_key > 98)
+                    {
+                        //是鼠标按键
+                        if (Player.MouseDownState[lv_p, (lv_key - 98)] == true)
+                        {
+                            //蓄力
+                            KXL = HD_ReturnKeyfloatXL(lv_p, lv_key) + chargeDeltaValue;
+                            HD_SetKeyfloatXL(lv_p, lv_key, KXL);
+                        }
+                        else
+                        {
+                            //未蓄力
+                            KXL = HD_ReturnKeyfloatXL(lv_p, lv_key) - chargeDeltaValue;
+                            HD_SetKeyfloatXL(lv_p, lv_key, KXL);
+                        }
+                    }
+                    else
+                    {
+                        //是键盘按键
+                        if (Player.KeyDownState[lv_p, lv_key] == true)
+                        {
+                            //蓄力
+                            KXL = HD_ReturnKeyfloatXL(lv_p, lv_key) + chargeDeltaValue;
+                            HD_SetKeyfloatXL(lv_p, lv_key, KXL);
+                        }
+                        else
+                        {
+                            //未蓄力
+                            KXL = HD_ReturnKeyfloatXL(lv_p, lv_key) - chargeDeltaValue;
+                            HD_SetKeyfloatXL(lv_p, lv_key, KXL);
+                        }
+                    }
+                    //蓄力值低于原始值,则清空
+                    if (HD_ReturnKeyfloatXL(lv_p, lv_key) < 1.0)
+                    {
+                        HD_SetKeyfloatXL(lv_p, lv_key, 0);
+                    }
+                    //蓄力值调试输出
+                    if ((HD_ReturnKeyfloatXL(lv_p, lv_key) != 0) && (chargeDebug == true))
+                    {
+                        Tell(ThreadStringBuilder.Concat("P", lv_p, "蓄力值[", lv_key, "]", " => "), HD_ReturnKeyfloatXL(lv_p, lv_key));
+                    }
+                }
             }
-            return 0;
         }
-        /// <summary>
-        /// 设置按键注册总数（蓄力专用）
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="value"></param>
-        private static void SetXuLiNumMax(int player, int value)
-        {
-            string groupKey = GetXuLiGroupKey(player);
-            string numKey = groupKey + "Num";
-            DataTableIntSave0(true, numKey, value);
-        }
-        /// <summary>
-        /// 根据注册序号返回对应的按键（蓄力专用）
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="regNum"></param>
-        /// <returns></returns>
-        private static int GetXuLiTagFromRegNum(int player, int regNum)
-        {
-            string groupKey = GetXuLiGroupKey(player);
-            string tagKey = groupKey + "Tag";
-            return DataTableIntLoad1(true, tagKey, regNum);
-        }
-        /// <summary>
-        /// 注册蓄力按键,如果按键已注册则不重复注册,否则添加到列表末尾,并在DataTable中保存注册信息和初始蓄力值
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="player"></param>
-        public static void HD_RegKXL(int key, int player)
-        {
-            string groupKey = GetXuLiGroupKey(player);
-            int num = GetXuLiNumMax(player);
 
-            if (num == 0)
+        public static void DoubleClickManager()
+        {
+            int lv_key;
+            int lv_p;
+            float KSJ;
+            float i;
+            PlayerGroup PG;
+
+            string Auto_vs;
+            int Auto_ae;
+            int Auto_va;
+            const int Auto_ai = 1;
+            PG = CurrentUserGroup();
+            lv_p = -1;
+            while (true)
             {
-                int i = num + 1;
-                SetXuLiNumMax(player, i);
-                DataTableIntSave1(true, GetXuLiTagKey(player, i), i, key);
-                DataTableBoolSave1(true, GetIfKTagKey(player, key), key, true);
+                lv_p = PlayerGroupNextPlayer(PG, lv_p);
+                if (lv_p < 0) { break; }
+                Auto_vs = ThreadStringBuilder.Concat("IntGroup_DoubleClicked", lv_p); //取得玩家区域
+                Auto_ae = HD_ReturnKSJNumMax(Auto_vs); //该玩家区域需要处理的注册数量
+                Auto_va = 1;
+                i = doubleClickDeltaValue;
+                for (; ((Auto_ai >= 0 && Auto_va <= Auto_ae) || (Auto_ai < 0 && Auto_va >= Auto_ae)); Auto_va += Auto_ai)
+                {
+                    lv_key = HD_ReturnKSJTagFromRegNum(Auto_va, Auto_vs); //取得每个序号对应的双击注册键
+                    if ((HD_ReturnKeyFloat_DoubleClick(lv_p, lv_key) != -1.0))
+                    {  //跳过不需要处理的键（双击值为-1）
+                       //无论按键是什么,总是进行双击值的衰减,双击管理无需像蓄力管理那样判断鼠标键盘弹起状态
+                        if (HD_ReturnKeyFloat_DoubleClick(lv_p, lv_key) >= 0.0)
+                        {
+                            KSJ = HD_ReturnKeyFloat_DoubleClick(lv_p, lv_key) - i;
+                            HD_SetKeyFloat_DoubleClick(lv_p, lv_key, KSJ);
+                        }
+                        //Debug
+                        if (HD_ReturnKeyFloat_DoubleClick(lv_p, lv_key) < 0.0)
+                        {
+                            HD_SetKeyFloat_DoubleClick(lv_p, lv_key, -1.0f);
+                        }
+                        //调试双击值
+                        if ((HD_ReturnKeyFloat_DoubleClick(lv_p, lv_key) != -1.0) && (doubleClickDebug == true))
+                        {
+                            Tell(ThreadStringBuilder.Concat("P", lv_p, "双击值[", lv_key, "]", " => "), HD_ReturnKeyFloat_DoubleClick(lv_p, lv_key));
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void Send_KeyDoubleClicked(int lp_player, int lp_key, float lp_deltaTime)
+        {
+            KeyDoubleClickEvent?.Invoke(lp_player, lp_key, lp_deltaTime);
+        }
+
+        public static void Send_MouseDoubleClicked(int lp_player, int lp_key, float lp_deltaTime, Vector2F lp__3DE782B9, int lp_x, int lp_y)
+        {
+            MouseDoubleClickEvent?.Invoke(lp_player, lp_key, lp_deltaTime);
+        }
+
+        public static void HD_RegKSJ(int lp_key, string lp_keyStorage)
+        {
+            string lv_str;
+            int lv_num;
+            int lv_i;
+            int lv_e6A087E7ADBE;
+            int autoE2130D1D_ae;
+            int autoE2130D1D_var;
+            lv_str = (lp_keyStorage + "KSJ");
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_e6A087E7ADBE = lp_key;
+            ThreadWait(lv_str);
+            if ((lv_num == 0))
+            {
+                lv_i = (lv_num + 1);
+                DataTableIntSave0(true, (lv_str + "Num"), lv_i);
+                DataTableIntSave1(true, (lv_str + "Tag"), lv_i, lv_e6A087E7ADBE);
+                DataTableBoolSave1(true, ("HD_IfKTag" + lv_str), lv_e6A087E7ADBE, true);
             }
             else
             {
-                bool found = false;
-                for (int i = 1; i <= num; i++)
+                if ((lv_num >= 1))
                 {
-                    if (DataTableIntLoad1(true, GetXuLiTagKey(player, i), i) == key)
+                    autoE2130D1D_ae = lv_num;
+                    autoE2130D1D_var = 1;
+                    for (; autoE2130D1D_var <= autoE2130D1D_ae; autoE2130D1D_var += 1)
                     {
-                        found = true;
-                        break;
+                        lv_i = autoE2130D1D_var;
+                        if ((DataTableIntLoad1(true, (lv_str + "Tag"), lv_i) == lv_e6A087E7ADBE))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            if ((lv_i == lv_num))
+                            {
+                                lv_i = (lv_num + 1);
+                                DataTableIntSave0(true, (lv_str + "Num"), lv_i);
+                                DataTableIntSave1(true, (lv_str + "Tag"), lv_i, lv_e6A087E7ADBE);
+                                DataTableBoolSave1(true, ("HD_IfKTag" + lv_str), lv_e6A087E7ADBE, true);
+                            }
+
+                        }
                     }
                 }
-                if (!found)
-                {
-                    int i = num + 1;
-                    SetXuLiNumMax(player, i);
-                    DataTableIntSave1(true, GetXuLiTagKey(player, i), i, key);
-                    DataTableBoolSave1(true, GetIfKTagKey(player, key), key, true);
-                }
+
             }
         }
-        /// <summary>
-        /// 移除蓄力按键,根据注册序号找到对应按键,从DataTable中删除注册信息,并将列表后续按键前移覆盖,最后更新注册总数
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="index"></param>
-        private static void HD_RemoveKXL(int player, int index)
+
+        public static int HD_ReturnKSJNumMax(string lp_keyStorage)
         {
-            string groupKey = GetXuLiGroupKey(player);
-            int num = GetXuLiNumMax(player);
-            int key = GetXuLiTagFromRegNum(player, index);
+            return DataTableIntLoad0(true, (lp_keyStorage + "KSJNum"));
+        }
 
-            DataTableBoolRemove(true, GetIfKTagKey(player, key));
+        public static int HD_ReturnKSJTagFromRegNum(int lp_regNum, string lp_keyStorage)
+        {
+            return DataTableIntLoad1(true, (lp_keyStorage + "KSJTag"), lp_regNum);
+        }
 
-            for (int i = index; i < num; i++)
+        public static void HD_RegKXL(int lp_key, string lp_keyStorage)
+        {
+            string lv_str;
+            int lv_num;
+            int lv_i;
+            int lv_e6A087E7ADBE;
+            int autoAD1568D7_ae;
+            int autoAD1568D7_var;
+            lv_str = (lp_keyStorage + "KXL");
+            lv_num = DataTableIntLoad0(true, (lv_str + "Num"));
+            lv_e6A087E7ADBE = lp_key;
+            ThreadWait(lv_str);
+            if ((lv_num == 0))
             {
-                int nextTag = GetXuLiTagFromRegNum(player, i + 1);
-                DataTableIntSave1(true, GetXuLiTagKey(player, i), i, nextTag);
-            }
-            DataTableIntSave1(true, GetXuLiTagKey(player, num), num, 0);
-            SetXuLiNumMax(player, num - 1);
-        }
-        /// <summary>
-        /// 注册蓄力按键,如果按键已注册则不重复注册,否则添加到列表末尾,并在DataTable中保存注册信息和初始蓄力值（默认1.0f表示开始蓄力）
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="key"></param>
-        public static void RegistKeyXuLi(int player, int key)
-        {
-            HD_RegKXL(key, player);
-            HD_SetKeyFixedXL(player, key, 1.0f);
-        }
-        /// <summary>
-        /// 移除蓄力按键,根据注册序号找到对应按键,从DataTable中删除注册信息,并将列表后续按键前移覆盖,最后更新注册总数,同时重置蓄力值（默认0.0f）
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="key"></param>
-        public static void RemoveKeyXuLi(int player, int key)
-        {
-            string groupKey = GetXuLiGroupKey(player);
-            int num = GetXuLiNumMax(player);
-            for (int i = 1; i <= num; i++)
-            {
-                if (GetXuLiTagFromRegNum(player, i) == key)
-                {
-                    HD_RemoveKXL(player, i);
-                    HD_SetKeyFixedXL(player, key, 0.0f);
-                    break;
-                }
-            }
-        }
-        /// <summary>
-        /// 设置按键蓄力值,根据玩家和按键找到对应的DataTable键名,保存蓄力值
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        public static void HD_SetKeyFixedXL(int player, int key, float value)
-        {
-            DataTableFloatSave1(true, GetXuLiFixedKey(player, key), key, value);
-        }
-        /// <summary>
-        /// 返回按键蓄力值,根据玩家和按键找到对应的DataTable键名,加载蓄力值,如果不存在则返回0.0f表示未注册或已过期
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public static float HD_ReturnKeyFixedXL(int player, int key)
-        {
-            if (DataTableFloatKeyExists(true, GetXuLiFixedKey(player, key)))
-            {
-                return DataTableFloatLoad1(true, GetXuLiFixedKey(player, key), key);
-            }
-            return 0.0f;
-        }
-        /// <summary>
-        /// 设置按键双击值,根据玩家和按键找到对应的DataTable键名,保存双击值
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        public static void HD_SetKeyFixedSJ(int player, int key, float value)
-        {
-            DataTableFloatSave1(true, c_tableKey_SJFixed + player + "_" + key, key, value);
-        }
-        /// <summary>
-        /// 返回按键双击值,根据玩家和按键找到对应的DataTable键名,加载双击值,如果不存在则返回-1.0f表示未注册或已过期
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public static float HD_ReturnKeyFixedSJ(int player, int key)
-        {
-            if (DataTableFloatKeyExists(true, c_tableKey_SJFixed + player + "_" + key))
-            {
-                return DataTableFloatLoad1(true, c_tableKey_SJFixed + player + "_" + key, key);
-            }
-            return -1.0f;
-        }
-        /// <summary>
-        /// 设置蓄力增量,在UpdateXuLi中每帧调用,根据按键状态增加或减少蓄力值
-        /// </summary>
-        /// <param name="enable"></param>
-        public static void StartXuLiGuanLi(bool enable)
-        {
-            _xuLiGuanLi = enable;
-        }
-        /// <summary>
-        /// 蓄力管理主循环 - 每帧调用
-        /// 遍历所有注册的蓄力按键,根据按键状态累加或减少蓄力值
-        /// </summary>
-        public static void UpdateXuLi(int player)
-        {
-            if (!_xuLiGuanLi) return;
-
-            string groupKey = GetXuLiGroupKey(player);
-            int num = GetXuLiNumMax(player);
-
-            List<int> keysToRemove = new List<int>();
-
-            for (int i = 1; i <= num; i++)
-            {
-                int key = GetXuLiTagFromRegNum(player, i);
-                bool isPressed = false;
-
-                if (key > 98)
-                {
-                    int mouseButton = key - 98;
-                    isPressed = DataTableBoolLoad1(true, c_tableKey_MouseDownState + player, mouseButton);
-                }
-                else
-                {
-                    isPressed = DataTableBoolLoad1(true, c_tableKey_KeyDownState + player, key);
-                }
-
-                float KXL = HD_ReturnKeyFixedXL(player, key);
-
-                if (isPressed)
-                {
-                    KXL += c_xuLiZengLiang;
-                }
-                else
-                {
-                    KXL -= c_xuLiZengLiang;
-                }
-
-                if (KXL < 1.0f)
-                {
-                    KXL = 0.0f;
-                    keysToRemove.Add(key);
-                }
-
-                HD_SetKeyFixedXL(player, key, KXL);
-            }
-
-            foreach (int key in keysToRemove)
-            {
-                RemoveKeyXuLi(player, key);
-            }
-        }
-        /// <summary>
-        /// 处理按键释放时的蓄力事件,如果蓄力值大于0,则触发KeyChargeEvent事件,并重置蓄力值
-        /// </summary>
-        public static void ProcessKeyReleaseWithCharge(int player, int key)
-        {
-            float chargeValue = HD_ReturnKeyFixedXL(player, key);
-            if (chargeValue > 0.0f)
-            {
-                KeyChargeEvent?.Invoke(player, key, chargeValue);
-            }
-            HD_SetKeyFixedXL(player, key, 0.0f);
-            RemoveKeyXuLi(player, key);
-        }
-        #endregion
-
-        #region 双击功能
-        /// <summary>
-        /// 返回双击按键的DataTable分组键名,格式为"IntGroup_DoubleClicked" + player,用于区分不同玩家的双击按键注册信息
-        /// </summary>
-        /// <param name="player"></param>
-        /// <returns></returns>
-        private static string GetSJGroupKey(int player)
-        {
-            return "IntGroup_DoubleClicked" + player;
-        }
-        /// <summary>
-        /// 返回双击按键注册总数的DataTable键名,格式为"IntGroup_DoubleClicked" + player + "Num",用于保存玩家注册的双击按键数量
-        /// </summary>
-        /// <param name="player"></param>
-        /// <returns></returns>
-        private static int GetSJNumMax(int player)
-        {
-            string groupKey = GetSJGroupKey(player);
-            string numKey = groupKey + "Num";
-            if (DataTableIntKeyExists(true, numKey))
-            {
-                return DataTableIntLoad0(true, numKey);
-            }
-            return 0;
-        }
-        /// <summary>
-        /// 设置双击按键注册总数,根据玩家找到对应的DataTable键名,保存注册总数
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="value"></param>
-        private static void SetSJNumMax(int player, int value)
-        {
-            string groupKey = GetSJGroupKey(player);
-            string numKey = groupKey + "Num";
-            DataTableIntSave0(true, numKey, value);
-        }
-        /// <summary>
-        /// 根据注册序号返回对应的按键（双击专用）,根据玩家和注册序号找到对应的DataTable键名,加载按键值,如果不存在则返回0表示未注册
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="regNum"></param>
-        /// <returns></returns>
-        private static int GetSJTagFromRegNum(int player, int regNum)
-        {
-            string groupKey = GetSJGroupKey(player);
-            string tagKey = groupKey + "Tag";
-            return DataTableIntLoad1(true, tagKey, regNum);
-        }
-        /// <summary>
-        /// 注册双击按键,如果按键已注册则不重复注册,否则添加到列表末尾,并在DataTable中保存注册信息和初始双击值（默认时限值）
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="player"></param>
-        public static void HD_RegKSJ(int key, int player)
-        {
-            string groupKey = GetSJGroupKey(player);
-            int num = GetSJNumMax(player);
-
-            if (num == 0)
-            {
-                int i = num + 1;
-                SetSJNumMax(player, i);
-                DataTableIntSave1(true, groupKey + "Tag", i, key);
-                DataTableBoolSave1(true, c_tableKey_IfSTag + player + "_" + key, key, true);
+                lv_i = (lv_num + 1);
+                DataTableIntSave0(true, (lv_str + "Num"), lv_i);
+                DataTableIntSave1(true, (lv_str + "Tag"), lv_i, lv_e6A087E7ADBE);
+                DataTableBoolSave1(true, ("HD_IfKTag" + lv_str), lv_e6A087E7ADBE, true);
             }
             else
             {
-                bool found = false;
-                for (int i = 1; i <= num; i++)
+                if ((lv_num >= 1))
                 {
-                    if (DataTableIntLoad1(true, groupKey + "Tag", i) == key)
+                    autoAD1568D7_ae = lv_num;
+                    autoAD1568D7_var = 1;
+                    for (; autoAD1568D7_var <= autoAD1568D7_ae; autoAD1568D7_var += 1)
                     {
-                        found = true;
-                        break;
+                        lv_i = autoAD1568D7_var;
+                        if ((DataTableIntLoad1(true, (lv_str + "Tag"), lv_i) == lv_e6A087E7ADBE))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            if ((lv_i == lv_num))
+                            {
+                                lv_i = (lv_num + 1);
+                                DataTableIntSave0(true, (lv_str + "Num"), lv_i);
+                                DataTableIntSave1(true, (lv_str + "Tag"), lv_i, lv_e6A087E7ADBE);
+                                DataTableBoolSave1(true, ("HD_IfKTag" + lv_str), lv_e6A087E7ADBE, true);
+                            }
+
+                        }
                     }
                 }
-                if (!found)
-                {
-                    int i = num + 1;
-                    SetSJNumMax(player, i);
-                    DataTableIntSave1(true, groupKey + "Tag", i, key);
-                    DataTableBoolSave1(true, c_tableKey_IfSTag + player + "_" + key, key, true);
-                }
             }
         }
-        /// <summary>
-        /// 移除双击按键,根据注册序号找到对应按键,从DataTable中删除注册信息,并将列表后续按键前移覆盖,最后更新注册总数
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="index"></param>
-        private static void HD_RemoveKSJ(int player, int index)
-        {
-            string groupKey = GetSJGroupKey(player);
-            int num = GetSJNumMax(player);
-            int key = GetSJTagFromRegNum(player, index);
 
-            DataTableBoolRemove(true, c_tableKey_IfSTag + player + "_" + key);
+        public static int HD_ReturnKXLNumMax(string lp_key)
+        {
+            return DataTableIntLoad0(true, (lp_key + "KXLNum"));
+        }
 
-            for (int i = index; i < num; i++)
-            {
-                int nextTag = GetSJTagFromRegNum(player, i + 1);
-                DataTableIntSave1(true, groupKey + "Tag", i, nextTag);
-            }
-            DataTableIntSave1(true, groupKey + "Tag", num, 0);
-            SetSJNumMax(player, num - 1);
-        }
         /// <summary>
-        /// 注册双击按键,如果按键已注册则不重复注册,否则添加到列表末尾,并在DataTable中保存注册信息和初始双击值（默认时限值）
+        /// 返回序号对应按键（蓄力专用）
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="key"></param>
-        public static void RegistKeyShuangJi(int player, int key)
-        {
-            HD_RegKSJ(key, player);
-            HD_SetKeyFixedSJ(player, key, c_shuangJiShiXian);
-        }
-        /// <summary>
-        /// 移除双击按键,根据注册序号找到对应按键,从DataTable中删除注册信息,并将列表后续按键前移覆盖,最后更新注册总数,同时重置双击值（默认-1.0f表示未注册或已过期）
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="key"></param>
-        public static void RemoveKeyShuangJi(int player, int key)
-        {
-            string groupKey = GetSJGroupKey(player);
-            int num = GetSJNumMax(player);
-            for (int i = 1; i <= num; i++)
-            {
-                if (GetSJTagFromRegNum(player, i) == key)
-                {
-                    HD_RemoveKSJ(player, i);
-                    HD_SetKeyFixedSJ(player, key, -1.0f);
-                    break;
-                }
-            }
-        }
-        /// <summary>
-        /// 设置双击增量,在UpdateShuangJi中每帧调用,根据按键状态衰减双击值,如果按键未在时限内按下第二次则过期失效
-        /// </summary>
-        /// <param name="value"></param>
-        public static void SetShuangJiZengLiang(float value)
-        {
-        }
-        /// <summary>
-        /// 设置双击时限,在ProcessKeyDoubleClick和ProcessMouseDoubleClick中调用,当第一次按下时初始化双击值,如果在时限内按下第二次则触发双击事件
-        /// </summary>
-        /// <param name="enable"></param>
-        public static void StartShuangJiGuanLi(bool enable)
-        {
-            _shuangJiGuanLi = enable;
-        }
-        /// <summary>
-        /// 双击管理主循环 - 每帧调用
-        /// 遍历所有注册的双击按键,衰减双击值（与Galaxy版本一致）
-        /// </summary>
-        public static void UpdateShuangJi(int player)
-        {
-            if (!_shuangJiGuanLi) return;
-
-            string groupKey = GetSJGroupKey(player);
-            int num = GetSJNumMax(player);
-
-            for (int i = 1; i <= num; i++)
-            {
-                int key = GetSJTagFromRegNum(player, i);
-                float KSJ = HD_ReturnKeyFixedSJ(player, key);
-
-                if (KSJ != -1.0f && KSJ >= 0.0f)
-                {
-                    KSJ -= c_shuangJiZengLiang;
-                    if (KSJ < 0.0f)
-                    {
-                        KSJ = -1.0f;
-                        HD_RemoveKSJ(player, i);
-                    }
-                    HD_SetKeyFixedSJ(player, key, KSJ);
-                }
-            }
-        }
-        /// <summary>
-        /// 处理按键双击事件,当第一次按下时初始化双击值,如果在时限内按下第二次则触发双击事件并重置双击值,否则等待下一次按下重新初始化双击值
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="key"></param>
+        /// <param name="lp_regNum"></param>
+        /// <param name="lp_keyStorage"></param>
         /// <returns></returns>
-        public static bool ProcessKeyDoubleClick(int player, int key)
+        public static int HD_ReturnKXLTagFromRegNum(int lp_regNum, string lp_keyStorage)
         {
-            if (!_shuangJiGuanLi) return false;
-
-            float KSJ = HD_ReturnKeyFixedSJ(player, key);
-
-            if (KSJ > 0.0f)
-            {
-                // 在时限内按下第二次,触发双击事件
-                KeyDoubleClickEvent?.Invoke(player, key, KSJ);
-                HD_SetKeyFixedSJ(player, key, -1.0f);
-                RemoveKeyShuangJi(player, key);
-                return true;
-            }
-
-            // 第一次按下,初始化双击值
-            HD_SetKeyFixedSJ(player, key, c_shuangJiShiXian);
-            return false;
+            return DataTableIntLoad1(true, (lp_keyStorage + "KXLTag"), lp_regNum);
         }
-        /// <summary>
-        /// 处理鼠标双击事件,当第一次按下时初始化双击值,如果在时限内按下第二次则触发双击事件并重置双击值,否则等待下一次按下重新初始化双击值
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="mouseButton"></param>
-        /// <returns></returns>
-        public static bool ProcessMouseDoubleClick(int player, int mouseButton)
+
+        public static void HD_SetKeyfloatXL(int lp_player, int lp_key, float lp_value)
         {
-            if (!_shuangJiGuanLi) return false;
-
-            int key = mouseButton + 98;
-            float KSJ = HD_ReturnKeyFixedSJ(player, key);
-
-            if (KSJ > 0.0f)
-            {
-                // 在时限内按下第二次,触发双击事件
-                MouseDoubleClickEvent?.Invoke(player, mouseButton, KSJ);
-                HD_SetKeyFixedSJ(player, key, -1.0f);
-                RemoveKeyShuangJi(player, key);
-                return true;
-            }
-
-            // 第一次按下,初始化双击值
-            HD_SetKeyFixedSJ(player, key, c_shuangJiShiXian);
-            return false;
+            DataTableFloatSave1(true, ThreadStringBuilder.Concat("HD_CDFloat_KXL", lp_player), lp_key, lp_value);
         }
+
+        public static void SetChargeDeltaValue(float lp_e89384E58A9BE5A29EE9878F)
+        {
+            chargeDeltaValue = lp_e89384E58A9BE5A29EE9878F;
+        }
+
+        public static float HD_ReturnKeyfloatXL(int lp_player, int lp_key)
+        {
+            return DataTableFloatLoad1(true, ThreadStringBuilder.Concat("HD_CDFloat_KXL", lp_player), lp_key);
+        }
+
+        public static float HD_ReturnKeyfloatXL_Mouse(int lp_player, int lp_mouse)
+        {
+            return DataTableFloatLoad1(true, ThreadStringBuilder.Concat("HD_CDFloat_KXL", lp_player), lp_mouse + 98);
+        }
+
+        public static float HD_ReturnKeyfloatXL_Keyboard(int lp_player, int lp_key)
+        {
+            return DataTableFloatLoad1(true, ThreadStringBuilder.Concat("HD_CDFloat_KXL", lp_player), lp_key);
+        }
+
+        public static void HD_SetKeyFloat_DoubleClick(int lp_player, int lp_key, float lp_value)
+        {
+            DataTableFloatSave1(true, ThreadStringBuilder.Concat("HD_CDFloat_KSJ", lp_player), lp_key, lp_value);
+        }
+
+        public static void SetDoubleClickDeltaValue(float lp_value)
+        {
+            doubleClickDeltaValue = lp_value;
+        }
+
+        public static float HD_ReturnKeyFloat_DoubleClick(int lp_player, int lp_key)
+        {
+            return DataTableFloatLoad1(true, ThreadStringBuilder.Concat("HD_CDFloat_KSJ", lp_player), lp_key);
+        }
+
+        public static float HD_ReturnKeyFloat_DoubleClick_Mouse(int lp_player, int lp_mouse)
+        {
+            return DataTableFloatLoad1(true, ThreadStringBuilder.Concat("HD_CDFloat_KSJ", lp_player), lp_mouse + 98);
+        }
+
+        public static float HD_ReturnKeyFloat_DoubleClick_Keyboard(int lp_player, int lp_key)
+        {
+            return DataTableFloatLoad1(true, ThreadStringBuilder.Concat("HD_CDFloat_KSJ", lp_player), lp_key);
+        }
+
+        public static void SetDoubleClickTimeLimit(float lp_time)
+        {
+            doubleClickTimeLimit = lp_time;
+        }
+
         #endregion
 
-        #region 按键状态管理
-        /// <summary>
-        /// 设置按键按下状态,在OnKeyDown和OnKeyUp中调用,根据玩家和按键找到对应的DataTable键名,保存按键状态（true表示按下, false表示释放）
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="key"></param>
-        /// <param name="state"></param>
-        public static void SetKeyDownState(int player, int key, bool state)
+        // playergroup 类型定义 - 存储玩家组信息
+        public class PlayerGroup
         {
-            DataTableBoolSave1(true, c_tableKey_KeyDownState + player, key, state);
+            public List<int> players = new List<int>();
         }
-        /// <summary>
-        /// 返回按键按下状态,根据玩家和按键找到对应的DataTable键名,加载按键状态,如果不存在则返回false表示未按下
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public static bool GetKeyDownState(int player, int key)
+
+        // CurrentUserGroup - 返回当前本地用户组（支持多人联机）
+        public static PlayerGroup CurrentUserGroup()
         {
-            return DataTableBoolLoad1(true, c_tableKey_KeyDownState + player, key);
-        }
-        /// <summary>
-        /// 设置鼠标按下状态,在OnMouseDown和OnMouseUp中调用,根据玩家和鼠标按钮找到对应的DataTable键名,保存鼠标按钮状态（true表示按下, false表示释放）
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="mouseButton"></param>
-        /// <param name="state"></param>
-        public static void SetMouseDownState(int player, int mouseButton, bool state)
-        {
-            DataTableBoolSave1(true, c_tableKey_MouseDownState + player, mouseButton, state);
-        }
-        /// <summary>
-        /// 返回鼠标按下状态,根据玩家和鼠标按钮找到对应的DataTable键名,加载鼠标按钮状态,如果不存在则返回false表示未按下
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="mouseButton"></param>
-        /// <returns></returns>
-        public static bool GetMouseDownState(int player, int mouseButton)
-        {
-            return DataTableBoolLoad1(true, c_tableKey_MouseDownState + player, mouseButton);
-        }
-        /// <summary>
-        /// 按键按下事件处理,在OnKeyDown中调用,设置按键按下状态,如果启用蓄力管理则注册蓄力按键并初始化蓄力值,如果启用双击管理则处理双击事件并设置双击值
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="key"></param>
-        public static void OnKeyDown(int player, int key)
-        {
-            SetKeyDownState(player, key, true);
-            if (_xuLiGuanLi)
+            PlayerGroup pg = new PlayerGroup();
+
+            // 遍历所有可能的玩家,收集本地用户
+            for (int i = 1; i <= Game.c_maxPlayers; i++)
             {
-                RegistKeyXuLi(player, key);
-                HD_SetKeyFixedXL(player, key, 1.0f);
-            }
-            if (_shuangJiGuanLi)
-            {
-                if (ProcessKeyDoubleClick(player, key))
+                // 如果是本地用户,添加到组中
+                if (Player.LocalUser[i])
                 {
-                }
-                else
-                {
-                    HD_RegKSJ(key, player);
-                    HD_SetKeyFixedSJ(player, key, c_shuangJiShiXian);
+                    pg.players.Add(i);
                 }
             }
+
+            // 如果没有找到本地用户（可能是初始化阶段或单机模式）,默认添加玩家1
+            if (pg.players.Count == 0)
+            {
+                pg.players.Add(1);
+            }
+
+            return pg;
         }
-        /// <summary>
-        /// 按键释放事件处理,在OnKeyUp中调用,设置按键按下状态,如果启用蓄力管理则处理蓄力事件并重置蓄力值,如果启用双击管理则不需要处理双击事件因为双击只在按下时判断和触发
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="key"></param>
-        public static void OnKeyUp(int player, int key)
+
+        // PlayerGroupNextPlayer - 遍历玩家组
+        public static int PlayerGroupNextPlayer(PlayerGroup lp_pg, int lp_current)
         {
-            SetKeyDownState(player, key, false);
-            if (_xuLiGuanLi)
+            if (lp_pg == null || lp_pg.players.Count == 0)
+                return -1;
+
+            if (lp_current < 0)
             {
-                ProcessKeyReleaseWithCharge(player, key);
+                // 首次调用,返回第一个玩家
+                return lp_pg.players[0];
             }
+
+            int index = lp_pg.players.IndexOf(lp_current);
+            if (index < 0 || index >= lp_pg.players.Count - 1)
+            {
+                return -1; // 遍历结束
+            }
+
+            return lp_pg.players[index + 1];
         }
-        /// <summary>
-        /// 鼠标按钮按下事件处理,在OnMouseDown中调用,设置鼠标按钮按下状态,如果启用蓄力管理则注册蓄力按键并初始化蓄力值,如果启用双击管理则处理双击事件并设置双击值
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="mouseButton"></param>
-        public static void OnMouseDown(int player, int mouseButton)
-        {
-            int key = mouseButton + 98;
-            SetMouseDownState(player, mouseButton, true);
-            if (_xuLiGuanLi)
-            {
-                RegistKeyXuLi(player, key);
-                HD_SetKeyFixedXL(player, key, 1.0f);
-            }
-            if (_shuangJiGuanLi)
-            {
-                if (ProcessMouseDoubleClick(player, mouseButton))
-                {
-                }
-                else
-                {
-                    HD_RegKSJ(key, player);
-                    HD_SetKeyFixedSJ(player, key, c_shuangJiShiXian);
-                }
-            }
-        }
-        /// <summary>
-        /// 鼠标按钮释放事件处理,在OnMouseUp中调用,设置鼠标按钮按下状态,如果启用蓄力管理则处理蓄力事件并重置蓄力值,如果启用双击管理则不需要处理双击事件因为双击只在按下时判断和触发
-        /// </summary>
-        /// <param name="player"></param>
-        /// <param name="mouseButton"></param>
-        public static void OnMouseUp(int player, int mouseButton)
-        {
-            int key = mouseButton + 98;
-            SetMouseDownState(player, mouseButton, false);
-            if (_xuLiGuanLi)
-            {
-                ProcessKeyReleaseWithCharge(player, key);
-            }
-        }
-        #endregion
 
     }
 }
 
-//// 1. 启用蓄力和双击管理
-//MMCore.StartXuLiGuanLi(true);
-//MMCore.StartShuangJiGuanLi(true);
+/*
+## 一、完整架构图
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         整体协作架构                                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   ┌─────────────────────────┐                                              │
+│   │    操作系统底层硬件      │                                              │
+│   │      输入事件           │                                              │
+│   └─────────────────────────┘                                              │
+│              ↓                                                              │
+│   ┌───────────────────────────────────────────────────┐                    │
+│   │  KeyMouseHook (Windows 系统钩子)                  │                    │
+│   │  - MouseHook (监听 WM_MOUSEMOVE/WM_LBUTTONDOWN 等)│                    │
+│   │  - KeyboardHook (监听 WM_KEYDOWN/WM_KEYUP 等)     │                    │
+│   └───────────────────────────────────────────────────┘                    │
+│              ↓                                                              │
+│   ┌───────────────────────────────────────────────────┐                    │
+│   │     RecordService (输入服务层)                    │                    │
+│   │  ├─ 接收钩子事件 (MouseEventHandler/KeyboardEventHandler) │                    │
+│   │  ├─ 转换为标准化格式 (PlayerID, key, Vector3F...) │                    │
+│   │  ├─ 触发事件: KeyDownEvent / MouseDownEvent...   │                    │
+│   │  └─ 通过 AddKeyMouseEvent 绑定到 MMCore          │                    │
+│   └───────────────────────────────────────────────────┘                    │
+│              ↓                                                              │
+│   ┌─────────────────────────────────────────────────────────────────────┐ │
+│   │          MMCore (按键事件总控)                                       │ │
+│   │  ┌───────────────────────────────────────────────────────────────┐   │ │
+│   │  │ 状态存储 (Player 类) - 按键状态/鼠标位置                         │   │ │
+│   │  ├───────────────────────────────────────────────────────────────┤   │ │
+│   │  │ KeyDown(player, key) -> Player.KeyDownState[] ->                │   │ │
+│   │  │ KeyDownGlobalEvent(key, true, player) -> 执行注册的委托         │   │ │
+│   │  ├───────────────────────────────────────────────────────────────┤   │ │
+│   │  │ 委托管理 - RegistKeyEventFuncref() / RegistMouseEventFuncref() │   │ │
+│   │  └───────────────────────────────────────────────────────────────┘   │ │
+│   └─────────────────────────────────────────────────────────────────────┘ │
+│              ↓                                                              │
+│   ┌─────────────────────────────────────────────────────────────────────┐ │
+│   │        MainUpdate / SubUpdate (周期更新触发器)                        │ │
+│   │  ┌───────────────────────────────────────────────────────────────┐ │ │
+│   │  │ MainUpdate 线程 (默认间隔 50ms)                                │ │ │
+│   │  │  - Awake()  -> EntryGlobalEvent(MainAwake)                    │ │ │
+│   │  │  - Start()  -> EntryGlobalEvent(MainStart)                    │ │ │
+│   │  │  - Update() -> EntryGlobalEvent(MainUpdate) <- 每帧调用      │ │ │
+│   │  │  - End()    -> EntryGlobalEvent(MainEnd)                      │ │ │
+│   │  │  - Destroy() -> EntryGlobalEvent(MainDestroy)                 │ │ │
+│   │  ├───────────────────────────────────────────────────────────────┤ │ │
+│   │  │ SubUpdate 线程 (另一个周期触发器, 可并行)                      │ │ │
+│   │  └───────────────────────────────────────────────────────────────┘ │ │
+│   └─────────────────────────────────────────────────────────────────────┘ │
+│              ↓                                                              │
+│   ┌─────────────────────────────────────────────────────────────────────┐ │
+│   │       游戏系统每帧更新 (ChargeManager, DoubleClickManager)          │ │
+│   │  - ChargeManager: 遍历 CurrentUserGroup,更新蓄力值                │ │
+│   │  - DoubleClickManager: 遍历 CurrentUserGroup,衰减双击计时器      │ │
+│   │  - MouseKeyUpWait: 处理按键队列的延迟弹起                          │ │
+│   └─────────────────────────────────────────────────────────────────────┘ │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 
-//// 2. 订阅事件
-//MMCore.KeyChargeEvent += OnKeyCharge;
-//MMCore.KeyDoubleClickEvent += OnKeyDoubleClick;
+## 二、各组件详解
 
-//// 3. 在主循环中更新
-//void Update()
-//{
-//    MMCore.UpdateXuLi(playerId);
-//    MMCore.UpdateShuangJi(playerId);
-//}
+### 1. KeyMouseHook - 系统底层钩子
 
-//// 4. 事件处理
-//void OnKeyCharge(int player, int key, float chargeValue)
-//{
-//    Debug.Log($"玩家{player}按键{key}蓄力值: {chargeValue}");
-//}
+// RecordService.cs 中的初始化
+MyMouseHook = MouseHook.GetMouseHook();
+MyKeyboardHook = KeyboardHook.GetKeyboardHook();
 
-//void OnKeyDoubleClick(int player, int key, float timeDiff)
-//{
-//    Debug.Log($"玩家{player}按键{key}双击，间隔{timeDiff}秒");
-//}
+// 钩子工作原理: 拦截系统级 WM_* 消息
+// WM_MOUSEMOVE, WM_LBUTTONDOWN, WM_KEYDOWN 等
+
+### 2. RecordService - 输入服务层
+
+**功能**：
+- 接收钩子事件
+- 转换为标准格式 (包含 PlayerID)
+- 通过 AddKeyMouseEvent 绑定到 MMCore
+
+// RecordService.cs:223
+private void MouseEventHandler(int wParam, MouseHook.MouseHookStruct mouseMsg)
+{
+    // 1. 记录鼠标位置 X/Y/Z
+    X = mouseMsg.pt.x;
+    Y = mouseMsg.pt.y;
+    
+    // 2. 触发绑定的事件
+    MouseDownEvent?.Invoke(PlayerID, key, Player.MouseVector3F[PlayerID], X, Y);
+}
+
+// MMCore.cs:18246 - 绑定 MMCore 函数到 RecordService
+public static void AddKeyMouseEvent(RecordService keyMouseRecordService, bool cover)
+{
+    keyMouseRecordService.KeyDownEvent = KeyDown;      // 绑定!
+    keyMouseRecordService.KeyUpEvent = KeyUp;
+    // ...
+}
+
+### 3. MMCore - 按键事件总控
+
+**工作流程**：
+
+// MMCore.cs:18301 - KeyDown
+internal static bool KeyDown(int player, int key)
+{
+    // 1. 检查 StopKeyMouseEvent
+    bool torf = !StopKeyMouseEvent[player];
+    
+    // 2. 更新 Player 状态
+    Player.KeyDownState[player, key] = torf;
+    Player.KeyDown[player, key] = true;
+    
+    // 3. 记录到按键队列 (支持延迟弹起)
+    Player.KeyDownLoopOneBitNum[player] += 1;
+    DataTableIntSave2(true, "KeyDownLoopOneBit", player, ...);
+    
+    // 4. 触发全局事件 -> 执行注册的委托
+    KeyDownGlobalEvent(key, true, player);
+}
+
+// MMCore.cs:18931 - 执行委托
+public static void KeyDownGlobalEvent(int key, bool keydown, int player)
+{
+    for (int a = 1; a <= keyEventFuncrefGroupNum[key]; a++)
+    {
+        keyEventFuncrefGroup[key, a](keydown, player);
+    }
+}
+
+### 4. MainUpdate/SubUpdate - 周期更新
+
+**MainUpdate.cs:96**：
+
+private static void Func()
+{
+    if (Duetime < 0) { Duetime = 0; }
+    if (Period <= 0) { Period = 50; }  // 默认 50ms (20FPS)
+    Action(Duetime, Period);
+}
+
+// Action() 执行流程:
+// Awake() -> EntryGlobalEvent(MainAwake)
+// Start() -> EntryGlobalEvent(MainStart)
+// Timer -> CheckStatus() -> Update() -> EntryGlobalEvent(MainUpdate) (每50ms)
+// End() -> EntryGlobalEvent(MainEnd)
+// Destroy() -> EntryGlobalEvent(MainDestroy)
+```
+
+### 5. 游戏系统更新 (ChargeManager / DoubleClickManager)
+
+**MMCore.MouseKeyboardEvent.cs:50 - ChargeManager**：
+
+public static void ChargeManager()
+{
+    // 1. 获取当前本地用户组 (支持多人联机)
+    PlayerGroup PG = CurrentUserGroup();
+    int lv_p = -1;
+    
+    // 2. 遍历组内每个玩家
+    while (true)
+    {
+        lv_p = PlayerGroupNextPlayer(PG, lv_p);
+        if (lv_p < 0) break;
+        
+        // 3. 读取该玩家注册的蓄力键
+        string auto88703A65_vs = ThreadStringBuilder.Concat("IntGroup_Charge", lv_p);
+        int auto88703A65_ae = HD_ReturnKXLNumMax(auto88703A65_vs);
+        
+        // 4. 更新每个蓄力键的值
+        for (auto88703A65_va = 1; ...)
+        {
+            if (Player.MouseDownState[lv_p, key] == true)
+                HD_SetKeyfloatXL(lv_p, key, value + chargeDeltaValue);  // + 1
+            else
+                HD_SetKeyfloatXL(lv_p, key, value - chargeDeltaValue);  // - 1
+        }
+    }
+}
+
+## 三、多人联机协作关键点
+
+| 机制 | 说明 |
+|------|------|
+| **PlayerID** | RecordService 实例绑定 PlayerID (1-15) |
+| **LocalUser[]** | Player.LocalUser[player] 标记本地用户 |
+| **CurrentUserGroup()** | 返回所有 LocalUser=true 的玩家 |
+| **遍历策略** | ChargeManager 等使用 `PlayerGroupNextPlayer(PG, lv_p)` 遍历 |
+
+## 四、完整使用示例
+
+// 1. 创建 RecordService 实例
+RecordService recordService = new RecordService(1);  // 绑定玩家1
+
+// 2. 绑定到 MMCore
+MMCore.AddKeyMouseEvent(recordService, cover: true);
+
+// 3. 注册按键委托
+MMCore.RegistKeyEventFuncref(MMCore.c_keyW, OnKeyW_Pressed);
+MMCore.RegistKeyEventFuncref(MMCore.c_keyMouseLeft, OnMouseLeft_Pressed);
+
+// 4. 注册蓄力/双击
+MMCore.HD_RegKXL(MMCore.c_keyMouseLeft, "IntGroup_Charge1");
+MMCore.HD_RegKSJ(MMCore.c_keyMouseLeft, "IntGroup_DoubleClick1");
+
+// 5. 注册到 MainUpdate 每帧更新
+MMCore.RegistEntryEventFuncref(Entry.MainUpdate, MMCore.ChargeManager);
+MMCore.RegistEntryEventFuncref(Entry.MainUpdate, MMCore.DoubleClickManager);
+MMCore.RegistEntryEventFuncref(Entry.MainUpdate, () => MMCore.MouseKeyUpWait(1));
+
+// 6. 启动 MainUpdate
+MainUpdate.Start(isBackground: true);
+
+// 7. 启动钩子
+recordService.StartMouseHook();
+recordService.StartKeyboardHook();
+
+这就是整套系统的完整协作流程！通过钩子 -> 服务 -> 总控 -> 周期更新 -> 游戏逻辑,实现了灵活且支持多人的按键事件管理.
+ */

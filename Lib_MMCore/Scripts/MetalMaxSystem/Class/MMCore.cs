@@ -18311,13 +18311,13 @@ namespace MetalMaxSystem
                 //↑存储玩家注册序号对应按键队列键位
                 DataTableBoolSave2(true, "KeyDownLoopOneBitKey", player, key, true); //存储玩家按键队列键位状态
                 //---------------------------------------------------------------------蓄力管理
-                RegistKeyXuLi(player, key);
-                //if (XuLiGuanLi == true){
-                //libBC0D3AAD_gf_HD_RegKXL(key, "IntGroup_XuLi" + IntToString(player)); //HD_注册蓄力按键
-                //libBC0D3AAD_gf_HD_SetKeyFixedXL(player, key, 1.0);
+                //if (_xuLiGuanLi == true)
+                //{
+                //    HD_RegKXL(key, player);
+                //    HD_SetKeyFixedXL(player, key, 1.0f);
                 //}
                 //---------------------------------------------------------------------双击管理
-                ProcessKeyDoubleClick(player, key);
+                //ProcessKeyDoubleClick(player, key);
                 //if (ShuangJiGuanLi == true){
                 //    lv_a = libBC0D3AAD_gf_HD_ReturnKeyFixedSJ(player, key);
                 //    if ((0.0 < lv_a) && (lv_a <= ShuangJiShiXian)){
@@ -18529,14 +18529,12 @@ namespace MetalMaxSystem
                 DataTableIntSave2(true, "MouseDownLoopOneBit", player, Player.MouseDownLoopOneBitNum[player], key);
                 DataTableBoolSave2(true, "MouseDownLoopOneBitKey", player, key, true);
                 //---------------------------------------------------------------------
-                RegistKeyXuLi(player, key);
                 //if (libBC0D3AAD_gv_XuLiGuanLi == true)
                 //{
                 //   libBC0D3AAD_gf_HD_RegKXL(lv_mouseButton, "libBC0D3AAD_gv_IntGroup_XuLi" + IntToString(lv_player)); //HD_注册按键
                 //   libBC0D3AAD_gf_HD_SetKeyFixedXL(lv_player, lv_mouseButton, 1.0);
                 //}
                 ////---------------------------------------------------------------------
-                ProcessMouseDoubleClick(player, key);
                 //if (libBC0D3AAD_gv_ShuangJiGuanLi == true)
                 //{
                 //   libBC0D3AAD_gf_HD_RegPTwo(lv_point1, "DoubleClicked_PTwo_" + IntToString(lv_player));
@@ -18594,14 +18592,12 @@ namespace MetalMaxSystem
                 DataTableIntSave2(true, "MouseDownLoopOneBit", player, Player.MouseDownLoopOneBitNum[player], key);
                 DataTableBoolSave2(true, "MouseDownLoopOneBitKey", player, key, true);
                 //---------------------------------------------------------------------
-                RegistKeyXuLi(player, key);
                 //if (libBC0D3AAD_gv_XuLiGuanLi == true)
                 //{
-                //   libBC0D3AAD_gf_HD_RegKXL(lv_mouseButton, "libBC0D3AAD_gv_IntGroup_XuLi" + IntToString(lv_player)); //HD_注册按键
-                //   libBC0D3AAD_gf_HD_SetKeyFixedXL(lv_player, lv_mouseButton, 1.0);
+                //    libBC0D3AAD_gf_HD_RegKXL(key, player);
+                //    libBC0D3AAD_gf_HD_SetKeyFixedXL(player, key, 1.0);
                 //}
                 ////---------------------------------------------------------------------
-                ProcessMouseDoubleClick(player, key);
                 //if (libBC0D3AAD_gv_ShuangJiGuanLi == true)
                 //{
                 //   libBC0D3AAD_gf_HD_RegPTwo(lv_point1, "DoubleClicked_PTwo_" + IntToString(lv_player));
