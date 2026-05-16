@@ -18528,8 +18528,8 @@ namespace MetalMaxSystem
 
                 //---------------------------------------------------------------------
                 Player.MouseDownLoopOneBitNum[player] += 1;
-                DataTableIntSave2(true, "MouseDownLoopOneBit", player, Player.MouseDownLoopOneBitNum[player], key);
-                DataTableBoolSave2(true, "MouseDownLoopOneBitKey", player, key, true);
+                DataTableIntSave2(true, "MouseDownLoopOneBit", player, Player.MouseDownLoopOneBitNum[player], lp_mouseKey);
+                DataTableBoolSave2(true, "MouseDownLoopOneBitKey", player, lp_mouseKey, true);
                 //---------------------------------------------------------------------
                 if (chargeDebug == true)
                 {
@@ -18539,7 +18539,7 @@ namespace MetalMaxSystem
                 //---------------------------------------------------------------------
                 if (doubleClickDebug == true)
                 {
-                   HD_RegPTwo(lv_point1, ThreadStringBuilder.Concat("DoubleClicked_PTwo_", player));
+                    HD_RegPTwo(Player.MouseVector2F[player], ThreadStringBuilder.Concat("DoubleClicked_PTwo_", player));
                    float lv_a = HD_ReturnKeyFloatSJ(player, lp_mouseKey);
                    if ((0.0 < lv_a) && (lv_a <= doubleClickTimeLimit) && HD_PTwoRangeTrue(ThreadStringBuilder.Concat("DoubleClicked_PTwo_", player)))
                    {
@@ -18553,7 +18553,7 @@ namespace MetalMaxSystem
                    }
                 }
                 //---------------------------------------------------------------------
-                MouseDownFunc(player, key, lp_mouseVector3F, uiX, uiY);
+                MouseDownFunc(player, lp_mouseKey, lp_mouseVector3F, uiX, uiY);
             }
 #else
             if (StopKeyMouseEvent[player] == false)
@@ -18602,13 +18602,12 @@ namespace MetalMaxSystem
                 //---------------------------------------------------------------------
                 if (doubleClickEnable == true)
                 {
-                    var lv_mouseVector2F = new Vector2F(lp_mouseVector3F.X, lp_mouseVector3F.Y);
-                    HD_RegPTwo(lv_mouseVector2F, ThreadStringBuilder.Concat("DoubleClicked_PTwo_", player));
+                    HD_RegPTwo(Player.MouseVector2F[player], ThreadStringBuilder.Concat("DoubleClicked_PTwo_", player));
                     float lv_a = HD_ReturnKeyFloatSJ(player, lp_mouseKey);
                     if ((0.0f < lv_a) && (lv_a <= doubleClickTimeLimit) && HD_PTwoRangeTrue(ThreadStringBuilder.Concat("DoubleClicked_PTwo_", player)))
                     {
                         //符合双击标准(鼠标双击多个2点验证),发送事件
-                        Send_MouseSJEvent(player, lp_mouseKey, doubleClickTimeLimit - lv_a, lv_mouseVector2F, uiX, uiY);
+                        Send_MouseSJEvent(player, lp_mouseKey, doubleClickTimeLimit - lv_a, Player.MouseVector2F[player], uiX, uiY);
                     }
                     else
                     {

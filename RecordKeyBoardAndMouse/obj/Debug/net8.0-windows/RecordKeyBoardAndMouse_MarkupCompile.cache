@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-d:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\
+D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\
 RecordKeyBoardAndMouse
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
-d:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\App.xaml
+D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\App.xaml
 2-1413451295
 
-5-1637452853
-211835121191
+41134805115
+2111112800182
 MainWindow.xaml;styles\DicMainWindow.xaml;
 
-True
+False
 

@@ -62,6 +62,7 @@
       "Lib_MMCore/1.0.0": {
         "dependencies": {
           "HtmlAgilityPack": "1.11.59",
+          "Newtonsoft.Json": "13.0.1",
           "System.Management": "8.0.0"
         },
         "runtime": {
