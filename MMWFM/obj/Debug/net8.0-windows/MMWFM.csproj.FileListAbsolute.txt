@@ -5,6 +5,7 @@ D:\VSWork\2022\Lib_MMProgram\MMWFM\bin\Debug\net8.0-windows\MMWFM.runtimeconfig.
 D:\VSWork\2022\Lib_MMProgram\MMWFM\bin\Debug\net8.0-windows\MMWFM.dll
 D:\VSWork\2022\Lib_MMProgram\MMWFM\bin\Debug\net8.0-windows\MMWFM.pdb
 D:\VSWork\2022\Lib_MMProgram\MMWFM\bin\Debug\net8.0-windows\HtmlAgilityPack.dll
+D:\VSWork\2022\Lib_MMProgram\MMWFM\bin\Debug\net8.0-windows\Newtonsoft.Json.dll
 D:\VSWork\2022\Lib_MMProgram\MMWFM\bin\Debug\net8.0-windows\System.Management.dll
 D:\VSWork\2022\Lib_MMProgram\MMWFM\bin\Debug\net8.0-windows\runtimes\win\lib\net8.0\System.Management.dll
 D:\VSWork\2022\Lib_MMProgram\MMWFM\bin\Debug\net8.0-windows\Lib_MMCore.dll
@@ -22,4 +23,3 @@ D:\VSWork\2022\Lib_MMProgram\MMWFM\obj\Debug\net8.0-windows\refint\MMWFM.dll
 D:\VSWork\2022\Lib_MMProgram\MMWFM\obj\Debug\net8.0-windows\MMWFM.pdb
 D:\VSWork\2022\Lib_MMProgram\MMWFM\obj\Debug\net8.0-windows\MMWFM.genruntimeconfig.cache
 D:\VSWork\2022\Lib_MMProgram\MMWFM\obj\Debug\net8.0-windows\ref\MMWFM.dll
-D:\VSWork\2022\Lib_MMProgram\MMWFM\bin\Debug\net8.0-windows\Newtonsoft.Json.dll

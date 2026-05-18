@@ -4,6 +4,7 @@ D:\VSWork\2022\Lib_MMProgram\TextureMaster\bin\Debug\net8.0-windows\TextureMaste
 D:\VSWork\2022\Lib_MMProgram\TextureMaster\bin\Debug\net8.0-windows\TextureMaster.dll
 D:\VSWork\2022\Lib_MMProgram\TextureMaster\bin\Debug\net8.0-windows\TextureMaster.pdb
 D:\VSWork\2022\Lib_MMProgram\TextureMaster\bin\Debug\net8.0-windows\HtmlAgilityPack.dll
+D:\VSWork\2022\Lib_MMProgram\TextureMaster\bin\Debug\net8.0-windows\Newtonsoft.Json.dll
 D:\VSWork\2022\Lib_MMProgram\TextureMaster\bin\Debug\net8.0-windows\System.Management.dll
 D:\VSWork\2022\Lib_MMProgram\TextureMaster\bin\Debug\net8.0-windows\runtimes\win\lib\net8.0\System.Management.dll
 D:\VSWork\2022\Lib_MMProgram\TextureMaster\bin\Debug\net8.0-windows\Lib_MMCore.dll
@@ -22,4 +23,3 @@ D:\VSWork\2022\Lib_MMProgram\TextureMaster\obj\Debug\net8.0-windows\refint\Textu
 D:\VSWork\2022\Lib_MMProgram\TextureMaster\obj\Debug\net8.0-windows\TextureMaster.pdb
 D:\VSWork\2022\Lib_MMProgram\TextureMaster\obj\Debug\net8.0-windows\TextureMaster.genruntimeconfig.cache
 D:\VSWork\2022\Lib_MMProgram\TextureMaster\obj\Debug\net8.0-windows\ref\TextureMaster.dll
-D:\VSWork\2022\Lib_MMProgram\TextureMaster\bin\Debug\net8.0-windows\Newtonsoft.Json.dll

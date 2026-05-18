@@ -1,9 +1,10 @@
-﻿using System.Threading;
+﻿using MetalMaxSystem;
+using System.Diagnostics;
+using System.Threading;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using MetalMaxSystem;
 
 namespace RecordKeyBoardAndMouse
 {
@@ -38,10 +39,10 @@ namespace RecordKeyBoardAndMouse
                 Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
                 {
                     //记录成员变量
-                    this.label.Content = "wParam:" + recordService.WParam + ",x:" + recordService.X + ",y:" + recordService.Y;
-                    this.label2.Content = "keyStatus:" + recordService.KeyStatus + ",keyValue:" + recordService.KeyValue;
+                    this.label.Content = "wParam:" + recordService.MouseWParam + ",x:" + recordService.X + ",y:" + recordService.Y;
+                    this.label2.Content = "keyStatus:" + recordService.KeyWParam‌ + ",keyValue:" + recordService.VKCode;
                     //查询是否按下按钮
-                    int result = recordService.IsPressTarget();
+                    int result = recordService.IsPressCtrlAltNum();
                     if (result != -1)
                     {
                         int index = result != 0 ? 9 + result : 19;
@@ -54,7 +55,16 @@ namespace RecordKeyBoardAndMouse
             aTimer.Interval = 50;// 设置引发时间的时间间隔　此处设置为１秒（500毫秒）
             aTimer.AutoReset = true;//设置是执行一次（false）还是一直执行(true)；
             aTimer.Enabled = true; //是否执行System.Timers.Timer.Elapsed事件；
+
+            //MMCore.StartKeyMouseEvent();
+            //MMCore.KeyDownEvent += KeyDown;
         }
+
+        //public static bool KeyDown(int player, int key)
+        //{
+        //    Debug.WriteLine($"Key={key}, Player={player}");
+        //    return true;
+        //}
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {

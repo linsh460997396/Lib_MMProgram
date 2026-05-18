@@ -5,6 +5,7 @@ D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\bin\Debug\net8.0-windows\Rec
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\bin\Debug\net8.0-windows\RecordKeyBoardAndMouse.dll
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\bin\Debug\net8.0-windows\RecordKeyBoardAndMouse.pdb
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\bin\Debug\net8.0-windows\HtmlAgilityPack.dll
+D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\bin\Debug\net8.0-windows\Newtonsoft.Json.dll
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\bin\Debug\net8.0-windows\System.Management.dll
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\bin\Debug\net8.0-windows\runtimes\win\lib\net8.0\System.Management.dll
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\bin\Debug\net8.0-windows\Lib_MMCore.dll
@@ -28,4 +29,3 @@ D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\ref
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\RecordKeyBoardAndMouse.pdb
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\RecordKeyBoardAndMouse.genruntimeconfig.cache
 D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\obj\Debug\net8.0-windows\ref\RecordKeyBoardAndMouse.dll
-D:\VSWork\2022\Lib_MMProgram\RecordKeyBoardAndMouse\bin\Debug\net8.0-windows\Newtonsoft.Json.dll
