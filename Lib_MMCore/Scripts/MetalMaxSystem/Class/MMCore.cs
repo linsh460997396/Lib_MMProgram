@@ -18700,24 +18700,24 @@ namespace MetalMaxSystem
                 //---------------------------------------------------------------------
                 if (chargeDebug == true)
                 {
-                   HD_RegKXL(key, ThreadStringBuilder.Concat("IntGroup_XuLi", player)); //HD_注册按键
-                   HD_SetKeyFloatXL(player, key, 1.0f);
+                    HD_RegKXL(key, ThreadStringBuilder.Concat("IntGroup_XuLi", player)); //HD_注册按键
+                    HD_SetKeyFloatXL(player, key, 1.0f);
                 }
                 //---------------------------------------------------------------------
                 if (doubleClickDebug == true)
                 {
                     HD_RegPTwo(Player.MouseVector2F[player], ThreadStringBuilder.Concat("DoubleClicked_PTwo_", player));
-                   float lv_a = HD_ReturnKeyFloatSJ(player, key);
-                   if ((0.0 < lv_a) && (lv_a <= doubleClickTimeLimit) && HD_PTwoRangeTrue(ThreadStringBuilder.Concat("DoubleClicked_PTwo_", player)))
-                   {
-                       //符合双击标准(鼠标双击多个2点验证),发送事件
-                       Send_MouseSJEvent(player, key, doubleClickTimeLimit - lv_a, uiX, uiY, mouseVector);
-                   }
-                   else
-                   {
-                       HD_RegKSJ(key, ThreadStringBuilder.Concat("IntGroup_DoubleClicked", player)); //HD_注册按键
-                       HD_SetKeyFloatSJ(player, key, doubleClickTimeLimit);
-                   }
+                    float lv_a = HD_ReturnKeyFloatSJ(player, key);
+                    if ((0.0 < lv_a) && (lv_a <= doubleClickTimeLimit) && HD_PTwoRangeTrue(ThreadStringBuilder.Concat("DoubleClicked_PTwo_", player)))
+                    {
+                        //符合双击标准(鼠标双击多个2点验证),发送事件
+                        Send_MouseSJEvent(player, key, doubleClickTimeLimit - lv_a, uiX, uiY, mouseVector);
+                    }
+                    else
+                    {
+                        HD_RegKSJ(key, ThreadStringBuilder.Concat("IntGroup_DoubleClicked", player)); //HD_注册按键
+                        HD_SetKeyFloatSJ(player, key, doubleClickTimeLimit);
+                    }
                 }
                 //---------------------------------------------------------------------
                 MouseDownFunc(player, key, uiX, uiY, mouseVector);
